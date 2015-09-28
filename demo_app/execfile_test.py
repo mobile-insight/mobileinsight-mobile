@@ -8,7 +8,7 @@ from mobile_insight.monitor import QmdlReplayer
 from mobile_insight.analyzer import LteRrcAnalyzer
 
 if __name__ == "__main__":
-    
+
     # Initialize a 3G/4G monitor
     src = QmdlReplayer({"ws_dissect_executable_path": "/data/likayo/android_pie_ws_dissector",
                         "libwireshark_path": "/data/likayo/"})
