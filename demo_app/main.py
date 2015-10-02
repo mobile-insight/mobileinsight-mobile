@@ -1,62 +1,63 @@
 import kivy
 kivy.require('1.0.9')
+
 from kivy.lang import Builder
 from kivy.uix.gridlayout import GridLayout
-from kivy.properties import NumericProperty
+from kivy.properties import NumericProperty, StringProperty
 from kivy.app import App
 
 import sys
 import traceback
 
-Builder.load_string('''
+Builder.load_string("""
 <HelloWorldScreen>:
     cols: 1
+
     Label:
         text: '%s' % root.error_log
+        text_size: self.size
+        size_hint_y: 6
+        valign: 'top'
+
     Button:
-        text: 'Click me! %d' % root.counter
-        on_release: root.my_callback2()
-''')
+        text: 'Run script!'
+        size_hint_y: 1
+        on_release: root.my_callback()
+""")
 
 class HelloWorldScreen(GridLayout):
-    counter = NumericProperty(0)
-    error_log = ""
+    error_log = StringProperty("Nico-Nico-Ni!")
+
+    def __init__(self):
+        super(HelloWorldScreen, self).__init__()
+
     def my_callback(self):
-        print 'The button has been pushed'
-        self.counter += 1
+        no_error = True
+        if no_error:
+            try:
+                import mobile_insight
+            except:
+                self.error_log = str(traceback.format_exc())
+                no_error = False
+        
+        if no_error:
+            try:
+                import mobile_insight.dm_collector_c
+                self.error_log = "Loaded dm_collector_c v%s" % mobile_insight.dm_collector_c.version
+            except:
+                self.error_log = "Failed to load dm_collector_c"
+                no_error = False
 
-    def my_callback2(self):
-        #Try execfile()
-        print "Test execfile"
-        try:
-            execfile('/sdcard/execfile_test.py')
-        except:
-            f = open('/sdcard/python_log.txt','w')
-            f.write(str(traceback.format_exc()))
-            f.close()
+        if no_error:
+            try:
+                execfile('/sdcard/execfile_test.py')
+            except:
+                self.error_log = str(traceback.format_exc())
 
-    def my_callback3(self):
-        try:
-            import mobile_insight
-        except:
-            f = open('/sdcard/python_log.txt','w')
-            f.write(str(traceback.format_exc()))
-            f.close()
-
-    def my_callback4(self):
-        f = open("/sdcard/python_log.txt", "w")
-        try:
-            import mobile_insight.dm_collector_c
-            print >> f, "Loaded dm_collector_c v%s" % mobile_insight.dm_collector_c.version
-        except:
-            print >> f, "Failed to load dm_collector_c"
-        f.close()
-    
 
 class HelloWorldApp(App):
     def build(self):
         return HelloWorldScreen()
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     HelloWorldApp().run()
