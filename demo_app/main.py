@@ -36,23 +36,24 @@ class HelloWorldScreen(GridLayout):
         if no_error:
             try:
                 import mobile_insight
+                self.error_log += "\nImported mobile_insight"
             except:
-                self.error_log = str(traceback.format_exc())
+                self.error_log += "\n" + str(traceback.format_exc())
                 no_error = False
         
         if no_error:
             try:
-                import mobile_insight.dm_collector_c
-                self.error_log = "Loaded dm_collector_c v%s" % mobile_insight.dm_collector_c.version
+                import mobile_insight.monitor.dm_collector.dm_collector_c as dm_collector_c
+                self.error_log += "\nLoaded dm_collector_c v%s" % dm_collector_c.version
             except:
-                self.error_log = "Failed to load dm_collector_c"
+                self.error_log += "\nFailed to load dm_collector_c"
                 no_error = False
 
         if no_error:
             try:
                 execfile('/sdcard/execfile_test.py')
             except:
-                self.error_log = str(traceback.format_exc())
+                self.error_log += "\n" + str(traceback.format_exc())
 
 
 class HelloWorldApp(App):
