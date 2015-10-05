@@ -18,7 +18,6 @@ apk:
 		--name "MobileInsight2" \
 		--version 1.0 \
 		--dir "$(ROOT_DIR)" \
-		--private "$(ROOT_DIR)/private/" \
 		--orientation portrait \
 		debug ; \
 	cd "$(ROOT_DIR)"

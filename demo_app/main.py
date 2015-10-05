@@ -1,27 +1,51 @@
 import kivy
 kivy.require('1.0.9')
 
-from kivy.lang import Builder
 from kivy.uix.gridlayout import GridLayout
-from kivy.properties import NumericProperty, StringProperty
+from kivy.uix.scrollview import ScrollView
+from kivy.properties import *
+
+from kivy.lang import Builder
 from kivy.app import App
+from kivy.core.window import Window
 
 import sys
 import traceback
 
+# Prevent Android on-screen keyboard from hiding text input
+# See http://stackoverflow.com/questions/26799084/android-on-screen-keyboard-hiding-python-kivy-textinputs
+Window.softinput_mode = "pan"
+
 Builder.load_string("""
+# A scrollable label class.
+# Taken from http://tune.pk/video/2639621/kivy-crash-course-9-creating-a-scrollable-label
+<ScrollableLabel@ScrollView>:
+    text: ''
+
+    Label:
+        text: root.text
+        text_size: self.width, None
+        size_hint_y: None
+        height: self.texture_size[1]
+        valign: 'top'
+
+# Main screen
 <HelloWorldScreen>:
     cols: 1
 
-    Label:
+    ScrollableLabel:
         text: '%s' % root.error_log
-        text_size: self.size
-        size_hint_y: 6
-        valign: 'top'
+        size_hint_y: 18
+
+    TextInput:
+        id: filename
+        size_hint_y: 3
+        text: '/sdcard/execfile_test.py'
+        multiline: False
 
     Button:
         text: 'Run script!'
-        size_hint_y: 1
+        size_hint_y: 4
         on_release: root.my_callback()
 """)
 
@@ -31,34 +55,41 @@ class HelloWorldScreen(GridLayout):
     def __init__(self):
         super(HelloWorldScreen, self).__init__()
 
+    def _add_log_line(self, s):
+        self.error_log += "\n"
+        self.error_log += s
+
     def my_callback(self):
         no_error = True
         if no_error:
             try:
                 import mobile_insight
-                self.error_log += "\nImported mobile_insight"
+                self._add_log_line("Imported mobile_insight")
             except:
-                self.error_log += "\n" + str(traceback.format_exc())
+                self._add_log_line(str(traceback.format_exc()))
                 no_error = False
         
         if no_error:
             try:
                 import mobile_insight.monitor.dm_collector.dm_collector_c as dm_collector_c
-                self.error_log += "\nLoaded dm_collector_c v%s" % dm_collector_c.version
+                self._add_log_line("Loaded dm_collector_c v%s" % dm_collector_c.version)
             except:
-                self.error_log += "\nFailed to load dm_collector_c"
+                self._add_log_line("Failed to load dm_collector_c")
                 no_error = False
 
         if no_error:
             try:
-                execfile('/sdcard/execfile_test.py')
+                filename = self.ids["filename"].text
+                self._add_log_line("execfile: %s" % filename)
+                execfile(filename)
             except:
-                self.error_log += "\n" + str(traceback.format_exc())
+                self._add_log_line(str(traceback.format_exc()))
 
 
 class HelloWorldApp(App):
     def build(self):
         return HelloWorldScreen()
+
 
 if __name__ == "__main__":
     HelloWorldApp().run()
