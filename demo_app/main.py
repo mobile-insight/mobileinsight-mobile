@@ -141,8 +141,8 @@ class HelloWorldScreen(GridLayout):
 
         from mobile_insight.monitor import QmdlReplayer
         from mobile_insight.analyzer import RrcAnalyzer
-        self.qmdl_src = QmdlReplayer({  "ws_dissect_executable_path": "/data/likayo/android_pie_ws_dissector",
-                                        "libwireshark_path": "/data/likayo/"})
+        self.qmdl_src = QmdlReplayer({  "ws_dissect_executable_path": "/data/ws_dissector/android_pie_ws_dissector",
+                                        "libwireshark_path": "/data/ws_dissector/"})
         self.analyzer = RrcAnalyzer()
 
         infos = {
