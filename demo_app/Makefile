@@ -14,7 +14,7 @@ redist:
 apk:
 	cd "$(P4A_DIST_ROOT)" ; \
 	python ./build.py \
-		--package org.wing.mobile_insight \
+		--package org.wing.mobile_insight2 \
 		--name "MobileInsight2" \
 		--version 1.0 \
 		--dir "$(ROOT_DIR)" \

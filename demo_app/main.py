@@ -10,6 +10,8 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.lang import Builder
 
+from jnius import autoclass, cast
+
 import functools
 import os
 import shlex
@@ -112,11 +114,17 @@ class HelloWorldScreen(GridLayout):
                 self._add_log_line(str(traceback.format_exc()))
                 no_error = False
 
+    def _get_cache_dir(self):
+        PythonActivity = autoclass('org.renpy.android.PythonActivity')
+        currentActivity = cast('android.app.Activity', PythonActivity.mActivity)
+        return str(currentActivity.getCacheDir().getAbsolutePath())
+
     def start_collection(self):
         # The subprocess module uses "/bin/sh" by default, which must be changed on Android.
         # See http://grokbase.com/t/gg/python-for-android/1343rm7q1w/py4a-subprocess-popen-oserror-errno-8-exec-format-error
         ANDROID_SHELL = "/system/bin/sh"
-        LOG_DIR = "/sdcard/external_sd/mobile_insight_log"
+        LOG_DIR = self._get_cache_dir() + "/mobile_insight_log"
+        self._add_log_line("LOG_DIR: %s" % LOG_DIR)
 
         def clock_callback(infos, dt):
             if not self.collecting:
@@ -136,8 +144,12 @@ class HelloWorldScreen(GridLayout):
                 self._add_log_line(repr(t))
             infos["qmdls_before"] = qmdls_after
 
-        cmd1 = "su -c diag_mdlog -s 1 -o \"%s\"" % LOG_DIR
-        subprocess.Popen(cmd1, executable=ANDROID_SHELL, shell=True)
+        cmd = "su -c mkdir \"%s\"" % LOG_DIR
+        subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
+        cmd = "su -c chmod -R 777 \"%s\"" % LOG_DIR
+        subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
+        cmd = "su -c diag_mdlog -s 1 -o \"%s\"" % LOG_DIR
+        subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
 
         from mobile_insight.monitor import QmdlReplayer
         from mobile_insight.analyzer import RrcAnalyzer
@@ -163,7 +175,7 @@ class HelloWorldScreen(GridLayout):
                 cmdline = open(os.path.join("/proc", pid, "cmdline"), "rb").read()
                 if cmdline.startswith("diag_mdlog"):
                     diag_procs.append(int(pid))
-            except IOError:
+            except IOError:     # proc has been terminated
                 continue
 
         if len(diag_procs) > 0:
