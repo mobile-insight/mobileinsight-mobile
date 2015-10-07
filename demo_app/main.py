@@ -133,7 +133,7 @@ class HelloWorldScreen(GridLayout):
 
             qmdls_after = set(os.listdir(LOG_DIR))
             log_files = sorted(list(qmdls_after - infos["qmdls_before"]))
-            for log_file in log_files:
+            for log_file in [l for l in log_files if l.endswith(".qmdl")]:
                 self._add_log_line("=== %s ===" % log_file)
                 self.qmdl_src.set_input_path(os.path.join(LOG_DIR, log_file))
                 self.analyzer.set_source(self.qmdl_src)
@@ -179,7 +179,7 @@ class HelloWorldScreen(GridLayout):
                 continue
 
         if len(diag_procs) > 0:
-            cmd2 = "su -c kill -9 " + " ".join([str(pid) for pid in diag_procs])
+            cmd2 = "su -c kill " + " ".join([str(pid) for pid in diag_procs])
             subprocess.Popen(cmd2, executable=ANDROID_SHELL, shell=True)
 
 
