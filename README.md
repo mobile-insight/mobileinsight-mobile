@@ -1,17 +1,6 @@
 # How to install and use this app #
 
-1. Create a "ws_dissector" folder under the "/data" folder of your phone. Copy the follwoing files into it
-
-```
-    android_pie_ws_dissector
-    libglib-2.0.so
-    libgmodule-2.0.so
-    libgobject-2.0.so
-    libgthread-2.0.so
-    libwireshark.so.5
-    libwiretap.so.4
-    libwsutil.so.4
-```
+1. Follow the instuctions on [Wiki page](http://metro.cs.ucla.edu/mobile_insight/mediawiki/index.php/Android_ws_dissector_Setup) to install Android ws_dissector program.
 
 Then change the permissions of all files to 755, including the "/data/ws_dissector" folder itself.
 
