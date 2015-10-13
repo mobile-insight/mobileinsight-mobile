@@ -24,7 +24,7 @@ function prebuild_mobile_insight() {
 	# Pull code from repository
 	cd $RECIPE_mobile_insight/src
 	rm -rf ./mobile_insight ./dm_collector_c
-	git clone -b new-analyzer --depth=1 -- git@metro.cs.ucla.edu:likayo/automator.git temp/
+	git clone -b new-analyzer --depth=1 -- http://metro.cs.ucla.edu:8081/likayo/automator.git temp/
 	#    we only need these 2 folders
 	mv temp/mobile_insight ./
 	mv temp/dm_collector_c ./
