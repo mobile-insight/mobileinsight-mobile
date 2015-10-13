@@ -1,3 +1,5 @@
+__version__ = "0.1"
+
 import kivy
 kivy.require('1.0.9')
 
@@ -79,6 +81,10 @@ class HelloWorldScreen(GridLayout):
     def __init__(self):
         super(HelloWorldScreen, self).__init__()
 
+        # ANDROID_SHELL = "/system/bin/sh"
+        # cmd = "su -c echo hello"
+        # subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
+
     def _add_log_line(self, s):
         self.error_log += "\n"
         self.error_log += s
@@ -108,7 +114,7 @@ class HelloWorldScreen(GridLayout):
                 self._add_log_line("execfile: %s" % filename)
                 namespace = { "app_log": "" }
                 execfile(filename, namespace)
-                # self._add_log_line(repr(namespace))
+                # Load the "app_log" variable from namespace and print it out
                 self._add_log_line(namespace["app_log"])
             except:
                 self._add_log_line(str(traceback.format_exc()))
@@ -187,10 +193,9 @@ class HelloWorldApp(App):
     def build(self):
         return HelloWorldScreen()
 
+    def on_pause(self):
+        return True
+
 
 if __name__ == "__main__":
-    ANDROID_SHELL = "/system/bin/sh"
-    cmd = "su -c echo hello"
-    subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
-
     HelloWorldApp().run()

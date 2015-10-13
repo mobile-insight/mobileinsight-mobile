@@ -33,6 +33,7 @@ function prebuild_mobile_insight() {
 	#    remove unecessary code
 	sed -i.bak '/### P4A:/d' ./mobile_insight/monitor/__init__.py
 	sed -i.bak '/### P4A:/d' ./mobile_insight/monitor/dm_collector/__init__.py
+	sed -i.bak '/### P4A:/d' ./mobile_insight/monitor/dm_collector/dm_endec/ws_dissector.py
 	rm ./mobile_insight/monitor/dm_collector/dm_collector.py
 
 	cd $BUILD_PATH/mobile_insight
