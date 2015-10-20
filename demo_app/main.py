@@ -11,6 +11,7 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.lang import Builder
+from kivy.utils import platform
 
 from jnius import autoclass, cast
 
@@ -21,7 +22,6 @@ import sys
 import subprocess
 import time
 import traceback
-
 
 # Prevent Android on-screen keyboard from hiding text input
 # See http://stackoverflow.com/questions/26799084/android-on-screen-keyboard-hiding-python-kivy-textinputs
@@ -40,13 +40,29 @@ Builder.load_string("""
         height: self.texture_size[1]
         valign: 'top'
 
+<LabeledCheckBox@GridLayout>:
+    cols: 2
+    active: False
+    text: ''
+    group: None
+
+    CheckBox:
+        active: root.active
+        group: root.group
+        size_hint_x: None
+        on_active: root.callback(*args)
+
+    Label:
+        text: root.text
+        text_width: self.width
+
 # Main screen
 <HelloWorldScreen>:
     cols: 1
 
     ScrollableLabel:
         text: '%s' % root.error_log
-        size_hint_y: 18
+        size_hint_y: 10
 
     TextInput:
         id: filename
@@ -57,7 +73,22 @@ Builder.load_string("""
     Button:
         text: 'Run script!'
         size_hint_y: 4
-        on_release: root.my_callback()
+        on_release: root.run_script_callback()
+
+    ScrollView:
+        id: checkbox_app
+        size_hint_y: 10
+        selected: ""
+
+        BoxLayout:
+            id: checkbox_app_layout
+            orientation: 'vertical'
+
+    Button:
+        text: 'Run app! %s' % root.ids.checkbox_app.selected
+        disabled: root.ids.checkbox_app.selected == ''
+        size_hint_y: 4
+        on_release: root.start_service(root.ids.checkbox_app.selected)
 
     Button:
         text: 'Start collection'
@@ -75,21 +106,33 @@ Builder.load_string("""
 class HelloWorldScreen(GridLayout):
     error_log = StringProperty("Nico-Nico-Ni!")
     collecting = BooleanProperty(False)
+    current_activity = cast("android.app.Activity",
+                            autoclass("org.renpy.android.PythonActivity").mActivity)
+    service = None
     qmdl_src = None
     analyzer = None
 
     def __init__(self):
         super(HelloWorldScreen, self).__init__()
+        app_list = self._get_app_list()
+        app_list.sort()
 
-        # ANDROID_SHELL = "/system/bin/sh"
-        # cmd = "su -c echo hello"
-        # subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
+        first = True
+        for name in app_list:
+            widget = LabeledCheckBox(text=name, group="app")
+            if first:
+                widget.active = True
+                self.ids.checkbox_app.selected = name
+                first = False
+            widget.bind(on_active=self.on_checkbox_app_active)
+            self.ids.checkbox_app_layout.add_widget(widget)
+
 
     def _add_log_line(self, s):
         self.error_log += "\n"
         self.error_log += s
 
-    def my_callback(self):
+    def run_script_callback(self):
         no_error = True
         if no_error:
             try:
@@ -121,9 +164,25 @@ class HelloWorldScreen(GridLayout):
                 no_error = False
 
     def _get_cache_dir(self):
-        PythonActivity = autoclass('org.renpy.android.PythonActivity')
-        currentActivity = cast('android.app.Activity', PythonActivity.mActivity)
-        return str(currentActivity.getCacheDir().getAbsolutePath())
+        return str(self.current_activity.getCacheDir().getAbsolutePath())
+
+    def _get_files_dir(self):
+        return str(self.current_activity.getFilesDir().getAbsolutePath())
+
+    def _get_app_list(self):
+        l = os.listdir(os.path.join(self._get_files_dir(), "res"))
+        ret = []
+        for f in l:
+            if f.endswith(".mi2app"):
+                ret.append(f[0:-7])
+        return ret
+
+    def on_checkbox_app_active(self, obj):
+        self.ids.checkbox_app.selected = ""
+        for cb in self.ids.checkbox_app_layout.children:
+            if cb.active:
+                self.ids.checkbox_app.selected = cb.text
+        return True
 
     def start_collection(self):
         # The subprocess module uses "/bin/sh" by default, which must be changed on Android.
@@ -169,7 +228,6 @@ class HelloWorldScreen(GridLayout):
         self.collecting = True
         Clock.schedule_interval(functools.partial(clock_callback, infos), 1)
 
-
     def stop_collection(self):
         self.collecting = False
 
@@ -188,13 +246,51 @@ class HelloWorldScreen(GridLayout):
             cmd2 = "su -c kill " + " ".join([str(pid) for pid in diag_procs])
             subprocess.Popen(cmd2, executable=ANDROID_SHELL, shell=True)
 
+    def start_service(self, app_name):
+        if platform == "android" and app_name:
+            from android import AndroidService
+            service = AndroidService("Test service", "Running")
+            service.start(app_name)   # app name
+            self.service = service
+
+    def stop_service(self):
+        if self.service:
+            self.service.stop()
+            self.service = None
+
+
+class LabeledCheckBox(GridLayout):
+    active = BooleanProperty(False)
+    text = StringProperty("")
+    group = ObjectProperty(None, allownone=True)
+
+    def __init__(self, **kwargs):
+        self.register_event_type("on_active")
+        super(LabeledCheckBox, self).__init__(**kwargs)
+        self.active = kwargs.get("active", False)
+        self.text = kwargs.get("text", False)
+        self.group = kwargs.get("group", None)
+
+    def on_active(self, *args):
+        pass
+    
+    def callback(self, cb, value):
+        self.active = value
+        self.dispatch("on_active")
+
 
 class HelloWorldApp(App):
+    screen = None
+
     def build(self):
-        return HelloWorldScreen()
+        self.screen = HelloWorldScreen()
+        return self.screen
 
     def on_pause(self):
-        return True
+        return True     # go into Pause mode
+
+    def on_stop(self):
+        self.screen.stop_service()
 
 
 if __name__ == "__main__":

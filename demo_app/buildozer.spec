@@ -13,7 +13,7 @@ package.domain = org.wing
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas
+source.include_exts = py,png,jpg,kv,atlas,mi2app
 
 # (list) Source files to exclude (let empty to not exclude anything)
 #source.exclude_exts = spec
@@ -22,7 +22,7 @@ source.include_exts = py,png,jpg,kv,atlas
 #source.exclude_dirs = tests, bin
 
 # (list) List of exclusions using pattern matching
-#source.exclude_patterns = license,images/*/*.jpg
+source.exclude_patterns = Makefile
 
 # (str) Application versioning (method 1)
 version.regex = __version__ = ['"](.*)['"]
@@ -87,7 +87,7 @@ android.sdk_path =
 android.ant_path =
 
 # (str) python-for-android git clone directory (if empty, it will be automatically cloned from github)
-android.p4a_dir = /home/likayo/Code/python-for-android
+android.p4a_dir = 
 
 # (list) python-for-android whitelist
 #android.p4a_whitelist =
