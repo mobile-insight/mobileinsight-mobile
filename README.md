@@ -1,10 +1,14 @@
-# How to install and use this app #
+# How to install #
 
-1. Follow the instuctions on [Wiki page](http://metro.cs.ucla.edu/mobile_insight/mediawiki/index.php/Android_ws_dissector_Setup) to install Android ws_dissector program.
-Then change the permissions of all files to 755.
+Follow the instuctions on  [Build_MobileInsight2 Wiki page](http://metro.cs.ucla.edu/mobile_insight/mediawiki/index.php/Build_MobileInsight2) to build and install the app.
 
-2. Put under the "/sdcard/diag_logs" directory a "Diag.cfg" file that suits your need
+# How to use #
 
-3. Run the app. Usually it will ask for root permission for the first time, and will immediately crash after that. This behavior is normal and should disappear from the second time running.
+The app has 3 functions at the point of writing:
 
-4. Click "Start/Stop collection" buttons to control the collection process. The app will print out infomation about the current serving cell.
+1. Run a (foreground) script on the phone, and display its output on the screen (only for debug purpose).
+2. Select and run an app in a background process, which continues to run even the foreground app is closed.
+An app is just a Python script, but has a ".mi2app" extension and is located under the res/ directory.
+3. Start and stop trace collection, similar to MobileInsight2 demo (not complete)
+
+![App Screenshot](docs/MobileInsight2_screenshot.png)
