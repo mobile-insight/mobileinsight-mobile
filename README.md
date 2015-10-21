@@ -10,3 +10,5 @@ The app has 3 functions at the point of writing:
 2. Select and run an app in a background process, which continues to run even the foreground app is closed.
 An app is just a Python script, but has a ".mi2app" extension and is located under the res/ directory.
 3. Start and stop trace collection, similar to MobileInsight2 demo (not complete)
+
+![App Screenshot](docs/MobileInsight2_screenshot.png)
