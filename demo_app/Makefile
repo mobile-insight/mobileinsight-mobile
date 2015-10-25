@@ -12,6 +12,9 @@ all: apk install
 clean:
 	rm -rf $(P4A_DIST_ROOT)
 
+clean_apk:
+	rm $(P4A_DIST_ROOT)/bin/MobileInsight2-0.1-debug.apk
+
 apk:
 	$(BUILDOZER_FLAGS) buildozer android debug
 
