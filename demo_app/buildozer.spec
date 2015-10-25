@@ -78,16 +78,16 @@ android.ndk = 8c
 android.private_storage = True
 
 # (str) Android NDK directory (if empty, it will be automatically downloaded.)
-android.ndk_path =
+android.ndk_path = /Users/yuanjieli/Documents/android-ndk
 
 # (str) Android SDK directory (if empty, it will be automatically downloaded.)
-android.sdk_path =
+android.sdk_path = /Users/yuanjieli/Documents/android-sdk
 
 # (str) ANT directory (if empty, it will be automatically downloaded.)
 android.ant_path =
 
 # (str) python-for-android git clone directory (if empty, it will be automatically cloned from github)
-android.p4a_dir = 
+android.p4a_dir = /Users/yuanjieli/Documents/python-for-android
 
 # (list) python-for-android whitelist
 #android.p4a_whitelist =
@@ -107,7 +107,7 @@ android.p4a_dir =
 
 # (str) python-for-android branch to use, if not master, useful to try
 # not yet merged features.
-android.branch = old_toolchain
+# android.branch = old_toolchain
 
 # (str) OUYA Console category. Should be one of GAME or APP
 # If you leave this blank, OUYA support will not be enabled
