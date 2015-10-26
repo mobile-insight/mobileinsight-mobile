@@ -24,5 +24,8 @@ dist/
 # Temporary files
 *~
 
-# BUildozer temporary files
+# Buildozer temporary files
 .buildozer
+
+# Android App
+*.apk
