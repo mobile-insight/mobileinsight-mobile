@@ -230,6 +230,7 @@ class HelloWorldScreen(GridLayout):
         Clock.schedule_interval(functools.partial(clock_callback, infos), 1)
 
     def stop_collection(self):
+        ANDROID_SHELL = "/system/bin/sh"
         self.collecting = False
 
         # Find diag_mdlog process
