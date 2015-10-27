@@ -174,7 +174,7 @@ class HelloWorldScreen(GridLayout):
         l = os.listdir(APP_DIR)
         ret = []
         for f in l:
-            if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app"))
+            if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
                 ret.append(f)
         return ret
 
