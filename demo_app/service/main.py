@@ -14,7 +14,8 @@ def get_files_dir():
 
 if __name__ == "__main__":
     try:
-        app_file = os.path.join(get_files_dir(), "res", arg + ".mi2app")
+        APP_DIR = os.path.join(get_files_dir(), "app")
+        app_file = os.path.join(APP_DIR, arg, "main.mi2app")
         print "Running app: " + app_file
         namespace = {"service_context": ServiceContext}
         execfile(app_file, namespace)

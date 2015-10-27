@@ -170,11 +170,12 @@ class HelloWorldScreen(GridLayout):
         return str(self.current_activity.getFilesDir().getAbsolutePath())
 
     def _get_app_list(self):
-        l = os.listdir(os.path.join(self._get_files_dir(), "res"))
+        APP_DIR = os.path.join(self._get_files_dir(), "app")
+        l = os.listdir(APP_DIR)
         ret = []
         for f in l:
-            if f.endswith(".mi2app"):
-                ret.append(f[0:-7])
+            if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app"))
+                ret.append(f)
         return ret
 
     def on_checkbox_app_active(self, obj):

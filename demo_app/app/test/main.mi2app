@@ -1,0 +1,8 @@
+import traceback
+
+try:
+    from test import test_str
+    print "Succeeded to load test_str: " % test_str
+except:
+    print "Failed to load test_str"
+    print str(traceback.format_exc())
