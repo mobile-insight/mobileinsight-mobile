@@ -12,3 +12,5 @@ An app is just a Python script, but has a ".mi2app" extension and is located und
 3. Start and stop trace collection, similar to MobileInsight2 demo (not complete)
 
 ![App Screenshot](docs/MobileInsight2_screenshot.png)
+
+   
