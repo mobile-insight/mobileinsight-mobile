@@ -131,15 +131,25 @@ class UploadAnalyzer(Analyzer):
         return out.communicate()[0]
         # another solution: Sending AT+CGSN through the appropriate serial device will have it return the IMEI.
         """
-        cmd = "su -c dumpsys iphonesubinfo"
+        # original func call -- does not work on Android 5.0+ device
+        # cmd = "su -c dumpsys iphonesubinfo"
+        # ANDROID_SHELL = "/system/bin/sh"
+        # proc = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
+        # for line in proc.stdout:
+        #     if "Device ID" in line:
+        #         deviceId = re.findall("\d+", line)[0] # find the number in the line
+        #         proc.kill()
+        #         break
+        # proc.wait()
+        # return deviceId
+
+        cmd = "su -c service call iphonesubinfo 1"
         ANDROID_SHELL = "/system/bin/sh"
         proc = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
-        for line in proc.stdout:
-            if "Device ID" in line:
-                deviceId = re.findall("\d+", line)[0] # find the number in the line
-                proc.kill()
-                break
-        proc.wait()
+        out = proc.communicate()[0]
+        tup = re.findall("\'.+\'", out)
+        tupnum = re.findall("\d+", "".join(tup))
+        deviceId = "".join(tupnum)
         return deviceId
 
     def __get_phone_info(self):
