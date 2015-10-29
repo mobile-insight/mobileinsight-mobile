@@ -1,14 +1,14 @@
 import os
+import sys
 import traceback
 
 import mobile_insight
 from mobile_insight.monitor import AndroidQmdlMonitor
-from mobile_insight.analyzer import MsgLogger
 
+from upload_analyzer import UploadAnalyzer
 
 def get_cache_dir():
     return str(service_context.getCacheDir().getAbsolutePath())
-
 
 try:
     src = AndroidQmdlMonitor({  "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
@@ -24,8 +24,8 @@ try:
                     "LTE_ML1_Serving_Cell_Measurement_Result",
                     "LTE_ML1_Connected_Mode_Neighbor_Meas_Req_Resp"])
 
-    l = MsgLogger()
-    l.set_source(src)
+    uploadAnalyzer = UploadAnalyzer()
+    uploadAnalyzer.set_source(src)
 
     src.run() # Note that the collection can't stop ...
     

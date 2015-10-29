@@ -33,7 +33,7 @@ version.filename = %(source.dir)s/main.py
 
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy
-requirements = kivy,mobile_insight
+requirements = kivy,mobile_insight,twisted
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -69,25 +69,25 @@ android.api = 14
 android.minapi = 14
 
 # (int) Android SDK version to use
-android.sdk = 14
+android.sdk = 19
 
 # (str) Android NDK version to use
-android.ndk = 8c
+android.ndk = 9d
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
 android.private_storage = True
 
 # (str) Android NDK directory (if empty, it will be automatically downloaded.)
-android.ndk_path = /Users/yuanjieli/Documents/android-ndk
+android.ndk_path = /home/dale/android/android-ndk-r9d
 
 # (str) Android SDK directory (if empty, it will be automatically downloaded.)
-android.sdk_path = /Users/yuanjieli/Documents/android-sdk
+android.sdk_path = /home/dale/android/android-sdk-linux
 
 # (str) ANT directory (if empty, it will be automatically downloaded.)
 android.ant_path =
 
 # (str) python-for-android git clone directory (if empty, it will be automatically cloned from github)
-android.p4a_dir = /Users/yuanjieli/Documents/python-for-android
+android.p4a_dir = /home/dale/android/python-for-android-old_toolchain
 
 # (list) python-for-android whitelist
 #android.p4a_whitelist =
