@@ -98,7 +98,6 @@ Builder.load_string("""
 
     Button:
         text: 'Stop collection'
-        disabled: not root.collecting
         size_hint_y: 4
         on_release: root.stop_collection()
 """)
