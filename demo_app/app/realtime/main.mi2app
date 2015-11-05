@@ -1,0 +1,26 @@
+import os
+import traceback
+
+import mobile_insight
+from mobile_insight.monitor import AndroidQmdlMonitor
+from mobile_insight.analyzer import MsgLogger
+from mi2app_utils import get_cache_dir
+
+from realtime_analyzer import RealtimeAnalyzer
+
+
+try:
+    src = AndroidQmdlMonitor({  "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+                                "libwireshark_path": "/system/lib"})
+    log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")
+    src.set_log_directory(log_directory)
+    # uses existing Diag.cfg
+
+    l = RealtimeAnalyzer()
+    l.set_source(src)
+    # l.enable_flight_mode_test()
+
+    src.run() # Note that the collection can't stop ...
+
+except:
+    print str(traceback.format_exc())
