@@ -33,7 +33,8 @@ version.filename = %(source.dir)s/main.py
 
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy
-requirements = kivy,mobile_insight,twisted
+# requirements = kivy,mobile_insight,twisted
+requirements = kivy,mobile_insight
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -60,7 +61,7 @@ fullscreen = 1
 #
 
 # (list) Permissions
-android.permissions = INTERNET
+android.permissions = INTERNET, WRITE_EXTERNAL_STORAGE
 
 # (int) Android API to use
 android.api = 14
