@@ -2,7 +2,7 @@ import os
 import traceback
 
 import mobile_insight
-from mobile_insight.monitor import AndroidQmdlMonitor
+from mobile_insight.monitor import AndroidDevDiagMonitor
 from mobile_insight.analyzer import MsgLogger
 from mi2app_utils import get_cache_dir
 
@@ -10,11 +10,18 @@ from realtime_analyzer import RealtimeAnalyzer
 
 
 try:
-    src = AndroidQmdlMonitor({  "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
-                                "libwireshark_path": "/system/lib"})
-    log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")
-    src.set_log_directory(log_directory)
-    # uses existing Diag.cfg
+    # src = AndroidQmdlMonitor({  "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+    #                             "libwireshark_path": "/system/lib"})
+    # log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")
+    # src.set_log_directory(log_directory)
+    # # uses existing Diag.cfg
+
+    src = AndroidDevDiagMonitor({   "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+                                    "libwireshark_path": "/sdcard/ws_dissector",
+                                    "diag_revealer_path": "/system/bin/diag_revealer"})
+    src.enable_log(["1xEV_Signaling_Control_Channel_Broadcast",
+                    "WCDMA_Signaling_Messages",
+                    "LTE_RRC_OTA_Packet"])
 
     l = RealtimeAnalyzer()
     l.set_source(src)

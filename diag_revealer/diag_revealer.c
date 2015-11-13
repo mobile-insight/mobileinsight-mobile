@@ -1,7 +1,8 @@
-#include <stdio.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
 #include <endian.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/ioctl.h>
 // #include <linux/diagchar.h>
 
 #define USER_SPACE_DATA_TYPE	0x00000020
@@ -10,71 +11,157 @@
 #define DIAG_IOCTL_REMOTE_DEV		32
 #define CALLBACK_MODE	6
 
-const char buf_write1 [] = {
-	0x20, 0x00, 0x00, 0x00,	// pkt_type == CALLBACK_DATA_TYPE
-	// 0x00, 0x00, 0x00, 0x00,	// remote_proc == -1
-	
-	0x73, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x0b, 0x00, 0x00, 0x00, 0xc1, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x74, 0xac, 0x7e,
+typedef struct {
+	char *p;
+	size_t len;
+} BinaryBuffer;
 
-	// 0x73, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x30, 0x01, 0x00, 0x00, 
-	// 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-	// 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-	// 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x1c, 0x52, 0x7e, 
-};
+char buf_read[4096] = {};
 
-const char buf_write2 [] = {
-	0x20, 0x00, 0x00, 0x00,	// pkt_type == CALLBACK_DATA_TYPE
-	0x73, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x7d, 0x5d, 0x00, 0x00,
-	0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x10, 0x6a, 0x3a, 0x7e, 
-};
+static BinaryBuffer
+read_diag_cfg (const char *filename)
+{
+	BinaryBuffer ret;
 
-char buf_read[2000] = {};
+	FILE *fp = fopen(filename, "rb");
+	if (fp == NULL) {
+		perror("Error");
+		goto fail;
+	}
+	fseek(fp, 0L, SEEK_END);
+	size_t file_sz = ftell(fp);
+	fseek(fp, 0L, SEEK_SET);
 
-void print_hex(const char *buf, int len) {
+	if (file_sz > 0 && file_sz <= 4096) {
+		ret.p = (char *) malloc(file_sz);
+		if (ret.p == NULL) {
+			fprintf(stderr, "Error: Failed to malloc.\n");
+			goto fail;
+		}
+		ret.len = file_sz;
+		int retcode = fread(ret.p, sizeof(char), ret.len, fp);
+		if (retcode != ret.len) {
+			perror("Error");
+			free(ret.p);
+			goto fail;
+		}
+	} else {
+		fprintf(stderr, "Error: File size inappropriate.\n");
+		goto fail;
+	}
+
+	return ret;
+
+	fail:
+		ret.p = NULL;
+		ret.len = 0;
+		return ret;
+}
+
+static void
+print_hex (const char *buf, int len)
+{
 	int i = 0;
 	for (i = 0; i < len; i++) {
 		printf("%02x ", buf[i]);
 		if (((i + 1) % 16) == 0)
 			printf("\n");
 	}
-	printf("\n");
+	if ((i % 16) != 0)
+		printf("\n");
 }
 
-int main () {
+static int
+write_commands (int fd, BinaryBuffer *pbuf_write) {
+	size_t i = 0;
+	char *p = pbuf_write->p;
+	char *send_buf = (char *) malloc(pbuf_write->len + 10);
+	if (send_buf == NULL) {
+		perror("Error");
+		return -1;
+	}
+	*((int *)send_buf) = htole32(USER_SPACE_DATA_TYPE);
+
+	while (i < pbuf_write->len) {
+		size_t len = 0;
+		while (i + len < pbuf_write->len && p[i + len] != 0x7e) len++;
+		if (i + len >= pbuf_write->len)
+			break;
+		len++;
+		if (len >= 3) {
+			memcpy(send_buf + 4, p + i, len);
+			// printf("Writing %d bytes of data\n", len + 4);
+			// print_hex(send_buf, len + 4);
+			int ret = write(fd, (const void *) send_buf, len + 4);
+			if (ret < 0) {
+				perror("Error");
+				return -1;
+			}
+		}
+		i += len;
+	}
+
+	return 0;
+}
+
+int
+main (int argc, char **argv)
+{
+	if (argc != 2) {
+		printf("Usage: diag_revealer [Path to Diag.cfg]\n");
+        return 0;
+	}
+
+	BinaryBuffer buf_write = read_diag_cfg(argv[1]);
+	if (buf_write.p == NULL || buf_write.len == 0) {
+		return -8001;
+	}
+	// print_hex(buf_write.p, buf_write.len);
+
 	int fd = open("/dev/diag", O_RDWR);
-	perror("open");
+	if (fd < 0) {
+		perror("Error");
+		return -8002;
+	}
 
 	int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) CALLBACK_MODE);
-	printf("ioctl SWITCH_LOGGING ret: %d\n", ret);
+	if (ret != 1) {
+		fprintf(stderr, "Error: ioctl SWITCH_LOGGING returns %d\n", ret);
+		return -8003;
+	}
 
-	uint16_t device_mask = 0;
-	ret = ioctl(fd, DIAG_IOCTL_REMOTE_DEV, (char *) &device_mask);
-	printf("ioctl REMOTE_DEV ret: %d\n", ret);
+	// uint16_t device_mask = 0;
+	// ret = ioctl(fd, DIAG_IOCTL_REMOTE_DEV, (char *) &device_mask);
+	// printf("ioctl REMOTE_DEV ret: %d\n", ret);
 
-	printf("Writing %d bytes of data\n", sizeof(buf_write1));
-	print_hex(buf_write1, sizeof(buf_write1));
-	write(fd, (const void *) buf_write1, sizeof(buf_write1));
-	perror("write");
+	ret = write_commands(fd, &buf_write);
+	free(buf_write.p);
+	if (ret != 0) {
+		return -8004;
+	}
 
-	printf("Writing %d bytes of data\n", sizeof(buf_write2));
-	print_hex(buf_write2, sizeof(buf_write2));
-	write(fd, (const void *) buf_write2, sizeof(buf_write2));
-	perror("write");
-
+	setvbuf(stdout, NULL, _IONBF, -1);	// disable stdout buffer
 	while (1) {
-		int ign = read(fd, buf_read, 1000);
-		if (ign > 0) {
-			printf("%d\n", ign);
-			print_hex(buf_read, ign);
-			// printf("0x%x ", buf_read[0]);
+		int read_len = read(fd, buf_read, sizeof(buf_read));
+		if (read_len > 0) {
+			if (*((int *)buf_read) == USER_SPACE_DATA_TYPE) {
+				int num_data = *((int *)(buf_read + 4));
+				int i = 0;
+				int offset = 8;
+				for (i = 0; i < num_data; i++) {
+					int msg_len;
+					memcpy(&msg_len, buf_read + offset, 4);
+					// printf("%d\n", msg_len);
+					// print_hex(buf_read + offset + 4, msg_len);
+					fwrite(buf_read + offset + 4, sizeof(char), msg_len, stdout);
+					fflush(stdout);
+					offset += msg_len + 4;
+				}
+			}
 		} else {
 			continue;
 		}
 	}
-	printf("\nend\n");
 
 	close(fd);
 	return (ret < 0? ret: 0);

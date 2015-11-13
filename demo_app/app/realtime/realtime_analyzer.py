@@ -131,7 +131,7 @@ class RealtimeAnalyzer(Analyzer):
             delta2 = (log_item["timestamp"] - self._reference_ts_dm).total_seconds()
             self._latency.append(delta1 - delta2)
 
-            if (self._i % 300) == 0:
+            if (self._i % 1) == 0:
                 print delta1, delta2, delta1 - delta2
                 with open(self._get_lantency_log_filename(), "a") as fd:
                     for s in self._latency:
