@@ -107,8 +107,8 @@ write_commands (int fd, BinaryBuffer *pbuf_write) {
 int
 main (int argc, char **argv)
 {
-	if (argc != 2) {
-		printf("Usage: diag_revealer [Path to Diag.cfg]\n");
+	if (argc != 3) {
+		printf("Usage: diag_revealer [Diag.cfg file] [Fifo file]\n");
         return 0;
 	}
 
@@ -140,7 +140,8 @@ main (int argc, char **argv)
 		return -8004;
 	}
 
-	setvbuf(stdout, NULL, _IONBF, -1);	// disable stdout buffer
+	int fifo_fd = open(argv[2], O_WRONLY);	// block until the other end also calls open()
+	// setvbuf(stdout, NULL, _IONBF, -1);	// disable stdout buffer
 	while (1) {
 		int read_len = read(fd, buf_read, sizeof(buf_read));
 		if (read_len > 0) {
@@ -153,8 +154,7 @@ main (int argc, char **argv)
 					memcpy(&msg_len, buf_read + offset, 4);
 					// printf("%d\n", msg_len);
 					// print_hex(buf_read + offset + 4, msg_len);
-					fwrite(buf_read + offset + 4, sizeof(char), msg_len, stdout);
-					fflush(stdout);
+					write(fifo_fd, buf_read + offset + 4, msg_len);
 					offset += msg_len + 4;
 				}
 			}
@@ -164,5 +164,6 @@ main (int argc, char **argv)
 	}
 
 	close(fd);
+	clsoe(fifo_fd);
 	return (ret < 0? ret: 0);
 }
