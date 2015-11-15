@@ -71,7 +71,6 @@ class RealtimeAnalyzer(Analyzer):
 
         self._latency = []
 
-
     def enable_flight_mode_test(self):
         self._run_flight_mode_test = True
         self._fmtest_states = dict()
@@ -82,6 +81,13 @@ class RealtimeAnalyzer(Analyzer):
         self._t = threading.Thread( target=flight_mode_worker,
                                     args=(self._fmtest_states,))
         self._thread_running = False
+
+    def calibrate_timestamp(self):
+        if self._reference_ts_android is None:
+            self._reference_ts_android, self._reference_ts_dm = self._calibrate_timestamp()
+            print "First Android timestamp:", self._reference_ts_android
+            with open(self._get_lantency_log_filename(), "w") as fd:
+                pass
 
     def _get_lantency_log_filename(self):
         return os.path.join(mi2app_utils.get_cache_dir(), "latency.txt")
@@ -107,16 +113,10 @@ class RealtimeAnalyzer(Analyzer):
 
         if msg.type_id == "new_qmdl_file":
             print "End of %s" % msg.data
-            self._latency.append(-666.0)
+            self._latency.append( (-666.0, -666.0, -666.0, msg.type_id) )
 
         else:
             log_item = msg.data.decode()
-
-            if self._reference_ts_android is None:
-                self._reference_ts_android, self._reference_ts_dm = self._calibrate_timestamp()
-                print "First Android timestamp:", self._reference_ts_android
-                with open(self._get_lantency_log_filename(), "w") as fd:
-                    pass
 
             if self._run_flight_mode_test:
                 with self._fmtest_states["lock"]:
@@ -129,13 +129,13 @@ class RealtimeAnalyzer(Analyzer):
 
             delta1 = msg.timestamp - self._reference_ts_android
             delta2 = (log_item["timestamp"] - self._reference_ts_dm).total_seconds()
-            self._latency.append(delta1 - delta2)
+            self._latency.append( (delta1, delta2, delta1 - delta2, msg.type_id) )
 
             if (self._i % 1) == 0:
-                print delta1, delta2, delta1 - delta2
+                print delta1, delta2, delta1 - delta2, msg.type_id
                 with open(self._get_lantency_log_filename(), "a") as fd:
-                    for s in self._latency:
-                        fd.write("%.5f\n" % s)
+                    for tup in self._latency:
+                        fd.write("%.5f %.5f %.5f %s\n" % tup)
                 self._latency = []
                 # print (datetime.utcnow() - log_item["timestamp"]).total_seconds(), self.source.get_avg_read_latency()
             self._i += 1

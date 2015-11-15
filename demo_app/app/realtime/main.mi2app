@@ -1,4 +1,6 @@
+import errno
 import os
+import stat
 import traceback
 
 import mobile_insight
@@ -8,7 +10,6 @@ from mi2app_utils import get_cache_dir
 
 from realtime_analyzer import RealtimeAnalyzer
 
-
 try:
     # src = AndroidQmdlMonitor({  "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
     #                             "libwireshark_path": "/system/lib"})
@@ -16,16 +17,19 @@ try:
     # src.set_log_directory(log_directory)
     # # uses existing Diag.cfg
 
+    fifo_path = os.path.join(get_cache_dir(), "diag_revealer_fifo")
     src = AndroidDevDiagMonitor({   "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
-                                    "libwireshark_path": "/sdcard/ws_dissector",
-                                    "diag_revealer_path": "/system/bin/diag_revealer"})
+                                    "libwireshark_path": "/system/lib",
+                                    "diag_revealer_executable_path": "/system/bin/diag_revealer",
+                                    "diag_revealer_fifo_path": fifo_path,
+                                    })
     src.enable_log(["1xEV_Signaling_Control_Channel_Broadcast",
                     "WCDMA_Signaling_Messages",
                     "LTE_RRC_OTA_Packet"])
 
     l = RealtimeAnalyzer()
     l.set_source(src)
-    # l.enable_flight_mode_test()
+    l.calibrate_timestamp()
 
     src.run() # Note that the collection can't stop ...
 
