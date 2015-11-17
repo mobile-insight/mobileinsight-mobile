@@ -26,10 +26,11 @@ try:
     src.enable_log(["1xEV_Signaling_Control_Channel_Broadcast",
                     "WCDMA_Signaling_Messages",
                     "LTE_RRC_OTA_Packet"])
+    src.set_skip_decoding(True)
 
     l = RealtimeAnalyzer()
     l.set_source(src)
-    l.calibrate_timestamp()
+    # l.calibrate_timestamp()
 
     src.run() # Note that the collection can't stop ...
 
