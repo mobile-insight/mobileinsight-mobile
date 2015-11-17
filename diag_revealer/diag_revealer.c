@@ -10,11 +10,23 @@
 #define DIAG_IOCTL_SWITCH_LOGGING	7
 #define DIAG_IOCTL_REMOTE_DEV		32
 #define CALLBACK_MODE	6
+#define DIAG_IOCTL_PERIPHERAL_BUF_CONFIG	35
+#define DIAG_BUFFERING_MODE_STREAMING	0
+#define DEFAULT_LOW_WM_VAL	15
+#define DEFAULT_HIGH_WM_VAL	85
+#define NUM_SMD_CONTROL_CHANNELS 4
 
 typedef struct {
 	char *p;
 	size_t len;
 } BinaryBuffer;
+
+struct diag_buffering_mode_t {
+	uint8_t peripheral;
+	uint8_t mode;
+	uint8_t high_wm_val;
+	uint8_t low_wm_val;
+} __packed;
 
 char buf_read[4096] = {};
 
@@ -133,6 +145,24 @@ main (int argc, char **argv)
 	// uint16_t device_mask = 0;
 	// ret = ioctl(fd, DIAG_IOCTL_REMOTE_DEV, (char *) &device_mask);
 	// printf("ioctl REMOTE_DEV ret: %d\n", ret);
+
+	//Configure realtime streaming mode
+	int i=0;
+	for(i=0;i<NUM_SMD_CONTROL_CHANNELS;i++){
+
+		struct diag_buffering_mode_t diag_buffering_mode;
+		diag_buffering_mode.peripheral = i;
+		diag_buffering_mode.mode = DIAG_BUFFERING_MODE_STREAMING;
+		diag_buffering_mode.high_wm_val = DEFAULT_HIGH_WM_VAL;
+		diag_buffering_mode.low_wm_val = DEFAULT_LOW_WM_VAL;
+
+		int ret = ioctl(fd,DIAG_IOCTL_PERIPHERAL_BUF_CONFIG,(char *) &diag_buffering_mode);
+
+		if(!ret)
+			perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG:");
+
+	}
+	
 
 	ret = write_commands(fd, &buf_write);
 	free(buf_write.p);
