@@ -139,13 +139,13 @@ class RealtimeAnalyzer(Analyzer):
             delta1 = (log_item["timestamp"] - self._reference_ts_dm).total_seconds()
             delta2 = msg.timestamp - self._reference_ts_android
             delta3 = timeit.default_timer() - self._reference_ts_android
-            self._latency.append( (delta1, delta2, delta3, delta2 - delta1, delta3 - delta2, msg.type_id) )
+            self._latency.append( (delta1, delta2, delta3, delta2 - delta1, delta3 - delta2, log_item["log_msg_len"], msg.type_id) )
 
             if (self._i % 1) == 0:
-                print "%.5f %.5f %.5f %.5f %.5f %s" % self._latency[-1]
+                print "%.5f %.5f %.5f %.5f %.5f %d bytes %s" % self._latency[-1]
                 with open(self._get_lantency_log_filename(), "a") as fd:
                     for tup in self._latency:
-                        fd.write("%.5f %.5f %.5f %.5f %.5f %s\n" % tup)
+                        fd.write("%.5f %.5f %.5f %.5f %.5f %d %s\n" % tup)
                 self._latency = []
                 # print (datetime.utcnow() - log_item["timestamp"]).total_seconds(), self.source.get_avg_read_latency()
             self._i += 1
