@@ -9,12 +9,20 @@
 #define CALLBACK_DATA_TYPE		0x00000080
 #define DIAG_IOCTL_SWITCH_LOGGING	7
 #define DIAG_IOCTL_REMOTE_DEV		32
-#define CALLBACK_MODE	6
+#define MEMORY_DEVICE_MODE	2
+#define CALLBACK_MODE		6
+
+#define DIAG_IOCTL_VOTE_REAL_TIME	33
+#define DIAG_IOCTL_GET_REAL_TIME	34
 #define DIAG_IOCTL_PERIPHERAL_BUF_CONFIG	35
+#define DIAG_IOCTL_PERIPHERAL_BUF_DRAIN		36
+
 #define DIAG_BUFFERING_MODE_STREAMING	0
 #define DEFAULT_LOW_WM_VAL	15
 #define DEFAULT_HIGH_WM_VAL	85
 #define NUM_SMD_CONTROL_CHANNELS 4
+
+#define MODEM_DATA		0
 
 typedef struct {
 	char *p;
@@ -26,6 +34,18 @@ struct diag_buffering_mode_t {
 	uint8_t mode;
 	uint8_t high_wm_val;
 	uint8_t low_wm_val;
+} __packed;
+
+#define DIAG_PROC_DCI			1
+#define DIAG_PROC_MEMORY_DEVICE		2
+struct real_time_vote_t {
+	uint16_t proc;
+	uint8_t real_time_vote;
+};
+
+struct real_time_query_t {
+	int real_time;
+	int proc;
 } __packed;
 
 char buf_read[4096] = {};
@@ -146,23 +166,39 @@ main (int argc, char **argv)
 	// ret = ioctl(fd, DIAG_IOCTL_REMOTE_DEV, (char *) &device_mask);
 	// printf("ioctl REMOTE_DEV ret: %d\n", ret);
 
-	//Configure realtime streaming mode
-	int i=0;
-	for(i=0;i<NUM_SMD_CONTROL_CHANNELS;i++){
+	// // Configure realtime streaming mode
+	// int i=0;
+	// for(i=0;i<NUM_SMD_CONTROL_CHANNELS;i++){
 
-		struct diag_buffering_mode_t diag_buffering_mode;
-		diag_buffering_mode.peripheral = i;
-		diag_buffering_mode.mode = DIAG_BUFFERING_MODE_STREAMING;
-		diag_buffering_mode.high_wm_val = DEFAULT_HIGH_WM_VAL;
-		diag_buffering_mode.low_wm_val = DEFAULT_LOW_WM_VAL;
+	// 	struct diag_buffering_mode_t diag_buffering_mode;
+	// 	diag_buffering_mode.peripheral = i;
+	// 	diag_buffering_mode.mode = DIAG_BUFFERING_MODE_STREAMING;
+	// 	diag_buffering_mode.high_wm_val = DEFAULT_HIGH_WM_VAL;
+	// 	diag_buffering_mode.low_wm_val = DEFAULT_LOW_WM_VAL;
 
-		int ret = ioctl(fd,DIAG_IOCTL_PERIPHERAL_BUF_CONFIG,(char *) &diag_buffering_mode);
+	// 	int ret = ioctl(fd,DIAG_IOCTL_PERIPHERAL_BUF_CONFIG,(char *) &diag_buffering_mode);
 
-		if(!ret)
-			perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG:");
+	// 	if(ret != 1)
+	// 		perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG");
 
+	// }
+
+	// {
+	// 	char ioarg = MODEM_DATA;
+	// 	ret = ioctl(fd, DIAG_IOCTL_PERIPHERAL_BUF_DRAIN, (char *) &ioarg);
+	// 	if(ret != 1)
+	// 		perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_DRAIN");
+	// }
+
+	{
+		struct real_time_query_t ioarg;
+		ioarg.real_time = -666;
+		ioarg.proc = 1000;
+		ret = ioctl(fd, DIAG_IOCTL_GET_REAL_TIME, (char *) &ioarg);
+		perror("ioctl DIAG_IOCTL_GET_REAL_TIME");
+		printf ("ioctl DIAG_IOCTL_GET_REAL_TIME returns %d\n", ret);
+		printf ("real_time = %d\n", ioarg.real_time);
 	}
-	
 
 	ret = write_commands(fd, &buf_write);
 	free(buf_write.p);
