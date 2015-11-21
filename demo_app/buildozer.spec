@@ -70,25 +70,25 @@ android.api = 14
 android.minapi = 14
 
 # (int) Android SDK version to use
-android.sdk = 19
+android.sdk = 14
 
 # (str) Android NDK version to use
-android.ndk = 9d
+android.ndk = 8c
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
 android.private_storage = True
 
 # (str) Android NDK directory (if empty, it will be automatically downloaded.)
-android.ndk_path = /home/dale/android/android-ndk-r9d
+android.ndk_path = /Users/yuanjieli/Documents/android-ndk
 
 # (str) Android SDK directory (if empty, it will be automatically downloaded.)
-android.sdk_path = /home/dale/android/android-sdk-linux
+android.sdk_path = /Users/yuanjieli/Documents/android-sdk/sdk
 
 # (str) ANT directory (if empty, it will be automatically downloaded.)
 android.ant_path =
 
 # (str) python-for-android git clone directory (if empty, it will be automatically cloned from github)
-android.p4a_dir = /home/dale/android/python-for-android-old_toolchain
+android.p4a_dir = /Users/yuanjieli/Documents/python-for-android
 
 # (list) python-for-android whitelist
 #android.p4a_whitelist =

@@ -1,0 +1,30 @@
+#!/usr/bin/python
+import os
+import sys
+
+#Import MobileInsight modules
+from mobile_insight.monitor import QmdlReplayer
+from mobile_insight.analyzer import MsgLogger,MobilityMngt,LteRrcAnalyzer,RrcAnalyzer
+    
+# Initialize a 3G/4G monitor
+src = QmdlReplayer({"ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+                    "libwireshark_path": "/system/lib"})
+src.set_input_path("/sdcard/lte_rrc.qmdl")
+# src = QmdlReplayer()
+# src.set_input_path("lte_rrc.qmdl")
+
+#Enable 3G/4G RRC (radio resource control) monitoring
+src.enable_log("LTE_RRC_OTA_Packet")
+src.enable_log("WCDMA_Signaling_Messages")
+
+# dumper = MsgLogger()
+# dumper.set_source(src)
+# dumper.set_decoding(MsgLogger.XML)
+# dumper.set_log('/sdcard/lte_rrc.txt')
+
+mobility_mngt = MobilityMngt()
+mobility_mngt.set_source(src)
+mobility_mngt.set_log("/sdcard/analyze-test.txt") 
+
+#Start the monitoring
+src.run()

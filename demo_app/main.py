@@ -249,6 +249,9 @@ class HelloWorldScreen(GridLayout):
 
     def start_service(self, app_name):
         if platform == "android" and app_name:
+            if self.service:
+                #Stop the running service
+                self.service.stop()
             from android import AndroidService
             service = AndroidService("Test service", "Running")
             service.start(app_name)   # app name
