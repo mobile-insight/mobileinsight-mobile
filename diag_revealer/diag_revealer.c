@@ -122,9 +122,11 @@ write_commands (int fd, BinaryBuffer *pbuf_write) {
 		len++;
 		if (len >= 3) {
 			memcpy(send_buf + 4, p + i, len);
-			// printf("Writing %d bytes of data\n", len + 4);
-			// print_hex(send_buf, len + 4);
+			printf("Writing %d bytes of data\n", len + 4);
+			print_hex(send_buf, len + 4);
 			int ret = write(fd, (const void *) send_buf, len + 4);
+			printf("hehehehehehehhehehhe %d/%d\n", i, pbuf_write->len);
+			fflush(stdout);
 			if (ret < 0) {
 				perror("Error");
 				return -1;
@@ -156,11 +158,16 @@ main (int argc, char **argv)
 		return -8002;
 	}
 
-	int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) CALLBACK_MODE);
-	if (ret != 1) {
+	// int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) CALLBACK_MODE);
+	// int CALLBACK_MODE = 6;
+	// int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &CALLBACK_MODE);
+	int MEMORY_DEVICE_MODE = 2;
+	int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &MEMORY_DEVICE_MODE);
+	// if (ret != 1) {
 		fprintf(stderr, "Error: ioctl SWITCH_LOGGING returns %d\n", ret);
-		return -8003;
-	}
+		perror("ioctl SWITCH_LOGGING");
+	// 	return -8003;
+	// }
 
 	// uint16_t device_mask = 0;
 	// ret = ioctl(fd, DIAG_IOCTL_REMOTE_DEV, (char *) &device_mask);
@@ -177,7 +184,6 @@ main (int argc, char **argv)
 	// 	diag_buffering_mode.low_wm_val = DEFAULT_LOW_WM_VAL;
 
 	// 	int ret = ioctl(fd,DIAG_IOCTL_PERIPHERAL_BUF_CONFIG,(char *) &diag_buffering_mode);
-
 	// 	if(ret != 1)
 	// 		perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG");
 
@@ -200,15 +206,19 @@ main (int argc, char **argv)
 		printf ("real_time = %d\n", ioarg.real_time);
 	}
 
+	printf("Before write_commands\n");
 	ret = write_commands(fd, &buf_write);
+	printf("After write_commands\n");
+	fflush(stdout);
 	free(buf_write.p);
 	if (ret != 0) {
 		return -8004;
 	}
 
-	int fifo_fd = open(argv[2], O_WRONLY);	// block until the other end also calls open()
+	// int fifo_fd = open(argv[2], O_WRONLY);	// block until the other end also calls open()
 	// setvbuf(stdout, NULL, _IONBF, -1);	// disable stdout buffer
 	while (1) {
+		printf("Hehe\n");
 		int read_len = read(fd, buf_read, sizeof(buf_read));
 		if (read_len > 0) {
 			if (*((int *)buf_read) == USER_SPACE_DATA_TYPE) {
@@ -218,9 +228,9 @@ main (int argc, char **argv)
 				for (i = 0; i < num_data; i++) {
 					int msg_len;
 					memcpy(&msg_len, buf_read + offset, 4);
-					// printf("%d\n", msg_len);
-					// print_hex(buf_read + offset + 4, msg_len);
-					write(fifo_fd, buf_read + offset + 4, msg_len);
+					printf("%d\n", msg_len);
+					print_hex(buf_read + offset + 4, msg_len);
+					// write(fifo_fd, buf_read + offset + 4, msg_len);
 					offset += msg_len + 4;
 				}
 			}
@@ -230,6 +240,6 @@ main (int argc, char **argv)
 	}
 
 	close(fd);
-	clsoe(fifo_fd);
+	// clsoe(fifo_fd);
 	return (ret < 0? ret: 0);
 }
