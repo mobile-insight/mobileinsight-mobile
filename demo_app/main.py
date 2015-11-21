@@ -91,6 +91,12 @@ Builder.load_string("""
         on_release: root.start_service(root.ids.checkbox_app.selected)
 
     Button:
+        text: 'Stop app' 
+        disabled: root.ids.checkbox_app.selected == ''
+        size_hint_y: 4
+        on_release: root.stop_service()
+
+    Button:
         text: 'Start collection'
         disabled: root.collecting
         size_hint_y: 4
@@ -251,7 +257,7 @@ class HelloWorldScreen(GridLayout):
         if platform == "android" and app_name:
             if self.service:
                 #Stop the running service
-                self.service.stop()
+                self.stop_service()
             from android import AndroidService
             service = AndroidService("Test service", "Running")
             service.start(app_name)   # app name
