@@ -9,12 +9,13 @@
 #define CALLBACK_DATA_TYPE		0x00000080
 #define DIAG_IOCTL_SWITCH_LOGGING	7
 #define DIAG_IOCTL_REMOTE_DEV		32
-#define CALLBACK_MODE	6
+// #define CALLBACK_MODE	6
 #define DIAG_IOCTL_PERIPHERAL_BUF_CONFIG	35
 #define DIAG_BUFFERING_MODE_STREAMING	0
 #define DEFAULT_LOW_WM_VAL	15
 #define DEFAULT_HIGH_WM_VAL	85
 #define NUM_SMD_CONTROL_CHANNELS 4
+
 
 typedef struct {
 	char *p;
@@ -136,9 +137,12 @@ main (int argc, char **argv)
 		return -8002;
 	}
 
-	int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) CALLBACK_MODE);
+	// int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) CALLBACK_MODE);
+	int CALLBACK_MODE = 6;
+	int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &CALLBACK_MODE);
 	if (ret != 1) {
 		fprintf(stderr, "Error: ioctl SWITCH_LOGGING returns %d\n", ret);
+		perror("ioctl SWITCH_LOGGING");
 		return -8003;
 	}
 
@@ -147,21 +151,21 @@ main (int argc, char **argv)
 	// printf("ioctl REMOTE_DEV ret: %d\n", ret);
 
 	//Configure realtime streaming mode
-	int i=0;
-	for(i=0;i<NUM_SMD_CONTROL_CHANNELS;i++){
+	// int i=0;
+	// for(i=0;i<NUM_SMD_CONTROL_CHANNELS;i++){
 
-		struct diag_buffering_mode_t diag_buffering_mode;
-		diag_buffering_mode.peripheral = i;
-		diag_buffering_mode.mode = DIAG_BUFFERING_MODE_STREAMING;
-		diag_buffering_mode.high_wm_val = DEFAULT_HIGH_WM_VAL;
-		diag_buffering_mode.low_wm_val = DEFAULT_LOW_WM_VAL;
+	// 	struct diag_buffering_mode_t diag_buffering_mode;
+	// 	diag_buffering_mode.peripheral = i;
+	// 	diag_buffering_mode.mode = DIAG_BUFFERING_MODE_STREAMING;
+	// 	diag_buffering_mode.high_wm_val = DEFAULT_HIGH_WM_VAL;
+	// 	diag_buffering_mode.low_wm_val = DEFAULT_LOW_WM_VAL;
 
-		int ret = ioctl(fd,DIAG_IOCTL_PERIPHERAL_BUF_CONFIG,(char *) &diag_buffering_mode);
+	// 	int ret = ioctl(fd,DIAG_IOCTL_PERIPHERAL_BUF_CONFIG,(char *) &diag_buffering_mode);
 
-		if(!ret)
-			perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG:");
+	// 	if(!ret)
+	// 		perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG:");
 
-	}
+	// }
 	
 
 	ret = write_commands(fd, &buf_write);
