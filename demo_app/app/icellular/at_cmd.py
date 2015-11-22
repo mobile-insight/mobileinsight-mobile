@@ -29,13 +29,15 @@ class AtCmd(object):
 
         # self._run_shell_cmd("su -c chown root "+at_device,True)
         # self._run_shell_cmd("su -c chgrp sdcard_rw "+at_device,True)
-        # self._run_shell_cmd("su -c chmod 777 "+at_device,True)
+        self._run_shell_cmd("su -c chmod 777 "+at_device,True)
 
         # self.phy_ser = open(at_device,"rw")
         self.at_device = at_device
 
         at_res_cmd = "su -c cat "+at_device+">/sdcard/at_tmp.txt"
         self.at_proc = subprocess.Popen(at_res_cmd, executable=ANDROID_SHELL, shell=True)
+
+        self.cmd_count=0
 
         #disable echo mode
         self.run_at_cmd("ATE0")
@@ -60,16 +62,29 @@ class AtCmd(object):
         p = subprocess.Popen(full_cmd, executable=ANDROID_SHELL, shell=True)
         p.wait()
         
-        res=""
-        with codecs.open('/sdcard/at_tmp.txt',encoding='utf8') as fp:
-        	while True:
-        	    s = fp.read()
-        	    res+=s
-        	    if len(res)>2 and res[-2]=="\r" and res[-1]=="\n":
-        	    	break
-        return res
+        while True:
+            res=""
+            count=0
+            with codecs.open('/sdcard/at_tmp.txt',encoding='utf8') as fp:
+                while True:
+                    s = fp.readline()
+                    if not s:
+                    	break
+                    res+=s
+                    if len(res)>2 and res[-2]=="\r" and res[-1]=="\n":
+                        if count==self.cmd_count:
+                            break
+                        else:
+                        	count=count+1
+                        	res=""
+            if res:
+            	self.cmd_count = self.cmd_count+1
+                return res
 
-if __name__=="__main__":
-    at_cmd = AtCmd("/dev/smd11")
-    at_cmd.run_at_cmd("ATD3106148922")
+# if __name__=="__main__":
+#     at_cmd = AtCmd("/dev/smd11")
+#     at_cmd.run_at_cmd("ATD3106148922")
+
+at_cmd = AtCmd("/dev/smd11")
+print at_cmd.run_at_cmd("AT+COPS=?")
 
