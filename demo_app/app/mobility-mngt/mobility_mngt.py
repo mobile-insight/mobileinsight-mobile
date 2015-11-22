@@ -49,7 +49,7 @@ class MobilityMngt(Analyzer):
         #include analyzers
         self.include_analyzer("WcdmaRrcAnalyzer",[self.__on_wcdma_rrc_msg])
         self.include_analyzer("LteRrcAnalyzer",[self.__on_lte_rrc_msg])
-        self.include_analyzer("LteNasAnalyzer",[self.__on_lte_nas_msg])
+        # self.include_analyzer("LteNasAnalyzer",[self.__on_lte_nas_msg])
         # self.include_analyzer("UmtsNasAnalyzer",[self.__on_umts_nas_msg])
 
         #no source callbacks are included
@@ -92,7 +92,7 @@ class MobilityMngt(Analyzer):
                     if val.get('name')=='lte-rrc.MeasObjectToAddMod_element':
                         #Add measurement object
                         meas_obj = self.__get_meas_obj(val)
-                        if not meas_obj:
+                        if meas_obj:
                             meas_state.measobj[meas_obj.obj_id] = meas_obj
 
                     if val.get('name')=='lte-rrc.measObjectToRemoveList':
@@ -105,7 +105,8 @@ class MobilityMngt(Analyzer):
                     if val.get('name')=='lte-rrc.ReportConfigToAddMod_element':
                         #Add/modify a report config
                         report_config = self.__get_report_config(val)
-                        meas_state.report_list[report_config.report_id]=report_config
+                        if report_config:
+                            meas_state.report_list[report_config.report_id]=report_config
             
                     if val.get('name')=='lte-rrc.reportConfigToRemoveList':
                         #Remove a report config
@@ -136,7 +137,11 @@ class MobilityMngt(Analyzer):
                                 del meas_state.measid_list[item.get('show')]
             
                 #Generate a new state to the handoff sample
+                # if meas_state.measid_list:
                 self.__handoff_sample.add_state_transition(meas_state)
+                # if not meas_state.is_empty() \
+                # and not meas_state.equals(self.__handoff_sample.cur_state):
+                #     self.__handoff_sample.add_state_transition(meas_state)
                 # self.logger.info("Meas State: \n"+meas_state.dump())
 
             if field.get('name')=="lte-rrc.mobilityControlInfo_element":
@@ -320,7 +325,11 @@ class MobilityMngt(Analyzer):
                                 break
                 report_config.add_event('b2',threshold1,threshold2)
 
-        return report_config
+        if report_config.event_list:
+            return report_config
+        else:
+            #periodical report. No impact on handoff
+            return None
 
     def __on_wcdma_rrc_msg(self,msg):
         """
@@ -403,6 +412,8 @@ class MeasState:
         # return meas_obj
         if not self.measid_list.has_key(meas_id) \
         or not self.measobj.has_key(self.measid_list[meas_id][0]):
+            print "get_measobj: meas_id="+str(meas_id)+" meas_obj="+str(self.measid_list[meas_id])
+            print "debug: "+str(self.measobj.keys())
             return None
         else:
             return self.measobj[self.measid_list[meas_id][0]]
@@ -433,6 +444,12 @@ class MeasState:
 
         return (measobj,report_config)
 
+    def is_empty(self):
+        """
+        Return True if the meas_state is empty (happens when piggybacked with handoff command)
+        """
+        return (not self.measobj or not self.report_list)
+
     def equals(self,meas_state):
         """
         Compare two states to see if they are equivalent
@@ -445,7 +462,10 @@ class MeasState:
         #Algorithm for comparison:
         #Compare all objects in measid_list
         #For each one, check its freq, and the event/threshold configurations
+        if not meas_state:
+            return False
         if len(self.measid_list) != len(meas_state.measid_list):
+            # print "not same length "+str(len(self.measid_list))+" "+str(len(meas_state.measid_list))
             return False
         for meas_id in self.measid_list:
 
@@ -458,7 +478,7 @@ class MeasState:
 
             #Find if this measurement object also exists int meas_state
             meas_id_exist = False
-            for meas_id2 in meas_state:
+            for meas_id2 in meas_state.measid_list:
                 meas_obj2 = meas_state.get_measobj(meas_id2)
                 report_obj2 = meas_state.get_reportconfig(meas_id2)
                 if meas_obj.equals(meas_obj2) and report_obj.equals(report_obj2):
@@ -508,7 +528,8 @@ class MeasReportSeq:
         and meas_report[0].__class__.__name__!="LteMeasObjectGERAN" \
         and meas_report[1].__class__.__name__!="LteReportConfig":
             return False
-        self.meas_report_queue.append(meas_report)
+        if meas_report[0] and meas_report[1]:
+            self.meas_report_queue.append(meas_report)
         return True
 
     def merge_seq(self,meas_report_seq):
@@ -659,16 +680,29 @@ class MobilityStateMachine:
             return True 
 
 
-    def dump(self):
-        print "State machine"
-        for item in self.state_machine:
+    # def dump(self):
+    #     print "State machine"
+    #     for item in self.state_machine:
             
+    #         for item2 in self.state_machine[item]:
+    #             print item.__class__.__name__+"->" \
+    #                 +item2.__class__.__name__+": " \
+    #                 +str(self.state_machine[item][item2].meas_report_queue)
+    #             print item.dump()
+    #             print item2.dump()
+
+    def dump(self):
+        print "Handoff State Machine"
+        for item in self.state_machine:
             for item2 in self.state_machine[item]:
+                meas_report=""
+                for report in self.state_machine[item][item2].meas_report_queue:
+                    meas_report=meas_report+"("+str(report[0].freq)+","+str(report[1].event_list[0].type)+") "
                 print item.__class__.__name__+"->" \
                     +item2.__class__.__name__+": " \
-                    +str(self.state_machine[item][item2].meas_report_queue)
-                print item.dump()
-                print item2.dump()
+                    +meas_report
+                print "From State:\n",item.dump()
+                print "To State:\n",item2.dump()
 ############################################
 
 
