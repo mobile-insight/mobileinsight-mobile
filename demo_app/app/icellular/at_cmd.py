@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# Filename: at-cmd.py
+# Filename: at_cmd.py
 
 """
 
@@ -40,7 +40,7 @@ class AtCmd(object):
         self.cmd_count=0
 
         #disable echo mode
-        self.run_at_cmd("ATE0")
+        self.run_cmd("ATE0")
 
     def _run_shell_cmd(self, cmd, wait=False):
         p = subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
@@ -51,12 +51,12 @@ class AtCmd(object):
             return None
 
 
-    def run_at_cmd(self,cmd):
+    def run_cmd(self,cmd):
         '''
         Send an AT command, return responses
 
         :param cmd: the command to be sent
-        :returns: the return value of command
+        :returns: the return value of AT command
         '''
         full_cmd = 'su -c \"echo -e \'' + cmd + '\\r\\n\' > ' + self.at_device+"\""
         p = subprocess.Popen(full_cmd, executable=ANDROID_SHELL, shell=True)
@@ -81,10 +81,6 @@ class AtCmd(object):
             	self.cmd_count = self.cmd_count+1
                 return res
 
-# if __name__=="__main__":
-#     at_cmd = AtCmd("/dev/smd11")
-#     at_cmd.run_at_cmd("ATD3106148922")
-
-at_cmd = AtCmd("/dev/smd11")
-print at_cmd.run_at_cmd("AT+COPS=?")
-
+if __name__=="__main__":
+    at_cmd = AtCmd("/dev/smd11")
+    print at_cmd.run_cmd("ATD3106148922")

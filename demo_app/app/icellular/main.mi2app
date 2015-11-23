@@ -1,0 +1,51 @@
+#!/usr/bin/python
+# Filename: main.mi2app
+
+"""
+iCellular main app
+
+Author: Yuanjie Li
+"""
+
+from plmn_monitor import *
+from at_cmd import *
+from switch_exec import *
+from decision_strategy import *
+
+
+#QXDM collector for making decisions
+from mobile_insight.monitor import AndroidQmdlMonitor
+
+import thread
+
+def get_cache_dir():
+    return str(service_context.getCacheDir().getAbsolutePath())
+
+
+monitor = PlmnMonitor("/dev/smd11")
+#FIXME: the monitor is NOT used yet...
+src = AndroidQmdlMonitor({  "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+                                "libwireshark_path": "/system/lib"})
+log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")
+src.set_log_directory(log_directory)
+
+
+# Decision rules
+# TODO: offline training for the decision rules (for ease of impl)
+naive_decision = NaiveStrategy(monitor)
+# history_decision = HistoryStrategy(monitor,HISTORY_STRATEGY_PROFILE)
+
+# Switch engines
+switch = SwitchExec()
+
+
+# For each monitor, start a new thread
+# monitor.run()
+
+while True:
+    monitor.bplmn.run_once()
+    target1 = naive_decision.make_decision()  #default decision
+    switch.switch_to(target1)
+
+
+    
