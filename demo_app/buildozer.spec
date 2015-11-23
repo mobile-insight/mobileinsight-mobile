@@ -7,7 +7,7 @@ title = MobileInsight2
 package.name = mobile_insight2
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.wing
+package.domain = org.ucla.wing
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -53,7 +53,7 @@ requirements = kivy,mobile_insight
 orientation = portrait
 
 # (bool) Indicate if the application should be fullscreen or not
-fullscreen = 1
+fullscreen = 0
 
 
 #
@@ -152,7 +152,7 @@ android.p4a_dir = /Users/yuanjieli/Documents/python-for-android
 [buildozer]
 
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
-log_level = 1
+log_level = 2
 
 # (int) Display warning if buildozer is run as root (0 = False, 1 = True)
 warn_on_root = 1
