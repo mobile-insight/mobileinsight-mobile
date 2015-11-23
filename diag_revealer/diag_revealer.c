@@ -6,7 +6,7 @@
 #include <sys/time.h>
 // #include <linux/diagchar.h>
 
-#define DIAG_REVEALER_VERSION "1.0.1"
+#define DIAG_REVEALER_VERSION "1.0.2"
 
 
 #define USER_SPACE_DATA_TYPE	0x00000020
