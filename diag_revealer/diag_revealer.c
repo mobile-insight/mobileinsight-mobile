@@ -3,7 +3,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include <sys/time.h>
 // #include <linux/diagchar.h>
+
+#define DIAG_REVEALER_VERSION "1.0.1"
+
 
 #define USER_SPACE_DATA_TYPE	0x00000020
 #define CALLBACK_DATA_TYPE		0x00000080
@@ -38,6 +42,7 @@ struct diag_buffering_mode_t {
 
 #define DIAG_PROC_DCI			1
 #define DIAG_PROC_MEMORY_DEVICE		2
+
 struct real_time_vote_t {
 	uint16_t proc;
 	uint8_t real_time_vote;
@@ -49,6 +54,13 @@ struct real_time_query_t {
 } __packed;
 
 char buf_read[4096] = {};
+
+static double
+get_posix_timestamp () {
+    struct timeval tv;
+    (void) gettimeofday(&tv, NULL);
+    return (double)(tv.tv_sec) + (double)(tv.tv_usec) / 1.0e6;
+}
 
 static BinaryBuffer
 read_diag_cfg (const char *filename)
@@ -104,7 +116,8 @@ print_hex (const char *buf, int len)
 }
 
 static int
-write_commands (int fd, BinaryBuffer *pbuf_write) {
+write_commands (int fd, BinaryBuffer *pbuf_write)
+{
 	size_t i = 0;
 	char *p = pbuf_write->p;
 	char *send_buf = (char *) malloc(pbuf_write->len + 10);
@@ -122,11 +135,11 @@ write_commands (int fd, BinaryBuffer *pbuf_write) {
 		len++;
 		if (len >= 3) {
 			memcpy(send_buf + 4, p + i, len);
+			printf("hehehehehehehhehehhe %d / %d\n", i, pbuf_write->len);
 			printf("Writing %d bytes of data\n", len + 4);
 			print_hex(send_buf, len + 4);
-			int ret = write(fd, (const void *) send_buf, len + 4);
-			printf("hehehehehehehhehehhe %d/%d\n", i, pbuf_write->len);
 			fflush(stdout);
+			int ret = write(fd, (const void *) send_buf, len + 4);
 			if (ret < 0) {
 				perror("Error");
 				return -1;
@@ -141,8 +154,9 @@ write_commands (int fd, BinaryBuffer *pbuf_write) {
 int
 main (int argc, char **argv)
 {
-	if (argc != 3) {
-		printf("Usage: diag_revealer [Diag.cfg file] [Fifo file]\n");
+	if (argc != 3 && argc != 4) {
+		printf("Version " DIAG_REVEALER_VERSION "\n");
+		printf("Usage: diag_revealer DIAG_CFG_PATH FIFO_PATH [QMDL_OUTPUT_PATH]\n");
         return 0;
 	}
 
@@ -154,20 +168,18 @@ main (int argc, char **argv)
 
 	int fd = open("/dev/diag", O_RDWR);
 	if (fd < 0) {
-		perror("Error");
+		perror("open diag dev");
 		return -8002;
 	}
 
-	// int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) CALLBACK_MODE);
-	// int CALLBACK_MODE = 6;
-	// int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &CALLBACK_MODE);
-	int MEMORY_DEVICE_MODE = 2;
-	int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &MEMORY_DEVICE_MODE);
-	// if (ret != 1) {
-		fprintf(stderr, "Error: ioctl SWITCH_LOGGING returns %d\n", ret);
+	int mode = CALLBACK_MODE;
+	// int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
+	int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
+	if (ret != 1) {
+		fprintf(stderr, "ioctl SWITCH_LOGGING returns %d\n", ret);
 		perror("ioctl SWITCH_LOGGING");
-	// 	return -8003;
-	// }
+		return -8003;
+	}
 
 	// uint16_t device_mask = 0;
 	// ret = ioctl(fd, DIAG_IOCTL_REMOTE_DEV, (char *) &device_mask);
@@ -215,10 +227,17 @@ main (int argc, char **argv)
 		return -8004;
 	}
 
-	// int fifo_fd = open(argv[2], O_WRONLY);	// block until the other end also calls open()
-	// setvbuf(stdout, NULL, _IONBF, -1);	// disable stdout buffer
+	int fifo_fd = open(argv[2], O_WRONLY);	// block until the other end also calls open()
+	FILE *qmdl_fp = NULL;
+	if (argc == 4) {
+		qmdl_fp = fopen(argv[3], "wb");
+		if (qmdl_fp == NULL) {
+			perror("open qmdl");
+			return -8005;
+		}
+	}
+	printf("Hehe\n");
 	while (1) {
-		printf("Hehe\n");
 		int read_len = read(fd, buf_read, sizeof(buf_read));
 		if (read_len > 0) {
 			if (*((int *)buf_read) == USER_SPACE_DATA_TYPE) {
@@ -227,10 +246,20 @@ main (int argc, char **argv)
 				int offset = 8;
 				for (i = 0; i < num_data; i++) {
 					int msg_len;
+					double ts = get_posix_timestamp();
 					memcpy(&msg_len, buf_read + offset, 4);
-					printf("%d\n", msg_len);
-					print_hex(buf_read + offset + 4, msg_len);
-					// write(fifo_fd, buf_read + offset + 4, msg_len);
+					printf("%d %.5f\n", msg_len, ts);
+					// print_hex(buf_read + offset + 4, msg_len);
+					// Write size of payload to pipe
+					write(fifo_fd, &msg_len, sizeof(int));
+					// Write timestamp of sending payload to pipe
+					write(fifo_fd, &ts, sizeof(double));
+					// Write payload to pipe
+					write(fifo_fd, buf_read + offset + 4, msg_len);
+					// Write qmdl output if necessary
+					if (qmdl_fp != NULL) {
+						fwrite(buf_read + offset + 4, sizeof(char), msg_len, qmdl_fp);
+					}
 					offset += msg_len + 4;
 				}
 			}
