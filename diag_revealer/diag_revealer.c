@@ -118,6 +118,12 @@ print_hex (const char *buf, int len)
 static int
 write_commands (int fd, BinaryBuffer *pbuf_write)
 {
+	static char lte_rrc_cmd [] = {
+		0x73,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x0b,0x00,0x00,0x00,
+		0xc1,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+		0x00,0x00,0x00,0x00,0x01,0x74,0xac,0x7e
+	};
 	size_t i = 0;
 	char *p = pbuf_write->p;
 	char *send_buf = (char *) malloc(pbuf_write->len + 10);
@@ -141,12 +147,29 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 			fflush(stdout);
 			int ret = write(fd, (const void *) send_buf, len + 4);
 			if (ret < 0) {
-				perror("Error");
+				perror("cmd write error");
 				return -1;
+			}
+			int read_len = read(fd, buf_read, sizeof(buf_read));
+			if (read_len < 0) {
+				perror("cmd read error");
+				return -1;
+			} else {
+				printf("Reading %d bytes of resp\n", read_len);
 			}
 		}
 		i += len;
 	}
+
+	// int len = sizeof(lte_rrc_cmd);
+	// memcpy(send_buf + 4, lte_rrc_cmd, len);
+	// printf("Writing %d bytes of data\n", len + 4);
+	// print_hex(send_buf, len + 4);
+	// int ret = write(fd, (const void *) send_buf, len + 4);
+	// if (ret < 0) {
+	// 	perror("Error");
+	// 	return -1;
+	// }
 
 	return 0;
 }
@@ -176,9 +199,15 @@ main (int argc, char **argv)
 	// int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
 	int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
 	if (ret != 1) {
-		fprintf(stderr, "ioctl SWITCH_LOGGING returns %d\n", ret);
+		fprintf(stderr, "older way of ioctl SWITCH_LOGGING fails, with ret val = %d\n", ret);
 		perror("ioctl SWITCH_LOGGING");
-		return -8003;
+		// Try the newer way
+		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &mode);
+		if (ret != 1) {
+			fprintf(stderr, "ioctl SWITCH_LOGGING returns %d\n", ret);
+			perror("ioctl SWITCH_LOGGING");
+			return -8003;
+		}
 	}
 
 	// uint16_t device_mask = 0;
@@ -249,7 +278,7 @@ main (int argc, char **argv)
 					double ts = get_posix_timestamp();
 					memcpy(&msg_len, buf_read + offset, 4);
 					printf("%d %.5f\n", msg_len, ts);
-					// print_hex(buf_read + offset + 4, msg_len);
+					print_hex(buf_read + offset + 4, msg_len);
 					// Write size of payload to pipe
 					write(fifo_fd, &msg_len, sizeof(int));
 					// Write timestamp of sending payload to pipe
@@ -259,6 +288,7 @@ main (int argc, char **argv)
 					// Write qmdl output if necessary
 					if (qmdl_fp != NULL) {
 						fwrite(buf_read + offset + 4, sizeof(char), msg_len, qmdl_fp);
+						fflush(qmdl_fp);
 					}
 					offset += msg_len + 4;
 				}
