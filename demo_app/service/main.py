@@ -2,15 +2,24 @@ import mi2app_utils
 
 import os
 import sys
+import threading
 import time
 import traceback
 
 
-# get the argument passed
-arg = os.getenv("PYTHON_SERVICE_ARGUMENT")
+def alive_worker(secs):
+    while True:
+        print "I'm still alive..."
+        time.sleep(secs)
 
 if __name__ == "__main__":
+    # get the argument passed
+    arg = os.getenv("PYTHON_SERVICE_ARGUMENT")
+
     try:
+        t = threading.Thread(target=alive_worker, args=(30.0,))
+        t.start()
+
         APP_DIR = os.path.join(mi2app_utils.get_files_dir(), "app")
         sys.path.append(os.path.join(APP_DIR, arg)) # add this dir to module search path
         app_file = os.path.join(APP_DIR, arg, "main.mi2app")
