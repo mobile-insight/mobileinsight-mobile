@@ -41,5 +41,5 @@ apk:
 	$(BUILDOZER_FLAGS) buildozer android debug
 
 install:
-	adb uninstall org.wing.mobile_insight2
+	adb uninstall org.ucla.wing.mobile_insight2
 	adb install -r "$(P4A_DIST_ROOT)/bin/MobileInsight2-0.1-debug.apk"
