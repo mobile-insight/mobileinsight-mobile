@@ -37,7 +37,8 @@ class SwitchExec:
         """
             Return a current network type
         """
-        res = self.run_shell_cmd("service call phone 83")
+        #Nexus 6P only: setPreferredNetworkType=82
+        res = self.run_shell_cmd("service call phone 82")
         # print "Current network type: ",str(int(res[31],16))
         return int(res[31],16)
 
@@ -51,7 +52,8 @@ class SwitchExec:
         """
 
         if str(self.get_network_type())!=str(network_type):
-            self.run_shell_cmd("service call phone 85 i32 "+str(network_type))
+            #Nexus 6P only: setPreferredNetworkType=87
+            self.run_shell_cmd("service call phone 87 i32 "+str(network_type))
             print "Current network type",self.get_network_type()," switch to network type ",network_type
         
 
