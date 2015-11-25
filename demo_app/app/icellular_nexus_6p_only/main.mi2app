@@ -21,10 +21,11 @@ import thread
 def get_cache_dir():
     return str(service_context.getCacheDir().getAbsolutePath())
 
-
-monitor = PlmnMonitor("/dev/smd11")
+# TODO: change the path to generic version
+rildSerialPort = "/dev/smd11"
+monitor = PlmnMonitor(rildSerialPort)
 #FIXME: the monitor is NOT used yet...
-src = AndroidQmdlMonitor({  "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+src = AndroidQmdlMonitor({"ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
                                 "libwireshark_path": "/system/lib"})
 log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")
 src.set_log_directory(log_directory)
@@ -46,6 +47,3 @@ while True:
     monitor.bplmn.run_once()
     target1 = naive_decision.make_decision()  #default decision
     switch.switch_to(target1)
-
-
-    
