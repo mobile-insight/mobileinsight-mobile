@@ -189,7 +189,7 @@ class UploadAnalyzer(Analyzer):
                 proc.kill()
                 break
         proc.wait()
-        if operatorFound == False:
+        if operator == "":
             operator = "null"
         return self.__get_device_id() + '_' + manufacturer + '-' + model + '_' + operator
 
