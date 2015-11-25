@@ -189,6 +189,8 @@ class UploadAnalyzer(Analyzer):
                 proc.kill()
                 break
         proc.wait()
+        if operatorFound == False:
+            operator = "null"
         return self.__get_device_id() + '_' + manufacturer + '-' + model + '_' + operator
 
     def __callback_rename_file(self):
@@ -208,7 +210,7 @@ class UploadAnalyzer(Analyzer):
         # uploadfileabsname = '/data/data/org.wing.mobile_insight2/cache/log_upload/diag_log_20151023_190031_351881062060429_Samsung-SM-G900T_AT&T.qmdl'
         
         cmd = "su -c getprop"
-        uploaddir = "/sdcard/mobileInsight2_log"
+        uploaddir = "/sdcard/mobile_insight_log"
         print "uploaddir = " + uploaddir
 
         if not os.path.exists(uploaddir):
@@ -224,12 +226,15 @@ class UploadAnalyzer(Analyzer):
 
         print "uploadfileabsname = " + uploadfileabsname
 
-        uploadcmd = "su -c mv " + self.__original_filename + " " + uploadfileabsname
-
+        uploadcmd = "su -c cp " + self.__original_filename + " " + uploadfileabsname
         proc = subprocess.Popen(uploadcmd, executable = ANDROID_SHELL, shell = True)
         proc.wait()
-
         print "file copied to sdcard"
+
+        deletecmd = "su -c rm " + self.__original_filename
+        proc = subprocess.Popen(deletecmd, executable = ANDROID_SHELL, shell = True)
+        proc.wait()
+        print "temporary log deleted"
         
         # out = proc.communicate()[0]
 
