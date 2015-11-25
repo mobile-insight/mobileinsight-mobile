@@ -24,6 +24,8 @@ from mobile_insight.analyzer import Analyzer
 from mi2app_utils import get_cache_dir
 from jnius import autoclass  # SDcard Android
 
+ANDROID_SHELL = "/system/bin/sh"
+
 class MultiPartForm(object):
     """Accumulate the data to be used when posting a form."""
 
@@ -147,7 +149,6 @@ class UploadAnalyzer(Analyzer):
         # return deviceId
 
         cmd = "su -c service call iphonesubinfo 1"
-        ANDROID_SHELL = "/system/bin/sh"
         proc = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
         out = proc.communicate()[0]
         tup = re.findall("\'.+\'", out)
@@ -170,7 +171,6 @@ class UploadAnalyzer(Analyzer):
         modelFound = False
         manufacturerFound = False
         operatorFound = False
-        ANDROID_SHELL = "/system/bin/sh"
         proc = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
         for line in proc.stdout:
             if "[ro.product.model]" in line:
@@ -206,41 +206,54 @@ class UploadAnalyzer(Analyzer):
         # uploaddir = '/data/data/org.wing.mobile_insight2/cache/log_upload'
         # uploadfilebasename = 'diag_log_20151023_190031_351881062060429_Samsung-SM-G900T_AT&T.qmdl'
         # uploadfileabsname = '/data/data/org.wing.mobile_insight2/cache/log_upload/diag_log_20151023_190031_351881062060429_Samsung-SM-G900T_AT&T.qmdl'
-        qmdlfilebasename = os.path.basename(self.__original_filename)
-        qmdlfiledirname = os.path.dirname(self.__original_filename)
-        print "get_cache_dir"
-        # uploaddir = os.path.join(os.path.dirname(qmdlfiledirname) + '/log_upload')
-        uploaddir = os.path.join(get_cache_dir(), "log_upload")
-        print "uploaddir = "+uploaddir
-        uploadfilebasename = qmdlfilebasename.split('.')[0] + '_' + self.__get_phone_info() + '.qmdl'
-        uploadfileabsname = os.path.join(uploaddir + '/' + uploadfilebasename)
-
-        print "uploadfileabsname = "+uploadfileabsname
-
-        # Get path to SD card Android
-        try:
-            Environment = autoclass('android.os.Environment')
-            sdpath = Environment.get_running_app().getExternalStorageDirectory()
-
-        # Not on Android
-        except:
-            sdpath = App.get_running_app().user_data_dir
-
-        sdpathfile = os.path.join(sdpath, uploadfilebasename)
-        shutil.copyfile(uploadfileabsname, sdpathfile)
         
-        # backupdir = "/sdcard/mobileInsightLog/"
-        # if not os.path.exists(backupdir):
-        #     os.makedirs(backupdir)
-        # shutil.copy(self.__original_filename, backupdir)
-        print "file copied to sdcard"
-        
+        cmd = "su -c getprop"
+        uploaddir = "/sdcard/mobileInsight2_log"
+        print "uploaddir = " + uploaddir
+
         if not os.path.exists(uploaddir):
             os.makedirs(uploaddir)
 
-        os.rename(self.__original_filename, uploadfileabsname) # move file to new folder and rename
+        qmdlfilebasename = os.path.basename(self.__original_filename)
+        qmdlfiledirname = os.path.dirname(self.__original_filename)
+        # print "get_cache_dir"
+        # uploaddir = os.path.join(os.path.dirname(qmdlfiledirname) + '/log_upload')
+        # uploaddir = os.path.join(get_cache_dir(), "log_upload")
+        uploadfilebasename = qmdlfilebasename.split('.')[0] + '_' + self.__get_phone_info() + '.qmdl'
+        uploadfileabsname = os.path.join(uploaddir + '/' + uploadfilebasename)
 
-        print "file moved to new dir"
+        print "uploadfileabsname = " + uploadfileabsname
+
+        uploadcmd = "su -c mv " + self.__original_filename + " " + uploadfileabsname
+
+        proc = subprocess.Popen(uploadcmd, executable = ANDROID_SHELL, shell = True)
+        proc.wait()
+
+        print "file copied to sdcard"
+        
+        # out = proc.communicate()[0]
+
+        # # Get path to SD card Android
+        # try:
+        #     Environment = autoclass('android.os.Environment')
+        #     sdpath = Environment.get_running_app().getExternalStorageDirectory()
+
+        # # Not on Android
+        # except:
+        #     sdpath = App.get_running_app().user_data_dir
+
+        # sdpathfile = os.path.join(sdpath, uploadfilebasename)
+        # shutil.copyfile(uploadfileabsname, sdpathfile)
+        
+        # # backupdir = "/sdcard/mobileInsightLog/"
+        # # if not os.path.exists(backupdir):
+        # #     os.makedirs(backupdir)
+        # # shutil.copy(self.__original_filename, backupdir)
+
+
+        # os.rename(self.__original_filename, uploadfileabsname) # move file to new folder and rename
+
+        # print "file moved to new dir"
         return uploadfileabsname
 
     def __upload_qmdl_log(self, filename):
