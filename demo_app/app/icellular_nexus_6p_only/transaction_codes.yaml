@@ -1,0 +1,1271 @@
+clipboard:
+  '#PACKAGE_NAME+/android-4.4.2_r1': android.content.IClipboard
+  '#PACKAGE_NAME+/android-6.0.0_r1': android.content.IClipboard
+  '#PACKAGE_URL+/android-4.4.2_r1': https://android.googlesource.com/platform/frameworks/base/+/android-4.4.2_r1/core/java/android/content/IClipboard.aidl
+  '#PACKAGE_URL+/android-6.0.0_r1': https://android.googlesource.com/platform/frameworks/base/+/android-6.0.0_r1/core/java/android/content/IClipboard.aidl
+  addprimaryclipchangedlistener:
+    4.4.2: 5
+    '6.0': 5
+  getprimaryclip:
+    4.4.2: 2
+    '6.0': 2
+  getprimaryclipdescription:
+    4.4.2: 3
+    '6.0': 3
+  hasclipboardtext:
+    4.4.2: 7
+    '6.0': 7
+  hasprimaryclip:
+    4.4.2: 4
+    '6.0': 4
+  removeprimaryclipchangedlistener:
+    4.4.2: 6
+    '6.0': 6
+  setprimaryclip:
+    4.4.2: 1
+    '6.0': 1
+connectivity:
+  '#PACKAGE_NAME+/android-4.4.2_r1': android.net.IConnectivityManager
+  '#PACKAGE_NAME+/android-6.0.0_r1': android.net.IConnectivityManager
+  '#PACKAGE_URL+/android-4.4.2_r1': https://android.googlesource.com/platform/frameworks/base/+/android-4.4.2_r1/core/java/android/net/IConnectivityManager.aidl
+  '#PACKAGE_URL+/android-6.0.0_r1': https://android.googlesource.com/platform/frameworks/base/+/android-6.0.0_r1/core/java/android/net/IConnectivityManager.aidl
+  addvpnaddress:
+    '6.0': 60
+  captiveportalcheckcomplete:
+    4.4.2: 48
+  captiveportalcheckcompleted:
+    4.4.2: 49
+  checkmobileprovisioning:
+    4.4.2: 52
+    '6.0': 44
+  establishvpn:
+    4.4.2: 43
+    '6.0': 38
+  factoryreset:
+    '6.0': 63
+  findconnectiontypeforiface:
+    4.4.2: 51
+  getactivelinkproperties:
+    4.4.2: 10
+    '6.0': 11
+  getactivelinkqualityinfo:
+    4.4.2: 56
+  getactivenetwork:
+    '6.0': 1
+  getactivenetworkinfo:
+    4.4.2: 4
+    '6.0': 2
+  getactivenetworkinfoforuid:
+    4.4.2: 5
+    '6.0': 3
+  getactivenetworkquotainfo:
+    4.4.2: 13
+    '6.0': 16
+  getalllinkqualityinfo:
+    4.4.2: 57
+  getallnetworkinfo:
+    4.4.2: 7
+    '6.0': 6
+  getallnetworks:
+    '6.0': 8
+  getallnetworkstate:
+    4.4.2: 12
+    '6.0': 15
+  getallvpninfo:
+    '6.0': 42
+  getdefaultnetworkcapabilitiesforuser:
+    '6.0': 9
+  getglobalproxy:
+    4.4.2: 37
+    '6.0': 33
+  getlasttethererror:
+    4.4.2: 26
+    '6.0': 21
+  getlegacyvpninfo:
+    4.4.2: 46
+    '6.0': 41
+  getlinkproperties:
+    4.4.2: 11
+    '6.0': 13
+  getlinkpropertiesfortype:
+    '6.0': 12
+  getlinkqualityinfo:
+    4.4.2: 55
+  getmobiledataenabled:
+    4.4.2: 21
+  getmobileprovisioningurl:
+    4.4.2: 53
+    '6.0': 45
+  getmobileredirectedprovisioningurl:
+    4.4.2: 54
+  getnetworkcapabilities:
+    '6.0': 14
+  getnetworkfortype:
+    '6.0': 7
+  getnetworkinfo:
+    4.4.2: 6
+    '6.0': 4
+  getnetworkinfofornetwork:
+    '6.0': 5
+  getnetworkpreference:
+    4.4.2: 3
+  getprovisioningoractivenetworkinfo:
+    4.4.2: 8
+  getproxy:
+    4.4.2: 39
+  getproxyfornetwork:
+    '6.0': 35
+  getrestoredefaultnetworkdelay:
+    '6.0': 59
+  gettetherablebluetoothregexs:
+    4.4.2: 33
+    '6.0': 29
+  gettetherableifaces:
+    4.4.2: 28
+    '6.0': 23
+  gettetherableusbregexs:
+    4.4.2: 31
+    '6.0': 27
+  gettetherablewifiregexs:
+    4.4.2: 32
+    '6.0': 28
+  gettethereddhcpranges:
+    '6.0': 26
+  gettetheredifaces:
+    4.4.2: 29
+    '6.0': 24
+  gettetheringerroredifaces:
+    4.4.2: 30
+    '6.0': 25
+  getvpnconfig:
+    4.4.2: 44
+    '6.0': 39
+  isactivenetworkmetered:
+    4.4.2: 14
+    '6.0': 17
+  isnetworksupported:
+    4.4.2: 9
+    '6.0': 10
+  istetheringsupported:
+    4.4.2: 27
+    '6.0': 22
+  listenfornetwork:
+    '6.0': 55
+  marksocketasuser:
+    4.4.2: 1
+  pendinglistenfornetwork:
+    '6.0': 56
+  pendingrequestfornetwork:
+    '6.0': 53
+  preparevpn:
+    4.4.2: 42
+    '6.0': 36
+  protectvpn:
+    4.4.2: 41
+  registernetworkagent:
+    '6.0': 51
+  registernetworkfactory:
+    '6.0': 48
+  releasenetworkrequest:
+    '6.0': 57
+  releasependingnetworkrequest:
+    '6.0': 54
+  removevpnaddress:
+    '6.0': 61
+  reportinetcondition:
+    4.4.2: 36
+    '6.0': 31
+  reportnetworkconnectivity:
+    '6.0': 32
+  requestbandwidthupdate:
+    '6.0': 49
+  requestnetwork:
+    '6.0': 52
+  requestnetworktransitionwakelock:
+    4.4.2: 35
+  requestroutetohost:
+    4.4.2: 19
+  requestroutetohostaddress:
+    4.4.2: 20
+    '6.0': 18
+  setacceptunvalidated:
+    '6.0': 58
+  setairplanemode:
+    4.4.2: 59
+    '6.0': 47
+  setdatadependency:
+    4.4.2: 40
+  setglobalproxy:
+    4.4.2: 38
+    '6.0': 34
+  setmobiledataenabled:
+    4.4.2: 22
+  setnetworkpreference:
+    4.4.2: 2
+  setpolicydataenable:
+    4.4.2: 23
+  setprovisioningnotificationvisible:
+    4.4.2: 58
+    '6.0': 46
+  setradio:
+    4.4.2: 16
+  setradios:
+    4.4.2: 15
+  setunderlyingnetworksforvpn:
+    '6.0': 62
+  setusbtethering:
+    4.4.2: 34
+    '6.0': 30
+  setvpnpackageauthorization:
+    '6.0': 37
+  startlegacyvpn:
+    4.4.2: 45
+    '6.0': 40
+  startusingnetworkfeature:
+    4.4.2: 17
+  stopusingnetworkfeature:
+    4.4.2: 18
+  supplymessenger:
+    4.4.2: 50
+  tether:
+    4.4.2: 24
+    '6.0': 19
+  unregisternetworkfactory:
+    '6.0': 50
+  untether:
+    4.4.2: 25
+    '6.0': 20
+  updatelockdownvpn:
+    4.4.2: 47
+    '6.0': 43
+input:
+  '#PACKAGE_NAME+/android-4.4.2_r1': android.hardware.input.IInputManager
+  '#PACKAGE_NAME+/android-6.0.0_r1': android.hardware.input.IInputManager
+  '#PACKAGE_URL+/android-4.4.2_r1': https://android.googlesource.com/platform/frameworks/base/+/android-4.4.2_r1/core/java/android/hardware/input/IInputManager.aidl
+  '#PACKAGE_URL+/android-6.0.0_r1': https://android.googlesource.com/platform/frameworks/base/+/android-6.0.0_r1/core/java/android/hardware/input/IInputManager.aidl
+  addkeyboardlayoutforinputdevice:
+    4.4.2: 11
+    '6.0': 13
+  cancelvibrate:
+    4.4.2: 15
+    '6.0': 17
+  getcurrentkeyboardlayoutforinputdevice:
+    4.4.2: 8
+    '6.0': 10
+  getinputdevice:
+    4.4.2: 1
+    '6.0': 1
+  getinputdeviceids:
+    4.4.2: 2
+    '6.0': 2
+  getkeyboardlayout:
+    4.4.2: 7
+    '6.0': 9
+  getkeyboardlayouts:
+    4.4.2: 6
+    '6.0': 8
+  getkeyboardlayoutsforinputdevice:
+    4.4.2: 10
+    '6.0': 12
+  gettouchcalibrationforinputdevice:
+    '6.0': 6
+  haskeys:
+    4.4.2: 3
+    '6.0': 3
+  injectinputevent:
+    4.4.2: 5
+    '6.0': 5
+  registerinputdeviceschangedlistener:
+    4.4.2: 13
+    '6.0': 15
+  removekeyboardlayoutforinputdevice:
+    4.4.2: 12
+    '6.0': 14
+  setcurrentkeyboardlayoutforinputdevice:
+    4.4.2: 9
+    '6.0': 11
+  settouchcalibrationforinputdevice:
+    '6.0': 7
+  trypointerspeed:
+    4.4.2: 4
+    '6.0': 4
+  vibrate:
+    4.4.2: 14
+    '6.0': 16
+iphonesubinfo:
+  '#PACKAGE_NAME+/android-4.4.2_r1': com.android.internal.telephony.IPhoneSubInfo
+  '#PACKAGE_NAME+/android-6.0.0_r1': com.android.internal.telephony.IPhoneSubInfo
+  '#PACKAGE_URL+/android-4.4.2_r1': https://android.googlesource.com/platform/frameworks/base/+/android-4.4.2_r1/telephony/java/com/android/internal/telephony/IPhoneSubInfo.aidl
+  '#PACKAGE_URL+/android-6.0.0_r1': https://android.googlesource.com/platform/frameworks/base/+/android-6.0.0_r1/telephony/java/com/android/internal/telephony/IPhoneSubInfo.aidl
+  getcompletevoicemailnumber:
+    4.4.2: 10
+    '6.0': 21
+  getcompletevoicemailnumberforsubscriber:
+    '6.0': 22
+  getdeviceid:
+    4.4.2: 1
+    '6.0': 1
+  getdeviceidforphone:
+    '6.0': 3
+  getdevicesvn:
+    4.4.2: 2
+    '6.0': 5
+  getdevicesvnusingsubid:
+    '6.0': 6
+  getgroupidlevel1:
+    4.4.2: 4
+    '6.0': 9
+  getgroupidlevel1forsubscriber:
+    '6.0': 10
+  geticcserialnumber:
+    4.4.2: 5
+    '6.0': 11
+  geticcserialnumberforsubscriber:
+    '6.0': 12
+  geticcsimchallengeresponse:
+    '6.0': 31
+  getimeiforsubscriber:
+    '6.0': 4
+  getisimchallengeresponse:
+    '6.0': 30
+  getisimdomain:
+    4.4.2: 13
+    '6.0': 26
+  getisimimpi:
+    4.4.2: 12
+    '6.0': 25
+  getisimimpu:
+    4.4.2: 14
+    '6.0': 27
+  getisimist:
+    '6.0': 28
+  getisimpcscf:
+    '6.0': 29
+  getline1alphatag:
+    4.4.2: 7
+    '6.0': 15
+  getline1alphatagforsubscriber:
+    '6.0': 16
+  getline1number:
+    4.4.2: 6
+    '6.0': 13
+  getline1numberforsubscriber:
+    '6.0': 14
+  getmsisdn:
+    4.4.2: 8
+    '6.0': 17
+  getmsisdnforsubscriber:
+    '6.0': 18
+  getnaiforsubscriber:
+    '6.0': 2
+  getsubscriberid:
+    4.4.2: 3
+    '6.0': 7
+  getsubscriberidforsubscriber:
+    '6.0': 8
+  getvoicemailalphatag:
+    4.4.2: 11
+    '6.0': 23
+  getvoicemailalphatagforsubscriber:
+    '6.0': 24
+  getvoicemailnumber:
+    4.4.2: 9
+    '6.0': 19
+  getvoicemailnumberforsubscriber:
+    '6.0': 20
+isms:
+  '#PACKAGE_NAME+/android-4.4.2_r1': com.android.internal.telephony.ISms
+  '#PACKAGE_NAME+/android-6.0.0_r1': com.android.internal.telephony.ISms
+  '#PACKAGE_URL+/android-4.4.2_r1': https://android.googlesource.com/platform/frameworks/base/+/android-4.4.2_r1/telephony/java/com/android/internal/telephony/ISms.aidl
+  '#PACKAGE_URL+/android-6.0.0_r1': https://android.googlesource.com/platform/frameworks/base/+/android-6.0.0_r1/telephony/java/com/android/internal/telephony/ISms.aidl
+  copymessagetoiccef:
+    4.4.2: 5
+  copymessagetoiccefforsubscriber:
+    '6.0': 5
+  disablecellbroadcast:
+    4.4.2: 10
+  disablecellbroadcastforsubscriber:
+    '6.0': 13
+  disablecellbroadcastrange:
+    4.4.2: 12
+  disablecellbroadcastrangeforsubscriber:
+    '6.0': 15
+  enablecellbroadcast:
+    4.4.2: 9
+  enablecellbroadcastforsubscriber:
+    '6.0': 12
+  enablecellbroadcastrange:
+    4.4.2: 11
+  enablecellbroadcastrangeforsubscriber:
+    '6.0': 14
+  getallmessagesfromiccef:
+    4.4.2: 3
+  getallmessagesfromiccefforsubscriber:
+    '6.0': 3
+  getimssmsformat:
+    4.4.2: 16
+  getimssmsformatforsubscriber:
+    '6.0': 23
+  getpreferredsmssubscription:
+    '6.0': 22
+  getpremiumsmspermission:
+    4.4.2: 13
+    '6.0': 16
+  getpremiumsmspermissionforsubscriber:
+    '6.0': 17
+  injectsmspduforsubscriber:
+    '6.0': 10
+  isimssmssupported:
+    4.4.2: 15
+  isimssmssupportedforsubscriber:
+    '6.0': 20
+  isms.stub.asinterface(sm.getservice:
+    4.4.2: 2
+    '6.0': 2
+  issmspromptenabled:
+    '6.0': 24
+  issmssimpickactivityneeded:
+    '6.0': 21
+  senddata:
+    4.4.2: 6
+  senddataforsubscriber:
+    '6.0': 6
+  senddataforsubscriberwithselfpermissions:
+    '6.0': 7
+  sendmultiparttext:
+    4.4.2: 8
+  sendmultiparttextforsubscriber:
+    '6.0': 11
+  sendstoredmultiparttext:
+    '6.0': 26
+  sendstoredtext:
+    '6.0': 25
+  sendtext:
+    4.4.2: 7
+  sendtextforsubscriber:
+    '6.0': 8
+  sendtextforsubscriberwithselfpermissions:
+    '6.0': 9
+  servicemanagernative.getdefault:
+    4.4.2: 1
+    '6.0': 1
+  setpremiumsmspermission:
+    4.4.2: 14
+    '6.0': 18
+  setpremiumsmspermissionforsubscriber:
+    '6.0': 19
+  updatemessageoniccef:
+    4.4.2: 4
+  updatemessageoniccefforsubscriber:
+    '6.0': 4
+phone:
+  '#PACKAGE_NAME+/android-4.4.2_r1': com.android.internal.telephony.ITelephony
+  '#PACKAGE_NAME+/android-6.0.0_r1': com.android.internal.telephony.ITelephony
+  '#PACKAGE_URL+/android-4.4.2_r1': https://android.googlesource.com/platform/frameworks/base/+/android-4.4.2_r1/telephony/java/com/android/internal/telephony/ITelephony.aidl
+  '#PACKAGE_URL+/android-6.0.0_r1': https://android.googlesource.com/platform/frameworks/base/+/android-6.0.0_r1/telephony/java/com/android/internal/telephony/ITelephony.aidl
+  answerringingcall:
+    4.4.2: 6
+    '6.0': 5
+  answerringingcallforsubscriber:
+    '6.0': 6
+  call:
+    4.4.2: 2
+    '6.0': 2
+  cancelmissedcallsnotification:
+    4.4.2: 13
+  canchangedtmftonelength:
+    '6.0': 111
+  checkcarrierprivilegesforpackage:
+    '6.0': 95
+  checkcarrierprivilegesforpackageanyphone:
+    '6.0': 96
+  dial:
+    4.4.2: 1
+    '6.0': 1
+  disableapntype:
+    4.4.2: 26
+  disabledataconnectivity:
+    4.4.2: 28
+    '6.0': 39
+  disablelocationupdates:
+    4.4.2: 24
+    '6.0': 36
+  disablelocationupdatesforsubscriber:
+    '6.0': 37
+  enableapntype:
+    4.4.2: 25
+  enabledataconnectivity:
+    4.4.2: 27
+    '6.0': 38
+  enablelocationupdates:
+    4.4.2: 23
+    '6.0': 34
+  enablelocationupdatesforsubscriber:
+    '6.0': 35
+  enablevideocalling:
+    '6.0': 109
+  endcall:
+    4.4.2: 5
+    '6.0': 3
+  endcallforsubscriber:
+    '6.0': 4
+  factoryreset:
+    '6.0': 120
+  getactivephonetype:
+    4.4.2: 35
+    '6.0': 47
+  getactivephonetypeforsubscriber:
+    '6.0': 48
+  getallcellinfo:
+    4.4.2: 46
+    '6.0': 68
+  getcalculatedpreferrednetworktype:
+    '6.0': 81
+  getcallstate:
+    4.4.2: 32
+    '6.0': 43
+  getcallstateforsubscriber:
+    '6.0': 44
+  getcarrierpackagenamesforintentandphone:
+    '6.0': 97
+  getcarrierprivilegestatus:
+    '6.0': 94
+  getcdmaeriiconindex:
+    4.4.2: 36
+    '6.0': 49
+  getcdmaeriiconindexforsubscriber:
+    '6.0': 50
+  getcdmaeriiconmode:
+    4.4.2: 37
+    '6.0': 51
+  getcdmaeriiconmodeforsubscriber:
+    '6.0': 52
+  getcdmaeritext:
+    4.4.2: 38
+    '6.0': 53
+  getcdmaeritextforsubscriber:
+    '6.0': 54
+  getcdmamdn:
+    '6.0': 92
+  getcdmamin:
+    '6.0': 93
+  getcelllocation:
+    4.4.2: 30
+    '6.0': 41
+  getcellnetworkscanresults:
+    '6.0': 85
+  getdataactivity:
+    4.4.2: 33
+    '6.0': 45
+  getdataenabled:
+    '6.0': 89
+  getdatanetworktype:
+    4.4.2: 42
+    '6.0': 61
+  getdatanetworktypeforsubscriber:
+    '6.0': 62
+  getdatastate:
+    4.4.2: 34
+    '6.0': 46
+  getdefaultsim:
+    '6.0': 70
+  getdeviceid:
+    '6.0': 118
+  getline1alphatagfordisplay:
+    '6.0': 100
+  getline1numberfordisplay:
+    '6.0': 99
+  getlocalefromdefaultsim:
+    '6.0': 121
+  getlteoncdmamode:
+    4.4.2: 45
+    '6.0': 66
+  getlteoncdmamodeforsubscriber:
+    '6.0': 67
+  getmergedsubscriberids:
+    '6.0': 101
+  getmodemactivityinfo:
+    '6.0': 122
+  getneighboringcellinfo:
+    4.4.2: 31
+    '6.0': 42
+  getnetworktype:
+    4.4.2: 41
+    '6.0': 59
+  getnetworktypeforsubscriber:
+    '6.0': 60
+  getpcscfaddress:
+    '6.0': 90
+  getpreferrednetworktype:
+    '6.0': 82
+  getradioaccessfamily:
+    '6.0': 108
+  getsubidforphoneaccount:
+    '6.0': 119
+  gettetherapnrequired:
+    '6.0': 83
+  getvoicemessagecount:
+    4.4.2: 40
+    '6.0': 57
+  getvoicemessagecountforsubscriber:
+    '6.0': 58
+  getvoicenetworktype:
+    4.4.2: 43
+  getvoicenetworktypeforsubscriber:
+    '6.0': 63
+  handlepinmmi:
+    4.4.2: 18
+    '6.0': 25
+  handlepinmmiforsubscriber:
+    '6.0': 26
+  hasicccard:
+    4.4.2: 44
+    '6.0': 64
+  hasicccardusingslotid:
+    '6.0': 65
+  icccloselogicalchannel:
+    '6.0': 72
+  iccexchangesimio:
+    '6.0': 75
+  iccopenlogicalchannel:
+    '6.0': 71
+  icctransmitapdubasicchannel:
+    '6.0': 74
+  icctransmitapdulogicalchannel:
+    '6.0': 73
+  invokeoemrilrequestraw:
+    '6.0': 104
+  isdataconnectivitypossible:
+    4.4.2: 29
+    '6.0': 40
+  ishearingaidcompatibilitysupported:
+    '6.0': 114
+  isidle:
+    4.4.2: 10
+    '6.0': 12
+  isidleforsubscriber:
+    '6.0': 13
+  isimsregistered:
+    '6.0': 115
+  isoffhook:
+    4.4.2: 8
+    '6.0': 8
+  isoffhookforsubscriber:
+    '6.0': 9
+  isradioon:
+    4.4.2: 11
+    '6.0': 14
+  isradioonforsubscriber:
+    '6.0': 15
+  isringing:
+    4.4.2: 9
+    '6.0': 11
+  isringingforsubscriber:
+    '6.0': 10
+  issimpinenabled:
+    4.4.2: 12
+    '6.0': 16
+  isttymodesupported:
+    '6.0': 113
+  isvideocallingenabled:
+    '6.0': 110
+  isvolteenabled:
+    '6.0': 117
+  iswificallingenabled:
+    '6.0': 116
+  isworldphone:
+    '6.0': 112
+  needmobileradioshutdown:
+    '6.0': 105
+  needsotaserviceprovisioning:
+    4.4.2: 39
+    '6.0': 55
+  nvreaditem:
+    '6.0': 77
+  nvresetconfig:
+    '6.0': 80
+  nvwritecdmaprl:
+    '6.0': 79
+  nvwriteitem:
+    '6.0': 78
+  sendenvelopewithstatus:
+    '6.0': 76
+  setcellinfolistrate:
+    4.4.2: 47
+    '6.0': 69
+  setdataenabled:
+    '6.0': 88
+  setimsregistrationstate:
+    '6.0': 91
+  setline1numberfordisplayforsubscriber:
+    '6.0': 98
+  setnetworkselectionmodeautomatic:
+    '6.0': 84
+  setnetworkselectionmodemanual:
+    '6.0': 86
+  setoperatorbrandoverride:
+    '6.0': 102
+  setpreferrednetworktype:
+    '6.0': 87
+  setradio:
+    4.4.2: 20
+    '6.0': 29
+  setradiocapability:
+    '6.0': 107
+  setradioforsubscriber:
+    '6.0': 30
+  setradiopower:
+    4.4.2: 21
+    '6.0': 31
+  setroamingoverride:
+    '6.0': 103
+  setvoicemailnumber:
+    '6.0': 56
+  showcallscreen:
+    4.4.2: 3
+  showcallscreenwithdialpad:
+    4.4.2: 4
+  shutdownmobileradios:
+    '6.0': 106
+  silenceringer:
+    4.4.2: 7
+    '6.0': 7
+  supplypin:
+    4.4.2: 14
+    '6.0': 17
+  supplypinforsubscriber:
+    '6.0': 18
+  supplypinreportresult:
+    4.4.2: 16
+    '6.0': 21
+  supplypinreportresultforsubscriber:
+    '6.0': 22
+  supplypuk:
+    4.4.2: 15
+    '6.0': 19
+  supplypukforsubscriber:
+    '6.0': 20
+  supplypukreportresult:
+    4.4.2: 17
+    '6.0': 23
+  supplypukreportresultforsubscriber:
+    '6.0': 24
+  toggleradioonoff:
+    4.4.2: 19
+    '6.0': 27
+  toggleradioonoffforsubscriber:
+    '6.0': 28
+  updateservicelocation:
+    4.4.2: 22
+    '6.0': 32
+  updateservicelocationforsubscriber:
+    '6.0': 33
+usb:
+  '#PACKAGE_NAME+/android-4.4.2_r1': android.hardware.usb.IUsbManager
+  '#PACKAGE_NAME+/android-6.0.0_r1': android.hardware.usb.IUsbManager
+  '#PACKAGE_URL+/android-4.4.2_r1': https://android.googlesource.com/platform/frameworks/base/+/android-4.4.2_r1/core/java/android/hardware/usb/IUsbManager.aidl
+  '#PACKAGE_URL+/android-6.0.0_r1': https://android.googlesource.com/platform/frameworks/base/+/android-6.0.0_r1/core/java/android/hardware/usb/IUsbManager.aidl
+  allowusbdebugging:
+    4.4.2: 17
+    '6.0': 18
+  cleardefaults:
+    4.4.2: 14
+    '6.0': 14
+  clearusbdebuggingkeys:
+    4.4.2: 19
+    '6.0': 20
+  denyusbdebugging:
+    4.4.2: 18
+    '6.0': 19
+  getcurrentaccessory:
+    4.4.2: 3
+    '6.0': 3
+  getdevicelist:
+    4.4.2: 1
+    '6.0': 1
+  getports:
+    '6.0': 21
+  getportstatus:
+    '6.0': 22
+  grantaccessorypermission:
+    4.4.2: 12
+    '6.0': 12
+  grantdevicepermission:
+    4.4.2: 11
+    '6.0': 11
+  hasaccessorypermission:
+    4.4.2: 8
+    '6.0': 8
+  hasdefaults:
+    4.4.2: 13
+    '6.0': 13
+  hasdevicepermission:
+    4.4.2: 7
+    '6.0': 7
+  isfunctionenabled:
+    '6.0': 15
+  openaccessory:
+    4.4.2: 4
+    '6.0': 4
+  opendevice:
+    4.4.2: 2
+    '6.0': 2
+  requestaccessorypermission:
+    4.4.2: 10
+    '6.0': 10
+  requestdevicepermission:
+    4.4.2: 9
+    '6.0': 9
+  setaccessorypackage:
+    4.4.2: 6
+    '6.0': 6
+  setcurrentfunction:
+    4.4.2: 15
+    '6.0': 16
+  setdevicepackage:
+    4.4.2: 5
+    '6.0': 5
+  setmassstoragebackingfile:
+    4.4.2: 16
+  setportroles:
+    '6.0': 23
+  setusbdataunlocked:
+    '6.0': 17
+wifi:
+  '#PACKAGE_NAME+/android-4.4.2_r1': android.net.wifi.IWifiManager
+  '#PACKAGE_NAME+/android-6.0.0_r1': android.net.wifi.IWifiManager
+  '#PACKAGE_URL+/android-4.4.2_r1': https://android.googlesource.com/platform/frameworks/base/+/android-4.4.2_r1/wifi/java/android/net/wifi/IWifiManager.aidl
+  '#PACKAGE_URL+/android-6.0.0_r1': https://android.googlesource.com/platform/frameworks/base/+/android-6.0.0_r1/wifi/java/android/net/wifi/IWifiManager.aidl
+  acquiremulticastlock:
+    4.4.2: 27
+    '6.0': 34
+  acquirewifilock:
+    4.4.2: 22
+    '6.0': 29
+  addorupdatenetwork:
+    4.4.2: 2
+    '6.0': 6
+  addtoblacklist:
+    4.4.2: 35
+    '6.0': 43
+  buildwificonfig:
+    '6.0': 39
+  captiveportalcheckcomplete:
+    4.4.2: 40
+  clearblacklist:
+    4.4.2: 36
+    '6.0': 44
+  disableephemeralnetwork:
+    '6.0': 66
+  disablenetwork:
+    4.4.2: 5
+    '6.0': 9
+  disconnect:
+    4.4.2: 9
+    '6.0': 15
+  enableaggressivehandover:
+    '6.0': 57
+  enableautojoinwhenassociated:
+    '6.0': 63
+  enablenetwork:
+    4.4.2: 4
+    '6.0': 8
+  enabletdls:
+    4.4.2: 41
+    '6.0': 47
+  enabletdlswithmacaddress:
+    4.4.2: 42
+    '6.0': 48
+  enableverboselogging:
+    '6.0': 55
+  factoryreset:
+    '6.0': 67
+  getaggressivehandover:
+    '6.0': 58
+  getallowscanswithtraffic:
+    '6.0': 60
+  getbatchedscanresults:
+    4.4.2: 45
+    '6.0': 51
+  getchannellist:
+    '6.0': 11
+  getconfigfile:
+    4.4.2: 39
+    '6.0': 46
+  getconfigurednetworks:
+    4.4.2: 1
+    '6.0': 3
+  getconnectioninfo:
+    4.4.2: 12
+    '6.0': 18
+  getconnectionstatistics:
+    '6.0': 65
+  getcountrycode:
+    '6.0': 22
+  getcurrentnetwork:
+    '6.0': 68
+  getdhcpinfo:
+    4.4.2: 20
+    '6.0': 27
+  getenableautojoinwhenassociated:
+    '6.0': 64
+  getfrequencyband:
+    4.4.2: 17
+    '6.0': 24
+  gethalbasedautojoinoffload:
+    '6.0': 62
+  getmatchingwificonfig:
+    '6.0': 5
+  getprivilegedconfigurednetworks:
+    '6.0': 4
+  getscanresults:
+    4.4.2: 8
+    '6.0': 14
+  getsupportedfeatures:
+    '6.0': 1
+  getverboselogginglevel:
+    '6.0': 56
+  getwifiapconfiguration:
+    4.4.2: 31
+    '6.0': 38
+  getwifiapenabledstate:
+    4.4.2: 30
+    '6.0': 37
+  getwifienabledstate:
+    4.4.2: 14
+    '6.0': 20
+  getwifiservicemessenger:
+    4.4.2: 37
+    '6.0': 45
+  getwifistatemachinemessenger:
+    4.4.2: 38
+  getwpsnfcconfigurationtoken:
+    '6.0': 54
+  initializemulticastfiltering:
+    4.4.2: 25
+    '6.0': 32
+  isbatchedscansupported:
+    4.4.2: 46
+    '6.0': 52
+  isdualbandsupported:
+    4.4.2: 18
+    '6.0': 25
+  ismulticastenabled:
+    4.4.2: 26
+    '6.0': 33
+  isscanalwaysavailable:
+    4.4.2: 21
+    '6.0': 28
+  pingsupplicant:
+    4.4.2: 6
+    '6.0': 10
+  pollbatchedscan:
+    4.4.2: 47
+    '6.0': 53
+  reassociate:
+    4.4.2: 11
+    '6.0': 17
+  reconnect:
+    4.4.2: 10
+    '6.0': 16
+  releasemulticastlock:
+    4.4.2: 28
+    '6.0': 35
+  releasewifilock:
+    4.4.2: 24
+    '6.0': 31
+  removenetwork:
+    4.4.2: 3
+    '6.0': 7
+  reportactivityinfo:
+    '6.0': 2
+  requestbatchedscan:
+    4.4.2: 43
+    '6.0': 49
+  saveconfiguration:
+    4.4.2: 19
+    '6.0': 26
+  setallowscanswithtraffic:
+    '6.0': 59
+  setcountrycode:
+    4.4.2: 15
+    '6.0': 21
+  setfrequencyband:
+    4.4.2: 16
+    '6.0': 23
+  sethalbasedautojoinoffload:
+    '6.0': 61
+  setwifiapconfiguration:
+    4.4.2: 32
+    '6.0': 40
+  setwifiapenabled:
+    4.4.2: 29
+    '6.0': 36
+  setwifienabled:
+    4.4.2: 13
+    '6.0': 19
+  startlocationrestrictedscan:
+    '6.0': 13
+  startscan:
+    4.4.2: 7
+    '6.0': 12
+  startwifi:
+    4.4.2: 33
+    '6.0': 41
+  stopbatchedscan:
+    4.4.2: 44
+    '6.0': 50
+  stopwifi:
+    4.4.2: 34
+    '6.0': 42
+  updatewifilockworksource:
+    4.4.2: 23
+    '6.0': 30
+window:
+  '#PACKAGE_NAME+/android-4.4.2_r1': android.view.IWindowManager
+  '#PACKAGE_NAME+/android-6.0.0_r1': android.view.IWindowManager
+  '#PACKAGE_URL+/android-4.4.2_r1': https://android.googlesource.com/platform/frameworks/base/+/android-4.4.2_r1/core/java/android/view/IWindowManager.aidl
+  '#PACKAGE_URL+/android-6.0.0_r1': https://android.googlesource.com/platform/frameworks/base/+/android-6.0.0_r1/core/java/android/view/IWindowManager.aidl
+  addapptoken:
+    4.4.2: 20
+    '6.0': 21
+  addwindowtoken:
+    4.4.2: 18
+    '6.0': 19
+  clearforceddisplaydensity:
+    4.4.2: 13
+    '6.0': 13
+  clearforceddisplaysize:
+    4.4.2: 9
+    '6.0': 9
+  clearwindowcontentframestats:
+    '6.0': 78
+  closesystemdialogs:
+    4.4.2: 48
+    '6.0': 53
+  disablekeyguard:
+    4.4.2: 41
+    '6.0': 45
+  dismisskeyguard:
+    4.4.2: 47
+    '6.0': 51
+  enablescreenifneeded:
+    '6.0': 77
+  executeapptransition:
+    4.4.2: 30
+    '6.0': 34
+  exitkeyguardsecurely:
+    4.4.2: 43
+    '6.0': 47
+  freezerotation:
+    4.4.2: 61
+    '6.0': 68
+  getanimationscale:
+    4.4.2: 49
+    '6.0': 54
+  getanimationscales:
+    4.4.2: 50
+    '6.0': 55
+  getapporientation:
+    4.4.2: 23
+    '6.0': 24
+  getbasedisplaydensity:
+    4.4.2: 11
+    '6.0': 11
+  getbasedisplaysize:
+    4.4.2: 7
+    '6.0': 7
+  getcompatiblemagnificationspecforwindow:
+    4.4.2: 75
+  getcurrentanimatorscale:
+    '6.0': 58
+  getfocusedwindowtoken:
+    4.4.2: 69
+  getinitialdisplaydensity:
+    4.4.2: 10
+    '6.0': 10
+  getinitialdisplaysize:
+    4.4.2: 6
+    '6.0': 6
+  getpendingapptransition:
+    4.4.2: 26
+    '6.0': 27
+  getpreferredoptionspanelgravity:
+    4.4.2: 60
+    '6.0': 67
+  getrotation:
+    4.4.2: 57
+    '6.0': 64
+  getwindowcontentframestats:
+    '6.0': 79
+  getwindowframe:
+    4.4.2: 71
+  hasnavigationbar:
+    4.4.2: 67
+    '6.0': 74
+  inkeyguardrestrictedinputmode:
+    4.4.2: 46
+    '6.0': 50
+  inputmethodclienthasfocus:
+    4.4.2: 5
+    '6.0': 5
+  iskeyguardlocked:
+    4.4.2: 44
+    '6.0': 48
+  iskeyguardsecure:
+    4.4.2: 45
+    '6.0': 49
+  isrotationfrozen:
+    4.4.2: 63
+    '6.0': 70
+  issafemodeenabled:
+    4.4.2: 72
+    '6.0': 76
+  isviewserverrunning:
+    4.4.2: 3
+    '6.0': 3
+  keyguardgoingaway:
+    '6.0': 52
+  locknow:
+    4.4.2: 68
+    '6.0': 75
+  opensession:
+    4.4.2: 4
+    '6.0': 4
+  overridependingapptransition:
+    4.4.2: 27
+    '6.0': 28
+  overridependingapptransitionaspectscaledthumb:
+    '6.0': 32
+  overridependingapptransitionclipreveal:
+    '6.0': 30
+  overridependingapptransitioninplace:
+    '6.0': 33
+  overridependingapptransitionscaleup:
+    4.4.2: 28
+    '6.0': 29
+  overridependingapptransitionthumb:
+    4.4.2: 29
+    '6.0': 31
+  pausekeydispatching:
+    4.4.2: 15
+    '6.0': 16
+  prepareapptransition:
+    4.4.2: 25
+    '6.0': 26
+  reenablekeyguard:
+    4.4.2: 42
+    '6.0': 46
+  removeapptoken:
+    4.4.2: 36
+    '6.0': 40
+  removerotationwatcher:
+    4.4.2: 59
+    '6.0': 66
+  removewindowtoken:
+    4.4.2: 19
+    '6.0': 20
+  requestassistscreenshot:
+    '6.0': 71
+  resumekeydispatching:
+    4.4.2: 16
+    '6.0': 17
+  screenshotapplications:
+    4.4.2: 64
+    '6.0': 72
+  setanimationscale:
+    4.4.2: 51
+    '6.0': 56
+  setanimationscales:
+    4.4.2: 52
+    '6.0': 57
+  setappgroupid:
+    4.4.2: 21
+  setapporientation:
+    4.4.2: 22
+    '6.0': 23
+  setappstartingwindow:
+    4.4.2: 31
+    '6.0': 35
+  setapptask:
+    '6.0': 22
+  setappvisibility:
+    4.4.2: 33
+    '6.0': 37
+  setappwillbehidden:
+    4.4.2: 32
+    '6.0': 36
+  seteventdispatching:
+    4.4.2: 17
+    '6.0': 18
+  setfocusedapp:
+    4.4.2: 24
+    '6.0': 25
+  setforceddisplaydensity:
+    4.4.2: 12
+    '6.0': 12
+  setforceddisplayscalingmode:
+    '6.0': 14
+  setforceddisplaysize:
+    4.4.2: 8
+    '6.0': 8
+  setinputfilter:
+    4.4.2: 70
+  setintouchmode:
+    4.4.2: 53
+    '6.0': 59
+  setmagnificationcallbacks:
+    4.4.2: 73
+  setmagnificationspec:
+    4.4.2: 74
+  setnewconfiguration:
+    4.4.2: 38
+    '6.0': 42
+  setoverscan:
+    4.4.2: 14
+    '6.0': 15
+  setscreencapturedisabled:
+    '6.0': 62
+  setstrictmodevisualindicatorpreference:
+    4.4.2: 55
+    '6.0': 61
+  settouchexplorationenabled:
+    4.4.2: 76
+  showstrictmodeviolation:
+    4.4.2: 54
+    '6.0': 60
+  startappfreezingscreen:
+    4.4.2: 34
+    '6.0': 38
+  startfreezingscreen:
+    4.4.2: 39
+    '6.0': 43
+  startviewserver:
+    4.4.2: 1
+    '6.0': 1
+  statusbarvisibilitychanged:
+    4.4.2: 65
+    '6.0': 73
+  stopappfreezingscreen:
+    4.4.2: 35
+    '6.0': 39
+  stopfreezingscreen:
+    4.4.2: 40
+    '6.0': 44
+  stopviewserver:
+    4.4.2: 2
+    '6.0': 2
+  thawrotation:
+    4.4.2: 62
+    '6.0': 69
+  updateorientationfromapptokens:
+    4.4.2: 37
+    '6.0': 41
+  updaterotation:
+    4.4.2: 56
+    '6.0': 63
+  waitforwindowdrawn:
+    4.4.2: 66
+  watchrotation:
+    4.4.2: 58
+    '6.0': 65
