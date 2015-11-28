@@ -1,13 +1,19 @@
+#include <assert.h>
 #include <endian.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
 // #include <linux/diagchar.h>
 
-#define DIAG_REVEALER_VERSION "1.0.2"
+#define DIAG_REVEALER_VERSION "1.1.0"
+#define LOG_CUT_SIZE_DEFAULT (1 * 1024 * 1024)
 
+#define FIFO_MSG_TYPE_LOG 1
+#define FIFO_MSG_TYPE_START_LOG_FILE 2
+#define FIFO_MSG_TYPE_END_LOG_FILE 3
 
 #define USER_SPACE_DATA_TYPE	0x00000020
 #define CALLBACK_DATA_TYPE		0x00000080
@@ -118,12 +124,6 @@ print_hex (const char *buf, int len)
 static int
 write_commands (int fd, BinaryBuffer *pbuf_write)
 {
-	static char lte_rrc_cmd [] = {
-		0x73,0x00,0x00,0x00,0x03,0x00,0x00,0x00,0x0b,0x00,0x00,0x00,
-		0xc1,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-		0x00,0x00,0x00,0x00,0x01,0x74,0xac,0x7e
-	};
 	size_t i = 0;
 	char *p = pbuf_write->p;
 	char *send_buf = (char *) malloc(pbuf_write->len + 10);
@@ -161,25 +161,98 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 		i += len;
 	}
 
-	// int len = sizeof(lte_rrc_cmd);
-	// memcpy(send_buf + 4, lte_rrc_cmd, len);
-	// printf("Writing %d bytes of data\n", len + 4);
-	// print_hex(send_buf, len + 4);
-	// int ret = write(fd, (const void *) send_buf, len + 4);
-	// if (ret < 0) {
-	// 	perror("Error");
-	// 	return -1;
-	// }
+	return 0;
+}
 
+struct LogManagerState {
+	const char *dir;
+	int log_id;
+	FILE *log_fp;
+	size_t log_size;
+	size_t log_cut_size;
+};
+
+static void
+manager_init_state (struct LogManagerState *pstate, const char *dir, size_t log_cut_size) {
+	pstate->dir = dir;
+	pstate->log_id = -1;
+	pstate->log_fp = NULL;
+	pstate->log_size = -1;
+	pstate->log_cut_size = log_cut_size;
+}
+
+static void
+manager_get_log_name (struct LogManagerState *pstate, char *out_buf, size_t out_buf_size) {
+	assert(out_buf_size > 0);
+	size_t dir_len = strlen(pstate->dir);
+	// Remove trailing slashes
+	while (dir_len > 0 && pstate->dir[dir_len - 1] == '/') {
+		dir_len--;
+	}
+	assert(dir_len > 0);
+	assert(out_buf_size > dir_len + 100);
+	strncpy(out_buf, pstate->dir, dir_len);
+	snprintf(out_buf + dir_len, out_buf_size - dir_len - 1, "/%d.mi2log", pstate->log_id);
+	out_buf[out_buf_size - 1] = '\0';
+	return;
+}
+
+static int
+manager_start_new_log (struct LogManagerState *pstate, int fifo_fd) {
+	static char filename[1024] = {};
+	if (pstate->log_fp != NULL) {	// end the last log
+		assert(pstate->log_id >= 0);
+		manager_get_log_name(pstate, filename, sizeof(filename));
+		short fifo_msg_type = FIFO_MSG_TYPE_END_LOG_FILE;
+		short msg_len = strlen(filename);
+		// Wirte msg type to pipe
+		write(fifo_fd, &fifo_msg_type, sizeof(short));
+		// Write len of filename
+		write(fifo_fd, &msg_len, sizeof(short));
+		// Write filename of ended log to pipe
+		write(fifo_fd, filename, msg_len);
+		fclose(pstate->log_fp);
+		pstate->log_fp = NULL;
+	}
+	pstate->log_id = (pstate->log_id < 0? 0: pstate->log_id + 1);
+	manager_get_log_name(pstate, filename, sizeof(filename));
+	pstate->log_fp = fopen(filename, "wb");
+	printf("creating %s ...\n", filename);
+	if (pstate->log_fp != NULL) {
+		printf("success\n");
+		pstate->log_size = 0;
+		short fifo_msg_type = FIFO_MSG_TYPE_START_LOG_FILE;
+		short msg_len = strlen(filename);
+		// Wirte msg type to pipe
+		write(fifo_fd, &fifo_msg_type, sizeof(short));
+		// Write len of filename
+		write(fifo_fd, &msg_len, sizeof(short));
+		// Write filename of ended log to pipe
+		write(fifo_fd, filename, msg_len);
+	} else {
+		return -1;
+	}
+	return 0;
+}
+
+static int
+manager_append_log (struct LogManagerState *pstate, int fifo_fd, size_t msg_len) {
+	if (pstate->log_size + msg_len > pstate->log_cut_size) {
+		int ret = manager_start_new_log(pstate, fifo_fd);
+		if (ret < 0) {
+			return -1;
+		}
+	}
+	pstate->log_size += msg_len;
 	return 0;
 }
 
 int
 main (int argc, char **argv)
 {
-	if (argc != 3 && argc != 4) {
+	if (argc < 3 || argc > 5) {
 		printf("Version " DIAG_REVEALER_VERSION "\n");
-		printf("Usage: diag_revealer DIAG_CFG_PATH FIFO_PATH [QMDL_OUTPUT_PATH]\n");
+		printf("Usage: diag_revealer DIAG_CFG_PATH FIFO_PATH [LOG_OUTPUT_DIR] [LOG_CUT_SIZE (in MB)]\n");
         return 0;
 	}
 
@@ -257,15 +330,35 @@ main (int argc, char **argv)
 	}
 
 	int fifo_fd = open(argv[2], O_WRONLY);	// block until the other end also calls open()
-	FILE *qmdl_fp = NULL;
-	if (argc == 4) {
-		qmdl_fp = fopen(argv[3], "wb");
-		if (qmdl_fp == NULL) {
+	if (fifo_fd < 0) {
+		perror("open fifo");
+		return -8005;
+	} else {
+		printf("FIFO opened\n");
+	}
+
+	struct LogManagerState state;
+	if (argc >= 4) {
+		size_t log_cut_size = 0;
+		if (argc == 5) {
+			double size_MB = atof(argv[4]);
+			if (size_MB <= 0.0 || size_MB > 10.0) {
+				size_MB = 1.0;
+				fprintf(stderr, "log_cut_size inappropriate, reset to %.2f\n", size_MB);
+			}
+			state.log_cut_size = (size_t) (size_MB * 1024 * 1024);
+		} else {
+			log_cut_size = LOG_CUT_SIZE_DEFAULT;
+		}
+		manager_init_state(&state, argv[3], log_cut_size);
+		printf("log_cut_size = %lld\n", state.log_cut_size);
+		int ret2 = manager_start_new_log(&state, fifo_fd);
+		if (ret2 < 0 || state.log_fp == NULL) {
 			perror("open qmdl");
-			return -8005;
+			return -8006;
 		}
 	}
-	printf("Hehe\n");
+
 	while (1) {
 		int read_len = read(fd, buf_read, sizeof(buf_read));
 		if (read_len > 0) {
@@ -274,21 +367,31 @@ main (int argc, char **argv)
 				int i = 0;
 				int offset = 8;
 				for (i = 0; i < num_data; i++) {
+					short fifo_msg_type = FIFO_MSG_TYPE_LOG;
 					int msg_len;
+					short fifo_msg_len;
 					double ts = get_posix_timestamp();
 					memcpy(&msg_len, buf_read + offset, 4);
 					printf("%d %.5f\n", msg_len, ts);
-					print_hex(buf_read + offset + 4, msg_len);
-					// Write size of payload to pipe
-					write(fifo_fd, &msg_len, sizeof(int));
+					// print_hex(buf_read + offset + 4, msg_len);
+					// Wirte msg type to pipe
+					write(fifo_fd, &fifo_msg_type, sizeof(short));
+					// Write size of (payload + timestamp)
+					fifo_msg_len = (short) msg_len + 8;
+					write(fifo_fd, &fifo_msg_len, sizeof(short));
 					// Write timestamp of sending payload to pipe
 					write(fifo_fd, &ts, sizeof(double));
 					// Write payload to pipe
 					write(fifo_fd, buf_read + offset + 4, msg_len);
 					// Write qmdl output if necessary
-					if (qmdl_fp != NULL) {
-						fwrite(buf_read + offset + 4, sizeof(char), msg_len, qmdl_fp);
-						fflush(qmdl_fp);
+					if (state.log_fp != NULL) {
+						int ret2 = manager_append_log(&state, fifo_fd, msg_len);
+						if (ret2 == 0) {
+							fwrite(buf_read + offset + 4, sizeof(char), msg_len, state.log_fp);
+							fflush(state.log_fp);
+						} else {
+							// TODO: error handling
+						}
 					}
 					offset += msg_len + 4;
 				}
