@@ -94,7 +94,6 @@ class SwitchExec:
         if target is None:
             return
 
-        # TODO: run decision fault check and prevent unecessary switch
         #TODO: perform the switch until the device is idle
         self.set_carrier(target[0])
         self.set_network_type(target[1])

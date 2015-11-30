@@ -15,6 +15,8 @@ import thread
 import os
 
 class PlmnMonitor:
+
+    # TODO: run decision fault check and prevent unecessary switch
     
     def __init__(self, at_serial_port):
         self.bplmn = BplmnSearch(at_serial_port)

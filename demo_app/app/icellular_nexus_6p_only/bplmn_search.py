@@ -62,8 +62,6 @@ class BplmnSearch:
 
         self.last_update_time = time.time()
 
-        # Zengwen's commment:
-        # what are these lines doing? regex search??
         token1 = '+COPS: '
         token2 = 'OK'
         index1 = at_res.find(token1)
