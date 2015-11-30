@@ -7,7 +7,7 @@ title = MobileInsight2
 package.name = mobile_insight2
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.ucla.wing
+package.domain = edu.ucla.cs.wing
 
 # (str) Source code where the main.py live
 source.dir = .
