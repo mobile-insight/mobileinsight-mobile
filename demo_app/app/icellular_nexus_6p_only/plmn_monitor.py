@@ -8,7 +8,6 @@ A background monitor to get all necessary information for the decision
 Author: Yuanjie Li
 """
 
-
 from bplmn_search import *
 
 import thread
