@@ -23,7 +23,6 @@ class SwitchExec:
         """
         return os.popen("su -c " + cmd).read()
 
-
     def run_secret_code(self,code):
         """
             Dial a secret code in Android
@@ -42,7 +41,6 @@ class SwitchExec:
         # print "Current network type: ",str(int(res[31],16))
         return int(res[31], 16)
 
-
     def set_network_type(self, network_type):
 
         """
@@ -55,7 +53,6 @@ class SwitchExec:
             #Nexus 6P only: setPreferredNetworkType=87
             self.run_shell_cmd("service call phone 87 i32 " + str(network_type))
             print "Current network type", self.get_network_type(), " switch to network type ", network_type
-        
 
     def set_carrier(self, carrier_type):
 
@@ -96,6 +93,8 @@ class SwitchExec:
         """
         if target is None:
             return
+
+        # TODO: run decision fault check and prevent unecessary switch
         #TODO: perform the switch until the device is idle
         self.set_carrier(target[0])
         self.set_network_type(target[1])

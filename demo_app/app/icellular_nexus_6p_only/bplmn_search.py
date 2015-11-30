@@ -114,6 +114,21 @@ class BplmnSearch:
 
 
 if __name__ == "__main__":
+
+    '''
+    Sample output:
+    11-28 16:51:20.222 1448758280.22 BPLMN-search 2 Project Fi "310260" 7 1448758280.22
+    11-28 16:51:20.223 1448758280.22 BPLMN-search 1 Project Fi "310260" 2 1448758280.22
+    11-28 16:51:20.224 1448758280.22 BPLMN-search 1 Project Fi "310260" 0 1448758280.22
+    11-28 16:51:20.225 1448758280.22 BPLMN-search 1 Project Fi "311480" 7 1448758280.22
+    11-28 16:51:20.225 1448758280.23 BPLMN-search 1 Project Fi "310410" 7 1448758280.22
+    11-28 16:51:20.226 1448758280.23 BPLMN-search 1 Project Fi "310410" 2 1448758280.22
+    11-28 16:51:20.227 1448758280.23 BPLMN-search 1 Project Fi "310410" 0 1448758280.22
+    11-28 16:51:20.228 1448758280.23 BPLMN-search 0  3 4 1448758280.22
+    11-28 16:51:21.390 BPLMN searching...
+    11-28 16:51:22.867 BPLMN searching...
+
+    '''
     # bplmn_search = BplmnSearch("/dev/smd11")
     bplmn_search = BplmnSearch(at_serial_port)
     bplmn_search.run()
