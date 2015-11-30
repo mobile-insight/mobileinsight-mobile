@@ -44,4 +44,5 @@ class PlmnMonitor:
         return (float(last_known_gps[0]),float(last_known_gps[1]))
 
     def run(self):
-        thread.start_new_thread(self.bplmn.run,())
+        # should pass the param msg?
+        thread.start_new_thread(self.bplmn.run,(msg))

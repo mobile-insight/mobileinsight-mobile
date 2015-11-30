@@ -32,6 +32,9 @@ log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")
 src.set_log_directory(log_directory)
 
 src.enable_log("LTE_RRC_OTA_Packet")
+src.enable_log("LTE_NAS_EMM_Plain_OTA_Outgoing_Message")
+
+
 src.enable_log("WCDMA_Signaling_Messages")
 src.enable_log(["UMTS_NAS_MM_State", "LTE_NAS_EMM_State", "UMTS_NAS_OTA"])
 src.enable_log(["LTE_LL1_PDSCH_Demapper_Configuration",
@@ -46,7 +49,7 @@ src.enable_log(["LTE_LL1_PDSCH_Demapper_Configuration",
 
 # TODO: support fault decision prevention
 # we should filter the unqualified network type in the returned result.
-# case I (Forbidden access) -- find in RRC SIB, indicated by access_baring_option == True
+# case I (Forbidden access) -- find in RRC SIB, indicated by access_baring_option == True [finished at 050d8ef1 (untested)]
 # case II (Switch to carriers with incomplete service) -- find in TAU, to see if it is CS-only or CS-preferred
 # case III (Incoordination with carrier’s mobility rules) -- use the cell reselection rule to decide whether a switch choice is a stable state or not
 plmn_select_monitor.set_source(src)
