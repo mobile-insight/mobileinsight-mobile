@@ -8,13 +8,14 @@ A background monitor to get all necessary information for the decision
 Author: Yuanjie Li
 """
 
-
 from bplmn_search import *
 
 import thread
 import os
 
 class PlmnMonitor:
+
+    # TODO: run decision fault check and prevent unecessary switch
     
     def __init__(self, at_serial_port):
         self.bplmn = BplmnSearch(at_serial_port)
@@ -43,4 +44,5 @@ class PlmnMonitor:
         return (float(last_known_gps[0]),float(last_known_gps[1]))
 
     def run(self):
-        thread.start_new_thread(self.bplmn.run,())
+        # should pass the param msg?
+        thread.start_new_thread(self.bplmn.run,(msg))

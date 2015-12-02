@@ -20,6 +20,37 @@ def get_cache_dir():
     return str(service_context.getCacheDir().getAbsolutePath())
 
 try:
+    # TODO: change the QmdlMonitor to the DevDiagMonitor
+    # lte_lvl1 = ["LTE_RRC_OTA_Packet",
+    #             "LTE_RRC_Serv_Cell_Info_Log_Packet",
+    #             "LTE_NAS_ESM_Plain_OTA_Incoming_Message",
+    #             "LTE_NAS_ESM_Plain_OTA_Outgoing_Message",
+    #             "LTE_NAS_EMM_Plain_OTA_Incoming_Message",
+    #             "LTE_NAS_EMM_Plain_OTA_Outgoing_Message",
+    #             "LTE_NAS_EMM_State",
+    #             ]
+    # lte_lvl2 = ["LTE_ML1_Connected_Mode_LTE_Intra_Freq_Meas_Results",
+    #             "LTE_ML1_IRAT_Measurement_Request",
+    #             "LTE_ML1_Serving_Cell_Measurement_Result",
+    #             "LTE_ML1_Connected_Mode_Neighbor_Meas_Req_Resp",
+    #             "LTE_LL1_PDSCH_Demapper_Configuration",
+    #             ]
+    # lte_lvl3 = ["LTE_PDCP_DL_SRB_Integrity_Data_PDU", 
+    #             "LTE_PDCP_UL_SRB_Integrity_Data_PDU", 
+    #             # "LTE_MAC_Configuration", 
+    #             "LTE_MAC_UL_Transport_Block",
+    #             "LTE_MAC_DL_Transport_Block",
+    #             ]
+    # fifo_path = os.path.join(get_cache_dir(), "diag_revealer_fifo")
+    # src = AndroidDevDiagMonitor({   "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+    #                                 "libwireshark_path": "/system/lib",
+    #                                 # "libwireshark_path": "/sdcard/ws_dissector",
+    #                                 "diag_revealer_executable_path": "/system/bin/diag_revealer",
+    #                                 "diag_revealer_fifo_path": fifo_path,
+    #                                 })
+    # src.enable_log(lte_lvl1 + lte_lvl2 + lte_lvl3)
+    # src.set_skip_decoding(False)
+
     src = AndroidQmdlMonitor({  "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
                                 "libwireshark_path": "/system/lib"})
     log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")
