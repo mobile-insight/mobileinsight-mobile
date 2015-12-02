@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# Filename: main.mi2app
+
 import errno
 import os
 import stat
@@ -6,7 +9,7 @@ import traceback
 import mobile_insight
 from mobile_insight.monitor import AndroidDevDiagMonitor, QmdlReplayer
 from mobile_insight.analyzer import MsgLogger
-from mi2app_utils import get_cache_dir
+from mi2app_utils import get_cache_dir, get_phone_model
 
 from realtime_analyzer import RealtimeAnalyzer
 
@@ -39,22 +42,35 @@ try:
                 ]
 
     fifo_path = os.path.join(get_cache_dir(), "diag_revealer_fifo")
+
+    if get_phone_model() == "LGLS660":  # LG Tribute
+        libwireshark_path = "/sdcard/ws_dissector"
+    else:
+        libwireshark_path = "/system/lib"
     src = AndroidDevDiagMonitor({   "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
-                                    "libwireshark_path": "/system/lib",
-                                    # "libwireshark_path": "/sdcard/ws_dissector",
+                                    "libwireshark_path": libwireshark_path,
                                     "diag_revealer_executable_path": "/system/bin/diag_revealer",
                                     "diag_revealer_fifo_path": fifo_path,
                                     })
-    src.enable_log(lte_lvl1 + lte_lvl2 + lte_lvl3)
+    src.enable_log(lte_lvl1 + lte_lvl2)
     src.set_skip_decoding(False)
+    if get_phone_model() == "LGLS660":
+        src.set_log_directory("/storage/external_SD/mobile_insight2/logs")
+    else:
+        src.set_log_directory(os.path.join(get_cache_dir(), "logs"))
+    src.set_log_cut_size(5.0)
 
     # directory = "/sdcard/decode_test"
     # logs = sorted(os.listdir(directory))
 
     # src = QmdlReplayer({"ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
     #                     "libwireshark_path": "/system/lib",})
-    #                     # "libwireshark_path": "/sdcard/ws_dissector",})
+    #                     # "libwireshark_path": "/sdcard/ws_dissector",})  # for LG
     l = RealtimeAnalyzer()
+    if get_phone_model() == "LGLS660":
+        l.set_log_directory("/storage/external_SD/mobile_insight2")
+    else:
+        l.set_log_directory(get_cache_dir())
 
     # i = 0
     # for f in logs:
