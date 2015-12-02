@@ -346,12 +346,12 @@ main (int argc, char **argv)
 				size_MB = 1.0;
 				fprintf(stderr, "log_cut_size inappropriate, reset to %.2f\n", size_MB);
 			}
-			state.log_cut_size = (size_t) (size_MB * 1024 * 1024);
+			log_cut_size = (size_t) (size_MB * 1024 * 1024);
 		} else {
 			log_cut_size = LOG_CUT_SIZE_DEFAULT;
 		}
 		manager_init_state(&state, argv[3], log_cut_size);
-		printf("log_cut_size = %lld\n", state.log_cut_size);
+		printf("log_cut_size = %lld\n", log_cut_size);
 		int ret2 = manager_start_new_log(&state, fifo_fd);
 		if (ret2 < 0 || state.log_fp == NULL) {
 			perror("open qmdl");
