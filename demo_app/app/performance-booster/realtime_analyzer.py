@@ -61,6 +61,7 @@ class RealtimeAnalyzer(Analyzer):
         Analyzer.__init__(self)
 
         self.add_source_callback(self._callback)
+        self._log_directory = mi2app_utils.get_cache_dir()
         self._run_timestamp_calibration = False
         self._reference_ts_android = None
         self._reference_ts_dm = None
@@ -74,6 +75,9 @@ class RealtimeAnalyzer(Analyzer):
         self._latency = []
         with open(self._get_lantency_log_filename(), "w") as fd:
             pass
+
+    def set_log_directory(self, d):
+        self._log_directory = d
 
     def enable_flight_mode_test(self):
         self._run_flight_mode_test = True
@@ -93,7 +97,7 @@ class RealtimeAnalyzer(Analyzer):
             print "First Android timestamp:", self._reference_ts_android
 
     def _get_lantency_log_filename(self):
-        return os.path.join(mi2app_utils.get_cache_dir(), "latency.txt")
+        return os.path.join(self._log_directory, "latency.txt")
 
     def _calibrate_timestamp(self):
         script = """echo -e 'AT+CCLK="11/11/11,00:00:00"\\r\\n' > /dev/smd0"""
@@ -115,8 +119,8 @@ class RealtimeAnalyzer(Analyzer):
             self._thread_running = True
 
         if msg.type_id == "new_qmdl_file":
-            print "End of %s" % msg.data
-            self._latency.append( (-666.0, -666.0, -666.0, msg.type_id) )
+            # self._latency.append( (-666.0, -666.0, -666.0, msg.type_id) )
+            pass
 
         else:
             log_item = msg.data.decode()
@@ -146,7 +150,7 @@ class RealtimeAnalyzer(Analyzer):
             else:
                 self._latency.append( (t1, t3, t4, t3 - t1, t4 - t3, log_item["log_msg_len"], msg.type_id) )
 
-            if (self._i % 1) == 0:
+            if (self._i % 5) == 0:
                 nt = len(self._latency[-1]) - 2
                 print ("%.3f " * nt + "%d-byte %s") % self._latency[-1]
                 with open(self._get_lantency_log_filename(), "a") as fd:

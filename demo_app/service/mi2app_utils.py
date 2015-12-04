@@ -7,6 +7,8 @@ Define utility variables and functions for apps.
 __all__ = [ "get_service_context",
             "get_cache_dir",
             "get_files_dir",
+            "get_phone_manufacturer",
+            "get_phone_model",
             "run_shell_cmd",
             ]
 
@@ -15,6 +17,7 @@ from jnius import autoclass
 import subprocess
 
 service_context = autoclass('org.renpy.android.PythonService').mService
+android_os_build = autoclass("android.os.Build")
 
 def get_service_context():
     return service_context
@@ -24,6 +27,12 @@ def get_cache_dir():
 
 def get_files_dir():
     return str(service_context.getFilesDir().getAbsolutePath())
+
+def get_phone_manufacturer():
+    return android_os_build.MANUFACTURER
+
+def get_phone_model():
+    return android_os_build.MODEL
 
 def run_shell_cmd(cmd, wait=False):
     ANDROID_SHELL = "/system/bin/sh"
