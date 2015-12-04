@@ -5,6 +5,7 @@
 A background PLMN search module. Help reduce unavailability PLMN search overhead
 
 Author: Yuanjie Li
+        Zengwen Yuan
 """
 
 import time
@@ -475,6 +476,9 @@ class BplmnSearch(Analyzer):
             # detect network accessibility
             self.__is_network_unavailable(xml_msg)
 
+            # detect neighbor cell id (RAT type) and signal strength
+            self.__get_meas_report(xml_msg)
+
             # Raise event to other analyzers
             # e = Event(timeit.default_timer(),self.__class__.__name__,"")
             # self.send(e)
@@ -547,6 +551,27 @@ class BplmnSearch(Analyzer):
             # self.logger.info(self.__status.dump())
             self.__status.mcc_mnc = str(self.__status.mcc + self.__status.mnc)
             # pass
+
+    def __get_meas_report(self, msg):
+        """
+
+        """
+        # Sample
+        if field.get('name') == "lte-rrc.c1":
+            for val in field.iter('field'):
+                if field.get('name') == "lte-rrc.measResultPCell_element":
+                    for val in field.iter('field'):
+                        if val.get('name') == "lte-rrc.rsrpResult":
+                            self.current_cell_rsrp = val.get('show') - 140 # 4G cell
+
+                # TODO: did not finished here
+                if field.get('name') == "lte-rrc.measResultNeighCells":
+                    for val in field.iter('field'):
+                        if val.get('name') == "lte-rrc.MeasResultEUTRA_element":
+                            name="lte-rrc.physCellId"
+                        if val.get('name') == "lte-rrc.rsrpResult":
+                            self.current_cell_rsrp = val.get('show') - 140 # 4G cell
+
 
     def __is_network_unavailable(self, msg):
         """
