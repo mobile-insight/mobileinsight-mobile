@@ -14,17 +14,15 @@ import threading
 
 from at_cmd import * 
 
-
 try: 
     import xml.etree.cElementTree as ET 
 except ImportError: 
     import xml.etree.ElementTree as ET
-from analyzer import *
-from protocol_analyzer import *
+from mobile_insight.analyzer import *
+from mobile_insight.protocol_analyzer import *
 import timeit
-import time
 
-from profile import Profile, ProfileHierarchy
+# from mobile_insight.profile import Profile, ProfileHierarchy
 
 #ESM session connection state
 esm_state={0:"disconnected",1:"connected"}
