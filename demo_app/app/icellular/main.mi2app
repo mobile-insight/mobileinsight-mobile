@@ -95,5 +95,7 @@ while True:
     plmn_select_monitor.bplmn.run_once()
     target1 = naive_decision.make_decision()  #default decision
 
+    printf("current decision target, carreier = " + target1[0] + "network type = " + target1[1])
+
     # TODO: support fault decision prevention inside this func call
     switch.switch_to(target1)
