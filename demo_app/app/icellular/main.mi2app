@@ -61,7 +61,7 @@ src.enable_log(["LTE_LL1_PDSCH_Demapper_Configuration",
 # we should filter the unqualified network type in the returned result.
 # case I (Forbidden access) -- find in RRC SIB, indicated by access_baring_option == True [finished at 050d8ef1 (untested)]
 # case II (Switch to carriers with incomplete service) -- find in TAU, to see if it is CS-only or CS-preferred
-# case III (Incoordination with carrier’s mobility rules) -- use the cell reselection rule to decide whether a switch choice is a stable state or not
+# case III (Incoordination with carrier's mobility rules) -- use the cell reselection rule to decide whether a switch choice is a stable state or not
 plmn_select_monitor.set_source(src)
 plmn_select_monitor.set_log(logDir + "plmn_select_monitor-test.txt")
 
