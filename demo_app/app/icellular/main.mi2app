@@ -47,6 +47,16 @@ src.enable_log(["LTE_LL1_PDSCH_Demapper_Configuration",
 # step1, set the search preference (network pref)
 # step2, once the monitor finds out current search reaches AT&T, stop the search
 
+# Design plan:
+# (1) check TS 27.007, use the AT command
+# AT+CPLS
+# parameter 0 -> user controlled PLMN connection
+# (2) check TS 31.102, use the AT command (sec 4.2.5 Page 20)
+# AT+CRSM=176 -- read binary
+# (3) check TS 51.011, for the parameters for the AT command CRSM
+# (4) call the AT command AT+COPS to switch to the carrier (as in at_cmd.py)
+
+
 # TODO: support fault decision prevention
 # we should filter the unqualified network type in the returned result.
 # case I (Forbidden access) -- find in RRC SIB, indicated by access_baring_option == True [finished at 050d8ef1 (untested)]
@@ -84,6 +94,8 @@ while True:
 	# TODO: set the search preference (network pref) in run_once() or run()
     plmn_select_monitor.bplmn.run_once()
     target1 = naive_decision.make_decision()  #default decision
+
+    printf("current decision target, carreier = " + target1[0] + "network type = " + target1[1])
 
     # TODO: support fault decision prevention inside this func call
     switch.switch_to(target1)

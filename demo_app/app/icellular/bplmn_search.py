@@ -5,6 +5,7 @@
 A background PLMN search module. Help reduce unavailability PLMN search overhead
 
 Author: Yuanjie Li
+        Zengwen Yuan
 """
 
 import time
@@ -270,6 +271,13 @@ class BplmnSearch(Analyzer):
 
         self.current_network_inaccessible = False
         self.voice_domain_pref_for_eutran = None
+        self.wcdma_available = False # for case II decision part
+
+        # TODO: call other analyzer to parse the msg
+        # self.include_analyzer("WcdmaRrcAnalyzer",[self.__on_wcdma_rrc_msg])
+        # self.include_analyzer("LteRrcAnalyzer",[self.__on_lte_rrc_msg])
+        # self.include_analyzer("LteNasAnalyzer",[self.__on_lte_nas_msg])
+        # self.include_analyzer("UmtsNasAnalyzer",[self.__on_umts_nas_msg])
 
         Analyzer.__init__(self)
         self.add_source_callback(self.__rrc_filter)
@@ -309,10 +317,10 @@ class BplmnSearch(Analyzer):
             #Convert msg to xml format
             # log_xml = ET.fromstring(log_item_dict['Msg'])
             log_xml = ET.XML(log_item_dict['Msg'])
-            xml_msg = Event(msg.timestamp,msg.type_id,log_xml)
+            xml_msg = Event(msg.timestamp, msg.type_id, log_xml)
 
             # check if CSFB will fail
-            self.__is_network_unavailable(xml_msg)
+            self.__voice_preferred_csfb(xml_msg)
 
             # get the QoS latency and guaranteed bitrate
             if msg.type_id == "UMTS_NAS_OTA":
@@ -402,7 +410,6 @@ class BplmnSearch(Analyzer):
                 # self.__mm_nas_status.qos_negotiated.guaranteed_bitrate_ulink_ext = max_bitrate_ext(int(field_val['gsm_a.gm.sm.qos.guar_bitrate_upl_ext']))
                 self.__mm_nas_status.qos_negotiated.guaranteed_bitrate_dlink_ext = max_bitrate_ext(int(field_val['gsm_a.gm.sm.qos.guar_bitrate_downl_ext']))
 
-
     def __callback_esm(self, msg):
         """
         Extract ESM status and configurations from the NAS messages
@@ -474,6 +481,9 @@ class BplmnSearch(Analyzer):
 
             # detect network accessibility
             self.__is_network_unavailable(xml_msg)
+
+            # detect neighbor cell id (RAT type) and signal strength
+            # self.__get_meas_report(xml_msg)
 
             # Raise event to other analyzers
             # e = Event(timeit.default_timer(),self.__class__.__name__,"")
@@ -548,9 +558,51 @@ class BplmnSearch(Analyzer):
             self.__status.mcc_mnc = str(self.__status.mcc + self.__status.mnc)
             # pass
 
+    def __get_meas_report(self, msg):
+        """
+        get the signal strength measurement report to prevent fault decision
+
+        """
+        # Sample
+
+        # <field name="lte-rrc.measIdToAddModList" pos="57" show="2" showname="measIdToAddModList: 2 items" size="4" value="20000200">
+        #   <field name="" pos="57" show="Item 0" size="2" value="2000">
+        #     <field name="lte-rrc.MeasIdToAddMod_element" pos="57" show="" showname="MeasIdToAddMod" size="2" value="">
+        #       <field name="lte-rrc.measId" pos="57" show="1" showname="measId: 1" size="1" value="20" />
+        #       <field name="lte-rrc.measObjectId" pos="58" show="1" showname="measObjectId: 1" size="1" value="00" />
+        #       <field name="lte-rrc.reportConfigId" pos="58" show="1" showname="reportConfigId: 1" size="1" value="00" />
+        #     </field>
+        #   </field>
+        #   <field name="" pos="59" show="Item 1" size="2" value="0200">
+        #     <field name="lte-rrc.MeasIdToAddMod_element" pos="59" show="" showname="MeasIdToAddMod" size="2" value="">
+        #       <field name="lte-rrc.measId" pos="59" show="2" showname="measId: 2" size="1" value="02" />
+        #       <field name="lte-rrc.measObjectId" pos="59" show="1" showname="measObjectId: 1" size="1" value="02" />
+        #       <field name="lte-rrc.reportConfigId" pos="60" show="2" showname="reportConfigId: 2" size="1" value="00" />
+        #     </field>
+        #   </field>
+        # </field>
+
+
+        # 12/05 Change to the optional solution -- check the return list of the bplmn search
+
+        # if field.get('name') == "lte-rrc.c1":
+        #     for val in field.iter('field'):
+        #         if field.get('name') == "lte-rrc.measResultPCell_element":
+        #             for val in field.iter('field'):
+        #                 if val.get('name') == "lte-rrc.rsrpResult":
+        #                     self.current_cell_rsrp = val.get('show') - 140 # 4G cell
+
+        #         # TODO: did not finished here
+        #         if field.get('name') == "lte-rrc.measResultNeighCells":
+        #             for val in field.iter('field'):
+        #                 if val.get('name') == "lte-rrc.MeasResultEUTRA_element":
+        #                     name="lte-rrc.physCellId"
+        #                 if val.get('name') == "lte-rrc.rsrpResult":
+        #                     self.current_cell_rsrp = val.get('show') - 140 # 4G cell
+
     def __is_network_unavailable(self, msg):
         """
-        The background monitor detects the current scanned result is an unavailable network
+        The background monitor detects whether the current scanned result is an unavailable network or not
         """
         for field in msg.data.iter('field'):
 
@@ -569,11 +621,30 @@ class BplmnSearch(Analyzer):
             # for LTE NAS message
             if "Voice domain preference" in field.get('show'):
                 for val in field.iter('field'):
-                    if val.get('name') == 'gsm_a.gm.gmm.voice_domain_pref_for_eutran':
-                        self.voice_domain_pref_for_eutran = val.get('show')
+                    if val.get('name') == 'gsm_a.gm.gmm.voice_domain_pref_for_eutran' and (("CS Voice only" or "prefer CS Voice") in val.get('show')):
+                        self.voice_domain_pref_for_eutran = True
                         break
-                if False#some condition (maybe CS Voice only) that will made the CSFB fail:
-                    self.current_network_inaccessible = True
+                # if False#some condition (maybe CS Voice only) that will made the CSFB fail:
+                #     self.current_network_inaccessible = True
+
+            # case III
+            # TODO - need support of measurement report
+            if field.get('name') == "lte-rrc.sib3_element":
+
+    def __voice_preferred_csfb(self, msg):
+        """
+        The background monitor detects whether required CSFB is CS only or CS preferred
+        """
+        # case II (Switch to carriers with incomplete service) -- find in TAU, to see if it is CS-only or CS-preferred
+        # for LTE NAS message
+        for field in msg.data.iter('field'):
+            if "Voice domain preference" in field.get('show'):
+                for val in field.iter('field'):
+                    if val.get('name') == 'gsm_a.gm.gmm.voice_domain_pref_for_eutran' and (("CS Voice only" or "prefer CS Voice") in val.get('show')):
+                        self.voice_domain_pref_for_eutran = True
+                        break
+                # if False#some condition (maybe CS Voice only) that will made the CSFB fail:
+                #     self.current_network_inaccessible = True
 
     def parse_bplmn_res(self, at_res):
 
@@ -589,6 +660,8 @@ class BplmnSearch(Analyzer):
         # Reset data base
         # self.bplmn_database = {}
         # self.last_update_time = -1
+
+        self.wcdma_available = False
 
         self.last_update_time = time.time()
 
@@ -608,8 +681,16 @@ class BplmnSearch(Analyzer):
 
             if len(item) >= 5:
                 # after update, if this item's last_update_time != self.last_update_time, it is outdated
-                self.bplmn_database[item[1][1:-1]] = BplmnItem(item[0],item[1][1:-1],item[3],item[4],self.last_update_time)
-                print time.time(),"BPLMN-search",item[0],item[1][1:-1],item[3],item[4],self.last_update_time
+                if item[0] == 2 or item[0] == 0: # scanned cell type is NETWORK_MODE_WCDMA_PREF = 0 or NETWORK_MODE_WCDMA_ONLY = 2
+                    self.wcdma_available = True
+
+                # case II -- check CSFB
+                # needs CS Voice CSFB, but currently no wcdma cell available
+                if self.voice_domain_pref_for_eutran == True and self.wcdma_available == False:
+                    continue
+                else:
+                    self.bplmn_database[item[1][1:-1]] = BplmnItem(item[0],item[1][1:-1],item[3],item[4],self.last_update_time)
+                    print time.time(),"BPLMN-search",item[0],item[1][1:-1],item[3],item[4],self.last_update_time
             
             tmp = tmp[index4+2:]
 
@@ -630,7 +711,6 @@ class BplmnSearch(Analyzer):
         # only parse the current result if the network access is not barred
         if (!self.current_network_inaccessible):
             self.parse_bplmn_res(at_res)
-
 
     def run(self):
 
