@@ -627,7 +627,7 @@ class BplmnSearch(Analyzer):
 
             # case III
             # TODO - need support of measurement report
-            if field.get('name') == "lte-rrc.sib3_element":
+            # if field.get('name') == "lte-rrc.sib3_element":
 
     def __voice_preferred_csfb(self, msg):
         """
@@ -707,7 +707,7 @@ class BplmnSearch(Analyzer):
         at_res = self.at_cmd.run_cmd("AT+COPS=?")
 
         # only parse the current result if the network access is not barred
-        if (!self.current_network_inaccessible):
+        if (self.current_network_inaccessible == False):
             self.parse_bplmn_res(at_res)
 
     def run(self):
