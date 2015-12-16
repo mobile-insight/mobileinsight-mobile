@@ -66,13 +66,18 @@ try:
     # try to read the config file
     try:
         cfg = open(cfg_log_collection_file, 'r')
-        for line in cfg:
-            if '#' in line:
-                continue
-            else:
-                src.enable_log(line)
-                print "config_log -- src.enable_log(" + line + ")"
-    else:
+        lines = cfg.read().splitlines()
+
+        for line in lines:
+            if line.rstrip('\n'):
+                if '#' in line:
+                    continue
+                else:
+                    print "config_log -- src.enable_log(" + line + ")"
+                    src.enable_log(line)
+        cfg.close()
+    except:
+        print "config file open failed, use default logs"
         src.enable_log("LTE_RRC_OTA_Packet")
         src.enable_log(["UMTS_NAS_MM_State",  "LTE_NAS_EMM_State", "UMTS_NAS_OTA"])
         src.enable_log(["LTE_LL1_PDSCH_Demapper_Configuration",
