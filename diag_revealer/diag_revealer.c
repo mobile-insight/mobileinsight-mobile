@@ -1,3 +1,24 @@
+/* diag_revealer.c
+ * Author: Jiayao Li
+ * Read diagnostic message from Android's /dev/diag device. Messages are output
+ * using a Linux FIFO pipe.
+ */
+
+/* This program writes to FIFO using a special packet format:
+ *    type: 2-byte integer. Can be one of the following values:
+ *      1: LOG
+ *      2: START_LOG_FILE, indicating the creation of a new log file.
+ *      3: END_LOG_FILE, indicating the end of a log file.
+ *    length: 2-byte integer. The total number of bytes in this packet
+ *      (excluding the type field).
+ * If "type" is LOG, there are two other fields:
+ *    timestamp: 8-byte double float number. A POSIX timestamp representing
+ *      when this log is received from the device.
+ *    payload: byte stream of variable length.
+ * Otherwise, "type" contains only one field:
+ *    filename: the related log file's name
+ */
+
 #include <assert.h>
 #include <endian.h>
 #include <fcntl.h>
@@ -8,7 +29,9 @@
 #include <sys/time.h>
 // #include <linux/diagchar.h>
 
+// NOTE: the following number should be updated every time.
 #define DIAG_REVEALER_VERSION "1.1.0"
+
 #define LOG_CUT_SIZE_DEFAULT (1 * 1024 * 1024)
 
 #define FIFO_MSG_TYPE_LOG 1
@@ -68,6 +91,8 @@ get_posix_timestamp () {
     return (double)(tv.tv_sec) + (double)(tv.tv_usec) / 1.0e6;
 }
 
+// Read the content of config file.
+// If failed, an empty buffer is returned.
 static BinaryBuffer
 read_diag_cfg (const char *filename)
 {
@@ -121,6 +146,7 @@ print_hex (const char *buf, int len)
 		printf("\n");
 }
 
+// Write commands to /dev/diag device.
 static int
 write_commands (int fd, BinaryBuffer *pbuf_write)
 {
@@ -164,12 +190,13 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 	return 0;
 }
 
+// Manage the output of logs.
 struct LogManagerState {
 	const char *dir;
-	int log_id;
-	FILE *log_fp;
-	size_t log_size;
-	size_t log_cut_size;
+	int log_id;		// ID of the current log.
+	FILE *log_fp;	// Point to the current log.
+	size_t log_size;	// Number of bytes in the current log.
+	size_t log_cut_size;	// Max number of bytes for each log.
 };
 
 static void
@@ -235,6 +262,8 @@ manager_start_new_log (struct LogManagerState *pstate, int fifo_fd) {
 	return 0;
 }
 
+// When appending new data to logs, call this function to maintain states.
+// If the size of the current log exceeds log_cut_size, a new log file is created.
 static int
 manager_append_log (struct LogManagerState *pstate, int fifo_fd, size_t msg_len) {
 	if (pstate->log_size + msg_len > pstate->log_cut_size) {
@@ -256,6 +285,7 @@ main (int argc, char **argv)
         return 0;
 	}
 
+	// Read config file
 	BinaryBuffer buf_write = read_diag_cfg(argv[1]);
 	if (buf_write.p == NULL || buf_write.len == 0) {
 		return -8001;
@@ -268,6 +298,7 @@ main (int argc, char **argv)
 		return -8002;
 	}
 
+	// Change device's mode
 	int mode = CALLBACK_MODE;
 	// int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
 	int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
@@ -310,6 +341,7 @@ main (int argc, char **argv)
 	// 		perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_DRAIN");
 	// }
 
+	// Some testing code
 	{
 		struct real_time_query_t ioarg;
 		ioarg.real_time = -666;
@@ -320,6 +352,7 @@ main (int argc, char **argv)
 		printf ("real_time = %d\n", ioarg.real_time);
 	}
 
+	// Write commands to /dev/diag device to enable log collecting.
 	printf("Before write_commands\n");
 	ret = write_commands(fd, &buf_write);
 	printf("After write_commands\n");
@@ -329,6 +362,7 @@ main (int argc, char **argv)
 		return -8004;
 	}
 
+	// Messages are output to this FIFO pipe
 	int fifo_fd = open(argv[2], O_WRONLY);	// block until the other end also calls open()
 	if (fifo_fd < 0) {
 		perror("open fifo");
