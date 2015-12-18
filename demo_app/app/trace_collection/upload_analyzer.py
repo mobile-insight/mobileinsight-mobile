@@ -222,17 +222,10 @@ class UploadAnalyzer(Analyzer):
         # proc.wait()
         # print "file copied to sdcard"
 
-<<<<<<< HEAD
         # deletecmd = "su -c rm " + self.__original_filename
         # proc = subprocess.Popen(deletecmd, executable = ANDROID_SHELL, shell = True)
         # proc.wait()
         # print "temporary log deleted"
-=======
-        deletecmd = "su -c rm " + self.__original_filename
-        proc = subprocess.Popen(deletecmd, executable = ANDROID_SHELL, shell = True)
-        proc.wait()
-        print "temporary log deleted"
->>>>>>> c83469ff1ec84d2f74e4dd7f9495ed991ce772a0
         
         return uploadfileabsname
 
