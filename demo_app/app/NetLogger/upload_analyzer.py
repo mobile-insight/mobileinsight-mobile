@@ -204,37 +204,34 @@ class UploadAnalyzer(Analyzer):
         Rename log file's name to fit in server's parser
         format: diag_log_<timestamp>_<deviceID>_<manufacturer>-<model>_<operator>.mi2log
         """
-
         cmd = "su -c getprop"
         uploaddir = "/sdcard/mobile_insight_log"
-        # print "uploaddir = " + uploaddir
 
         if not os.path.exists(uploaddir):
             os.makedirs(uploaddir)
 
         qmdlfilebasename = os.path.basename(self.__original_filename)
         qmdlfiledirname = os.path.dirname(self.__original_filename)
-        # uploadfilebasename = qmdlfilebasename.split('.')[0] + '_' + self.__get_phone_info() + '.mi2log'
         uploadfilebasename = "diag_log_" + self.__log_timestamp + '_' + self.__get_phone_info() + '.mi2log'
         uploadfileabsname = os.path.join(uploaddir + '/' + uploadfilebasename)
 
-        print "original filename = " + self.__original_filename
-        print "uploadfileabsname = " + uploadfileabsname
+        # print "original filename = " + self.__original_filename
+        # print "uploadfileabsname = " + uploadfileabsname
 
         shutil.copyfile(self.__original_filename, uploadfileabsname)
+        # print "file copied to sdcard"
+        os.remove(self.__original_filename)
+        # print "temporary log deleted"
 
-        # this old command no longer work on the Nexus 6P
+        # these old commands no longer work on the Nexus 6P
         # uploadcmd = "su -c cp " + self.__original_filename + " " + uploadfileabsname
         # proc = subprocess.Popen(uploadcmd, executable = ANDROID_SHELL, shell = True)
         # proc.wait()
-        print "file copied to sdcard"
-
+        # print "file copied to sdcard"
         # deletecmd = "su -c rm " + self.__original_filename
         # proc = subprocess.Popen(deletecmd, executable = ANDROID_SHELL, shell = True)
         # proc.wait()
-
-        os.remove(self.__original_filename)
-        print "temporary log deleted"
+        # print "temporary log deleted"
         
         return uploadfileabsname
 
