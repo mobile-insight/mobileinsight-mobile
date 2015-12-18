@@ -189,7 +189,7 @@ class UploadAnalyzer(Analyzer):
                 proc.kill()
                 break
         proc.wait()
-        if operator == "":
+        if operatorFound == False:
             operator = "null"
         return self.__get_device_id() + '_' + manufacturer + '-' + model + '_' + operator
 
@@ -218,9 +218,9 @@ class UploadAnalyzer(Analyzer):
         proc.wait()
         # print "file copied to sdcard"
 
-        # deletecmd = "su -c rm " + self.__original_filename
-        # proc = subprocess.Popen(deletecmd, executable = ANDROID_SHELL, shell = True)
-        # proc.wait()
+        deletecmd = "su -c rm " + self.__original_filename
+        proc = subprocess.Popen(deletecmd, executable = ANDROID_SHELL, shell = True)
+        proc.wait()
         # print "temporary log deleted"
         
         return uploadfileabsname

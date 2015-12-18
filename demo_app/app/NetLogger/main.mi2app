@@ -19,13 +19,6 @@ from upload_analyzer import UploadAnalyzer
 def get_cache_dir():
     return str(service_context.getCacheDir().getAbsolutePath())
 
-# for "/sdcard/mi_trace_collector.cfg":
-# each line is a config line, which should only include the message name, e.g.,
-# LTE_RRC_OTA_Packet
-# if you want to disable a message type
-# you can safely use '#' to comment that line out.
-cfg_log_collection_file = "/sdcard/mi_trace_collector.cfg"
-
 try:
     # TODO: change the QmdlMonitor to the DevDiagMonitor
     # lte_lvl1 = ["LTE_RRC_OTA_Packet",
@@ -63,36 +56,13 @@ try:
     log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")
     src.set_log_directory(log_directory)
 
-    # try to read the config file
-    try:
-        cfg = open(cfg_log_collection_file, 'r')
-        lines = cfg.read().splitlines()
-
-        for line in lines:
-            if line.rstrip('\n'):
-                if '#' in line:
-                    continue
-                else:
-                    print "config_log -- src.enable_log(" + line + ")"
-                    src.enable_log(line)
-        cfg.close()
-    except:
-        print "config file open failed, use default logs"
-        src.enable_log(["LTE_RRC_OTA_Packet",
-            "LTE_RRC_Serv_Cell_Info_Log_Packet",
-            "LTE_LL1_PDSCH_Demapper_Configuration"])
-        src.enable_log(["LTE_NAS_ESM_Plain_OTA_Incoming_Message",
-            "LTE_NAS_ESM_Plain_OTA_Outgoing_Message",
-            "LTE_NAS_EMM_Plain_OTA_Incoming_Message",
-            "LTE_NAS_EMM_Plain_OTA_Outgoing_Message",])
-        src.enable_log(["WCDMA_Signaling_Messages",
-            "WCDMA_CELL_ID"])
-        src.enable_log(["UMTS_NAS_MM_State",  "LTE_NAS_EMM_State", "UMTS_NAS_OTA"])
-        # src.enable_log(["LTE_LL1_PDSCH_Demapper_Configuration",
-        #                 "LTE_ML1_Connected_Mode_LTE_Intra_Freq_Meas_Results",
-        #                 "LTE_ML1_IRAT_Measurement_Request",
-        #                 "LTE_ML1_Serving_Cell_Measurement_Result",
-        #                 "LTE_ML1_Connected_Mode_Neighbor_Meas_Req_Resp"])
+    src.enable_log("LTE_RRC_OTA_Packet")
+    src.enable_log(["UMTS_NAS_MM_State",  "LTE_NAS_EMM_State", "UMTS_NAS_OTA"])
+    src.enable_log(["LTE_LL1_PDSCH_Demapper_Configuration",
+                    "LTE_ML1_Connected_Mode_LTE_Intra_Freq_Meas_Results",
+                    "LTE_ML1_IRAT_Measurement_Request",
+                    "LTE_ML1_Serving_Cell_Measurement_Result",
+                    "LTE_ML1_Connected_Mode_Neighbor_Meas_Req_Resp"])
 
     uploadAnalyzer = UploadAnalyzer()
     uploadAnalyzer.set_source(src)
