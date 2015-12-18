@@ -212,16 +212,27 @@ class UploadAnalyzer(Analyzer):
         uploadfileabsname = os.path.join(uploaddir + '/' + uploadfilebasename)
 
         # print "uploadfileabsname = " + uploadfileabsname
+        # print "original filename = " + self.__original_filename
 
-        uploadcmd = "su -c cp " + self.__original_filename + " " + uploadfileabsname
-        proc = subprocess.Popen(uploadcmd, executable = ANDROID_SHELL, shell = True)
-        proc.wait()
+        shutil.copyfile(self.__original_filename, uploadfileabsname)
+
+        # this old command no longer work on the Nexus 6P
+        # uploadcmd = "su -c cp " + self.__original_filename + " " + uploadfileabsname
+        # proc = subprocess.Popen(uploadcmd, executable = ANDROID_SHELL, shell = True)
+        # proc.wait()
         # print "file copied to sdcard"
 
+<<<<<<< HEAD
         # deletecmd = "su -c rm " + self.__original_filename
         # proc = subprocess.Popen(deletecmd, executable = ANDROID_SHELL, shell = True)
         # proc.wait()
         # print "temporary log deleted"
+=======
+        deletecmd = "su -c rm " + self.__original_filename
+        proc = subprocess.Popen(deletecmd, executable = ANDROID_SHELL, shell = True)
+        proc.wait()
+        print "temporary log deleted"
+>>>>>>> c83469ff1ec84d2f74e4dd7f9495ed991ce772a0
         
         return uploadfileabsname
 
