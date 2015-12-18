@@ -118,7 +118,7 @@ class RealtimeAnalyzer(Analyzer):
             self._t.start()
             self._thread_running = True
 
-        if msg.type_id == "new_qmdl_file":
+        if msg.type_id == "new_diag_log":
             # self._latency.append( (-666.0, -666.0, -666.0, msg.type_id) )
             pass
 
