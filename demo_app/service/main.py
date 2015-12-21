@@ -9,7 +9,7 @@ import traceback
 
 def alive_worker(secs):
     while True:
-        print "I'm still alive..."
+        # print "I'm still alive..."
         time.sleep(secs)
 
 if __name__ == "__main__":
