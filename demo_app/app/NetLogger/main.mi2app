@@ -57,9 +57,12 @@ umts     = [
 
 try:
     ## Use AndroidQmdlMonitor
+    print "MobileInsight2 (NetLogger): using the AndroidQmdlMonitor"
     src = AndroidQmdlMonitor({  "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
                                 "libwireshark_path": "/system/lib"})
+
     ## Use AndroidDevDiagMonitor
+    # print "MobileInsight2 (NetLogger): using the AndroidDevDiagMonitor"
     # fifo_path = os.path.join(get_cache_dir(), "diag_revealer_fifo")
     # src = AndroidDevDiagMonitor({   "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
     #                                 "libwireshark_path": "/system/lib",
@@ -82,11 +85,11 @@ try:
                 if '#' in line:
                     continue
                 else:
-                    print "config_log -- src.enable_log(" + line + ")"
+                    print "MobileInsight2 (NetLogger): config_log -- src.enable_log(" + line + ")"
                     src.enable_log(line)
         cfg.close()
     except:
-        print "config file open failed, use default logs"
+        print "MobileInsight2 (NetLogger): config file open failed, use default logs"
         src.enable_log(lte_lvl1 + lte_lvl2 + lte_lvl3 + wcdma + umts)
 
     uploadAnalyzer = UploadAnalyzer()

@@ -112,9 +112,9 @@ class UploadAnalyzer(Analyzer):
         :type msg: Event
         """
         if msg.type_id.find("new_diag_log") != -1: # found new qmdl file
-            print "msg type found"
+            # print "msg type found"
             self.__log_timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-            print "the timestamp is "+self.__log_timestamp
+            # print "the timestamp is " + self.__log_timestamp
             self.__upload = True
             self.__original_filename = msg.data
             uploadcmd = "su -c chmod 644 " + self.__original_filename
@@ -219,9 +219,9 @@ class UploadAnalyzer(Analyzer):
         # print "uploadfileabsname = " + uploadfileabsname
 
         shutil.copyfile(self.__original_filename, uploadfileabsname)
-        # print "file copied to sdcard"
+        print "MobileInsight2 (NetLogger): temporary log file saved to sdcard"
         os.remove(self.__original_filename)
-        # print "temporary log deleted"
+        print "MobileInsight2 (NetLogger): temporary log file deleted in internal storage"
 
         # these old commands no longer work on the Nexus 6P
         # uploadcmd = "su -c cp " + self.__original_filename + " " + uploadfileabsname
@@ -255,12 +255,12 @@ class UploadAnalyzer(Analyzer):
         request.add_data(body)
 
         # print 'upload_analyzer.py: __upload_qmdl_log SERVER RESPONSE:'
-        print "trying to upload log to the server"
+        print "MobileInsight2 (NetLogger): trying to upload log \"" + filename + "\" to the server"
         try:
-            print urllib2.urlopen(request).read()
+            print "MobileInsight2 (NetLogger): server's response -- " + urllib2.urlopen(request).read()
         except urllib2.URLError, e:
             upload_fail_dir = "/sdcard/mobile_insight_log/failed_upload"
             if not os.path.exists(upload_fail_dir):
                 os.makedirs(upload_fail_dir)
             shutil.move(filename, upload_fail_dir)
-            print "upload failed, log saved to the /sdcard/mobile_insight_log/failed_upload"
+            print "MobileInsight2 (NetLogger): log upload failed, log \"" + filename + "\"  saved to the /sdcard/mobile_insight_log/failed_upload"
