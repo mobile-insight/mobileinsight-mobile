@@ -111,9 +111,15 @@ class UploadAnalyzer(Analyzer):
         :param msg: the upload message (qmdl file location) from trace collector.
         :type msg: Event
         """
-        if msg.type_id.find("new_qmdl_file") != -1: # found new qmdl file
+        if msg.type_id.find("new_diag_log") != -1: # found new qmdl file
+            # print "msg type found"
+            self.__log_timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            # print "the timestamp is " + self.__log_timestamp
             self.__upload = True
             self.__original_filename = msg.data
+            uploadcmd = "su -c chmod 644 " + self.__original_filename
+            proc = subprocess.Popen(uploadcmd, executable = ANDROID_SHELL, shell = True)
+            proc.wait()
             uploadfilename = self.__callback_rename_file()
             self.__upload_qmdl_log(uploadfilename)
 
@@ -198,34 +204,34 @@ class UploadAnalyzer(Analyzer):
         Rename log file's name to fit in server's parser
         format: diag_log_<timestamp>_<deviceID>_<manufacturer>-<model>_<operator>.mi2log
         """
-
         cmd = "su -c getprop"
         uploaddir = "/sdcard/mobile_insight_log"
-        # print "uploaddir = " + uploaddir
 
         if not os.path.exists(uploaddir):
             os.makedirs(uploaddir)
 
         qmdlfilebasename = os.path.basename(self.__original_filename)
         qmdlfiledirname = os.path.dirname(self.__original_filename)
-        uploadfilebasename = qmdlfilebasename.split('.')[0] + '_' + self.__get_phone_info() + '.mi2log'
+        uploadfilebasename = "diag_log_" + self.__log_timestamp + '_' + self.__get_phone_info() + '.mi2log'
         uploadfileabsname = os.path.join(uploaddir + '/' + uploadfilebasename)
 
-        # print "uploadfileabsname = " + uploadfileabsname
         # print "original filename = " + self.__original_filename
+        # print "uploadfileabsname = " + uploadfileabsname
 
         shutil.copyfile(self.__original_filename, uploadfileabsname)
+        print "MobileInsight2 (NetLogger): temporary log file saved to sdcard"
+        os.remove(self.__original_filename)
+        print "MobileInsight2 (NetLogger): temporary log file deleted in internal storage"
 
-        # this old command no longer work on the Nexus 6P
+        # these old commands no longer work on the Nexus 6P
         # uploadcmd = "su -c cp " + self.__original_filename + " " + uploadfileabsname
         # proc = subprocess.Popen(uploadcmd, executable = ANDROID_SHELL, shell = True)
         # proc.wait()
         # print "file copied to sdcard"
-
-        deletecmd = "su -c rm " + self.__original_filename
-        proc = subprocess.Popen(deletecmd, executable = ANDROID_SHELL, shell = True)
-        proc.wait()
-        print "temporary log deleted"
+        # deletecmd = "su -c rm " + self.__original_filename
+        # proc = subprocess.Popen(deletecmd, executable = ANDROID_SHELL, shell = True)
+        # proc.wait()
+        # print "temporary log deleted"
         
         return uploadfileabsname
 
@@ -248,5 +254,13 @@ class UploadAnalyzer(Analyzer):
         body = str(form)
         request.add_data(body)
 
-        print 'upload_analyzer.py: __upload_qmdl_log SERVER RESPONSE:'
-        print urllib2.urlopen(request).read()
+        # print 'upload_analyzer.py: __upload_qmdl_log SERVER RESPONSE:'
+        print "MobileInsight2 (NetLogger): trying to upload log \"" + filename + "\" to the server"
+        try:
+            print "MobileInsight2 (NetLogger): server's response -- " + urllib2.urlopen(request).read()
+        except urllib2.URLError, e:
+            upload_fail_dir = "/sdcard/mobile_insight_log/failed_upload"
+            if not os.path.exists(upload_fail_dir):
+                os.makedirs(upload_fail_dir)
+            shutil.move(filename, upload_fail_dir)
+            print "MobileInsight2 (NetLogger): log upload failed, log \"" + filename + "\"  saved to the /sdcard/mobile_insight_log/failed_upload"

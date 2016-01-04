@@ -13,7 +13,7 @@ package.domain = edu.ucla.cs.wing
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,mi2app
+source.include_exts = py,png,jpg,kv,atlas,mi2app,so
 
 # (list) Source files to exclude (let empty to not exclude anything)
 #source.exclude_exts = spec

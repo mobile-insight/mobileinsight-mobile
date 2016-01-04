@@ -118,7 +118,7 @@ class RealtimeAnalyzer(Analyzer):
             self._t.start()
             self._thread_running = True
 
-        if msg.type_id == "new_qmdl_file":
+        if msg.type_id == "new_diag_log":
             # self._latency.append( (-666.0, -666.0, -666.0, msg.type_id) )
             pass
 
@@ -147,15 +147,18 @@ class RealtimeAnalyzer(Analyzer):
             if isinstance(self.source, AndroidDevDiagMonitor):
                 t2 = self.source.get_last_diag_revealer_ts() - self._reference_ts_android
                 self._latency.append( (t1, t2, t3, t4, t2 - t1, t3 - t2, t4 - t3, log_item["log_msg_len"], msg.type_id) )
+                print t1, t2, t3, t4, t2 - t1, t3 - t2, t4 - t3, log_item["log_msg_len"], msg.type_id
             else:
                 self._latency.append( (t1, t3, t4, t3 - t1, t4 - t3, log_item["log_msg_len"], msg.type_id) )
+                print t1, t3, t4, t3 - t1, t4 - t3, log_item["log_msg_len"], msg.type_id
 
             if (self._i % 5) == 0:
                 nt = len(self._latency[-1]) - 2
                 print ("%.3f " * nt + "%d-byte %s") % self._latency[-1]
                 with open(self._get_lantency_log_filename(), "a") as fd:
                     for tup in self._latency:
-                        fd.write(("%.5f " * nt + "%d %s\n") % tup)
+                        # fd.write(("%.5f " * nt + "%d %s\n") % tup)
+                        fd.write(str(tup)+"\n")
                 self._latency = []
                 # print (datetime.utcnow() - log_item["timestamp"]).total_seconds(), self.source.get_avg_read_latency()
             self._i += 1

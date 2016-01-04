@@ -37,6 +37,7 @@ Builder.load_string("""
         text: root.text
         text_size: self.width, None
         size_hint_y: None
+        font_size: "30sp"
         height: self.texture_size[1]
         valign: 'top'
 
@@ -50,10 +51,12 @@ Builder.load_string("""
         active: root.active
         group: root.group
         size_hint_x: None
+        font_size: "30sp"
         on_active: root.callback(*args)
 
     Label:
         text: root.text
+        font_size: "30sp"
         text_width: self.width
 
 # Main screen
@@ -62,22 +65,25 @@ Builder.load_string("""
 
     ScrollableLabel:
         text: '%s' % root.error_log
-        size_hint_y: 10
+        size_hint_y: 5
 
     TextInput:
         id: filename
-        size_hint_y: 3
-        text: '/sdcard/execfile_test.py'
+        size_hint_y: 2
+        font_size: "30sp"
+        text: '/sdcard/main.py'
         multiline: False
 
     Button:
-        text: 'Run script!'
-        size_hint_y: 4
+        text: 'Run test script'
+        size_hint_y: 3
+        font_size: "30sp"
         on_release: root.run_script_callback()
 
     ScrollView:
         id: checkbox_app
         size_hint_y: 10
+        font_size: "30sp"
         selected: ""
 
         BoxLayout:
@@ -87,29 +93,21 @@ Builder.load_string("""
     Button:
         text: 'Run app! %s' % root.ids.checkbox_app.selected
         disabled: root.ids.checkbox_app.selected == ''
-        size_hint_y: 4
+        size_hint_y: 3
+        font_size: "30sp"
         on_release: root.start_service(root.ids.checkbox_app.selected)
 
     Button:
         text: 'Stop app' 
         disabled: root.ids.checkbox_app.selected == ''
-        size_hint_y: 4
+        size_hint_y: 3
+        font_size: "30sp"
         on_release: root.stop_service()
 
-    Button:
-        text: 'Start collection'
-        disabled: root.collecting
-        size_hint_y: 4
-        on_release: root.start_collection()
-
-    Button:
-        text: 'Stop collection'
-        size_hint_y: 4
-        on_release: root.stop_collection()
 """)
 
 class HelloWorldScreen(GridLayout):
-    error_log = StringProperty("Nico-Nico-Ni!")
+    error_log = StringProperty(" ")
     collecting = BooleanProperty(False)
     current_activity = cast("android.app.Activity",
                             autoclass("org.renpy.android.PythonActivity").mActivity)
@@ -122,6 +120,8 @@ class HelloWorldScreen(GridLayout):
         app_list = self._get_app_list()
         app_list.sort()
 
+        self.__init_libs()
+
         first = True
         for name in app_list:
             widget = LabeledCheckBox(text=name, group="app")
@@ -131,6 +131,53 @@ class HelloWorldScreen(GridLayout):
                 first = False
             widget.bind(on_active=self.on_checkbox_app_active)
             self.ids.checkbox_app_layout.add_widget(widget)
+
+    def __init_libs(self):
+        """
+        Initialize libs required by MobileInsight
+        """
+
+        libs_path = os.path.join(self._get_files_dir(), "data")
+        cmd=""
+
+        libs=["libglib-2.0.so","libgmodule-2.0.so","libgobject-2.0.so",\
+        "libgthread-2.0.so","libwireshark.so","libwiretap.so","libwsutil.so"]
+
+        for lib in libs:
+            if not os.path.isfile(os.path.join("/system/lib",lib)):
+                cmd = cmd+" su -c cp "+os.path.join(libs_path,lib)+" /system/lib/; "
+                cmd = cmd+" su -c chmod 777 "+os.path.join("/system/lib",lib)+"; "
+        #sym links for some libs
+        if not os.path.isfile("/system/lib/libwireshark.so.5"):
+            cmd = cmd+" su -c ln -s /system/lib/libwireshark.so /system/lib/libwireshark.so.5; "
+            cmd = cmd+" su -c chmod 777 /system/lib/libwireshark.so.5; "
+        if not os.path.isfile("/system/lib/libwireshark.so.5.0.3"):
+            cmd = cmd+" su -c ln -s /system/lib/libwireshark.so /system/lib/libwireshark.so.5.0.3; " 
+            cmd = cmd+" su -c chmod 777 /system/lib/libwireshark.so.5.0.3; "
+        if not os.path.isfile("/system/lib/libwiretap.so.4"):
+            cmd = cmd+" su -c ln -s /system/lib/libwiretap.so /system/lib/libwiretap.so.4; "  
+            cmd = cmd+" su -c chmod 777 /system/lib/libwiretap.so.4; "
+        if not os.path.isfile("/system/lib/libwiretap.so.4.0.3"):
+            cmd = cmd+" su -c ln -s /system/lib/libwiretap.so /system/lib/libwiretap.so.4.0.3; "
+            cmd = cmd+" su -c chmod 777 /system/lib/libwiretap.so.4.0.3; "
+        if not os.path.isfile("/system/lib/libwsutil.so.4"):
+            cmd = cmd+" su -c ln -s /system/lib/libwsutil.so /system/lib/libwsutil.so.4; " 
+            cmd = cmd+" su -c chmod 777 /system/lib/libwsutil.so.4; "
+        if not os.path.isfile("/system/lib/libwsutil.so.4.1.0"):
+            cmd = cmd+" su -c ln -s /system/lib/libwsutil.so /system/lib/libwsutil.so.4.1.0; "
+            cmd = cmd+" su -c chmod 777 /system/lib/libwsutil.so.4.1.0; "
+
+        #bins
+        exes=["diag_revealer","android_pie_ws_dissector","android_ws_dissector"]
+        for exe in exes:
+            if not os.path.isfile(os.path.join("/system/bin",exe)):
+                cmd = cmd+" su -c cp "+os.path.join(libs_path,exe)+" /system/bin/; "
+                cmd = cmd+" su -c chmod 0777 "+os.path.join("/system/bin/",exe)+"; "
+
+        if cmd:
+            #At least one lib should be copied
+            cmd = "su -c mount -o remount,rw /system; "+cmd
+            subprocess.Popen(cmd, executable="/system/bin/sh", shell=True)
 
 
     def _add_log_line(self, s):
@@ -259,7 +306,8 @@ class HelloWorldScreen(GridLayout):
                 #Stop the running service
                 self.stop_service()
             from android import AndroidService
-            service = AndroidService("Test service", "Running")
+            self.error_log="Running "+app_name+"..."
+            service = AndroidService("MobileInsight is running...", "Running")
             service.start(app_name)   # app name
             self.service = service
 
@@ -267,6 +315,7 @@ class HelloWorldScreen(GridLayout):
         if self.service:
             self.service.stop()
             self.service = None
+            self.error_log="Stopped"
 
 
 class LabeledCheckBox(GridLayout):
