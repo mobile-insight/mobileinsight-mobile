@@ -19,7 +19,7 @@ try:
 except ImportError: 
     import xml.etree.ElementTree as ET
 from mobile_insight.analyzer import *
-from mobile_insight.protocol_analyzer import *
+#from mobile_insight.protocol_analyzer import *
 import timeit
 
 # from mobile_insight.profile import Profile, ProfileHierarchy
