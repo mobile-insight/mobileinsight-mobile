@@ -307,7 +307,7 @@ class HelloWorldScreen(GridLayout):
                 self.stop_service()
             from android import AndroidService
             self.error_log="Running "+app_name+"..."
-            service = AndroidService("Test service", "Running")
+            service = AndroidService("MobileInsight is running...", "Running")
             service.start(app_name)   # app name
             self.service = service
 

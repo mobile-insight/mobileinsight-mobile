@@ -51,8 +51,13 @@ wcdma    = [
             ]
 umts     = [
             "UMTS_NAS_MM_State",
+            "UMTS_NAS_GMM_State",
             "UMTS_NAS_OTA",
             ]
+
+cdma2000 = [
+            "1xEV_Signaling_Control_Channel_Broadcast",
+            "CDMA_Paging_Channel_Message",]
 
 try:
     ## Use AndroidQmdlMonitor
