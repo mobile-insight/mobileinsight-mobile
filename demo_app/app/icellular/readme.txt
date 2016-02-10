@@ -2,38 +2,37 @@
 # Author: Zengwen Yuan
 # Date: Feb 02, 2016
 
-
 This directory contains codes for iCellular.
 
 # 0x01 Structure
 
 .
-├── __init__.py							# required python script to register and import module
-├── at_cmd.py 							# Send AT command to AT device
-├── * bplmn_search.py 					# Backgroud PLMN search module
-├── decision_strategy					# codes for decision strategy
-│   ├── __init__.py 					# required python script to register and import module
-│   ├── decision_strategy.py 			# An abstract decision strategy layer
-│   ├── history_decision.py 			# History-based decision strategy (possible dupe)
-│   ├── history_profile_example.txt 	# self-explanatory
-│   ├── history_strategy.py 			# History-based decision strategy
-│   └── naive_strategy.py 				# Naive strategy for selecting carrier and network type
-├── * main.mi2app 						# Program entrance, relies on MobileInsight monitor
-├── plmn_monitor.py 					# A wrap of bplmn_search to monitor for switch decision
-├── readme.txt 							# this document
-├── switch_exec.py 						# Perform switch execution
-└── transaction_codes.yaml	 			# (temporary, reference purpose) secret code to call Android system service
+├── __init__.py                         # required python script to register and import module
+├── at_cmd.py                           # Send AT command to AT device
+├── * bplmn_search.py                   # Backgroud PLMN search module
+├── decision_strategy                   # codes for decision strategy
+│   ├── __init__.py                     # required python script to register and import module
+│   ├── decision_strategy.py            # An abstract decision strategy layer
+│   ├── history_decision.py             # History-based decision strategy (possible dupe)
+│   ├── history_profile_example.txt     # self-explanatory
+│   ├── history_strategy.py             # History-based decision strategy
+│   └── naive_strategy.py               # Naive strategy for selecting carrier and network type
+├── * main.mi2app                       # Program entrance, relies on MobileInsight monitor
+├── plmn_monitor.py                     # A wrap of bplmn_search to monitor for switch decision
+├── readme.txt                          # this document
+├── switch_exec.py                      # Perform switch execution
+└── transaction_codes.yaml              # (temporary, reference purpose) secret code to call Android system service
 
 ---
 * : adapted code from PC offline version; otherwise untouched yet
 
 # 0x02 Dependencies (tentative)
 
-	                     main.mi2app
-    	                      |
-    	  --------------------|--------------------
-    	  |                   |                   |
-    	switch             monitor            predictor
+                         main.mi2app
+                              |
+          --------------------|--------------------
+          |                   |                   |
+        switch             monitor            predictor
           |                   |                   |
    (fault-prevent)       plmn_search         decision_tree
           |                   |                   |
