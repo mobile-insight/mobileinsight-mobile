@@ -385,7 +385,7 @@ main (int argc, char **argv)
 			log_cut_size = LOG_CUT_SIZE_DEFAULT;
 		}
 		manager_init_state(&state, argv[3], log_cut_size);
-		printf("log_cut_size = %lld\n", log_cut_size);
+		// printf("log_cut_size = %lld\n", log_cut_size);
 		int ret2 = manager_start_new_log(&state, fifo_fd);
 		if (ret2 < 0 || state.log_fp == NULL) {
 			perror("open qmdl");
