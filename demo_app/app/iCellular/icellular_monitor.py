@@ -65,7 +65,8 @@ class iCellularMonitor(Analyzer):
         Analyzer.set_source(self,source)
         #enable LTE RRC log
         source.enable_log("LTE_RRC_OTA_Packet")
-        source.enable_log("LTE_RRC_Serv_Cell_Info_Log_Packet")
+        # source.enable_log("LTE_RRC_Serv_Cell_Info_Log_Packet")
+        source.enable_log("Modem_debug_message") #Get RSRP/RSCP in manual network search
 
 
 
@@ -95,8 +96,14 @@ class iCellularMonitor(Analyzer):
 
         #Configure the preferred carrier list
 
-        #Start the AT command and monitor (non-blocking mode)
+
+        # Block inaccessible carriers (AT&T and Verizon)
         at_res = self.__at_cmd.run_cmd("AT+COPS=?", False)
+
+        #Start the AT command and monitor (non-blocking mode)
+        #This is achieved by confiugring fobridden PLMN list (FPLMN) on SIM
+        #Verizon=311480 AT&T=310410
+        at_res = self.__at_cmd.run_cmd("AT+CRSM=214,28539,0,0,12,\"130184130014\"", False)
         self.__monitor_state = self.STARTED
 
 
