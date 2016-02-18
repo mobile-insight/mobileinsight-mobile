@@ -140,6 +140,8 @@ class iCellularMonitor(Analyzer):
         return res
 
     def __is_wcdma_sib(self,msg):
+
+        return False
         
 
 
