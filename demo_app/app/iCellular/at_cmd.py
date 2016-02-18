@@ -37,7 +37,7 @@ class AtCmd(object):
         at_res_cmd = "su -c cat " + at_device + ">" + at_log_file
         self.at_proc = subprocess.Popen(at_res_cmd, executable = ANDROID_SHELL, shell = True)
 
-        self.cmd_count = 0
+        self.cmd_count = 0  #succesful command execution
 
         #disable echo mode
         self.run_cmd("ATE0")
@@ -49,6 +49,40 @@ class AtCmd(object):
             return p.returncode
         else:
             return None
+
+
+    def is_running(self):
+        '''
+        Test if an AT command is running
+
+        :returns: True if an AT command is running, False otherwise
+        '''
+
+        #Current implementation: compare the count of successful execution and available counts in list
+        #If they are equal, it means no command is running
+        #TODO: optimize this code to avoid redundant scanning
+        while True:
+            res = ""
+            count = 0
+            with codecs.open(at_log_file, encoding = 'utf8') as fp:
+                while True:
+                    s = fp.readline()
+                    if not s:
+                        break
+                    res += s
+                    if len(res) > 2 and res[-2] == "\r" and res[-1] == "\n":
+                        #Read next line until the end
+                        count = count + 1
+                        res = ""
+            if count>self.cmd_count:
+                #A new record is included, so no command is running
+                #Update the command count
+                self.cmd_count = self.cmd_count + 1
+                return False
+            else:
+                return True
+
+
 
 
     def run_cmd(self, cmd, wait = False):
@@ -75,16 +109,16 @@ class AtCmd(object):
                 while True:
                     s = fp.readline()
                     if not s:
-                    	break
+                        break
                     res += s
                     if len(res) > 2 and res[-2] == "\r" and res[-1] == "\n":
                         if count == self.cmd_count:
                             break
                         else:
-                        	count = count + 1
-                        	res = ""
+                            count = count + 1
+                            res = ""
             if res:
-            	self.cmd_count = self.cmd_count + 1
+                self.cmd_count = self.cmd_count + 1
                 return res
 
 if __name__=="__main__":
