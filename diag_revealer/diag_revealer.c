@@ -167,7 +167,6 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 		len++;
 		if (len >= 3) {
 			memcpy(send_buf + 4, p + i, len);
-			printf("hehehehehehehhehehhe %d / %d\n", i, pbuf_write->len);
 			printf("Writing %d bytes of data\n", len + 4);
 			print_hex(send_buf, len + 4);
 			fflush(stdout);
