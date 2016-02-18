@@ -121,9 +121,22 @@ class iCellularMonitor(Analyzer):
 
         :returns: True if it is SIB1, False otherwise
         '''
-        for field in msg.data.iter('field'):
+        for field in msg.iter('field'):
             if field.get('name') == "lte-rrc.systemInformationBlockType1_element":
                 return True
+        return False
+
+    def __is_wcdma_mib(self,msg):
+
+        '''
+        Detect if a WCDMA RRC message is MIB (for MCC/MNC and access barring option)
+
+        :returns: True if it is MIB, False otherwise
+        '''
+        for field in msg.iter('field'):
+            if field.get('name') == "rrc.MasterInformationBlock_element":
+                return True
+        return False
 
     def __parse_lte_plmn(self,msg):
         '''
@@ -134,14 +147,24 @@ class iCellularMonitor(Analyzer):
         '''
         #WARNING: this code assumes msg is a SIB1, otherwise its behavior is unpredictable!!!
         res=""
-        for field in msg.data.iter('field'):
+        for field in msg.iter('field'):
             if field.get('name') == "lte-rrc.MCC_MNC_Digit":
                 res=res+field.get('show')
         return res
 
-    def __is_wcdma_sib(self,msg):
+    def __parse_wcdma_plmn(self,msg):
+        '''
+        Given WCDMA MIB, parse its MCC/MNC
 
-        return False
+        :param msg: a xml message that is WCDMA MIB
+        :returns: a string of "MCCMNC"
+        '''
+        #WARNING: this code assumes msg is a SIB1, otherwise its behavior is unpredictable!!!
+        res=""
+        for field in msg.iter('field'):
+            if field.get('name') == "rrc.Digit":
+                res=res+field.get('show')
+        return res
         
 
 
@@ -170,12 +193,11 @@ class iCellularMonitor(Analyzer):
             log_item = msg.data.decode()
             log_item_dict = dict(log_item)
             log_xml = ET.XML(log_item_dict['Msg'])
-            xml_msg = Event(msg.timestamp, msg.type_id, log_xml)
 
-            if self.__is_lte_sib1(xml_msg):
-                self.__cur_plmn=self.__parse_lte_plmn(xml_msg) #MCC-MNC
-                self.__cur_rat="4G"  #4G or 3G
-                self.__cur_radio_quality=None  #RSRP or RSCP
+            if self.__is_lte_sib1(log_xml):
+                self.__cur_plmn=self.__parse_lte_plmn(log_xml) #MCC-MNC
+                self.__cur_rat="4G"
+                self.__cur_radio_quality=None  #4G RSRP
 
         elif msg.type_id == "WCDMA_Signaling_Messages":
             '''
@@ -186,8 +208,14 @@ class iCellularMonitor(Analyzer):
             '''
 
             #Convert msg to xml format
+            log_item = msg.data.decode()
+            log_item_dict = dict(log_item)
             log_xml = ET.XML(log_item_dict['Msg'])
-            xml_msg = Event(msg.timestamp, msg.type_id, log_xml)
+
+            if self.__is_wcdma_mib(log_xml):
+                self.__cur_plmn=self.__parse_wcdma_plmn(log_xml) #MCC-MNC
+                self.__cur_rat="3G"
+                self.__cur_radio_quality=None  #3G RSCP
 
         elif msg.type_id == "Modem_debug_message":
             '''
