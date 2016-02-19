@@ -7,95 +7,33 @@ iCellular main app
 Author: Yuanjie Li
 """
 
-from plmn_monitor import *
-from at_cmd import *
-from switch_exec import *
-from decision_strategy import *
+import os
+import sys
+import traceback
 
+from icellular_analyzer import IcellularAnalyzer
+from mobile_insight.monitor import AndroidDevDiagMonitor
 
-#QXDM collector for making decisions
-from mobile_insight.monitor import AndroidQmdlMonitor
-
-import thread
 
 def get_cache_dir():
     return str(service_context.getCacheDir().getAbsolutePath())
 
-# TODO: change the path to generic version
-rildSerialPort = "/dev/smd11"
-logDir = "/sdcard/mobile_insight_log/"
-plmn_select_monitor = PlmnMonitor(rildSerialPort)
-#FIXME: the monitor is NOT used yet...
-src = AndroidQmdlMonitor({"ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
-                                "libwireshark_path": "/system/lib"})
-log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")
-src.set_log_directory(log_directory)
+try:
+    ## Use AndroidDevDiagMonitor
+    fifo_path = os.path.join(get_cache_dir(), "diag_revealer_fifo")
+    src = AndroidDevDiagMonitor({   "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+                                    "libwireshark_path": "/system/lib",
+                                    # "libwireshark_path": "/sdcard/ws_dissector",
+                                    "diag_revealer_executable_path": "/system/bin/diag_revealer",
+                                    "diag_revealer_fifo_path": fifo_path,
+                                    })
+    src.set_skip_decoding(False)
 
-src.enable_log("LTE_RRC_OTA_Packet")
-src.enable_log("LTE_NAS_EMM_Plain_OTA_Outgoing_Message")
+    
+    icellular = IcellularAnalyzer()
+    icellular.set_source(src)
 
-
-src.enable_log("WCDMA_Signaling_Messages")
-src.enable_log(["UMTS_NAS_MM_State", "LTE_NAS_EMM_State", "UMTS_NAS_OTA"])
-src.enable_log(["LTE_LL1_PDSCH_Demapper_Configuration",
-                "LTE_ML1_Connected_Mode_LTE_Intra_Freq_Meas_Results",
-                "LTE_ML1_IRAT_Measurement_Request",
-                "LTE_ML1_Serving_Cell_Measurement_Result",
-                "LTE_ML1_Connected_Mode_Neighbor_Meas_Req_Resp"])
-
-# TODO (low priority): minimal search
-# step1, set the search preference (network pref)
-# step2, once the monitor finds out current search reaches AT&T, stop the search
-
-# Design plan:
-# (1) check TS 27.007, use the AT command
-# AT+CPLS
-# parameter 0 -> user controlled PLMN connection
-# (2) check TS 31.102, use the AT command (sec 4.2.5 Page 20)
-# AT+CRSM=176 -- read binary
-# (3) check TS 51.011, for the parameters for the AT command CRSM
-# (4) call the AT command AT+COPS to switch to the carrier (as in at_cmd.py)
-
-
-# TODO: support fault decision prevention
-# we should filter the unqualified network type in the returned result.
-# case I (Forbidden access) -- find in RRC SIB, indicated by access_baring_option == True [finished at 050d8ef1 (untested)]
-# case II (Switch to carriers with incomplete service) -- find in TAU, to see if it is CS-only or CS-preferred
-# case III (Incoordination with carrier's mobility rules) -- use the cell reselection rule to decide whether a switch choice is a stable state or not
-plmn_select_monitor.set_source(src)
-plmn_select_monitor.set_log(logDir + "plmn_select_monitor-test.txt")
-
-# TODO (low priority): implement adaptive monitor
-# adaptive_monitor = AdaptiveMonitor()
-# adaptive_monitor.set_source(src)
-# adaptive_monitor.set_log("/sdcard/adaptive_monitor-test.txt")
-
-
-# Decision rules
-## TODO (low priority): offline training for the decision rules (for ease of impl)
-
-# TODO (low priority): provide more options to make decision, based on:
-# (a) QoS --> latency
-# (b) QoS --> bandwidth (max guaranteed bitrate)
-naive_decision = NaiveStrategy(plmn_select_monitor)
-# history_decision = HistoryStrategy(monitor,HISTORY_STRATEGY_PROFILE)
-
-# Switch engines
-switch = SwitchExec()
-switch.set_source(src)
-switch.set_log(logDir + "carrier_switch-test.txt")
-
-# For each monitor, start a new thread
-# monitor.run()
-
-src.run() # start monitoring the low level cellular events
-
-while True:
-	# TODO: set the search preference (network pref) in run_once() or run()
-    plmn_select_monitor.bplmn.run_once()
-    target1 = naive_decision.make_decision()  #default decision
-
-    printf("current decision target, carreier = " + target1[0] + "network type = " + target1[1])
-
-    # TODO: support fault decision prevention inside this func call
-    switch.switch_to(target1)
+    src.run()
+    
+except:
+    print str(traceback.format_exc())

@@ -26,7 +26,7 @@ class IcellularMonitor(Analyzer):
     # STARTED = 1;    #manual network search is initiated   
 
     
-    def __init__(self, monitor_list, at_serial_port="/dev/smd11"):
+    def __init__(self, monitor_list=[], at_serial_port="/dev/smd11"):
         '''
         Initialize the iCellular monitor
 
@@ -46,7 +46,7 @@ class IcellularMonitor(Analyzer):
             self.__monitor_list = monitor_list
         else:
             self.__monitor_list = []
-        self.__monitor_state = self.NULL
+        # self.__monitor_state = self.NULL
 
         #observed carrier lists: carrier -> [RSRP/RSCP, radio/QoS profile (from Rrc/Nas analyzer)]
         #Passed to the decisions strategy
@@ -286,7 +286,7 @@ class IcellularMonitor(Analyzer):
                 self.__cur_rat="3G"
                 self.__cur_radio_quality=None  #3G RSCP
 
-            self.__is_csfb_unavailable(log_xml):
+            self.__is_csfb_unavailable(log_xml)
 
         elif msg.type_id == "Modem_debug_message":
             '''
