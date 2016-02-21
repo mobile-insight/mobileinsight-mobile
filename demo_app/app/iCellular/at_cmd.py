@@ -21,6 +21,8 @@ ANDROID_SHELL = "/system/bin/sh"
 at_log_file = os.path.join(get_cache_dir(), "at_tmp")
 
 class AtCmd(object):
+
+    cmd_count = 0  #succesful command execution
     
     def __init__(self, at_device):
 
@@ -40,8 +42,6 @@ class AtCmd(object):
 
         at_res_cmd = "su -c cat " + at_device + ">" + at_log_file
         self.at_proc = subprocess.Popen(at_res_cmd, executable = ANDROID_SHELL, shell = True)
-
-        self.cmd_count = 0  #succesful command execution
 
         #disable echo mode
         self.run_cmd("ATE0")
@@ -78,14 +78,14 @@ class AtCmd(object):
                         #Read next line until the end
                         count = count + 1
                         res = ""
-            if count>self.cmd_count:
+            if count>AtCmd.cmd_count:
                 #A new record is included, so no command is running
                 #Update the command count
-                self.cmd_count = self.cmd_count + 1
-                print "at command is NOT running: "+str(self.cmd_count)+" "+str(count)
+                AtCmd.cmd_count = AtCmd.cmd_count + 1
+                print "at command is NOT running: "+str(AtCmd.cmd_count)+" "+str(count)
                 return False
             else:
-                print "at command is running: "+str(self.cmd_count)+" "+str(count)
+                print "at command is running: "+str(AtCmd.cmd_count)+" "+str(count)
                 return True
 
 
@@ -124,13 +124,13 @@ class AtCmd(object):
                         break
                     res += s
                     if len(res) > 2 and res[-2] == "\r" and res[-1] == "\n":
-                        if count == self.cmd_count:
+                        if count == AtCmd.cmd_count:
                             break
                         else:
                             count = count + 1
                             res = ""
             if res:
-                self.cmd_count = self.cmd_count + 1
+                AtCmd.cmd_count = AtCmd.cmd_count + 1
                 return res
 
 if __name__=="__main__":
