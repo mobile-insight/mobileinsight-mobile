@@ -43,9 +43,11 @@ class IcellularMonitor(Analyzer):
 
         #MobileInsight Analyzer init
         Analyzer.__init__(self)
+        print "iCellularMonitor: I am called"
         self.add_source_callback(self.__active_monitor)
         #TODO: add dependency of Rrc/Nas analyzers (for profiling purpose)
 
+        print "iCellularMonitor: step 1"
         self.__at_cmd = AtCmd(at_serial_port)  # AT command port
         if monitor_list:
             self.__monitor_list = monitor_list
@@ -53,6 +55,7 @@ class IcellularMonitor(Analyzer):
             self.__monitor_list = []
         # self.__monitor_state = self.NULL
 
+        print "iCellularMonitor: step 2"
         #observed carrier lists: carrier -> [RSRP/RSCP, radio/QoS profile (from Rrc/Nas analyzer)]
         #Passed to the decisions strategy
         self.__observed_list = {}    
@@ -62,7 +65,9 @@ class IcellularMonitor(Analyzer):
         self.__cur_rat = None  #4G or 3G
         self.__cur_radio_quality = None  #RSRP or RSCP
 
+        print "iCellularMonitor: step 3"
         self.__is_network_inaccessible = False   # fault prevention case I
+        self.__csfb_pref_for_eutran = False
         self.__is_csfb_unavailable = False       # fault prevention case II
         self.__is_selection_unstable = False     # fault prevention case III
 
@@ -198,6 +203,7 @@ class IcellularMonitor(Analyzer):
 
                 for val in field.iter('field'):
                     field_val[val.get('name')] = val.get('show')
+                    print "icellular_fp: I got " + val.get('name') + "= " + val.get('show')
 
                 acBarringForEmergency = bool(field_val['lte-rrc.ac_BarringForEmergency'])
                 acBarringForMOSignalling = bool(field_val['lte-rrc.ac_BarringForMO_Signalling'])
@@ -209,6 +215,26 @@ class IcellularMonitor(Analyzer):
                                                 or acBarringForMOData
                                                 or acBarringForCSFB)
 
+                print "icellular_fp: self.__is_network_inaccessible = " + self.__is_network_inaccessible
+
+    def __update_csfb_pref(self, msg):
+        """
+        # case II (Switch to carriers with incomplete service)
+        find in TAU, to see if it is CS-only or CS-preferred
+        then we have to see if the current carrier's 3G service
+        supports or not (e.g. RSCP <= -95 dBm)
+        """
+        self.__csfb_pref_for_eutran = False
+
+        for field in msg.iter('field'):
+            if "Voice domain preference" in field.get('show'):
+                print "icellular_fp: I got Voice domain preference" + val.get('name') + "= " + val.get('show')
+                for val in field.iter('field'):
+                    if val.get('name') == 'gsm_a.gm.gmm.voice_domain_pref_for_eutran' and (("CS Voice only" or "prefer CS Voice") in val.get('show')):
+                        self.__csfb_pref_for_eutran = True
+                        print "icellular_fp: I got Voice domain preference = " + val.get('show')
+                        break
+
     def __is_csfb_unavailable(self, msg):
         """
         # case II (Switch to carriers with incomplete service)
@@ -217,21 +243,14 @@ class IcellularMonitor(Analyzer):
         supports or not (e.g. RSCP <= -95 dBm)
         """
         self.__is_csfb_unavailable = False
-        self.__csfb_pref_for_eutran = False
-
-        for field in msg.iter('field'):
-            if "Voice domain preference" in field.get('show'):
-                for val in field.iter('field'):
-                    if val.get('name') == 'gsm_a.gm.gmm.voice_domain_pref_for_eutran' and (("CS Voice only" or "prefer CS Voice") in val.get('show')):
-                        self.__csfb_pref_for_eutran = True
-                        break
-
         # when this func is called in the 4G case, we should check the radio_quality for the neighboring 3G cells
-        if self.__voice_domain_pref_for_eutran == True:
+        if self.__csfb_pref_for_eutran == True:
             for cell in self.__observed_list.keys():
                 if "3G" in cell: # neighbor 3G cell radio quality
+                    print "icellular_fp: I got neighbor 3G cell radio quality = " + self.__observed_list.get(cell)
                     if int(self.__observed_list.get(cell, "0")) < -95: # get(key, default=None)
                         self.__is_csfb_unavailable = True
+                        print "icellular_fp: unfortunately CSFB is not available"
 
     def __is_selection_unstable(self, msg):
         """
@@ -248,13 +267,14 @@ class IcellularMonitor(Analyzer):
         and stops the icellular monitor if search finishes
         '''
         
+        print "iCellularMonitor: __active_monitor"
 
-        print "__active_monitor"
         if not self.__at_cmd.is_running():
             #No AT command is running. Restart the monitoring
             self.run_monitor()
             #Ignore the current messages
 
+            print "iCellularMonitor: step 5"
         elif msg.type_id == "LTE_RRC_OTA_Packet":
             '''
             Monitor incoming SIB, detect the currently available carrier network.
@@ -262,6 +282,8 @@ class IcellularMonitor(Analyzer):
             If the new carrier network available, raise events to downstream analyzer
             (i.e., decision strategy)
             '''
+
+            print "iCellular: __active_monitor -- LTE"
 
             #Convert msg to xml format
             log_item = msg.data.decode()
@@ -283,6 +305,8 @@ class IcellularMonitor(Analyzer):
             (i.e., decision strategy)
             '''
 
+            print "iCellular: __active_monitor -- WCDMA"
+
             #Convert msg to xml format
             log_item = msg.data.decode()
             log_item_dict = dict(log_item)
@@ -293,12 +317,15 @@ class IcellularMonitor(Analyzer):
                 self.__cur_rat="3G"
                 self.__cur_radio_quality=None  #3G RSCP
 
-            self.__is_csfb_unavailable(log_xml)
+            self.__update_csfb_pref(log_xml)
 
         elif msg.type_id == "Modem_debug_message":
             '''
             Extract RSRP/RSCP from each candidate, map it to the cell
             '''
+
+            print "iCellular: __active_monitor -- Modem"
+
             log_item = msg.data.decode()
             log_item_dict = dict(log_item)
 
@@ -308,8 +335,9 @@ class IcellularMonitor(Analyzer):
                 if index != -1:
                     #LTE RSRP value (in dBm)
                     self.__cur_radio_quality=msg.log_item_dict['Msg'][index:]
-                    #TODO: Zengwen, please run decision fault function here
 
+                    #TODO: Zengwen, please run decision fault function here
+                    self.__is_csfb_unavailable(log_xml)
 
                     #Send available carrier networks to decision
                     self.__observed_list[self.__cur_plmn+"-"+self.__cur_rat]=self.__cur_radio_quality
