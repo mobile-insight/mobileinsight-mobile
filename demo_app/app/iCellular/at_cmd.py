@@ -40,7 +40,7 @@ class AtCmd(object):
         # self.phy_ser = open(at_device,"rw")
         self.at_device = at_device
 
-        at_res_cmd = "su -c cat " + at_device + ">" + at_log_file
+        at_res_cmd = "su -c cat " + at_device + " | awk '{ print strftime(\"[%Y-%m-%d %H:%M:%S %Z]\"), $0; fflush(); }' >" + at_log_file
         self.at_proc = subprocess.Popen(at_res_cmd, executable = ANDROID_SHELL, shell = True)
 
         #disable echo mode
@@ -82,10 +82,10 @@ class AtCmd(object):
                 #A new record is included, so no command is running
                 #Update the command count
                 AtCmd.cmd_count = AtCmd.cmd_count + 1
-                print "at command is NOT running: "+str(AtCmd.cmd_count)+" "+str(count)
+                print "at command is NOT running: " + str(AtCmd.cmd_count) + " " + str(count)
                 return False
             else:
-                print "at command is running: "+str(AtCmd.cmd_count)+" "+str(count)
+                print "at command is running: AtCmd.cmd_count = " + str(AtCmd.cmd_count) + ", count = " + str(count)
                 return True
 
 
