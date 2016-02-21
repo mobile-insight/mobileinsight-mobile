@@ -9,12 +9,16 @@ Author: Yuanjie Li
 
 """
 
+import os
 import sys
 import subprocess
 import codecs
+from mi2app_utils import get_cache_dir
 
 ANDROID_SHELL = "/system/bin/sh"
-at_log_file = "/sdcard/at_tmp.txt"
+# at_log_file = "/sdcard/at_tmp.txt"
+# at_log_file = str(service_context.getCacheDir().getAbsolutePath())+"/at_tmp.txt"
+at_log_file = os.path.join(get_cache_dir(), "at_tmp")
 
 class AtCmd(object):
     
@@ -98,9 +102,10 @@ class AtCmd(object):
         :returns: the return value of AT command if wait==True, otherwise empty string
         '''
 
-        print "Running AT command: "+cmd
-
         full_cmd = 'su -c \"echo -e \'' + cmd + '\\r\\n\' > ' + self.at_device + "\""
+
+        print "Running AT command: "+full_cmd
+
         p = subprocess.Popen(full_cmd, executable = ANDROID_SHELL, shell = True)
         p.wait()
 

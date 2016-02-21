@@ -114,16 +114,16 @@ class IcellularMonitor(Analyzer):
         # We configure the pre-stored carrier frequence band (4.2.57, TS31.102)
         # In scanning, the carrier network will only scan the following bands
         # TODO: further optimize the bands. The following config comes from AT&T
-        at_res = self.__at_cmd.run_cmd("AT+CRSM=214,28612,0,0,46,\"A10C800211088102023281022652FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\"", False)
+        at_res = self.__at_cmd.run_cmd('AT+CRSM=214,28612,0,0,46,\\"A10C800211088102023281022652FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\\"', False)
 
 
         # Block inaccessible carriers (AT&T and Verizon)
         # This is achieved by confiugring fobridden PLMN list (FPLMN) on SIM
         # Verizon=311480 AT&T=310410
-        at_res = self.__at_cmd.run_cmd("AT+CRSM=214,28539,0,0,12,\"130184130014FFFFFFFFFFFF\"", False)
+        at_res = self.__at_cmd.run_cmd('AT+CRSM=214,28539,0,0,12,\\"130184130014FFFFFFFFFFFF\\"', False)
 
         #Start the AT command and monitor (non-blocking mode)
-        at_res = self.__at_cmd.run_cmd("AT+COPS=?", False)
+        at_res = self.__at_cmd.run_cmd('AT+COPS=?', False)
 
     def __is_lte_sib1(self,msg):
         '''
