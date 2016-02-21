@@ -13,6 +13,7 @@ import traceback
 
 from icellular_analyzer import IcellularAnalyzer
 from mobile_insight.monitor import AndroidDevDiagMonitor
+from mobile_insight.analyzer import MsgLogger
 
 
 def get_cache_dir():
@@ -37,6 +38,9 @@ try:
     
     icellular = IcellularAnalyzer()
     icellular.set_source(src)
+
+    logger = MsgLogger()
+    logger.set_source(src)
 
     src.run()
     

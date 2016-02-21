@@ -321,6 +321,8 @@ class IcellularMonitor(Analyzer):
             #Convert msg to xml format
             log_item = msg.data.decode()
             log_item_dict = dict(log_item)
+            if 'Msg' not in log_item_dict:
+                return
             log_xml = ET.XML(log_item_dict['Msg'])
 
             # print "iCellular: __active_monitor.LTE -- decoded"
@@ -385,7 +387,8 @@ class IcellularMonitor(Analyzer):
             #Convert msg to xml format
             log_item = msg.data.decode()
             log_item_dict = dict(log_item)
-            # print "iCellular: __active_monitor.WCMDA -- about to take 'Msg'"
+            if 'Msg' not in log_item_dict:
+                return
             log_xml = ET.XML(log_item_dict['Msg'])
 
             if self.__is_wcdma_mib(log_xml):
