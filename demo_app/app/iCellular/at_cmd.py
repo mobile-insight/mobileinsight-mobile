@@ -78,8 +78,10 @@ class AtCmd(object):
                 #A new record is included, so no command is running
                 #Update the command count
                 self.cmd_count = self.cmd_count + 1
+                print "at command is NOT running: "+str(self.cmd_count)+" "+str(count)
                 return False
             else:
+                print "at command is running: "+str(self.cmd_count)+" "+str(count)
                 return True
 
 
@@ -95,9 +97,14 @@ class AtCmd(object):
         :type wait: boolean
         :returns: the return value of AT command if wait==True, otherwise empty string
         '''
+
+        print "Running AT command: "+cmd
+
         full_cmd = 'su -c \"echo -e \'' + cmd + '\\r\\n\' > ' + self.at_device + "\""
         p = subprocess.Popen(full_cmd, executable = ANDROID_SHELL, shell = True)
         p.wait()
+
+
 
         if not wait:
             return ""

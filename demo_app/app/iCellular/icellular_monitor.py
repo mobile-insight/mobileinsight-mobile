@@ -14,6 +14,11 @@ Author: Yuanjie Li
 
 from at_cmd import * 
 
+try: 
+    import xml.etree.cElementTree as ET 
+except ImportError: 
+    import xml.etree.ElementTree as ET
+
 from mobile_insight.analyzer import Analyzer
 
 
@@ -261,8 +266,9 @@ class IcellularMonitor(Analyzer):
         It monitors the RRC SIB in manual network search, 
         and stops the icellular monitor if search finishes
         '''
+        
+        print "iCellularMonitor: __active_monitor"
 
-        print "iCellularMonitor: step 4"
         if not self.__at_cmd.is_running():
             #No AT command is running. Restart the monitoring
             self.run_monitor()
