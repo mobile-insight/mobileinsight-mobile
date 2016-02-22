@@ -12,7 +12,7 @@ import sys
 import traceback
 
 from icellular_analyzer import IcellularAnalyzer
-from mobile_insight.monitor import AndroidDevDiagMonitor
+from mobile_insight.monitor import AndroidDevDiagMonitor, AndroidQmdlMonitor
 from mobile_insight.analyzer import MsgLogger
 
 
@@ -30,11 +30,12 @@ try:
                                     })
     src.set_skip_decoding(False)
 
+    ## Use AndroidQmdlMonitor
+    # src = AndroidQmdlMonitor({  "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+    #                             "libwireshark_path": "/system/lib"})
+
     log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")
     src.set_log_directory(log_directory)
-
-    
-
     
     icellular = IcellularAnalyzer()
     icellular.set_source(src)
