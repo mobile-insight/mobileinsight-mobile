@@ -11,6 +11,7 @@ and stops the search when necessary.
 Author: Yuanjie Li
         Zengwen Yuan
 """
+import psutil
 
 from at_cmd import * 
 
@@ -300,6 +301,8 @@ class IcellularMonitor(Analyzer):
         '''
         
         # print "iCellularMonitor: step 4"
+
+        print "iCellularMonitor: CPU usage at __active_monitor: " + str(psutil.cpu_percent(interval=None))
 
         if not self.__at_cmd.is_running():
             #No AT command is running. Restart the monitoring
