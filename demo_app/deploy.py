@@ -16,6 +16,25 @@ def run_apk():
     print cmd
     os.system(cmd)
 
+python-for-android apk --debug --compile-pyo --copy-libs \
+--name MobileInsight2 \
+--version 0.2 \
+--package edu.ucla.cs.wing \
+--private /Users/Dale/Workspace/mobileInsight/demo_app \
+--icon /Users/Dale/Workspace/mobileInsight/demo_app/data/icon.png \
+--presplash /Users/Dale/Workspace/mobileInsight/demo_app/data/presplash.jpg \
+--orientation portrait \
+--permission INTERNET \
+--permission WRITE_EXTERNAL_STORAGE \
+--sdk 19 \
+--minsdk 14 \
+--android_api 19 \
+--sdk_dir /Users/Dale/Library/Android/sdk \
+--ndk_dir /Users/Dale/Library/Android/android-ndk-r10e \
+--ndk_version r10e \
+--arch armeabi \
+--dist_name mi2 \
+--whitelist whitelist.txt
 
 if __name__ == '__main__':
     arg =  sys.argv[1]
