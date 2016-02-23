@@ -15,4 +15,4 @@ class TestStrategy(IcellularStrategyBase):
         IcellularStrategyBase.__init__(self)
 
     def selection(self, carrier_network_list):
-        return None 
+        return None

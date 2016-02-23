@@ -1,5 +1,0 @@
-# An example of history-based decision profile
-# Time latitude longitude carrier,network_type list (ordered by preference)
-08:05:34.069 34.06903658 -118.44368868 Sprint,11 T-Mobile,2 T-Mobile,11 Sprint,4
-09:05:34.069 34.06903658 -118.44368868 Sprint,11 T-Mobile,10 T-Mobile,2 Sprint,4
-10:05:34.069 34.06911089 -118.44357874 Sprint,11 T-Mobile,10 T-Mobile,2 Sprint,4
