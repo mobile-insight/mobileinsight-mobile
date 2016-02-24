@@ -1,4 +1,4 @@
-#!/usr/bin/python
+## !/usr/bin/python
 # Filename: icellular_monitor.py
 """
 iCellular adaptive monitor

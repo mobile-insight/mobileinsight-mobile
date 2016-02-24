@@ -21,20 +21,20 @@ def get_cache_dir():
 
 try:
     ## Use AndroidDevDiagMonitor
-    # fifo_path = os.path.join(get_cache_dir(), "diag_revealer_fifo")
-    # src = AndroidDevDiagMonitor({   "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
-    #                                 "libwireshark_path": "/system/lib",
-    #                                 # "libwireshark_path": "/sdcard/ws_dissector",
-    #                                 "diag_revealer_executable_path": "/system/bin/diag_revealer",
-    #                                 "diag_revealer_fifo_path": fifo_path,
-    #                                 })
-    # src.set_skip_decoding(False)
-    # log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")
-    # src.set_log_directory(log_directory)
+    fifo_path = os.path.join(get_cache_dir(), "diag_revealer_fifo")
+    src = AndroidDevDiagMonitor({   "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+                                    "libwireshark_path": "/system/lib",
+                                    # "libwireshark_path": "/sdcard/ws_dissector",
+                                    "diag_revealer_executable_path": "/system/bin/diag_revealer",
+                                    "diag_revealer_fifo_path": fifo_path,
+                                    })
+    src.set_skip_decoding(False)
+    log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")
+    src.set_log_directory(log_directory)
 
-    src = QmdlReplayer({"ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
-                        "libwireshark_path": "/system/lib",})
-    src.set_input_path("/sdcard/test.qmdl")
+    # src = QmdlReplayer({"ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+    #                     "libwireshark_path": "/system/lib",})
+    # src.set_input_path("/sdcard/test.qmdl")
     
     icellular = IcellularAnalyzer()
     icellular.set_source(src)
