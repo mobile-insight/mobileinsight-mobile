@@ -150,14 +150,14 @@ class MobileInsightRecipe(Recipe):
             shprint(sh.find, build_lib[0], '-name', '*.o', '-exec', env['STRIP'], '{}', ';')
 
         try:
-            warning('copying GNU STL shared lib to {}'.format(self.ctx.libs_dir))
+            warning('copying GNU STL shared lib to {}/{}'.format(self.ctx.libs_dir, arch))
             shprint(sh.cp,
                 '{ndk_dir}/sources/cxx-stl/gnu-libstdc++/{toolchain_version}/libs/{arch}/libgnustl_shared.so'.format(
                     ndk_dir=self.ctx.ndk_dir,
                     toolchain_version=self.toolchain_version,
                     arch=arch),
-                self.ctx.libs_dir)
-                # alternative: '{libs_dir}/{arch}'.format(libs_dir=self.ctx.libs_dir,arch=arch))
+                '{libs_dir}/{arch}'.format(libs_dir=self.ctx.libs_dir,arch=arch))
+                # self.ctx.libs_dir)
         except:
             warning('failed to copy GNU STL shared lib!!')
 
