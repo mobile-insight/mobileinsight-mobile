@@ -10,12 +10,14 @@ Author: Yuanjie Li
 
 
 from at_cmd import * 
+import config
 
 from mobile_insight.analyzer import Analyzer
 
 class IcellularExec(Analyzer):
 
-    def __init__(self, at_serial_port="/dev/smd11"):
+    # def __init__(self, at_serial_port="/dev/smd11"):
+    def __init__(self):
 
         '''
         Initialization
@@ -29,7 +31,7 @@ class IcellularExec(Analyzer):
         self.include_analyzer("IcellularDecision",[self.__run_switch])
 
         #FIXME: conflicts with AtCmd in IcellularMonitor
-        self.__at_cmd = AtCmd(at_serial_port)  # AT command port
+        self.__at_cmd = AtCmd(config.at_serial_port)  # AT command port
 
     def set_source(self,source):
         """

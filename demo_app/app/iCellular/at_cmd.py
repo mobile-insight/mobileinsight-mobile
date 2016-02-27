@@ -112,21 +112,19 @@ class AtCmd(object):
         :returns: the return value of AT command if wait==True, otherwise empty string
         '''
 
-        # full_cmd = 'su -c \"echo -e \'' + cmd + '\\r\\n\' > ' + self.at_device + "\""
+        full_cmd = 'su -c \"echo -e \'' + cmd + '\\r\\n\' > ' + self.at_device + "\""
 
-        # print "Running AT command: "+full_cmd
-
-        # p = subprocess.Popen(full_cmd, executable = ANDROID_SHELL, shell = True)
-        # p.wait()
-
-        full_cmd = 'echo -e \'' + cmd + '\\r\\n\' > ' + self.at_device + "\n"
         print "Running AT command: "+full_cmd
 
-        p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        p.communicate(full_cmd)
+        p = subprocess.Popen(full_cmd, executable = ANDROID_SHELL, shell = True)
         p.wait()
 
+        # full_cmd = 'echo -e \'' + cmd + '\\r\\n\' > ' + self.at_device + "\n"
+        # print "Running AT command: "+full_cmd
 
+        # p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        # p.communicate(full_cmd)
+        # p.wait()
 
         if not wait:
             AtCmd.cmd_count = AtCmd.cmd_count + 1

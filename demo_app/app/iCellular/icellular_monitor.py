@@ -14,6 +14,7 @@ Author: Yuanjie Li
 # import psutil
 
 from at_cmd import * 
+import config
 
 try: 
     import xml.etree.cElementTree as ET 
@@ -31,14 +32,11 @@ class IcellularMonitor(Analyzer):
     # STARTED = 1;    #manual network search is initiated   
 
     
-    def __init__(self, monitor_list=[], at_serial_port="/dev/smd11"):
+    # def __init__(self, monitor_list=[], at_serial_port="/dev/smd11"):
+    def __init__(self):
+
         '''
         Initialize the iCellular monitor
-
-        :param monitor_list: a list of carriers to be monitored (in MNC/MCC form)
-        :type monitor_list: list
-        :at_serial_port: in-phone device that connects to AT command at_serial_port
-        :type at_serial_port: string
         '''
 
         #MobileInsight Analyzer init
@@ -50,9 +48,9 @@ class IcellularMonitor(Analyzer):
         self.include_analyzer("LteRrcAnalyzer",[self.__on_event])
 
         print "iCellularMonitor: step 1"
-        self.__at_cmd = AtCmd(at_serial_port)  # AT command port
-        if monitor_list:
-            self.__monitor_list = monitor_list
+        self.__at_cmd = AtCmd(config.at_serial_port)  # AT command port
+        if config.monitor_list:
+            self.__monitor_list = config.monitor_list
         else:
             self.__monitor_list = []
         # self.__monitor_state = self.NULL
@@ -112,9 +110,6 @@ class IcellularMonitor(Analyzer):
         Start the active monitor (called by external source). 
         NOTE: this function is **non-blocking**, i.e., it exits immediately after
         manual network search is initiated.
-
-        :param monitor_list: a list of carriers to be monitored (in MNC/MCC form)
-        :type monitor_list: list
         '''
        
 

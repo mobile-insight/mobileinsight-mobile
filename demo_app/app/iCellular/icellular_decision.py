@@ -12,20 +12,20 @@ Author: Yuanjie Li
 
 from mobile_insight.analyzer import Analyzer
 
+import config
+
 
 class IcellularDecision(Analyzer):
 
-    def __init__(self, decision_strategy="TestStrategy"):
+    # def __init__(self, decision_strategy="TestStrategy"):
+    def __init__(self):
         '''
         Initialize the decision engine
-
-        :param decision_strategy: the name of the decision strategy (located in app/decision_strategy)
-        :type monitor_list: string
         '''
 
         Analyzer.__init__(self)
 
-        self.decision_strategy = decision_strategy
+        self.decision_strategy = config.decision_strategy
         self.__decision_module = None
         self.__import_decision_strategy()
 
