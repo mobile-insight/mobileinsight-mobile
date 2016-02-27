@@ -422,7 +422,7 @@ class IcellularMonitor(Analyzer):
                     self.__cur_radio_quality=log_item_dict['Msg'][index:]
 
                     #TODO: Zengwen, please run decision fault function here
-                    self.__is_csfb_unavailable(log_xml)
+                    self.__is_csfb_unavailable(log_xml) #FIXME: log_xml does not exist!
 
                     #Send available carrier networks to decision
                     self.__observed_list[self.__cur_plmn+"-"+self.__cur_rat]=self.__cur_radio_quality
