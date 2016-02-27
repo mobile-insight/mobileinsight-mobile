@@ -416,10 +416,10 @@ class IcellularMonitor(Analyzer):
 
             if self.__cur_rat == "4G":
                 #Track RSRP
-                index = msg.log_item_dict['Msg'].find("BPLMN LOG: Saved measurement results. rsrp=")
+                index = log_item_dict['Msg'].find("BPLMN LOG: Saved measurement results. rsrp=")
                 if index != -1:
                     #LTE RSRP value (in dBm)
-                    self.__cur_radio_quality=msg.log_item_dict['Msg'][index:]
+                    self.__cur_radio_quality=log_item_dict['Msg'][index:]
 
                     #TODO: Zengwen, please run decision fault function here
                     self.__is_csfb_unavailable(log_xml)
@@ -433,12 +433,12 @@ class IcellularMonitor(Analyzer):
                     self.__cur_radio_quality=None  #RSRP or RSCP
             elif self.__cur_rat == "3G":
                 #Track RSCP
-                field_list = msg.log_item_dict['Msg'].split(' ')
+                field_list = log_item_dict['Msg'].split(' ')
                 for field in field_list:
                     index = field.find("rscp=")
                     if index !=-1:
                         #WCDMA RSCP value (in dBm)
-                        self.__cur_radio_quality=msg.log_item_dict['Msg'][index:]
+                        self.__cur_radio_quality=log_item_dict['Msg'][index:]
 
                         #TODO: Zengwen, please run decision fault function here
 
