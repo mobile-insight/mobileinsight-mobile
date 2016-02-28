@@ -9,6 +9,8 @@ Author: Yuanjie Li
 from cart_interface import getTree, predict
 from icellular_strategy_base import IcellularStrategyBase
 
+import config
+
 
 class IcellularStrategyTemp(IcellularStrategyBase):
 
@@ -31,6 +33,27 @@ class IcellularStrategyTemp(IcellularStrategyBase):
                 best_lantency = result
                 best_carrier = carrier
         return best_carrier
+
+    def training(self,sample):
+        """
+        Online training sample collection and training. 
+
+        Currently this function is for regression tree algorithm only
+
+        :param sample: a sample from serving carrier network
+        :type sample: a tuple of (x,y), where x is the feature vector (dictionary), and y is the prediction metric
+        """
+        #Yuanjie: the following is how you can use this training sample
+
+        #Extract feature vector and prediction metric
+        sample_feature = sample.x   # a dictionary of all sample features
+        prediction_metric = sample.y
+
+        #learn which type of prediction metric we are using (latency, throughput, etc.)
+        prediction_metric_type = config.prediction_metric_type  #this is a string that indicates the type (defined in config.py)
+
+        signal_strength = sample_feature['signal_strength']
+        #Do your task here
 
 if __name__ == '__main__':
     test = {'att': {'1': 2,'2':-100.8,'3':0,'4': 90},'tmobile':{'1':2, '2':-109.6,'3':0, '4': 99.5 }}

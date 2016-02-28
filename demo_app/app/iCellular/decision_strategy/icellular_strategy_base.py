@@ -6,12 +6,10 @@ This defines the common interface for selection decision.
 
 Author: Yuanjie Li
 """
-# from cart_interface import getTree, predict
 
 class IcellularStrategyBase(object):
 
     def __init__(self):
-        # self.fit = getTree()
         pass
 
     def selection(self, carrier_network_list):
@@ -21,3 +19,16 @@ class IcellularStrategyBase(object):
         :param carrier_network_list: a dict of available carriers
         :returns: the target carrier network, or None if no switch is needed
         """
+        return None
+
+
+    def training(self,sample):
+    	"""
+    	Online training sample collection and training. 
+
+    	Currently this function is for regression tree algorithm only
+
+    	:param sample: a sample from serving carrier network
+    	:type sample: a tuple of (x,y), where x is the feature vector (dictionary), and y is the prediction metric
+    	"""
+    	pass

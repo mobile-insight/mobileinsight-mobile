@@ -14,6 +14,11 @@ from mobile_insight.analyzer import Analyzer
 
 import config
 
+class Sample:
+    def __init__(self,x,y):
+        self.x = x
+        self.y = y
+
 
 class IcellularDecision(Analyzer):
 
@@ -30,6 +35,9 @@ class IcellularDecision(Analyzer):
         self.__import_decision_strategy()
 
         self.include_analyzer("IcellularMonitor",[self.__selection_decision])
+        self.include_analyzer("IcellularSampleCollection",[self.__create_sample])
+
+        self.__cur_feature_vector = None
 
     def set_source(self,source):
         """
@@ -61,8 +69,20 @@ class IcellularDecision(Analyzer):
 
         :param msg: this is a list of available carrier networks and their runtime measurements
         '''
+        self.__cur_feature_vector = msg
         res = self.__decision_module.selection(msg)
         if res:
             #Inter-carrier switch is needed. Send an event to switch engine
             self.send(res)
+
+    def __create_sample(self,msg):
+        '''
+        Create a new training sample
+
+        :param msg: a new prediction metric
+        '''
+        sample = Sample()
+        sample.y = msg
+        sample.x = self.__cur_feature_vector
+        res = self.__decision_module.training(sample)
 
