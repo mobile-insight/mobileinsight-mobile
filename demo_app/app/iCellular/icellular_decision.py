@@ -75,14 +75,12 @@ class IcellularDecision(Analyzer):
             #Inter-carrier switch is needed. Send an event to switch engine
             self.send(res)
 
-    def __create_sample(self,msg):
+    def __create_sample(self,metric):
         '''
         Create a new training sample
 
         :param msg: a new prediction metric
         '''
-        sample = Sample()
-        sample.y = msg
-        sample.x = self.__cur_feature_vector
+        sample = Sample(metric,self.__cur_feature_vector)
         res = self.__decision_module.training(sample)
 

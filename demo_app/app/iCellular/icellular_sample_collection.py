@@ -28,7 +28,8 @@ class IcellularSampleCollection(Analyzer):
         self.__prediction_metric = None
         self.__import_prediction_metric()
 
-        self.add_source_callback(self.__collect_sample)
+        if self.__prediction_metric:
+            self.add_source_callback(self.__collect_sample)
 
     def set_source(self,source):
         """
@@ -38,6 +39,11 @@ class IcellularSampleCollection(Analyzer):
         :type source: trace collector
         """
         Analyzer.set_source(self,source)
+        #Enable the logs required by the specific prediction metric
+        if self.__prediction_metric:
+            logs = self.__prediction_metric.log_needed()
+            if logs:
+                source.enable_log(logs) 
 
 
     def __import_prediction_metric(self):
@@ -60,7 +66,7 @@ class IcellularSampleCollection(Analyzer):
 
         :param msg: not used
         '''
-        res = self.__prediction_metric.collect()
+        res = self.__prediction_metric.collect(msg)
         if res:
             self.send(res)
 

@@ -16,4 +16,4 @@ at_serial_port = "/dev/smd11"
 #decision strategy used
 decision_strategy = "TestStrategy"	
 #prediction metric
-prediction_metric_type = "OpensignalLatency"
+prediction_metric_type = "RadioLinkCapacity"
