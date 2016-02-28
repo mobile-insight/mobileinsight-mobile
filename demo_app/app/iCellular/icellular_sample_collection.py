@@ -42,14 +42,14 @@ class IcellularSampleCollection(Analyzer):
 
     def __import_prediction_metric(self):
         '''
-        Import the module of decision strategy specified by self.decision_strategy
+        Import the module of sample collection methods specified by self.decision_strategy
         '''
         try:
             module_tmp = __import__("sample_collection")
             analyzer_tmp = getattr(module_tmp,self.prediction_metric_type)
             self.__prediction_metric = analyzer_tmp()
         except Exception, e:
-            print "iCellular: no sample prediction metric "+self.decision_strategy
+            print "iCellular: no sample prediction metric "+self.prediction_metric_type
             import traceback
             import sys
             sys.exit(str(traceback.format_exc()))    
