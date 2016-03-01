@@ -191,7 +191,7 @@ class HoeffdingTree:
     F = 0.995
     def __init__(self, stat = [0,0], resPredict = None, left = None, right = None, attrNum = None,
                 attrType = 'con', splitDis = None, splitCon = None, attrInd = None, counterN = 0, counterT = 0, counterG = 0,
-                PHStat = [0, 0, 0], algTree = None, sErr = 0, grow = 'false', lastQi = 1,  __attrTree = []):
+                PHStat = [0, 0, 0], altTree = None, sErr = 0, grow = 'false', lastQi = 1,  __attrTree = []):
         self.stat = stat #(N, Sigma y)
         self.resPredict = resPredict
         self.left = left
@@ -399,7 +399,7 @@ class HoeffdingTree:
                 self.altTree.sErr += lAltTree
                 return -1
 
-   def subUpdate(self, sample): # traverse the tree till the leaf node where the sample lies in, return the leaf node
+    def subUpdate(self, sample): # traverse the tree till the leaf node where the sample lies in, return the leaf node
         if (self.left == None) & (self.right == None): # initilized root or leaf node
             for x in range (0, len(sample)-1):
                 self.__attrTree[x].add(float(sample[x]), float(sample[-1]))
@@ -459,21 +459,20 @@ class HoeffdingTree:
         if (self.left == None) & (self.right == None):
             return self.resPredict
         #elif self.attr_type == 'dis':
-        elif self.attr_type == 'con':
+        elif self.attrType == 'con':
             if sample[self.attrInd] <= self.splitCon:
                 return self.left.predict(sample)
             elif sample[self.attrInd] > self.splitCon:
                 return self.right.predict(sample)
-                
+
     def importTree(self, treeNode):
-        self.attrType = 'con'
-        self.splitCon = treeNode["S"]
         self.resPredict = treeNode["M"]
-        if treeNode["L"] != None:
+        if treeNode.has_key('V'):
             self.left = HoeffdingTree(attrNum = 4)
-            self.importTree(self.left, treeNode["L"])
-        if treeNode["R"] != None:
+            self.left.importTree(treeNode["L"])
             self.right = HoeffdingTree(attrNum = 4)
-            self.importTree(self.right, treeNode["R"]
-        if treeNone["L"] == None & treeNode["R"] == None:
-            return
+            self.right.importTree(treeNode["R"])
+            self.attrType = 'con'
+            self.splitCon = treeNode["S"]
+            self.attrInd = treeNode["V"]
+
