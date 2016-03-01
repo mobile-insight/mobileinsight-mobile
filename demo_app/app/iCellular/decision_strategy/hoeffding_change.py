@@ -464,3 +464,16 @@ class HoeffdingTree:
                 return self.left.predict(sample)
             elif sample[self.attrInd] > self.splitCon:
                 return self.right.predict(sample)
+                
+    def importTree(self, treeNode):
+        self.attrType = 'con'
+        self.splitCon = treeNode["S"]
+        self.resPredict = treeNode["M"]
+        if treeNode["L"] != None:
+            self.left = HoeffdingTree(attrNum = 4)
+            self.importTree(self.left, treeNode["L"])
+        if treeNode["R"] != None:
+            self.right = HoeffdingTree(attrNum = 4)
+            self.importTree(self.right, treeNode["R"]
+        if treeNone["L"] == None & treeNode["R"] == None:
+            return

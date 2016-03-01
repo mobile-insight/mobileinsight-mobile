@@ -12,7 +12,6 @@ from hoeffding_change import HoeffdingTree
 
 import config
 
-
 class IcellularStrategyTemp(IcellularStrategyBase):
 
     def __init__(self):
