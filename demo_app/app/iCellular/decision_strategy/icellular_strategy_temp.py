@@ -8,6 +8,7 @@ Author: Yuanjie Li
 """
 from cart_interface import getTree, predict
 from icellular_strategy_base import IcellularStrategyBase
+from hoeffding_change import HoeffdingTree
 
 import config
 
@@ -15,8 +16,11 @@ import config
 class IcellularStrategyTemp(IcellularStrategyBase):
 
     def __init__(self):
-	IcellularStrategyBase.__init__(self)
+        IcellularStrategyBase.__init__(self)
         self.fit = getTree()
+        self.hoeffdingTree = HoeffdingTree(attrNum = 4)
+        self.HoeffdingTree.importTree(self.fit) # import initilized tree
+        # self.prediction_metric_type = config.prediction_metric_type
 
     def selection(self, carrier_network_list):
         """
@@ -28,7 +32,8 @@ class IcellularStrategyTemp(IcellularStrategyBase):
         best_lantency = 1e10
         best_carrier = None
         for carrier, data in carrier_network_list.items():
-            result = predict(self.fit, [y for x, y in data.items()])
+            result = self.HoeffdingTree.predict([y for x, y in data.items()])
+            # result = predict(self.fit, [y for x, y in data.items()])
             if result < best_lantency:
                 best_lantency = result
                 best_carrier = carrier
@@ -54,6 +59,7 @@ class IcellularStrategyTemp(IcellularStrategyBase):
 
         signal_strength = sample_feature['signal_strength']
         #Do your task here
+        self.HoeffdingTree.train([y for x, y in sample_feature.items()])
 
 if __name__ == '__main__':
     test = {'att': {'1': 2,'2':-100.8,'3':0,'4': 90},'tmobile':{'1':2, '2':-109.6,'3':0, '4': 99.5 }}
