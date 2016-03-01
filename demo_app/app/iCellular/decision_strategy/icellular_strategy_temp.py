@@ -50,16 +50,18 @@ class IcellularStrategyTemp(IcellularStrategyBase):
         #Yuanjie: the following is how you can use this training sample
 
         #Extract feature vector and prediction metric
-        sample_feature = sample.x   # a dictionary of all sample features
-        prediction_metric = sample.y
+        sample_feature = sample['x']   # a dictionary of all sample features
+        prediction_metric = sample['y']
 
         #learn which type of prediction metric we are using (latency, throughput, etc.)
-        prediction_metric_type = config.prediction_metric_type  #this is a string that indicates the type (defined in config.py)
+        #prediction_metric_type = config.prediction_metric_type  #this is a string that indicates the type (defined in config.py)
 
-        signal_strength = sample_feature['signal_strength']
+        #signal_strength = sample_feature['signal_strength']
         #Do your task here
-        self.hoeffdingTree.train([y for x, y in sample_feature.items()])
+        self.hoeffdingTree.train([y for x, y in sample_feature.items()] + [prediction_metric])
 
 if __name__ == '__main__':
     test = {'att': {'1': 2,'2':-100.8,'3':0,'4': 90},'tmobile':{'1':2, '2':-109.6,'3':0, '4': 99.5 }}
- IcellularStrategyTemp().selection(test)
+    tester = IcellularStrategyTemp()
+    tester.training({'x':{'1':2, '2':4, '3':5, '4':6}, 'y':4.3});
+    tester.selection(test)

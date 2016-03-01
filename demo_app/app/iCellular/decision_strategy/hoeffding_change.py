@@ -284,7 +284,7 @@ class HoeffdingTree:
                     lNode = self
             return [lNode, adapt, absErr]
         #elif self.attr_type == 'dis': # internal node
-        elif self.attr_type == 'con':
+        elif self.attrType == 'con':
             if sample[self.attrInd] <= self.splitCon: #left node
                 self.left.counterT += 1
                 self.left.counterG += 1
@@ -332,7 +332,7 @@ class HoeffdingTree:
 
     def PHTest(self, err):
         self.PHStat[1] = (self.PHStat[1] * (self.counterT - 1) + err) / self.counterT
-        self.PHStat[0] += err - PHStat[1] - self.ALPHA
+        self.PHStat[0] += err - self.PHStat[1] - self.ALPHA
         if self.counterT == 1:
             self.PHStat[2] = PHStat[0]
         else:
