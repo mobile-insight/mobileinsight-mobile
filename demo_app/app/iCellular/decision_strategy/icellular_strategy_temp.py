@@ -31,12 +31,17 @@ class IcellularStrategyTemp(IcellularStrategyBase):
         """
         best_lantency = 1e10
         best_carrier = None
+
         for carrier, data in carrier_network_list.items():
-            result = self.hoeffdingTree.predict([y for x, y in data.items()])
+            data = [y for x, y in data.items()]
+            while (len(data) < 4) data.append(0.0)
+
+            result = self.hoeffdingTree.predict(data)
             # result = predict(self.fit, [y for x, y in data.items()])
             if result < best_lantency:
                 best_lantency = result
                 best_carrier = carrier
+        print 'IcellularStrategyTemp', carrier_network_list, best_carrier
         return best_carrier
 
     def training(self,sample):
@@ -59,7 +64,10 @@ class IcellularStrategyTemp(IcellularStrategyBase):
 
         #signal_strength = sample_feature['signal_strength']
         #Do your task here
-        self.hoeffdingTree.train([y for x, y in sample_feature.items()] + [prediction_metric])
+        print  'IcellularStrategyTemp', 'training', sample.x, sample.y
+        data = [y for x, y in sample_feature.items()]
+        while (len(data) < 4) data.append(0.0);
+        self.hoeffdingTree.train(data + [prediction_metric])
 
 if __name__ == '__main__':
     test = {'att': {'1': 2,'2':-100.8,'3':0,'4': 90},'tmobile':{'1':2, '2':-109.6,'3':0, '4': 99.5 }}

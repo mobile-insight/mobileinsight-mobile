@@ -3,7 +3,7 @@
 """
 iCellular inter-carrier selection engine
 
-It loads the decision strategy and performs inter-carrier selection. 
+It loads the decision strategy and performs inter-carrier selection.
 NOTE: this module is NOT decision strategy itself
 
 Author: Yuanjie Li
@@ -87,7 +87,7 @@ class IcellularDecision(Analyzer):
             print "iCellular: no decision strategy "+self.decision_strategy
             import traceback
             import sys
-            sys.exit(str(traceback.format_exc()))    
+            sys.exit(str(traceback.format_exc()))
 
     def __selection_decision(self,msg):
         '''
@@ -114,6 +114,6 @@ class IcellularDecision(Analyzer):
         if not self.__cur_feature_vector:
             return
         print "sample: ("+str(self.__cur_feature_vector)+","+str(metric)+")"
-        sample = Sample(metric,self.__cur_feature_vector)
+        sample = Sample(self.__cur_feature_vector, metric)
         res = self.__decision_module.training(sample)
 
