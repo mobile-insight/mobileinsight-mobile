@@ -11,6 +11,7 @@ Author: Yuanjie Li
 
 
 from mobile_insight.analyzer import Analyzer
+from mobile_insight.element import Event
 
 import config
 
@@ -36,8 +37,11 @@ class IcellularDecision(Analyzer):
 
         self.include_analyzer("IcellularMonitor",[self.__selection_decision])
         self.include_analyzer("IcellularSampleCollection",[self.__create_sample])
+        self.include_analyzer("LteNasAnalyzer",[self.__update_cur_feature_vector])
+        # self.include_analyzer("UmtsNasAnalyzer",[self.__update_cur_feature_vector])
 
-        self.__cur_feature_vector = None
+        self.__cur_feature_vector = {}
+        self.__cur_signal_strength = None #Yuanjie: a temporarily impl for signal strength
 
     def set_source(self,source):
         """
@@ -47,6 +51,28 @@ class IcellularDecision(Analyzer):
         :type source: trace collector
         """
         Analyzer.set_source(self,source)
+
+
+    def __update_cur_feature_vector(self,msg):
+        """
+        Update current vector feature
+        """
+
+        if msg.type_id == "LTE_NAS_ESM_Plain_OTA_Incoming_Message" \
+        or msg.type_id == "LTE_NAS_ESM_Plain_OTA_Outgoing_Message":
+            # LTE NAS: get QoS
+            qos_profile = self.get_analyzer("LteNasAnalyzer").get_qos()
+
+            if not self.__cur_signal_strength \
+            or not qos_profile.delay_class \
+            or not qos_profile.qci:
+                return
+
+            self.__cur_feature_vector['signal_strength'] = self.__cur_signal_strength
+            self.__cur_feature_vector['delay_class']=qos_profile.delay_class
+            self.__cur_feature_vector['qci']=qos_profile.qci
+            # self.__cur_feature_vector['max_bitrate_dlink']=qos_profile.max_bitrate_dlink
+            # self.__cur_feature_vector['guaranteed_bitrate_dlink']=qos_profile.guaranteed_bitrate_dlink
 
 
     def __import_decision_strategy(self):
@@ -69,11 +95,15 @@ class IcellularDecision(Analyzer):
 
         :param msg: this is a list of available carrier networks and their runtime measurements
         '''
-        self.__cur_feature_vector = msg
-        res = self.__decision_module.selection(msg)
-        if res:
-            #Inter-carrier switch is needed. Send an event to switch engine
-            self.send(res)
+        # print "__selection_decision: "+str(msg)
+
+        if msg.type_id == "iCellular_selection":
+            res = self.__decision_module.selection(msg.data)
+            if res:
+                #Inter-carrier switch is needed. Send an event to switch engine
+                self.send(res)
+        elif msg.type_id == "iCellular_serv_rss":
+            self.__cur_signal_strength = msg.data
 
     def __create_sample(self,metric):
         '''
@@ -81,6 +111,9 @@ class IcellularDecision(Analyzer):
 
         :param msg: a new prediction metric
         '''
+        if not self.__cur_feature_vector:
+            return
+        print "sample: ("+str(self.__cur_feature_vector)+","+str(metric)+")"
         sample = Sample(metric,self.__cur_feature_vector)
         res = self.__decision_module.training(sample)
 
