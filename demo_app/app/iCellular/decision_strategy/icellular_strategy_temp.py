@@ -10,11 +10,12 @@ from cart_interface import getTree, predict
 from icellular_strategy_base import IcellularStrategyBase
 from hoeffding_change import HoeffdingTree
 
-#import config
+import config
 
 class IcellularStrategyTemp(IcellularStrategyBase):
 
     def __init__(self):
+        print "IcellularStrategyTemp is called"
         IcellularStrategyBase.__init__(self)
         self.fit = getTree()
         self.hoeffdingTree = HoeffdingTree(attrNum = 4)
@@ -50,8 +51,8 @@ class IcellularStrategyTemp(IcellularStrategyBase):
         #Yuanjie: the following is how you can use this training sample
 
         #Extract feature vector and prediction metric
-        sample_feature = sample['x']   # a dictionary of all sample features
-        prediction_metric = sample['y']
+        sample_feature = sample.x   # a dictionary of all sample features
+        prediction_metric = sample.y
 
         #learn which type of prediction metric we are using (latency, throughput, etc.)
         #prediction_metric_type = config.prediction_metric_type  #this is a string that indicates the type (defined in config.py)

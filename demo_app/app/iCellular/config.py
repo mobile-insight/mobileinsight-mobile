@@ -14,6 +14,6 @@ monitor_list = ["310260-4G", "310260-3G", "310120-4G", "310120-3G"]
 at_serial_port = "/dev/smd11"
 
 #decision strategy used
-decision_strategy = "TestStrategy"	
+decision_strategy = "IcellularStrategyTemp"	
 #prediction metric
 prediction_metric_type = "RadioLinkCapacity"
