@@ -8,7 +8,7 @@ Author: Yuanjie Li
 """
 from cart_interface import getTree, predict
 from icellular_strategy_base import IcellularStrategyBase
-from hoeffding_change import HoeffdingTree
+from hoeffding import HoeffdingTree
 
 import config
 
@@ -65,4 +65,4 @@ if __name__ == '__main__':
     test = {'att': {'1': 2,'2':-100.8,'3':0,'4': 90},'tmobile':{'1':2, '2':-109.6,'3':0, '4': 99.5 }}
     tester = IcellularStrategyTemp()
     tester.training({'x':{'1':2, '2':4, '3':5, '4':6}, 'y':4.3});
-    tester.selection(test)
+    print tester.selection(test)
