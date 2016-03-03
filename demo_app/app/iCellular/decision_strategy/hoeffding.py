@@ -306,10 +306,13 @@ class HoeffdingTree:
                             if SDR > SDRList[attr2]:
                                 attr2 = x
                 epsilon = math.sqrt(math.log(1 / self.DELTA) / (2 * self.N_MIN))
-                if SDRList[attr2] / SDRList[attr1] + epsilon < 1: # criterion_is_satisfied
-                    self.split(attr1, splitSpot, sample, leftSigmayTotal / leftTotal, (self.stat[1] - leftSigmayTotal) / (self.stat[0] - leftTotal))
-                elif SDRList[attr2] / SDRList[attr1] + self.TAU >= 1: # tie -> either is okay
-                    self.split(attr1, splitSpot, sample, leftSigmayTotal / leftTotal, (self.stat[1] - leftSigmayTotal) / (self.stat[0] - leftTotal))
+                # if SDRList[attr1] == 0:
+                #     print "I'm here"
+                if SDRList[attr1] != 0:
+                    if SDRList[attr2] / SDRList[attr1] + epsilon < 1: # criterion_is_satisfied
+                        self.split(attr1, splitSpot, sample, leftSigmayTotal / leftTotal, (self.stat[1] - leftSigmayTotal) / (self.stat[0] - leftTotal))
+                    elif SDRList[attr2] / SDRList[attr1] + self.TAU >= 1: # tie -> either is okay
+                        self.split(attr1, splitSpot, sample, leftSigmayTotal / leftTotal, (self.stat[1] - leftSigmayTotal) / (self.stat[0] - leftTotal))
                 # reset E-BST for each node
                 self.stat = [0,0]
                 for x in range (0, len(sample)-1):
@@ -472,10 +475,11 @@ class HoeffdingTree:
                             if SDR > SDRList[attr2]:
                                 attr2 = x
                 epsilon = math.sqrt(math.log(1 / self.DELTA) / (2 * self.N_MIN))
-                if SDRList[attr2] / SDRList[attr1] + epsilon < 1: # criterion_is_satisfied
-                    self.split(attr1, splitSpot, sample, leftSigmayTotal / leftTotal, (self.stat[1] - leftSigmayTotal) / (self.stat[0] - leftTotal))
-                elif SDRList[attr2] / SDRList[attr1] + self.TAU >= 1: # tie -> either is okay
-                    self.split(attr1, splitSpot, sample, leftSigmayTotal / leftTotal, (self.stat[1] - leftSigmayTotal) / (self.stat[0] - leftTotal))
+                if SDRList[attr1] != 0:
+                    if SDRList[attr2] / SDRList[attr1] + epsilon < 1: # criterion_is_satisfied
+                        self.split(attr1, splitSpot, sample, leftSigmayTotal / leftTotal, (self.stat[1] - leftSigmayTotal) / (self.stat[0] - leftTotal))
+                    elif SDRList[attr2] / SDRList[attr1] + self.TAU >= 1: # tie -> either is okay
+                        self.split(attr1, splitSpot, sample, leftSigmayTotal / leftTotal, (self.stat[1] - leftSigmayTotal) / (self.stat[0] - leftTotal))
                 # reset E-BST for each node
                 self.stat = [0,0]
                 for x in range (0, len(sample)-1):
