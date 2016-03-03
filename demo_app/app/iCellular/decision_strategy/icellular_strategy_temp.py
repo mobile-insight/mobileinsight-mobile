@@ -10,7 +10,7 @@ from cart_interface import getTree, predict
 from icellular_strategy_base import IcellularStrategyBase
 from hoeffding import HoeffdingTree
 
-import config
+#import config
 
 class IcellularStrategyTemp(IcellularStrategyBase):
 
@@ -33,10 +33,11 @@ class IcellularStrategyTemp(IcellularStrategyBase):
         best_carrier = None
 
         for carrier, data in carrier_network_list.items():
-            data = [y for x, y in data.items()]
-            while (len(data) < 4) data.append(0.0)
+            d = [y for x, y in data.items()]
+            while (len(d) < 4):
+                d.append(0.0)
 
-            result = self.hoeffdingTree.predict(data)
+            result = self.hoeffdingTree.predict(d)
             # result = predict(self.fit, [y for x, y in data.items()])
             if result < best_lantency:
                 best_lantency = result
@@ -66,11 +67,18 @@ class IcellularStrategyTemp(IcellularStrategyBase):
         #Do your task here
         print  'IcellularStrategyTemp', 'training', sample.x, sample.y
         data = [y for x, y in sample_feature.items()]
-        while (len(data) < 4) data.append(0.0);
-        self.hoeffdingTree.train(data + [prediction_metric])
+        while (len(data) < 4):
+            data.append(0.0)
+        print "TRAIN_LOG", data + [float(prediction_metric)]
+        #self.hoeffdingTree.train(data + [float(prediction_metric)])
 
 if __name__ == '__main__':
-    test = {'att': {'1': 2,'2':-100.8,'3':0,'4': 90},'tmobile':{'1':2, '2':-109.6,'3':0, '4': 99.5 }}
+    #test = {'att': {'1': 2,'2':-100.8,'3':0,'4': 90},'tmobile':{'1':2, '2':-109.6,'3':0, '4': 99.5 }}
+    #tester = IcellularStrategyTemp()
+    #tester.training({'x':{'1':2, '2':4, '3':5, '4':6}, 'y':4.3});
+    #print tester.selection(test)
+    import json
     tester = IcellularStrategyTemp()
-    tester.training({'x':{'1':2, '2':4, '3':5, '4':6}, 'y':4.3});
-    print tester.selection(test)
+    for line in open('data', 'r'):
+       tester.hoeffdingTree.train(json.loads(line))
+
