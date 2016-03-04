@@ -22,6 +22,7 @@ except ImportError:
     import xml.etree.ElementTree as ET
 
 from mobile_insight.analyzer import Analyzer, LteRrcAnalyzer
+from mobile_insight.element import Event
 
 
 class IcellularMonitor(Analyzer):
@@ -103,6 +104,10 @@ class IcellularMonitor(Analyzer):
         source.enable_log("LTE_NAS_ESM_Plain_OTA_Outgoing_Message")
         source.enable_log("LTE_NAS_EMM_Plain_OTA_Incoming_Message")
         source.enable_log("LTE_NAS_EMM_Plain_OTA_Outgoing_Message")
+
+        #Serving cell's signal strength
+        # source.enable_log("LTE_ML1_Serving_Cell_Measurement_Result")
+        source.enable_log("LTE_ML1_Connected_Mode_LTE_Intra_Freq_Meas_Results")
 
 
     def run_monitor(self):
@@ -393,7 +398,8 @@ class IcellularMonitor(Analyzer):
             log_item      = msg.data.decode()
             log_item_dict = dict(log_item)
 
-            # print "iCellular: modem msg = " + str(log_item_dict)
+            if not log_item_dict.has_key('Msg'):
+                return
 
             if self.__cur_rat == "4G":
 
@@ -410,7 +416,9 @@ class IcellularMonitor(Analyzer):
 
                     #Send available carrier networks to decision
                     self.__observed_list[self.__cur_plmn+"-"+self.__cur_rat]=self.__cur_radio_quality
-                    self.send(self.__observed_list) #Currently observed carriers
+                    selection_event = Event(msg.timestamp,"iCellular_selection",self.__observed_list)
+                    self.send(selection_event)  #Currently observed carriers
+                    # self.send(self.__observed_list) #Currently observed carriers
                     #Reset current carrier network
                     self.__cur_plmn          = None  # MCC-MNC
                     self.__cur_rat           = None  # 4G or 3G
@@ -435,4 +443,13 @@ class IcellularMonitor(Analyzer):
                         self.__cur_plmn          = None  # MCC-MNC
                         self.__cur_rat           = None  # 4G or 3G
                         self.__cur_radio_quality = None  # RSRP or RSCP
+
+        elif msg.type_id == "LTE_ML1_Connected_Mode_LTE_Intra_Freq_Meas_Results":
+            log_item = msg.data.decode()
+            log_item_dict = dict(log_item)
+
+            serv_rsrp = log_item_dict['Serving Filtered RSRP(dBm)']
+
+            rss_event = Event(msg.timestamp,"iCellular_serv_rss",serv_rsrp)
+            self.send(rss_event)
 

@@ -82,7 +82,10 @@ struct real_time_query_t {
 	int proc;
 } __packed;
 
-char buf_read[4096] = {};
+
+#define BUFFER_SIZE	8192
+// char buf_read[4096] = {};
+char buf_read[BUFFER_SIZE] = {};	//From Haotian: improve diag_revealer reliability
 
 static double
 get_posix_timestamp () {
@@ -107,7 +110,8 @@ read_diag_cfg (const char *filename)
 	size_t file_sz = ftell(fp);
 	fseek(fp, 0L, SEEK_SET);
 
-	if (file_sz > 0 && file_sz <= 4096) {
+	// if (file_sz > 0 && file_sz <= 4096) {
+	if (file_sz > 0 && file_sz <= BUFFER_SIZE) {
 		ret.p = (char *) malloc(file_sz);
 		if (ret.p == NULL) {
 			fprintf(stderr, "Error: Failed to malloc.\n");
@@ -167,7 +171,6 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 		len++;
 		if (len >= 3) {
 			memcpy(send_buf + 4, p + i, len);
-			printf("hehehehehehehhehehhe %d / %d\n", i, pbuf_write->len);
 			printf("Writing %d bytes of data\n", len + 4);
 			print_hex(send_buf, len + 4);
 			fflush(stdout);
@@ -385,7 +388,7 @@ main (int argc, char **argv)
 			log_cut_size = LOG_CUT_SIZE_DEFAULT;
 		}
 		manager_init_state(&state, argv[3], log_cut_size);
-		// printf("log_cut_size = %lld\n", log_cut_size);
+		printf("log_cut_size = %lld\n", log_cut_size);
 		int ret2 = manager_start_new_log(&state, fifo_fd);
 		if (ret2 < 0 || state.log_fp == NULL) {
 			perror("open qmdl");
