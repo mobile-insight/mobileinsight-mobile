@@ -13,25 +13,25 @@ Author: Yuanjie Li
 """
 # import psutil
 
-from at_cmd import * 
+from at_cmd import *
 import config
 
-try: 
-    import xml.etree.cElementTree as ET 
-except ImportError: 
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
     import xml.etree.ElementTree as ET
 
 from mobile_insight.analyzer import Analyzer, LteRrcAnalyzer
 
-class IcellularMonitor(Analyzer):
 
+class IcellularMonitor(Analyzer):
     '''
     Monitoring states
     '''
     # NULL = 0;    #monitoring not started
-    # STARTED = 1;    #manual network search is initiated   
+    # STARTED = 1; #manual network search is initiated
 
-    
+
     # def __init__(self, monitor_list=[], at_serial_port="/dev/smd11"):
     def __init__(self):
 
@@ -61,15 +61,15 @@ class IcellularMonitor(Analyzer):
         self.__observed_list = {}    
 
         #The following memebers track the currently probed carrier network
-        self.__cur_plmn = None #MCC-MNC
-        self.__cur_rat = None  #4G or 3G
-        self.__cur_radio_quality = None  #RSRP or RSCP
+        self.__cur_plmn          = None # MCC-MNC
+        self.__cur_rat           = None # 4G or 3G
+        self.__cur_radio_quality = None # RSRP or RSCP
 
         print "iCellularMonitor: step 3"
-        self.__network_inaccessible = False   # fault prevention case I
+        self.__network_inaccessible = False # fault prevention case I
         self.__csfb_pref_for_eutran = False
-        self.__csfb_unavailable = False       # fault prevention case II
-        self.__selection_unstable = False     # fault prevention case III
+        self.__csfb_unavailable     = False # fault prevention case II
+        self.__selection_unstable   = False # fault prevention case III
 
     def __on_event(self, event):
         """
@@ -219,10 +219,10 @@ class IcellularMonitor(Analyzer):
                 field_val = {}
 
                 # remember to set to the default value based on TS36.331
-                field_val['lte-rrc.ac_BarringForEmergency'] = False #mandatory
+                field_val['lte-rrc.ac_BarringForEmergency']     = False #mandatory
                 field_val['lte-rrc.ac_BarringForMO_Signalling'] = False #optional
-                field_val['lte-rrc.ac_BarringForMO_Data'] = False #optional
-                field_val['lte-rrc.ac_BarringForCSFB_r10'] = False #optional
+                field_val['lte-rrc.ac_BarringForMO_Data']       = False #optional
+                field_val['lte-rrc.ac_BarringForCSFB_r10']      = False #optional
 
                 for val in field.iter('field'):
                     field_val[val.get('name')] = val.get('show')
@@ -326,45 +326,29 @@ class IcellularMonitor(Analyzer):
             # print "iCellular: __active_monitor.LTE -- decoded"
 
             if self.__is_lte_sib1(log_xml):
-                self.__cur_plmn=self.__parse_lte_plmn(log_xml) #MCC-MNC
-                self.__cur_rat="4G"
-                self.__cur_radio_quality=None  #4G RSRP
+                self.__cur_plmn          = self.__parse_lte_plmn(log_xml) #MCC-MNC
+                self.__cur_rat           = "4G"
+                self.__cur_radio_quality = None  #4G RSRP
 
                 print "iCellular: __active_monitor.LTE -- is sib1? called"
                 print "iCellular: __active_monitor.LTE -- self.__cur_plmn = " + self.__cur_plmn
 
             # print "iCellular: __active_monitor.LTE -- calling LteRrcAnalyzer"
             # print str(self.get_analyzer("LteRrcAnalyzer").get_cur_cell_config())
-            '''
-            02-20 17:14:12.936  1497  1510 I python  : iCellular: __active_monitor.LTE -- calling LteRrcAnalyzer
-            02-20 17:14:12.936  1497  1510 I python  : <mobile_insight.analyzer.lte_rrc_analyzer.LteRrcConfig instance at 0xe0098b98>
-            02-20 17:14:12.940  1497  1510 I python  : Traceback (most recent call last):
-            02-20 17:14:12.940  1497  1510 I python  :   File "/data/user/0/edu.ucla.cs.wing.mobile_insight2/files/app/icellular/main.mi2app", line 41, in <module>
-            02-20 17:14:12.940  1497  1510 I python  :     src.run()
-            02-20 17:14:12.940  1497  1510 I python  :   File "/home/dale/android/python-for-android-old_toolchain/build/python-install/lib/python2.7/site-packages/mobile_insight/monitor/android_dev_diag_monitor.py", line 321, in run
-            02-20 17:14:12.940  1497  1510 I python  :   File "/home/dale/android/python-for-android-old_toolchain/build/python-install/lib/python2.7/site-packages/mobile_insight/element.py", line 38, in send
-            02-20 17:14:12.940  1497  1510 I python  :   File "/home/dale/android/python-for-android-old_toolchain/build/python-install/lib/python2.7/site-packages/mobile_insight/analyzer/analyzer.py", line 240, in recv
-            02-20 17:14:12.940  1497  1510 I python  :   File "/home/dale/android/python-for-android-old_toolchain/build/python-install/lib/python2.7/site-packages/mobile_insight/analyzer/protocol_analyzer.py", line 94, in __update_state
-            02-20 17:14:12.940  1497  1510 I python  : ValueError: dictionary update sequence element #0 has length 1; 2 is required
-            '''
 
             self.__is_network_inaccessible(log_xml)
             print "iCellular: __active_monitor -- updated __is_network_inaccessible = " + str(self.__network_inaccessible)
 
-        elif msg.type_id.startswith("LTE_NAS"):
-        # elif msg.type_id == "LTE_NAS_ESM_Plain_OTA_Incoming_Message" \
-        #     or msg.type_id == "LTE_NAS_ESM_Plain_OTA_Outgoing_Message" \
-        #     or msg.type_id == "LTE_NAS_EMM_Plain_OTA_Incoming_Message" \
-        #     or msg.type_id == "LTE_NAS_EMM_Plain_OTA_Outgoing_Message":  
+        elif msg.type_id.startswith("LTE_NAS"): 
             '''
             Monitor outgoing NAS, detect the voice preference.
             Run the decision-fault prevention function.
             '''
 
             #Convert msg to xml format
-            log_item = msg.data.decode()
+            log_item      = msg.data.decode()
             log_item_dict = dict(log_item)
-            log_xml = ET.XML(log_item_dict['Msg'])
+            log_xml       = ET.XML(log_item_dict['Msg'])
 
             print "iCellular: __active_monitor." + str(msg.type_id)
 
@@ -404,34 +388,41 @@ class IcellularMonitor(Analyzer):
             Extract RSRP/RSCP from each candidate, map it to the cell
             '''
 
-            print "iCellular: __active_monitor.Modem"
+            # print "iCellular: __active_monitor.Modem"
 
-            log_item = msg.data.decode()
+            log_item      = msg.data.decode()
             log_item_dict = dict(log_item)
 
+            # print "iCellular: modem msg = " + str(log_item_dict)
+
             if self.__cur_rat == "4G":
+
                 #Track RSRP
                 index = log_item_dict['Msg'].find("BPLMN LOG: Saved measurement results. rsrp=")
                 if index != -1:
+
+                    print "iCellular: I found rsrp"
                     #LTE RSRP value (in dBm)
                     self.__cur_radio_quality=log_item_dict['Msg'][index:]
 
                     #TODO: Zengwen, please run decision fault function here
-                    self.__is_csfb_unavailable(log_xml) #FIXME: log_xml does not exist!
+                    # self.__is_csfb_unavailable(log_xml) #FIXME: log_xml does not exist!
 
                     #Send available carrier networks to decision
                     self.__observed_list[self.__cur_plmn+"-"+self.__cur_rat]=self.__cur_radio_quality
                     self.send(self.__observed_list) #Currently observed carriers
                     #Reset current carrier network
-                    self.__cur_plmn=None #MCC-MNC
-                    self.__cur_rat=None  #4G or 3G
-                    self.__cur_radio_quality=None  #RSRP or RSCP
+                    self.__cur_plmn          = None  # MCC-MNC
+                    self.__cur_rat           = None  # 4G or 3G
+                    self.__cur_radio_quality = None  # RSRP or RSCP
             elif self.__cur_rat == "3G":
                 #Track RSCP
                 field_list = log_item_dict['Msg'].split(' ')
                 for field in field_list:
                     index = field.find("rscp=")
                     if index !=-1:
+
+                        print "iCellular: I found rscp"
                         #WCDMA RSCP value (in dBm)
                         self.__cur_radio_quality=log_item_dict['Msg'][index:]
 
@@ -441,7 +432,7 @@ class IcellularMonitor(Analyzer):
                         self.__observed_list[self.__cur_plmn+"-"+self.__cur_rat]=self.__cur_radio_quality
                         self.send(self.__observed_list) #Currently observed carriers
                         #Reset current carrier network
-                        self.__cur_plmn=None #MCC-MNC
-                        self.__cur_rat=None  #4G or 3G
-                        self.__cur_radio_quality=None  #RSRP or RSCP
+                        self.__cur_plmn          = None  # MCC-MNC
+                        self.__cur_rat           = None  # 4G or 3G
+                        self.__cur_radio_quality = None  # RSRP or RSCP
 

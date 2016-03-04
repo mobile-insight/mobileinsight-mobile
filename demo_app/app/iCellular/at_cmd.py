@@ -95,7 +95,7 @@ class AtCmd(object):
                 print "at command is NOT running: " + str(AtCmd.cmd_count) + " " + str(count)
                 return False
             else:
-                print "at command is running: AtCmd.cmd_count = " + str(AtCmd.cmd_count) + ", count = " + str(count)
+                # print "at command is running: AtCmd.cmd_count = " + str(AtCmd.cmd_count) + ", count = " + str(count)
                 return True
 
 
