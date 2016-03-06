@@ -70,10 +70,10 @@ class IcellularExec(Analyzer):
         :type network_type: string
         """
 
-        if str(self.get_network_type()) != str(network_type):
+        if str(self.__get_network_type()) != str(network_type):
             #Nexus 6P only: setPreferredNetworkType=87
             self.run_shell_cmd("service call phone 87 i32 " + str(network_type))
-            print "Current network type", self.get_network_type(), " switch to network type ", network_type
+            print "Current network type", self.__get_network_type(), " switch to network type ", network_type
 
 
     def __set_carrier(self, carrier_type):
