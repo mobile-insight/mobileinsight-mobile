@@ -43,6 +43,7 @@ class IcellularPredictionStrategy(IcellularStrategyBase):
                     best_carrier = carrier
             print 'IcellularStrategyTemp', carrier_network_list, best_carrier
         except Exception as e:
+            print "hehehe"
             print e
         return best_carrier
 

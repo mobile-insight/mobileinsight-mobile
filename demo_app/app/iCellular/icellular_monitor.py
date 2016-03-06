@@ -446,6 +446,8 @@ class IcellularMonitor(Analyzer):
                         self.__cur_rat           = None  # 4G or 3G
                         self.__cur_radio_quality = None  # RSRP or RSCP
 
+                        break;
+
         elif msg.type_id == "LTE_ML1_Connected_Mode_LTE_Intra_Freq_Meas_Results":
             log_item = msg.data.decode()
             log_item_dict = dict(log_item)
