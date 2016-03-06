@@ -438,7 +438,9 @@ class IcellularMonitor(Analyzer):
 
                         #Send available carrier networks to decision
                         self.__observed_list[self.__cur_plmn+"-"+self.__cur_rat]=self.__cur_radio_quality
-                        self.send(self.__observed_list) #Currently observed carriers
+                        selection_event = Event(msg.timestamp,"iCellular_selection",self.__observed_list)
+                        self.send(selection_event)  #Currently observed carriers
+                        # self.send(self.__observed_list) #Currently observed carriers
                         #Reset current carrier network
                         self.__cur_plmn          = None  # MCC-MNC
                         self.__cur_rat           = None  # 4G or 3G
