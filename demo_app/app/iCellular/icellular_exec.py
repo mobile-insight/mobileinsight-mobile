@@ -43,13 +43,7 @@ class IcellularExec(Analyzer):
         Analyzer.set_source(self,source)
 
     def _run_shell_cmd(self, cmd, wait = False):
-        p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        p.communicate(cmd+'\n')
-        if wait:
-            p.wait()
-            return p.returncode
-        else:
-            return None
+        return os.popen("su -c "+cmd).read()
 
     def __run_secret_code(self,code):
         """
