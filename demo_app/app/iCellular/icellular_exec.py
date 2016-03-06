@@ -76,7 +76,7 @@ class IcellularExec(Analyzer):
             print "Current network type", self.get_network_type(), " switch to network type ", network_type
 
 
-    def set_carrier(self, carrier_type):
+    def __set_carrier(self, carrier_type):
 
         """
         Change network carriers. It returns only after successful registeration
@@ -133,8 +133,8 @@ class IcellularExec(Analyzer):
             else: #Unsupported carrier network
                 return
 
-        self.set_carrier(target_carrier)
-        self.set_network_type(network_type)
+        self.__set_carrier(target_carrier)
+        self.__set_network_type(network_type)
 
 
 
