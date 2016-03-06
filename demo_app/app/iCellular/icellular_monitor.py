@@ -415,7 +415,7 @@ class IcellularMonitor(Analyzer):
                     # self.__is_csfb_unavailable(log_xml) #FIXME: log_xml does not exist!
 
                     #Send available carrier networks to decision
-                    self.__observed_list[self.__cur_plmn+"-"+self.__cur_rat]=self.__cur_radio_quality
+                    self.__observed_list[self.__cur_plmn+"-"+self.__cur_rat]={'signal_strength': self.__cur_radio_quality}
                     selection_event = Event(msg.timestamp,"iCellular_selection",self.__observed_list)
                     self.send(selection_event)  #Currently observed carriers
                     # self.send(self.__observed_list) #Currently observed carriers
@@ -430,14 +430,16 @@ class IcellularMonitor(Analyzer):
                     index = field.find("rscp=")
                     if index !=-1:
 
-                        print "iCellular: I found rscp"
+                        print "iCellular: I found rscp "
                         #WCDMA RSCP value (in dBm)
-                        self.__cur_radio_quality=log_item_dict['Msg'][index:]
+                        self.__cur_radio_quality=field[index+5:]
+
+                        print "lalala "+str(self.__cur_radio_quality)
 
                         #TODO: Zengwen, please run decision fault function here
 
                         #Send available carrier networks to decision
-                        self.__observed_list[self.__cur_plmn+"-"+self.__cur_rat]=self.__cur_radio_quality
+                        self.__observed_list[self.__cur_plmn+"-"+self.__cur_rat]={'signal_strength': self.__cur_radio_quality}
                         selection_event = Event(msg.timestamp,"iCellular_selection",self.__observed_list)
                         self.send(selection_event)  #Currently observed carriers
                         # self.send(self.__observed_list) #Currently observed carriers
