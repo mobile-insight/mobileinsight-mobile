@@ -82,7 +82,10 @@ struct real_time_query_t {
 	int proc;
 } __packed;
 
-char buf_read[4096] = {};
+
+#define BUFFER_SIZE	8192
+// char buf_read[4096] = {};
+char buf_read[BUFFER_SIZE] = {};	//From Haotian: improve diag_revealer reliability
 
 static double
 get_posix_timestamp () {
@@ -107,7 +110,8 @@ read_diag_cfg (const char *filename)
 	size_t file_sz = ftell(fp);
 	fseek(fp, 0L, SEEK_SET);
 
-	if (file_sz > 0 && file_sz <= 4096) {
+	// if (file_sz > 0 && file_sz <= 4096) {
+	if (file_sz > 0 && file_sz <= BUFFER_SIZE) {
 		ret.p = (char *) malloc(file_sz);
 		if (ret.p == NULL) {
 			fprintf(stderr, "Error: Failed to malloc.\n");
