@@ -23,7 +23,6 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ET
 
-# from mobile_insight.monitor import QmdlReplayer
 from mobile_insight.analyzer import Analyzer
 from mi2app_utils import get_cache_dir
 from jnius import autoclass  # SDcard Android
@@ -101,7 +100,7 @@ class UploadAnalyzer(Analyzer):
         """
         Callback to process upload requests.
 
-        :param msg: the upload message (qmdl file location) from trace collector.
+        :param msg: the upload message (diag log file location) from trace collector.
         :type msg: Event
         """
         if (msg.type_id.startswith("LTE_") or msg.type_id.startswith("WCDMA_") or msg.type_id.startswith("UMTS_")):
@@ -126,7 +125,7 @@ class UploadAnalyzer(Analyzer):
             proc = subprocess.Popen(uploadcmd, executable = ANDROID_SHELL, shell = True)
             proc.wait()
             uploadfilename = self.__callback_rename_file()
-            self.__upload_qmdl_log(uploadfilename)
+            self.__upload_diag_log(uploadfilename)
 
     def __get_device_id(self):
         cmd = "su -c service call iphonesubinfo 1"
@@ -183,7 +182,7 @@ class UploadAnalyzer(Analyzer):
 
         return uploadfileabsname
 
-    def __upload_qmdl_log(self, filename):
+    def __upload_diag_log(self, filename):
         form = MultiPartForm()
         form.add_file('file', filename)
         request = urllib2.Request('http://metro.cs.ucla.edu/mobile_insight/upload_file.php')

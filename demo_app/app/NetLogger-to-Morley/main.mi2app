@@ -7,15 +7,12 @@ Trace uploader main app
 Author: Zengwen Yuan
 """
 
-# To change the log file size, go to the  new-analyzer branch @ automator,
-# and change line #126 at mobile_insight/monitor/android_dev_diag_monitor.py
-
 import os
 import sys
 import traceback
 
 import mobile_insight
-from mobile_insight.monitor import AndroidDevDiagMonitor, AndroidQmdlMonitor
+from mobile_insight.monitor import AndroidDevDiagMonitor
 from upload_analyzer import UploadAnalyzer
 
 import logging
@@ -33,30 +30,7 @@ lte_lvl1 = [
             "LTE_NAS_EMM_Plain_OTA_Incoming_Message",
             "LTE_NAS_EMM_Plain_OTA_Outgoing_Message",
             "LTE_NAS_EMM_State",
-
-            # "LTE_ML1_Connected_Mode_LTE_Intra_Freq_Meas_Results",
-            # "LTE_ML1_IRAT_Measurement_Request",
-            # "LTE_ML1_Serving_Cell_Measurement_Result",
-            # "LTE_ML1_Connected_Mode_Neighbor_Meas_Req_Resp",
-            # "LTE_LL1_PDSCH_Demapper_Configuration",
-            # "LTE_MAC_Configuration",
-            # "LTE_MAC_UL_Transport_Block",
-            # "LTE_MAC_DL_Transport_Block",
-            ]
-wcdma    = [
-            # "WCDMA_Signaling_Messages",
-            # "WCDMA_CELL_ID",
-            ]
-umts     = [
-            # "UMTS_NAS_MM_State",
-            # "UMTS_NAS_GMM_State",
-            # "UMTS_NAS_OTA",
-            ]
-
-cdma2000 = [
-            # "1xEV_Signaling_Control_Channel_Broadcast",
-            # "CDMA_Paging_Channel_Message",
-            ]
+]
 
 try:
     ## Use AndroidQmdlMonitor
@@ -77,7 +51,7 @@ try:
 
     log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")
     src.set_log_directory(log_directory)
-    src.enable_log(lte_lvl1 + wcdma + umts)
+    src.enable_log(lte_lvl1)
 
     uploadAnalyzer = UploadAnalyzer()
     uploadAnalyzer.set_source(src)
