@@ -25,16 +25,20 @@ function prebuild_mobile_insight() {
 	cd $RECIPE_mobile_insight/src
 	rm -rf ./mobile_insight ./dm_collector_c
 	git clone -b new-analyzer --depth=1 -- http://metro.cs.ucla.edu:8081/likayo/automator.git temp/
+	# cp -fr /Users/yuanjieli/Desktop/mobile_insight temp/
 	#    we only need these 2 folders
 	mv temp/mobile_insight ./
 	mv temp/dm_collector_c ./
 	#    remove git repository information
 	rm -rf .git temp
 	#    remove unecessary code
+	sed -i.bak '/### P4A:/d' ./mobile_insight/analyzer/__init__.py
 	sed -i.bak '/### P4A:/d' ./mobile_insight/monitor/__init__.py
 	sed -i.bak '/### P4A:/d' ./mobile_insight/monitor/dm_collector/__init__.py
 	sed -i.bak '/### P4A:/d' ./mobile_insight/monitor/dm_collector/dm_endec/ws_dissector.py
 	rm ./mobile_insight/monitor/dm_collector/dm_collector.py
+	rm ./mobile_insight/analyzer/gui_analyzer.py
+	rm ./mobile_insight/analyzer/log_analyzer.py
 
 	cd $BUILD_PATH/mobile_insight
 
@@ -50,16 +54,17 @@ function build_mobile_insight() {
 
 	push_arm
 
-    export CFLAGS="$CFLAGS -I$ANDROIDNDK/sources/cxx-stl/gnu-libstdc++/$TOOLCHAIN_VERSION/include -I$ANDROIDNDK/sources/cxx-stl/gnu-libstdc++/$TOOLCHAIN_VERSION/libs/armeabi/include"
+    export CFLAGS="$CFLAGS -I$ANDROIDNDK/sources/cxx-stl/gnu-libstdc++/$TOOLCHAIN_VERSION/include -I$ANDROIDNDK/sources/cxx-stl/gnu-libstdc++/$TOOLCHAIN_VERSION/libs/armeabi/include -llog"
     export LDFLAGS="$LDFLAGS -L$ANDROIDNDK/sources/cxx-stl/gnu-libstdc++/$TOOLCHAIN_VERSION/libs/armeabi -lgnustl_shared"
-
+    # export LIBS="$LIBS -llog"
 #	export LDFLAGS="$LDFLAGS -L$LIBS_PATH"
 #	export LDSHARED="$LIBLINK"
 
 	# fake try to be able to cythonize generated files
 	$HOSTPYTHON setup-p4a.py build_ext
 	try find . -iname '*.pyx' -exec cython {} \;
-	try $HOSTPYTHON setup-p4a.py build_ext -v
+	# try $HOSTPYTHON setup-p4a.py build_ext -v
+	try $HOSTPYTHON setup-p4a.py build_ext --inplace
 	# try find build/lib.* -name "*.o" -exec $STRIP {} \;
 	try $HOSTPYTHON setup-p4a.py install -O2
 
