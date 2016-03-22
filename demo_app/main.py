@@ -39,7 +39,7 @@ Builder.load_string("""
         text: root.text
         text_size: self.width, None
         size_hint_y: None
-        font_size: "30sp"
+        font_size: "25sp"
         height: self.texture_size[1]
         valign: 'top'
 
@@ -109,7 +109,7 @@ Builder.load_string("""
 """)
 
 class HelloWorldScreen(GridLayout):
-    error_log = StringProperty(" ")
+    error_log = StringProperty("MobileInsight 2.0\nUCLA Wing Group & OSU MSSN Lab")
     collecting = BooleanProperty(False)
     current_activity = cast("android.app.Activity",
                             autoclass("org.renpy.android.PythonActivity").mActivity)
