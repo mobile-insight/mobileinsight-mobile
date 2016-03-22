@@ -151,8 +151,14 @@ class HelloWorldScreen(GridLayout):
         """
         Check if diagnostic mode is enabled.
         """
-        return os.path.exists("/dev/diag")
 
+        # return os.path.exists("/dev/diag")    #This fails if /dev/ is not permitted for access
+        cmd = " test -e /dev/diag"
+        res=self._run_shell_cmd(cmd,True)
+        if res:
+            return False
+        else:
+            return True    
 
 
     def __init_libs(self):
