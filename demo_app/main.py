@@ -23,6 +23,8 @@ import subprocess
 import time
 import traceback
 
+ANDROID_SHELL = "/system/bin/sh"
+
 # Prevent Android on-screen keyboard from hiding text input
 # See http://stackoverflow.com/questions/26799084/android-on-screen-keyboard-hiding-python-kivy-textinputs
 Window.softinput_mode = "pan"
@@ -122,6 +124,10 @@ class HelloWorldScreen(GridLayout):
 
         self.__init_libs()
 
+        if not self.__check_diag_mode():
+            self.error_log = "WARINING: the diagnostic mode is disabled. Please check your phone settings."
+
+
         first = True
         for name in app_list:
             widget = LabeledCheckBox(text=name, group="app")
@@ -131,6 +137,23 @@ class HelloWorldScreen(GridLayout):
                 first = False
             widget.bind(on_active=self.on_checkbox_app_active)
             self.ids.checkbox_app_layout.add_widget(widget)
+
+    def _run_shell_cmd(self, cmd, wait = False):
+        p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        p.communicate(cmd+'\n')
+        if wait:
+            p.wait()
+            return p.returncode
+        else:
+            return None
+
+    def __check_diag_mode(self):
+        """
+        Check if diagnostic mode is enabled.
+        """
+        return os.path.exists("/dev/diag")
+
+
 
     def __init_libs(self):
         """
@@ -145,39 +168,57 @@ class HelloWorldScreen(GridLayout):
 
         for lib in libs:
             if not os.path.isfile(os.path.join("/system/lib",lib)):
-                cmd = cmd+" su -c cp "+os.path.join(libs_path,lib)+" /system/lib/; "
-                cmd = cmd+" su -c chmod 777 "+os.path.join("/system/lib",lib)+"; "
+                # cmd = cmd+" su -c cp "+os.path.join(libs_path,lib)+" /system/lib/; "
+                # cmd = cmd+" su -c chmod 777 "+os.path.join("/system/lib",lib)+"; "
+                cmd = cmd+" cp "+os.path.join(libs_path,lib)+" /system/lib/; "
+                cmd = cmd+" chmod 777 "+os.path.join("/system/lib",lib)+"; "
         #sym links for some libs
         if not os.path.isfile("/system/lib/libwireshark.so.5"):
-            cmd = cmd+" su -c ln -s /system/lib/libwireshark.so /system/lib/libwireshark.so.5; "
-            cmd = cmd+" su -c chmod 777 /system/lib/libwireshark.so.5; "
+            # cmd = cmd+" su -c ln -s /system/lib/libwireshark.so /system/lib/libwireshark.so.5; "
+            # cmd = cmd+" su -c chmod 777 /system/lib/libwireshark.so.5; "
+            cmd = cmd+" ln -s /system/lib/libwireshark.so /system/lib/libwireshark.so.5; "
+            cmd = cmd+" chmod 777 /system/lib/libwireshark.so.5; "
         if not os.path.isfile("/system/lib/libwireshark.so.5.0.3"):
-            cmd = cmd+" su -c ln -s /system/lib/libwireshark.so /system/lib/libwireshark.so.5.0.3; " 
-            cmd = cmd+" su -c chmod 777 /system/lib/libwireshark.so.5.0.3; "
+            # cmd = cmd+" su -c ln -s /system/lib/libwireshark.so /system/lib/libwireshark.so.5.0.3; " 
+            # cmd = cmd+" su -c chmod 777 /system/lib/libwireshark.so.5.0.3; "
+            cmd = cmd+" ln -s /system/lib/libwireshark.so /system/lib/libwireshark.so.5.0.3; " 
+            cmd = cmd+" chmod 777 /system/lib/libwireshark.so.5.0.3; "
         if not os.path.isfile("/system/lib/libwiretap.so.4"):
-            cmd = cmd+" su -c ln -s /system/lib/libwiretap.so /system/lib/libwiretap.so.4; "  
-            cmd = cmd+" su -c chmod 777 /system/lib/libwiretap.so.4; "
+            # cmd = cmd+" su -c ln -s /system/lib/libwiretap.so /system/lib/libwiretap.so.4; "  
+            # cmd = cmd+" su -c chmod 777 /system/lib/libwiretap.so.4; "
+            cmd = cmd+" ln -s /system/lib/libwiretap.so /system/lib/libwiretap.so.4; "  
+            cmd = cmd+" chmod 777 /system/lib/libwiretap.so.4; "
         if not os.path.isfile("/system/lib/libwiretap.so.4.0.3"):
-            cmd = cmd+" su -c ln -s /system/lib/libwiretap.so /system/lib/libwiretap.so.4.0.3; "
-            cmd = cmd+" su -c chmod 777 /system/lib/libwiretap.so.4.0.3; "
+            # cmd = cmd+" su -c ln -s /system/lib/libwiretap.so /system/lib/libwiretap.so.4.0.3; "
+            # cmd = cmd+" su -c chmod 777 /system/lib/libwiretap.so.4.0.3; "
+            cmd = cmd+" ln -s /system/lib/libwiretap.so /system/lib/libwiretap.so.4.0.3; "
+            cmd = cmd+" chmod 777 /system/lib/libwiretap.so.4.0.3; "
         if not os.path.isfile("/system/lib/libwsutil.so.4"):
-            cmd = cmd+" su -c ln -s /system/lib/libwsutil.so /system/lib/libwsutil.so.4; " 
-            cmd = cmd+" su -c chmod 777 /system/lib/libwsutil.so.4; "
+            # cmd = cmd+" su -c ln -s /system/lib/libwsutil.so /system/lib/libwsutil.so.4; " 
+            # cmd = cmd+" su -c chmod 777 /system/lib/libwsutil.so.4; "
+            cmd = cmd+" ln -s /system/lib/libwsutil.so /system/lib/libwsutil.so.4; " 
+            cmd = cmd+" chmod 777 /system/lib/libwsutil.so.4; "
         if not os.path.isfile("/system/lib/libwsutil.so.4.1.0"):
-            cmd = cmd+" su -c ln -s /system/lib/libwsutil.so /system/lib/libwsutil.so.4.1.0; "
-            cmd = cmd+" su -c chmod 777 /system/lib/libwsutil.so.4.1.0; "
+            # cmd = cmd+" su -c ln -s /system/lib/libwsutil.so /system/lib/libwsutil.so.4.1.0; "
+            # cmd = cmd+" su -c chmod 777 /system/lib/libwsutil.so.4.1.0; "
+            cmd = cmd+" ln -s /system/lib/libwsutil.so /system/lib/libwsutil.so.4.1.0; "
+            cmd = cmd+" chmod 777 /system/lib/libwsutil.so.4.1.0; "
 
         #bins
         exes=["diag_revealer","android_pie_ws_dissector","android_ws_dissector"]
         for exe in exes:
             if not os.path.isfile(os.path.join("/system/bin",exe)):
-                cmd = cmd+" su -c cp "+os.path.join(libs_path,exe)+" /system/bin/; "
-                cmd = cmd+" su -c chmod 0777 "+os.path.join("/system/bin/",exe)+"; "
+                # cmd = cmd+" su -c cp "+os.path.join(libs_path,exe)+" /system/bin/; "
+                # cmd = cmd+" su -c chmod 0777 "+os.path.join("/system/bin/",exe)+"; "
+                cmd = cmd+" cp "+os.path.join(libs_path,exe)+" /system/bin/; "
+                cmd = cmd+" chmod 0777 "+os.path.join("/system/bin/",exe)+"; "
 
         if cmd:
             #At least one lib should be copied
-            cmd = "su -c mount -o remount,rw /system; "+cmd
-            subprocess.Popen(cmd, executable="/system/bin/sh", shell=True)
+            # cmd = "su -c mount -o remount,rw /system; "+cmd
+            cmd = "mount -o remount,rw /system; "+cmd
+            # subprocess.Popen(cmd, executable="/system/bin/sh", shell=True)
+            self._run_shell_cmd(cmd)
 
 
     def _add_log_line(self, s):
@@ -264,12 +305,16 @@ class HelloWorldScreen(GridLayout):
                 self._add_log_line(repr(t))
             infos["qmdls_before"] = qmdls_after
 
-        cmd = "su -c mkdir \"%s\"" % LOG_DIR
-        subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
-        cmd = "su -c chmod -R 777 \"%s\"" % LOG_DIR
-        subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
-        cmd = "su -c diag_mdlog -s 1 -o \"%s\"" % LOG_DIR
-        subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
+        # cmd = "su -c mkdir \"%s\"" % LOG_DIR
+        # subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
+        # cmd = "su -c chmod -R 777 \"%s\"" % LOG_DIR
+        # subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
+        # cmd = "su -c diag_mdlog -s 1 -o \"%s\"" % LOG_DIR
+        # subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
+        cmd = "mkdir \"%s\";" % LOG_DIR
+        cmd = cmd + " chmod -R 777 \"%s\";" % LOG_DIR
+        cmd = cmd + " diag_mdlog -s 1 -o \"%s\";" % LOG_DIR
+        self._run_shell_cmd(cmd)
 
         from mobile_insight.monitor import QmdlReplayer
         from mobile_insight.analyzer import RrcAnalyzer
@@ -299,8 +344,10 @@ class HelloWorldScreen(GridLayout):
                 continue
 
         if len(diag_procs) > 0:
-            cmd2 = "su -c kill " + " ".join([str(pid) for pid in diag_procs])
-            subprocess.Popen(cmd2, executable=ANDROID_SHELL, shell=True)
+            # cmd2 = "su -c kill " + " ".join([str(pid) for pid in diag_procs])
+            # subprocess.Popen(cmd2, executable=ANDROID_SHELL, shell=True)
+            cmd2 = "kill " + " ".join([str(pid) for pid in diag_procs])
+            self._run_shell_cmd(cmd2)
 
     def start_service(self, app_name):
         if platform == "android" and app_name:
@@ -309,9 +356,11 @@ class HelloWorldScreen(GridLayout):
                 self.stop_service()
             from android import AndroidService
             self.error_log="Running "+app_name+"..."
-            service = AndroidService("MobileInsight is running...", "Running")
-            service.start(app_name)   # app name
-            self.service = service
+            self.service = AndroidService("MobileInsight is running...", "MobileInsight")
+            self.service.start(app_name)   # app name
+            # service = AndroidService("MobileInsight is running...", "MobileInsight")
+            # service.start(app_name)   # app name
+            # self.service = service
 
     def stop_service(self):
         if self.service:

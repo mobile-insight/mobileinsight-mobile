@@ -104,6 +104,15 @@ class UploadAnalyzer(Analyzer):
         # init packet filters
         self.add_source_callback(self.__upload_filter)
 
+    def _run_shell_cmd(self, cmd, wait = False):
+        p = subprocess.Popen("su", executable="/system/bin/sh", shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        p.communicate(cmd+'\n')
+        if wait:
+            p.wait()
+            return p.returncode
+        else:
+            return None
+
     def __upload_filter(self, msg):
         """
         Callback to process upload requests.
@@ -117,9 +126,11 @@ class UploadAnalyzer(Analyzer):
             # print "the timestamp is " + self.__log_timestamp
             self.__upload = True
             self.__original_filename = msg.data
-            uploadcmd = "su -c chmod 644 " + self.__original_filename
-            proc = subprocess.Popen(uploadcmd, executable = ANDROID_SHELL, shell = True)
-            proc.wait()
+            # uploadcmd = "su -c chmod 644 " + self.__original_filename
+            # proc = subprocess.Popen(uploadcmd, executable = ANDROID_SHELL, shell = True)
+            # proc.wait()
+            uploadcmd = "chmod 644 " + self.__original_filename
+            self._run_shell_cmd(uploadcmd,True)
             uploadfilename = self.__callback_rename_file()
             self.__upload_qmdl_log(uploadfilename)
 
@@ -154,8 +165,10 @@ class UploadAnalyzer(Analyzer):
         # proc.wait()
         # return deviceId
 
-        cmd = "su -c service call iphonesubinfo 1"
-        proc = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
+        # cmd = "su -c service call iphonesubinfo 1"
+        # proc = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
+        cmd = "service call iphonesubinfo 1"
+        self._run_shell_cmd(cmd)
         out = proc.communicate()[0]
         tup = re.findall("\'.+\'", out)
         tupnum = re.findall("\d+", "".join(tup))
@@ -173,7 +186,8 @@ class UploadAnalyzer(Analyzer):
         # [ro.product.manufacturer]: [samsung]
         # [ro.product.model]: [SM-G900T]
         """
-        cmd = "su -c getprop"
+        # cmd = "su -c getprop"
+        cmd = "getprop"
         modelFound = False
         manufacturerFound = False
         operatorFound = False
@@ -204,7 +218,8 @@ class UploadAnalyzer(Analyzer):
         Rename log file's name to fit in server's parser
         format: diag_log_<timestamp>_<deviceID>_<manufacturer>-<model>_<operator>.mi2log
         """
-        cmd = "su -c getprop"
+        # cmd = "su -c getprop"
+        cmd = "getprop"
         uploaddir = "/sdcard/mobile_insight_log"
 
         if not os.path.exists(uploaddir):
