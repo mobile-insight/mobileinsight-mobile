@@ -127,6 +127,9 @@ class HelloWorldScreen(GridLayout):
         if not self.__check_diag_mode():
             self.error_log = "WARINING: the diagnostic mode is disabled. Please check your phone settings."
 
+        #clean up ongoing log collections
+        self.stop_collection()
+
 
         first = True
         for name in app_list:
@@ -344,7 +347,7 @@ class HelloWorldScreen(GridLayout):
         for pid in pids:
             try:
                 cmdline = open(os.path.join("/proc", pid, "cmdline"), "rb").read()
-                if cmdline.startswith("diag_mdlog"):
+                if cmdline.startswith("diag_mdlog") or cmdline.startswith("/system/bin/diag_revealer"):
                     diag_procs.append(int(pid))
             except IOError:     # proc has been terminated
                 continue
@@ -373,6 +376,7 @@ class HelloWorldScreen(GridLayout):
             self.service.stop()
             self.service = None
             self.error_log="Stopped"
+            self.stop_collection()  #close ongoing collections
 
 
 class LabeledCheckBox(GridLayout):
