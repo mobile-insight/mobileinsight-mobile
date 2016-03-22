@@ -42,11 +42,7 @@ def run_online_test(libwireshark_path, log_output_directory):
                 ]
 
     fifo_path = os.path.join(get_cache_dir(), "diag_revealer_fifo")
-    src = AndroidDevDiagMonitor({   "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
-                                    "libwireshark_path": libwireshark_path,
-                                    "diag_revealer_executable_path": "/system/bin/diag_revealer",
-                                    "diag_revealer_fifo_path": fifo_path,
-                                    })
+    src = AndroidDevDiagMonitor()
     src.enable_log(lte_lvl1 + lte_lvl2)
     src.set_skip_decoding(False)
     src.set_log_directory(os.path.join(log_output_directory, "logs"))
