@@ -282,7 +282,7 @@ class HelloWorldScreen(GridLayout):
                 ret.append(f)
 
         #Yuanjie: support alternative path for users to customize their own app
-        APP_DIR = "/sdcard/mobile_insight_app"
+        APP_DIR = "/sdcard/mobile_insight_app/"
         if os.path.exists(APP_DIR):
             l = os.listdir(APP_DIR)
             for f in l:
