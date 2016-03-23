@@ -286,7 +286,8 @@ class HelloWorldScreen(GridLayout):
         if os.path.exists(APP_DIR):
             l = os.listdir(APP_DIR)
             for f in l:
-                if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+                if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")) \
+                and not f in ret:
                     ret.append(f)
         else:
             #Create directory for user-customized apps
