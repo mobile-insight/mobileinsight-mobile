@@ -280,6 +280,19 @@ class HelloWorldScreen(GridLayout):
         for f in l:
             if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
                 ret.append(f)
+
+        #Yuanjie: support alternative path for users to customize their own app
+        APP_DIR = "/sdcard/mobile_insight_app"
+        if os.path.exists(APP_DIR):
+            l = os.listdir(APP_DIR)
+            for f in l:
+                if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+                    ret.append(f)
+        else:
+            #Create directory for user-customized apps
+            cmd = "mkdir \"%s\";" % APP_DIR
+            self._run_shell_cmd(cmd)
+
         return ret
 
     def on_checkbox_app_active(self, obj):
