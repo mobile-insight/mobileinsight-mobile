@@ -12,7 +12,9 @@ dm_collector_c_module = Extension('mobile_insight.monitor.dm_collector.dm_collec
                                             "dm_collector_c/hdlc.cpp",
                                             "dm_collector_c/log_config.cpp",
                                             "dm_collector_c/log_packet.cpp",
-                                            "dm_collector_c/utils.cpp",])
+                                            "dm_collector_c/utils.cpp",],
+                                define_macros=[('EXPOSE_INTERNAL_LOGS',1)] #1 means expose all logs, 0 means exposes public logs only
+                                )
 
 setup(
     name = 'MobileInsight',
