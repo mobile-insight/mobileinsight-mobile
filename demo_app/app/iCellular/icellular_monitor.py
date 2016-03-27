@@ -353,6 +353,8 @@ class IcellularMonitor(Analyzer):
             #Convert msg to xml format
             log_item      = msg.data.decode()
             log_item_dict = dict(log_item)
+            if 'Msg' not in log_item_dict:
+                return
             log_xml       = ET.XML(log_item_dict['Msg'])
 
             print "iCellular: __active_monitor." + str(msg.type_id)
