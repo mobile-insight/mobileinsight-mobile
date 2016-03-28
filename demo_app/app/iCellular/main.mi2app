@@ -12,7 +12,7 @@ import sys
 import traceback
 
 from icellular_analyzer import IcellularAnalyzer
-from mobile_insight.monitor import AndroidDevDiagMonitor, AndroidQmdlMonitor, QmdlReplayer
+from mobile_insight.monitor import AndroidDevDiagMonitor, AndroidQmdlMonitor, OfflineReplayer
 from mobile_insight.analyzer import MsgLogger
 
 
@@ -27,7 +27,7 @@ try:
     # log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")
     # src.set_log_directory(log_directory)
 
-    src = QmdlReplayer({"ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+    src = OfflineReplayer({"ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
                         "libwireshark_path": "/system/lib",})
     src.set_input_path("/sdcard/test.qmdl")
     

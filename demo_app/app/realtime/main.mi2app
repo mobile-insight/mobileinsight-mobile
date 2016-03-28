@@ -7,7 +7,7 @@ import stat
 import traceback
 
 import mobile_insight
-from mobile_insight.monitor import AndroidDevDiagMonitor, QmdlReplayer
+from mobile_insight.monitor import AndroidDevDiagMonitor, OfflineReplayer
 from mobile_insight.analyzer import MsgLogger
 from mi2app_utils import get_cache_dir, get_phone_model
 
@@ -49,7 +49,7 @@ try:
         libwireshark_path = "/system/lib"
     # src = AndroidDevDiagMonitor()
 
-    src = QmdlReplayer({"ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+    src = OfflineReplayer({"ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
                         "libwireshark_path": "/system/lib",})
     #                     # "libwireshark_path": "/sdcard/ws_dissector",})  # for LG
     src.set_input_path("/sdcard/diag_log_20151107_220332_TCP_DL_null_null_353300061842826_Samsung-SM-G900T_T-Mobile.qmdl")

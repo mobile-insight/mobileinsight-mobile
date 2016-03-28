@@ -29,6 +29,7 @@ if __name__ == "__main__":
         execfile(app_file, namespace)
     except:
         try:
+            print str(traceback.format_exc())
             APP_DIR = "/sdcard/mobile_insight_app/"
             sys.path.append(os.path.join(APP_DIR, arg)) # add this dir to module search path
             app_file = os.path.join(APP_DIR, arg, "main.mi2app")

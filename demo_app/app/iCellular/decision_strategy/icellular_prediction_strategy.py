@@ -33,11 +33,14 @@ class IcellularPredictionStrategy(IcellularStrategyBase):
         best_carrier = None
         try:
             for carrier, data in carrier_network_list.items():
+                print "test 1"
                 d = [y for x, y in data.items()]
                 while (len(d) < 4):
                     d.append(0.0)
 
+                print "test 2", str(d)
                 result = self.hoeffdingTree.predict(d)
+                print "test 3"
                 if result < best_lantency:
                     best_lantency = result
                     best_carrier = carrier

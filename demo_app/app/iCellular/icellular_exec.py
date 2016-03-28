@@ -12,6 +12,8 @@ Author: Yuanjie Li
 from at_cmd import * 
 import config
 
+import subprocess
+
 from mobile_insight.analyzer import Analyzer
 
 class IcellularExec(Analyzer):
@@ -45,6 +47,14 @@ class IcellularExec(Analyzer):
     def _run_shell_cmd(self, cmd, wait = False):
         return os.popen("su -c "+cmd).read()
 
+    # def _run_shell_cmd(self, cmd):
+    #     p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    #     p.communicate(cmd+'\n')
+    #     # p.stdin.write(cmd+'\n')
+    #     # p.wait()
+    #     # return p.returncode
+    #     return p.stdout.read()
+
     def __run_secret_code(self,code):
         """
         Dial a secret code in Android
@@ -61,7 +71,7 @@ class IcellularExec(Analyzer):
         """
         #Nexus 6P only: setPreferredNetworkType=82
         res = self._run_shell_cmd("service call phone 82")
-        # print "Current network type: ",str(int(res[31],16))
+        print "Current network type: ",str(int(res[31],16))
         return int(res[31], 16)
 
     def __set_network_type(self, network_type):

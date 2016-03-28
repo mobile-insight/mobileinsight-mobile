@@ -240,6 +240,7 @@ class HelloWorldScreen(GridLayout):
             try:
                 # import mobile_insight
                 # self._add_log_line("Imported mobile_insight")
+                # print "test1"
                 pass
             except:
                 self._add_log_line(str(traceback.format_exc()))
@@ -249,6 +250,7 @@ class HelloWorldScreen(GridLayout):
             try:
                 # import mobile_insight.monitor.dm_collector.dm_collector_c as dm_collector_c
                 # self._add_log_line("Loaded dm_collector_c v%s" % dm_collector_c.version)
+                # print "test2"
                 pass
             except:
                 self._add_log_line("Failed to load dm_collector_c")
@@ -264,6 +266,7 @@ class HelloWorldScreen(GridLayout):
                 # Load the "app_log" variable from namespace and print it out
                 self._add_log_line(namespace["app_log"])
             except:
+                print str(traceback.format_exc())
                 self._add_log_line(str(traceback.format_exc()))
                 no_error = False
 
@@ -339,9 +342,9 @@ class HelloWorldScreen(GridLayout):
         cmd = cmd + " diag_mdlog -s 1 -o \"%s\";" % LOG_DIR
         self._run_shell_cmd(cmd)
 
-        from mobile_insight.monitor import QmdlReplayer
+        from mobile_insight.monitor import OfflineReplayer
         from mobile_insight.analyzer import RrcAnalyzer
-        self.qmdl_src = QmdlReplayer({  "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+        self.qmdl_src = OfflineReplayer({  "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
                                         "libwireshark_path": "/system/lib"})
         self.analyzer = RrcAnalyzer()
 

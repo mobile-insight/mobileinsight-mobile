@@ -7,7 +7,7 @@ import stat
 import traceback
 
 import mobile_insight
-from mobile_insight.monitor import AndroidDevDiagMonitor, QmdlReplayer
+from mobile_insight.monitor import AndroidDevDiagMonitor, OfflineReplayer
 from mobile_insight.analyzer import MsgLogger
 from mi2app_utils import get_cache_dir, get_phone_model
 
@@ -58,7 +58,7 @@ def run_decode_test(libwireshark_path, log_output_directory):
     directory = "/sdcard/decode_test"
     logs = sorted(os.listdir(directory))
 
-    src = QmdlReplayer({"ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+    src = OfflineReplayer({"ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
                         "libwireshark_path": libwireshark_path,})
     l = RealtimeAnalyzer()
     l.set_log_directory(log_output_directory)

@@ -403,29 +403,32 @@ class IcellularMonitor(Analyzer):
             if not log_item_dict.has_key('Msg'):
                 return
 
-            if self.__cur_rat == "4G":
 
-                #Track RSRP
-                index = log_item_dict['Msg'].find("BPLMN LOG: Saved measurement results. rsrp=")
-                if index != -1:
+            #Track RSRP
+            index = log_item_dict['Msg'].find("BPLMN LOG: Saved measurement results. rsrp=")
+            if index != -1:
 
-                    print "iCellular: I found rsrp"
-                    #LTE RSRP value (in dBm)
-                    self.__cur_radio_quality=log_item_dict['Msg'][index:]
+                print "iCellular: I found 4G rsrp"
+                #LTE RSRP value (in dBm)
+                self.__cur_radio_quality=log_item_dict['Msg'][index:]
 
-                    #TODO: Zengwen, please run decision fault function here
-                    # self.__is_csfb_unavailable(log_xml) #FIXME: log_xml does not exist!
+                #TODO: Zengwen, please run decision fault function here
+                # self.__is_csfb_unavailable(log_xml) #FIXME: log_xml does not exist!
 
-                    #Send available carrier networks to decision
-                    self.__observed_list[self.__cur_plmn+"-"+self.__cur_rat]={'signal_strength': self.__cur_radio_quality}
-                    selection_event = Event(msg.timestamp,"iCellular_selection",self.__observed_list)
-                    self.send(selection_event)  #Currently observed carriers
-                    # self.send(self.__observed_list) #Currently observed carriers
-                    #Reset current carrier network
-                    self.__cur_plmn          = None  # MCC-MNC
-                    self.__cur_rat           = None  # 4G or 3G
-                    self.__cur_radio_quality = None  # RSRP or RSCP
-            elif self.__cur_rat == "3G":
+
+                
+
+                #Send available carrier networks to decision
+                self.__observed_list[self.__cur_plmn+"-4G"]={'signal_strength': self.__cur_radio_quality}
+                selection_event = Event(msg.timestamp,"iCellular_selection",self.__observed_list)
+                self.send(selection_event)  #Currently observed carriers
+                # self.send(self.__observed_list) #Currently observed carriers
+                #Reset current carrier network
+                # self.__cur_plmn          = None  # MCC-MNC
+                # self.__cur_rat           = None  # 4G or 3G
+                # self.__cur_radio_quality = None  # RSRP or RSCP
+            else:
+
                 #Track RSCP
                 field_list = log_item_dict['Msg'].split(' ')
                 for field in field_list:
@@ -436,21 +439,67 @@ class IcellularMonitor(Analyzer):
                         #WCDMA RSCP value (in dBm)
                         self.__cur_radio_quality=field[index+5:]
 
-                        print "lalala "+str(self.__cur_radio_quality)
-
                         #TODO: Zengwen, please run decision fault function here
 
                         #Send available carrier networks to decision
-                        self.__observed_list[self.__cur_plmn+"-"+self.__cur_rat]={'signal_strength': self.__cur_radio_quality}
+                        self.__observed_list[self.__cur_plmn+"-3G"]={'signal_strength': self.__cur_radio_quality}
                         selection_event = Event(msg.timestamp,"iCellular_selection",self.__observed_list)
                         self.send(selection_event)  #Currently observed carriers
                         # self.send(self.__observed_list) #Currently observed carriers
                         #Reset current carrier network
-                        self.__cur_plmn          = None  # MCC-MNC
-                        self.__cur_rat           = None  # 4G or 3G
-                        self.__cur_radio_quality = None  # RSRP or RSCP
+                        # self.__cur_plmn          = None  # MCC-MNC
+                        # self.__cur_rat           = None  # 4G or 3G
+                        # self.__cur_radio_quality = None  # RSRP or RSCP
 
                         break;
+
+
+            # if self.__cur_rat == "4G":
+
+            #     #Track RSRP
+            #     index = log_item_dict['Msg'].find("BPLMN LOG: Saved measurement results. rsrp=")
+            #     if index != -1:
+
+            #         print "iCellular: I found rsrp"
+            #         #LTE RSRP value (in dBm)
+            #         self.__cur_radio_quality=log_item_dict['Msg'][index:]
+
+            #         #TODO: Zengwen, please run decision fault function here
+            #         # self.__is_csfb_unavailable(log_xml) #FIXME: log_xml does not exist!
+
+            #         #Send available carrier networks to decision
+            #         self.__observed_list[self.__cur_plmn+"-"+self.__cur_rat]={'signal_strength': self.__cur_radio_quality}
+            #         selection_event = Event(msg.timestamp,"iCellular_selection",self.__observed_list)
+            #         self.send(selection_event)  #Currently observed carriers
+            #         # self.send(self.__observed_list) #Currently observed carriers
+            #         #Reset current carrier network
+            #         self.__cur_plmn          = None  # MCC-MNC
+            #         self.__cur_rat           = None  # 4G or 3G
+            #         self.__cur_radio_quality = None  # RSRP or RSCP
+            # elif self.__cur_rat == "3G":
+            #     #Track RSCP
+            #     field_list = log_item_dict['Msg'].split(' ')
+            #     for field in field_list:
+            #         index = field.find("rscp=")
+            #         if index !=-1:
+
+            #             print "iCellular: I found rscp "
+            #             #WCDMA RSCP value (in dBm)
+            #             self.__cur_radio_quality=field[index+5:]
+
+            #             #TODO: Zengwen, please run decision fault function here
+
+            #             #Send available carrier networks to decision
+            #             self.__observed_list[self.__cur_plmn+"-"+self.__cur_rat]={'signal_strength': self.__cur_radio_quality}
+            #             selection_event = Event(msg.timestamp,"iCellular_selection",self.__observed_list)
+            #             self.send(selection_event)  #Currently observed carriers
+            #             # self.send(self.__observed_list) #Currently observed carriers
+            #             #Reset current carrier network
+            #             self.__cur_plmn          = None  # MCC-MNC
+            #             self.__cur_rat           = None  # 4G or 3G
+            #             self.__cur_radio_quality = None  # RSRP or RSCP
+
+            #             break;
 
         elif msg.type_id == "LTE_ML1_Connected_Mode_LTE_Intra_Freq_Meas_Results":
             log_item = msg.data.decode()
