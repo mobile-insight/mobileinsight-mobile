@@ -12,11 +12,13 @@ dm_collector_c_module = Extension('mobile_insight.monitor.dm_collector.dm_collec
                                             "dm_collector_c/hdlc.cpp",
                                             "dm_collector_c/log_config.cpp",
                                             "dm_collector_c/log_packet.cpp",
-                                            "dm_collector_c/utils.cpp",])
-
+                                            "dm_collector_c/utils.cpp",],
+                                # 1 means expose all logs, 0 means exposes public logs only
+                                define_macros = [('EXPOSE_INTERNAL_LOGS', 1)],
+                                )
 setup(
     name = 'MobileInsight',
-    version = '1.0',
+    version = '1.1',
     description = 'Mobile network monitoring and analysis',
     author = 'Yuanjie Li, Zengwen Yuan, Jiayao Li',
     author_email = 'yuanjie.li@cs.ucla.edu, zyuan@cs.ucla.edu, likayo@ucla.edu',
