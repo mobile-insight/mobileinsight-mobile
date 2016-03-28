@@ -7,39 +7,55 @@ def run_config():
     commands.getstatusoutput('cp config_template.py make_config.py')
     print 'Edit make_config.py to set up the configuration'
 
+
 def run_apk():
-    from  make_config import app_path, p4a_path, sdk_path, sdk, ndk_path, ndk
+    from make_config import *
 
-    os.system('python-for-android create --dist_name=mi2 --bootstrap=pygame --requirements=pyserial,kivy,mobileinsight')
+    build_dist_cmd = 'python-for-android create'
+            + ' --dist_name=' + dist_name \
+            + ' --bootstrap=' + bootstrap \
+            + ' --requirements=' + requirements
 
-    cmd = 'python-for-android apk --debug --compile-pyo --private ' + app_path + ' --package edu.ucla.cs.wing --name MobileInsight2 --version 0.2 --permission INTERNET --permission WRITE_EXTERNAL_STORAGE --orientation portrait --sdk ' + sdk + ' --minsdk 14 --android_api ' + sdk + ' --sdk_dir ' + sdk_path + ' --ndk_dir ' + ndk_path + ' --ndk_version ' + ndk + ' --arch armeabi --dist_name mi2 --whitelist whitelist.txt'
-    print cmd
-    os.system(cmd)
+    build_cmd = 'python-for-android apk' \
+            + ' --debug' \
+            + ' --compile-pyo' \
+            + ' --copy-libs' \
+            + ' --name' + app_name \
+            + ' --version' + app_version \
+            + ' --private' + app_path \
+            + ' --package' + pkg_name \
+            + ' --permission INTERNET' \
+            + ' --permission WRITE_EXTERNAL_STORAGE' \
+            + ' --icon' + icon_path \
+            + ' --presplash' + presplash_path \
+            + ' --orientation' + orientation \
+            + ' --sdk' + sdk_version \
+            + ' --minsdk' + minsdk \
+            + ' --android_api' + api_level \
+            + ' --sdk_dir' + sdk_path \
+            + ' --ndk_dir' + ndk_path \
+            + ' --ndk_version' + ndk_version \
+            + ' --arch' + arch \
+            + ' --dist_name' + dist_name \
+            + ' --whitelist' + whitelist
 
-python-for-android apk --debug --compile-pyo --copy-libs \
---name MobileInsight2 \
---version 0.2 \
---package edu.ucla.cs.wing \
---private /Users/Dale/Workspace/mobileInsight/demo_app \
---icon /Users/Dale/Workspace/mobileInsight/demo_app/data/icon.png \
---presplash /Users/Dale/Workspace/mobileInsight/demo_app/data/presplash.jpg \
---orientation portrait \
---permission INTERNET \
---permission WRITE_EXTERNAL_STORAGE \
---sdk 19 \
---minsdk 14 \
---android_api 19 \
---sdk_dir /Users/Dale/Library/Android/sdk \
---ndk_dir /Users/Dale/Library/Android/android-ndk-r10e \
---ndk_version r10e \
---arch armeabi \
---dist_name mi2 \
---whitelist whitelist.txt
+    print build_dist_cmd
+    os.system(build_dist_cmd)
+
+    print build_cmd
+    os.system(build_cmd)
 
 if __name__ == '__main__':
-    arg =  sys.argv[1]
+    arg = sys.argv[1]
     if arg == 'config':
         run_config();
-    if arg == 'apk':
+    elif arg == 'apk':
+        # TODO:
+        # support debug version and release version
         run_apk();
+    elif arg == 'clean':
+        # TODO
+        # finish clean up script
+        # mainly clean the pyo files
+        pass
 
