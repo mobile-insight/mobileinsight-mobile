@@ -177,56 +177,37 @@ class HelloWorldScreen(GridLayout):
 
         for lib in libs:
             if not os.path.isfile(os.path.join("/system/lib",lib)):
-                # cmd = cmd+" su -c cp "+os.path.join(libs_path,lib)+" /system/lib/; "
-                # cmd = cmd+" su -c chmod 777 "+os.path.join("/system/lib",lib)+"; "
                 cmd = cmd+" cp "+os.path.join(libs_path,lib)+" /system/lib/; "
                 cmd = cmd+" chmod 777 "+os.path.join("/system/lib",lib)+"; "
+        
+
         #sym links for some libs
-        if not os.path.isfile("/system/lib/libwireshark.so.5"):
-            # cmd = cmd+" su -c ln -s /system/lib/libwireshark.so /system/lib/libwireshark.so.5; "
-            # cmd = cmd+" su -c chmod 777 /system/lib/libwireshark.so.5; "
-            cmd = cmd+" ln -s /system/lib/libwireshark.so /system/lib/libwireshark.so.5; "
-            cmd = cmd+" chmod 777 /system/lib/libwireshark.so.5; "
-        if not os.path.isfile("/system/lib/libwireshark.so.5.0.3"):
-            # cmd = cmd+" su -c ln -s /system/lib/libwireshark.so /system/lib/libwireshark.so.5.0.3; " 
-            # cmd = cmd+" su -c chmod 777 /system/lib/libwireshark.so.5.0.3; "
-            cmd = cmd+" ln -s /system/lib/libwireshark.so /system/lib/libwireshark.so.5.0.3; " 
-            cmd = cmd+" chmod 777 /system/lib/libwireshark.so.5.0.3; "
-        if not os.path.isfile("/system/lib/libwiretap.so.4"):
-            # cmd = cmd+" su -c ln -s /system/lib/libwiretap.so /system/lib/libwiretap.so.4; "  
-            # cmd = cmd+" su -c chmod 777 /system/lib/libwiretap.so.4; "
-            cmd = cmd+" ln -s /system/lib/libwiretap.so /system/lib/libwiretap.so.4; "  
-            cmd = cmd+" chmod 777 /system/lib/libwiretap.so.4; "
-        if not os.path.isfile("/system/lib/libwiretap.so.4.0.3"):
-            # cmd = cmd+" su -c ln -s /system/lib/libwiretap.so /system/lib/libwiretap.so.4.0.3; "
-            # cmd = cmd+" su -c chmod 777 /system/lib/libwiretap.so.4.0.3; "
-            cmd = cmd+" ln -s /system/lib/libwiretap.so /system/lib/libwiretap.so.4.0.3; "
-            cmd = cmd+" chmod 777 /system/lib/libwiretap.so.4.0.3; "
-        if not os.path.isfile("/system/lib/libwsutil.so.4"):
-            # cmd = cmd+" su -c ln -s /system/lib/libwsutil.so /system/lib/libwsutil.so.4; " 
-            # cmd = cmd+" su -c chmod 777 /system/lib/libwsutil.so.4; "
-            cmd = cmd+" ln -s /system/lib/libwsutil.so /system/lib/libwsutil.so.4; " 
-            cmd = cmd+" chmod 777 /system/lib/libwsutil.so.4; "
-        if not os.path.isfile("/system/lib/libwsutil.so.4.1.0"):
-            # cmd = cmd+" su -c ln -s /system/lib/libwsutil.so /system/lib/libwsutil.so.4.1.0; "
-            # cmd = cmd+" su -c chmod 777 /system/lib/libwsutil.so.4.1.0; "
-            cmd = cmd+" ln -s /system/lib/libwsutil.so /system/lib/libwsutil.so.4.1.0; "
-            cmd = cmd+" chmod 777 /system/lib/libwsutil.so.4.1.0; "
+        # libs_mapping={"libwireshark.so": ["libwireshark.so.6", "libwireshark.so.6.0.1"],
+        #               "libwiretap.so": ["libwiretap.so.5", "libwiretap.so.5.0.1"],
+        #               "libwsutil.so": ["libwsutil.so.6", "libwsutil.so.6.0.0"]}
+        libs_mapping={"libwireshark.so": ["libwireshark.so.5", "libwireshark.so.5.0.3"],
+                      "libwiretap.so": ["libwiretap.so.4", "libwiretap.so.4.0.3"],
+                      "libwsutil.so": ["libwsutil.so.4", "libwsutil.so.4.1.0"]}
+
+
+        for lib in libs_mapping:
+            for sym_lib in libs_mapping[lib]:
+                if not os.path.isfile("/system/lib/"+sym_lib):
+                   cmd = cmd+" ln -s /system/lib/"+lib+" /system/lib/"+sym_lib+"; "
+                   cmd = cmd+" chmod 777 /system/lib/"+sym_lib+"; " 
+
+        print cmd
 
         #bins
         exes=["diag_revealer","android_pie_ws_dissector","android_ws_dissector"]
         for exe in exes:
             if not os.path.isfile(os.path.join("/system/bin",exe)):
-                # cmd = cmd+" su -c cp "+os.path.join(libs_path,exe)+" /system/bin/; "
-                # cmd = cmd+" su -c chmod 0777 "+os.path.join("/system/bin/",exe)+"; "
                 cmd = cmd+" cp "+os.path.join(libs_path,exe)+" /system/bin/; "
                 cmd = cmd+" chmod 0777 "+os.path.join("/system/bin/",exe)+"; "
 
         if cmd:
             #At least one lib should be copied
-            # cmd = "su -c mount -o remount,rw /system; "+cmd
             cmd = "mount -o remount,rw /system; "+cmd
-            # subprocess.Popen(cmd, executable="/system/bin/sh", shell=True)
             self._run_shell_cmd(cmd)
 
 

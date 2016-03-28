@@ -24,7 +24,7 @@ def get_cache_dir():
 
 lte_lvl1 = [
             "LTE_RRC_OTA_Packet",
-            "LTE_RRC_Serv_Cell_Info_Log_Packet",
+            "LTE_RRC_Serv_Cell_Info",
             "LTE_NAS_ESM_OTA_Incoming_Packet",
             "LTE_NAS_ESM_OTA_Outgoing_Packet",
             "LTE_NAS_EMM_OTA_Incoming_Packet",
