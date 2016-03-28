@@ -1,0 +1,21 @@
+#!/usr/bin/python
+import os
+import sys
+
+#Import MobileInsight modules
+from mobile_insight.monitor import AndroidDevDiagMonitor
+from mobile_insight.analyzer import LteRrcAnalyzer,WcdmaRrcAnalyzer
+    
+# Initialize a 3G/4G monitor
+src = AndroidDevDiagMonitor()
+src.set_skip_decoding(False)
+
+#Enable 3G/4G RRC (radio resource control) monitoring
+lte_rrc_analyzer = LteRrcAnalyzer()
+lte_rrc_analyzer.set_source(src)
+
+wcdma_rrc_analyzer = WcdmaRrcAnalyzer()
+wcdma_rrc_analyzer.set_source(src)
+
+#Start the monitoring
+src.run()

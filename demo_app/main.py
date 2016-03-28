@@ -119,8 +119,8 @@ class HelloWorldScreen(GridLayout):
 
     def __init__(self):
         super(HelloWorldScreen, self).__init__()
-        app_list = self._get_app_list()
-        app_list.sort()
+        self.app_list = self._get_app_list()
+        # self.app_list.sort()
 
         self.__init_libs()
 
@@ -132,7 +132,7 @@ class HelloWorldScreen(GridLayout):
 
 
         first = True
-        for name in app_list:
+        for name in self.app_list:
             widget = LabeledCheckBox(text=name, group="app")
             if first:
                 widget.active = True
@@ -217,25 +217,25 @@ class HelloWorldScreen(GridLayout):
 
     def run_script_callback(self):
         no_error = True
-        if no_error:
-            try:
-                # import mobile_insight
-                # self._add_log_line("Imported mobile_insight")
-                # print "test1"
-                pass
-            except:
-                self._add_log_line(str(traceback.format_exc()))
-                no_error = False
+        # if no_error:
+        #     try:
+        #         # import mobile_insight
+        #         # self._add_log_line("Imported mobile_insight")
+        #         # print "test1"
+        #         pass
+        #     except:
+        #         self._add_log_line(str(traceback.format_exc()))
+        #         no_error = False
         
-        if no_error:
-            try:
-                # import mobile_insight.monitor.dm_collector.dm_collector_c as dm_collector_c
-                # self._add_log_line("Loaded dm_collector_c v%s" % dm_collector_c.version)
-                # print "test2"
-                pass
-            except:
-                self._add_log_line("Failed to load dm_collector_c")
-                no_error = False
+        # if no_error:
+        #     try:
+        #         # import mobile_insight.monitor.dm_collector.dm_collector_c as dm_collector_c
+        #         # self._add_log_line("Loaded dm_collector_c v%s" % dm_collector_c.version)
+        #         # print "test2"
+        #         pass
+        #     except:
+        #         self._add_log_line("Failed to load dm_collector_c")
+        #         no_error = False
 
         if no_error:
             try:
@@ -258,21 +258,27 @@ class HelloWorldScreen(GridLayout):
         return str(self.current_activity.getFilesDir().getAbsolutePath())
 
     def _get_app_list(self):
+
+        ret = {} #app_name->path
+
         APP_DIR = os.path.join(self._get_files_dir(), "app")
         l = os.listdir(APP_DIR)
-        ret = []
         for f in l:
             if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
-                ret.append(f)
+                # ret.append(f)
+                ret[f] = os.path.join(APP_DIR, f)
 
         #Yuanjie: support alternative path for users to customize their own app
         APP_DIR = "/sdcard/mobile_insight_app/"
         if os.path.exists(APP_DIR):
             l = os.listdir(APP_DIR)
             for f in l:
-                if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")) \
-                and not f in ret:
-                    ret.append(f)
+                if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+                    if f in ret:
+                        tmp_name = f+" (plugin)"
+                    else:
+                        tmp_name = f
+                    ret[tmp_name] = os.path.join(APP_DIR, f)
         else:
             #Create directory for user-customized apps
             cmd = "mkdir \"%s\";" % APP_DIR
@@ -281,10 +287,20 @@ class HelloWorldScreen(GridLayout):
         return ret
 
     def on_checkbox_app_active(self, obj):
-        self.ids.checkbox_app.selected = ""
+        # self.ids.checkbox_app.selected = ""
         for cb in self.ids.checkbox_app_layout.children:
             if cb.active:
                 self.ids.checkbox_app.selected = cb.text
+        #Yuanjie: try to load readme.txt
+
+        app_path = self.app_list[self.ids.checkbox_app.selected]
+        if os.path.exists(os.path.join(app_path, "readme.txt")):
+            with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
+                self.error_log = self.ids.checkbox_app.selected+": "+ff.read()
+        else:
+            self.error_log = self.ids.checkbox_app.selected+": no descriptions."
+
+
         return True
 
     def start_collection(self):
@@ -312,12 +328,6 @@ class HelloWorldScreen(GridLayout):
                 self._add_log_line(repr(t))
             infos["qmdls_before"] = qmdls_after
 
-        # cmd = "su -c mkdir \"%s\"" % LOG_DIR
-        # subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
-        # cmd = "su -c chmod -R 777 \"%s\"" % LOG_DIR
-        # subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
-        # cmd = "su -c diag_mdlog -s 1 -o \"%s\"" % LOG_DIR
-        # subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
         cmd = "mkdir \"%s\";" % LOG_DIR
         cmd = cmd + " chmod -R 777 \"%s\";" % LOG_DIR
         cmd = cmd + " diag_mdlog -s 1 -o \"%s\";" % LOG_DIR
@@ -357,17 +367,15 @@ class HelloWorldScreen(GridLayout):
             self._run_shell_cmd(cmd2)
 
     def start_service(self, app_name):
-        if platform == "android" and app_name:
+        if platform == "android" and app_name in self.app_list:
             if self.service:
                 #Stop the running service
                 self.stop_service()
             from android import AndroidService
             self.error_log="Running "+app_name+"..."
             self.service = AndroidService("MobileInsight is running...", "MobileInsight")
-            self.service.start(app_name)   # app name
-            # service = AndroidService("MobileInsight is running...", "MobileInsight")
-            # service.start(app_name)   # app name
-            # self.service = service
+            self.service.start(self.app_list[app_name])   # app name
+            
 
     def stop_service(self):
         if self.service:

@@ -12,7 +12,7 @@ import sys
 import traceback
 
 import mobile_insight
-from mobile_insight.monitor import AndroidDevDiagMonitor, AndroidQmdlMonitor
+from mobile_insight.monitor import AndroidDevDiagMonitor
 from upload_analyzer import UploadAnalyzer
 
 
