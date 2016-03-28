@@ -22,17 +22,18 @@ def run_online_test(libwireshark_path, log_output_directory):
 
     lte_lvl1 = ["LTE_RRC_OTA_Packet",
                 "LTE_RRC_Serv_Cell_Info_Log_Packet",
-                "LTE_NAS_ESM_Plain_OTA_Incoming_Message",
-                "LTE_NAS_ESM_Plain_OTA_Outgoing_Message",
-                "LTE_NAS_EMM_Plain_OTA_Incoming_Message",
-                "LTE_NAS_EMM_Plain_OTA_Outgoing_Message",
+                "LTE_NAS_ESM_OTA_Incoming_Packet",
+                "LTE_NAS_ESM_OTA_Outgoing_Packet",
+                "LTE_NAS_EMM_OTA_Incoming_Packet",
+                "LTE_NAS_EMM_OTA_Outgoing_Packet",
                 "LTE_NAS_EMM_State",
                 ]
-    lte_lvl2 = ["LTE_ML1_Connected_Mode_LTE_Intra_Freq_Meas_Results",
-                "LTE_ML1_IRAT_Measurement_Request",
-                "LTE_ML1_Serving_Cell_Measurement_Result",
-                "LTE_ML1_Connected_Mode_Neighbor_Meas_Req_Resp",
-                "LTE_LL1_PDSCH_Demapper_Configuration",
+    lte_lvl2 = [
+                # LTE_PHY_Connected_Mode_Intra_Freq_Meas,
+                # LTE_PHY_Inter_RAT_Measurement,
+                # LTE_PHY_Serv_Cell_Measurement,
+                # LTE_PHY_Connected_Mode_Neighbor_Measurement,
+                # LTE_PHY_PDSCH_Packet,
                 ]
     lte_lvl3 = ["LTE_PDCP_DL_SRB_Integrity_Data_PDU", 
                 "LTE_PDCP_UL_SRB_Integrity_Data_PDU", 

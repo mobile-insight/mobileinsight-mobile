@@ -21,7 +21,7 @@ class RadioLinkCapacity(SampleCollectionBase):
 
     	:returns: a list of logs to be enabled
     	"""
-    	return "LTE_LL1_PDSCH_Demapper_Configuration"
+    	return "LTE_PHY_PDSCH_Packet"
 
     def collect(self,msg):
         """
@@ -31,7 +31,7 @@ class RadioLinkCapacity(SampleCollectionBase):
         :type msg: Event
         :returns: the runtime radio link capacity (in bps)
         """
-        if msg.type_id=="LTE_LL1_PDSCH_Demapper_Configuration":
+        if msg.type_id=="LTE_PHY_PDSCH_Packet":
             log_item = msg.data.decode()
             print "RadioLinkCapacity: "+str(log_item["Transport Block Size Stream 0"])
             log_item = msg.data.decode()

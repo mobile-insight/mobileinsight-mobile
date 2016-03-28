@@ -58,8 +58,8 @@ class IcellularDecision(Analyzer):
         Update current vector feature
         """
 
-        if msg.type_id == "LTE_NAS_ESM_Plain_OTA_Incoming_Message" \
-        or msg.type_id == "LTE_NAS_ESM_Plain_OTA_Outgoing_Message":
+        if msg.type_id == "LTE_NAS_ESM_OTA_Incoming_Packet" \
+        or msg.type_id == "LTE_NAS_ESM_OTA_Outgoing_Packet":
             # LTE NAS: get QoS
             qos_profile = self.get_analyzer("LteNasAnalyzer").get_qos()
 

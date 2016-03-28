@@ -95,19 +95,18 @@ class IcellularMonitor(Analyzer):
         Analyzer.set_source(self,source)
         #enable LTE RRC log
         source.enable_log("LTE_RRC_OTA_Packet")
-        source.enable_log("WCDMA_Signaling_Messages")
-        # source.enable_log("LTE_RRC_Serv_Cell_Info_Log_Packet")
+        source.enable_log("WCDMA_RRC_OTA_Packet")
+        source.enable_log("LTE_RRC_Serv_Cell_Info")
         source.enable_log("Modem_debug_message") #Get RSRP/RSCP in manual network search
 
         #Enable EMM/ESM logs
-        source.enable_log("LTE_NAS_ESM_Plain_OTA_Incoming_Message")
-        source.enable_log("LTE_NAS_ESM_Plain_OTA_Outgoing_Message")
-        source.enable_log("LTE_NAS_EMM_Plain_OTA_Incoming_Message")
-        source.enable_log("LTE_NAS_EMM_Plain_OTA_Outgoing_Message")
+        source.enable_log("LTE_NAS_ESM_OTA_Incoming_Packet")
+        source.enable_log("LTE_NAS_ESM_OTA_Outgoing_Packet")
+        source.enable_log("LTE_NAS_EMM_OTA_Incoming_Packet")
+        source.enable_log("LTE_NAS_EMM_OTA_Outgoing_Packet")
 
         #Serving cell's signal strength
-        # source.enable_log("LTE_ML1_Serving_Cell_Measurement_Result")
-        source.enable_log("LTE_ML1_Connected_Mode_LTE_Intra_Freq_Meas_Results")
+        source.enable_log("LTE_PHY_Connected_Mode_Intra_Freq_Meas")
 
 
     def run_monitor(self):
@@ -363,7 +362,7 @@ class IcellularMonitor(Analyzer):
             print "iCellular: __active_monitor -- updated voice_domain_pref_for_eutran = " + str(self.__csfb_pref_for_eutran)
 
 
-        elif msg.type_id == "WCDMA_Signaling_Messages":
+        elif msg.type_id == "WCDMA_RRC_OTA_Packet":
             '''
             Monitor incoming SIB, detect the currently available carrier network.
             Run the decision-fault prevention function. 
@@ -501,7 +500,7 @@ class IcellularMonitor(Analyzer):
 
             #             break;
 
-        elif msg.type_id == "LTE_ML1_Connected_Mode_LTE_Intra_Freq_Meas_Results":
+        elif msg.type_id == "LTE_PHY_Connected_Mode_Intra_Freq_Meas":
             log_item = msg.data.decode()
             log_item_dict = dict(log_item)
 

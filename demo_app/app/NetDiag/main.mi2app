@@ -14,7 +14,7 @@ src.set_input_path("/sdcard/lte_rrc.qmdl")
 
 #Enable 3G/4G RRC (radio resource control) monitoring
 src.enable_log("LTE_RRC_OTA_Packet")
-src.enable_log("WCDMA_Signaling_Messages")
+src.enable_log("WCDMA_RRC_OTA_Packet")
 
 mobility_mngt = MobilityMngt()
 mobility_mngt.set_source(src)
