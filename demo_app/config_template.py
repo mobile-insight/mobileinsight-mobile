@@ -1,6 +1,6 @@
 app_name = 'MobileInsight2'
 
-app_version = "1.0"
+app_version = '1.0'
 
 pkg_name = 'edu.ucla.cs.wing.mobileinsight2'
 
