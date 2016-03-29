@@ -19,3 +19,5 @@ wcdma_rrc_analyzer.set_source(src)
 
 #Start the monitoring
 src.run()
+
+print "over?"
