@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os, sys, commands
+# from os.path import exists, join,
 import yaml
 
 
@@ -17,6 +18,9 @@ def run_apk(build_release):
             + ' --dist_name=' + cfg['dist_name'] \
             + ' --bootstrap=' + cfg['bootstrap'] \
             + ' --requirements=' + cfg['requirements']
+
+    print build_dist_cmd
+    os.system(build_dist_cmd)
 
     build_cmd = 'python-for-android apk' \
             + ' --compile-pyo' \
@@ -41,17 +45,37 @@ def run_apk(build_release):
             + ' --whitelist=' + cfg['whitelist']
 
     if build_release is True:
-        build_cmd = build_cmd + "--release" \
-                + ' --keystore=' + cfg['keystore']\
-                + ' --signkey=' + cfg['signkey']\
-                + ' --keystorepw=' + cfg['keystorepw']\
-                + ' --signkeypw=' + cfg['signkeypw']
+        # This should work but currently has bug
+        # build_cmd = build_cmd + ' --release' \
+        #         + ' --keystore=' + str(cfg['keystore']) \
+        #         + ' --signkey=' + str(cfg['signkey']) \
+        #         + ' --keystorepw=' + str(cfg['keystorepw']) \
+        #         + ' --signkeypw=' + str(cfg['signkeypw'])
 
-    print build_dist_cmd
-    os.system(build_dist_cmd)
+        rm_cmd = 'rm ' + cfg['app_name'] + '-' + str(cfg['app_version']) + '.apk'
+        build_cmd = build_cmd + ' --release'
+        sign_cmd = 'jarsigner -verbose' \
+            + ' -sigalg SHA1withRSA' \
+            + ' -digestalg SHA1' \
+            + ' -keystore ' + cfg['keystore'] \
+            + ' ' + os.path.join(cfg['p4a_path'], 'dists', cfg['dist_name'], 'bin') \
+                + '/' + cfg['app_name'] + '-' + str(cfg['app_version']) + '-release-unsigned.apk ' + cfg['signkey']
+        align_cmd = 'zipalign -v 4 ' \
+            + os.path.join(cfg['p4a_path'], 'dists', cfg['dist_name'], 'bin') \
+                + '/' + cfg['app_name'] + '-' + str(cfg['app_version']) + '-release-unsigned.apk ' \
+            + cfg['app_name'] + '-' + str(cfg['app_version']) + '.apk'
 
-    print build_cmd
-    os.system(build_cmd)
+        print build_cmd
+        print sign_cmd
+        print align_cmd
+        os.system(rm_cmd)
+        os.system(build_cmd)
+        os.system(sign_cmd)
+        os.system(align_cmd)
+    else:
+        print build_cmd
+        os.system(build_cmd)
+
 
 if __name__ == '__main__':
     arg = sys.argv[1]
@@ -63,8 +87,6 @@ if __name__ == '__main__':
     if arg == 'config':
         run_config()
     elif arg == 'apk':
-        # TODO:
-        # support debug version and release version
         if debug == "debug" or debug == "":
             run_apk(False)
         elif debug == "release":
@@ -76,4 +98,10 @@ if __name__ == '__main__':
         # finish clean up script
         # mainly clean the pyo files
         pass
-
+    elif arg == 'install':
+        with open("config.yml", 'r') as ymlfile:
+            cfg = yaml.load(ymlfile)
+        try:
+            os.system('adb install -r ' + cfg['app_name'] + '-' + str(cfg['app_version']) + '.apk')
+        except:
+            os.system('adb install -r ' + cfg['app_name'] + '-' + str(cfg['app_version']) + '-debug.apk')
