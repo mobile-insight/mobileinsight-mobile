@@ -1,4 +1,4 @@
-all: apk install
+all: apk-release install
 
 .PHONY: apk install
 
@@ -15,10 +15,10 @@ install:
 	python deploy.py install
 
 apk:
-	python deploy.py apk release
+	python deploy.py apk
 
-apk debug:
+apk-debug:
 	python deploy.py apk debug
 
-apk release:
+apk-release:
 	python deploy.py apk release
