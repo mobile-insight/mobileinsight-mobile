@@ -217,25 +217,6 @@ class HelloWorldScreen(GridLayout):
 
     def run_script_callback(self):
         no_error = True
-        # if no_error:
-        #     try:
-        #         # import mobile_insight
-        #         # self._add_log_line("Imported mobile_insight")
-        #         # print "test1"
-        #         pass
-        #     except:
-        #         self._add_log_line(str(traceback.format_exc()))
-        #         no_error = False
-        
-        # if no_error:
-        #     try:
-        #         # import mobile_insight.monitor.dm_collector.dm_collector_c as dm_collector_c
-        #         # self._add_log_line("Loaded dm_collector_c v%s" % dm_collector_c.version)
-        #         # print "test2"
-        #         pass
-        #     except:
-        #         self._add_log_line("Failed to load dm_collector_c")
-        #         no_error = False
 
         if no_error:
             try:
@@ -373,7 +354,7 @@ class HelloWorldScreen(GridLayout):
                 self.stop_service()
             from android import AndroidService
             self.error_log="Running "+app_name+"..."
-            self.service = AndroidService("MobileInsight is running...", "MobileInsight")
+            self.service = AndroidService("MobileInsight is running...", app_name)
             self.service.start(self.app_list[app_name])   # app name
             
 
