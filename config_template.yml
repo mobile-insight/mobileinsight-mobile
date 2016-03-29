@@ -47,7 +47,7 @@ orientation : portrait
 
 whitelist : whitelist.txt
 
-keystore : /Users/zyuan/Projects/metro/mi2-release-key.keystore
+keystore : /Users/zyuan/Projects/metro/MobileInsight2/mi2-release-key.keystore
 signkey : mi2-key
 keystorepw : keystore-password
 signkeypw : key-password

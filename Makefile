@@ -1,6 +1,6 @@
 all: apk install
 
-# .PHONY: redist apk install  # what is this?
+.PHONY: apk install
 
 clean:
 	python deploy.py clean
