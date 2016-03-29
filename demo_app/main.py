@@ -182,12 +182,12 @@ class HelloWorldScreen(GridLayout):
         
 
         #sym links for some libs
-        # libs_mapping={"libwireshark.so": ["libwireshark.so.6", "libwireshark.so.6.0.1"],
-        #               "libwiretap.so": ["libwiretap.so.5", "libwiretap.so.5.0.1"],
-        #               "libwsutil.so": ["libwsutil.so.6", "libwsutil.so.6.0.0"]}
-        libs_mapping={"libwireshark.so": ["libwireshark.so.5", "libwireshark.so.5.0.3"],
-                      "libwiretap.so": ["libwiretap.so.4", "libwiretap.so.4.0.3"],
-                      "libwsutil.so": ["libwsutil.so.4", "libwsutil.so.4.1.0"]}
+        libs_mapping={"libwireshark.so": ["libwireshark.so.6", "libwireshark.so.6.0.1"],
+                      "libwiretap.so": ["libwiretap.so.5", "libwiretap.so.5.0.1"],
+                      "libwsutil.so": ["libwsutil.so.6", "libwsutil.so.6.0.0"]}
+        # libs_mapping={"libwireshark.so": ["libwireshark.so.5", "libwireshark.so.5.0.3"],
+        #               "libwiretap.so": ["libwiretap.so.4", "libwiretap.so.4.0.3"],
+        #               "libwsutil.so": ["libwsutil.so.4", "libwsutil.so.4.1.0"]}
 
 
         for lib in libs_mapping:
