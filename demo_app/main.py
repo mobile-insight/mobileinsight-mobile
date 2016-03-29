@@ -5,6 +5,8 @@ kivy.require('1.0.9')
 
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
+from kivy.uix.popup import Popup
+from kivy.uix.label import Label
 from kivy.properties import *
 
 from kivy.app import App
@@ -12,6 +14,7 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.utils import platform
+
 
 from jnius import autoclass, cast
 
@@ -22,6 +25,8 @@ import sys
 import subprocess
 import time
 import traceback
+
+ANDROID_SHELL = "/system/bin/sh"
 
 # Prevent Android on-screen keyboard from hiding text input
 # See http://stackoverflow.com/questions/26799084/android-on-screen-keyboard-hiding-python-kivy-textinputs
@@ -37,7 +42,7 @@ Builder.load_string("""
         text: root.text
         text_size: self.width, None
         size_hint_y: None
-        font_size: "30sp"
+        font_size: "25sp"
         height: self.texture_size[1]
         valign: 'top'
 
@@ -51,12 +56,12 @@ Builder.load_string("""
         active: root.active
         group: root.group
         size_hint_x: None
-        font_size: "30sp"
+        font_size: "25sp"
         on_active: root.callback(*args)
 
     Label:
         text: root.text
-        font_size: "30sp"
+        font_size: "25sp"
         text_width: self.width
 
 # Main screen
@@ -70,20 +75,21 @@ Builder.load_string("""
     TextInput:
         id: filename
         size_hint_y: 2
-        font_size: "30sp"
+        font_size: "25sp"
         text: '/sdcard/main.py'
         multiline: False
+
 
     Button:
         text: 'Run test script'
         size_hint_y: 3
-        font_size: "30sp"
+        font_size: "25sp"
         on_release: root.run_script_callback()
 
     ScrollView:
         id: checkbox_app
         size_hint_y: 10
-        font_size: "30sp"
+        font_size: "25sp"
         selected: ""
 
         BoxLayout:
@@ -94,20 +100,27 @@ Builder.load_string("""
         text: 'Run app! %s' % root.ids.checkbox_app.selected
         disabled: root.ids.checkbox_app.selected == ''
         size_hint_y: 3
-        font_size: "30sp"
+        font_size: "25sp"
         on_release: root.start_service(root.ids.checkbox_app.selected)
 
     Button:
         text: 'Stop app' 
         disabled: root.ids.checkbox_app.selected == ''
         size_hint_y: 3
-        font_size: "30sp"
+        font_size: "25sp"
         on_release: root.stop_service()
+
+    Button:
+        text: 'About' 
+        disabled: root.ids.checkbox_app.selected == ''
+        size_hint_y: 3
+        font_size: "25sp"
+        on_release: root.about()
 
 """)
 
 class HelloWorldScreen(GridLayout):
-    error_log = StringProperty(" ")
+    error_log = StringProperty("MobileInsight 2.0\nUCLA Wing Group & OSU MSSN Lab")
     collecting = BooleanProperty(False)
     current_activity = cast("android.app.Activity",
                             autoclass("org.renpy.android.PythonActivity").mActivity)
@@ -117,13 +130,20 @@ class HelloWorldScreen(GridLayout):
 
     def __init__(self):
         super(HelloWorldScreen, self).__init__()
-        app_list = self._get_app_list()
-        app_list.sort()
+        self.app_list = self._get_app_list()
+        # self.app_list.sort()
 
         self.__init_libs()
 
+        if not self.__check_diag_mode():
+            self.error_log = "WARINING: the diagnostic mode is disabled. Please check your phone settings."
+
+        #clean up ongoing log collections
+        self.stop_collection()
+
+
         first = True
-        for name in app_list:
+        for name in self.app_list:
             widget = LabeledCheckBox(text=name, group="app")
             if first:
                 widget.active = True
@@ -131,6 +151,29 @@ class HelloWorldScreen(GridLayout):
                 first = False
             widget.bind(on_active=self.on_checkbox_app_active)
             self.ids.checkbox_app_layout.add_widget(widget)
+
+    def _run_shell_cmd(self, cmd, wait = False):
+        p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        p.communicate(cmd+'\n')
+        if wait:
+            p.wait()
+            return p.returncode
+        else:
+            return None
+
+    def __check_diag_mode(self):
+        """
+        Check if diagnostic mode is enabled.
+        """
+
+        # return os.path.exists("/dev/diag")    #This fails if /dev/ is not permitted for access
+        cmd = " test -e /dev/diag"
+        res=self._run_shell_cmd(cmd,True)
+        if res:
+            return False
+        else:
+            return True    
+
 
     def __init_libs(self):
         """
@@ -145,39 +188,38 @@ class HelloWorldScreen(GridLayout):
 
         for lib in libs:
             if not os.path.isfile(os.path.join("/system/lib",lib)):
-                cmd = cmd+" su -c cp "+os.path.join(libs_path,lib)+" /system/lib/; "
-                cmd = cmd+" su -c chmod 777 "+os.path.join("/system/lib",lib)+"; "
+                cmd = cmd+" cp "+os.path.join(libs_path,lib)+" /system/lib/; "
+                cmd = cmd+" chmod 755 "+os.path.join("/system/lib",lib)+"; "
+        
+
         #sym links for some libs
-        if not os.path.isfile("/system/lib/libwireshark.so.5"):
-            cmd = cmd+" su -c ln -s /system/lib/libwireshark.so /system/lib/libwireshark.so.5; "
-            cmd = cmd+" su -c chmod 777 /system/lib/libwireshark.so.5; "
-        if not os.path.isfile("/system/lib/libwireshark.so.5.0.3"):
-            cmd = cmd+" su -c ln -s /system/lib/libwireshark.so /system/lib/libwireshark.so.5.0.3; " 
-            cmd = cmd+" su -c chmod 777 /system/lib/libwireshark.so.5.0.3; "
-        if not os.path.isfile("/system/lib/libwiretap.so.4"):
-            cmd = cmd+" su -c ln -s /system/lib/libwiretap.so /system/lib/libwiretap.so.4; "  
-            cmd = cmd+" su -c chmod 777 /system/lib/libwiretap.so.4; "
-        if not os.path.isfile("/system/lib/libwiretap.so.4.0.3"):
-            cmd = cmd+" su -c ln -s /system/lib/libwiretap.so /system/lib/libwiretap.so.4.0.3; "
-            cmd = cmd+" su -c chmod 777 /system/lib/libwiretap.so.4.0.3; "
-        if not os.path.isfile("/system/lib/libwsutil.so.4"):
-            cmd = cmd+" su -c ln -s /system/lib/libwsutil.so /system/lib/libwsutil.so.4; " 
-            cmd = cmd+" su -c chmod 777 /system/lib/libwsutil.so.4; "
-        if not os.path.isfile("/system/lib/libwsutil.so.4.1.0"):
-            cmd = cmd+" su -c ln -s /system/lib/libwsutil.so /system/lib/libwsutil.so.4.1.0; "
-            cmd = cmd+" su -c chmod 777 /system/lib/libwsutil.so.4.1.0; "
+        libs_mapping={"libwireshark.so": ["libwireshark.so.6", "libwireshark.so.6.0.1"],
+                      "libwiretap.so": ["libwiretap.so.5", "libwiretap.so.5.0.1"],
+                      "libwsutil.so": ["libwsutil.so.6", "libwsutil.so.6.0.0"]}
+        # libs_mapping={"libwireshark.so": ["libwireshark.so.5", "libwireshark.so.5.0.3"],
+        #               "libwiretap.so": ["libwiretap.so.4", "libwiretap.so.4.0.3"],
+        #               "libwsutil.so": ["libwsutil.so.4", "libwsutil.so.4.1.0"]}
+
+
+        for lib in libs_mapping:
+            for sym_lib in libs_mapping[lib]:
+                if not os.path.isfile("/system/lib/"+sym_lib):
+                   cmd = cmd+" ln -s /system/lib/"+lib+" /system/lib/"+sym_lib+"; "
+                   cmd = cmd+" chmod 755 /system/lib/"+sym_lib+"; " 
+
+        print cmd
 
         #bins
         exes=["diag_revealer","android_pie_ws_dissector","android_ws_dissector"]
         for exe in exes:
             if not os.path.isfile(os.path.join("/system/bin",exe)):
-                cmd = cmd+" su -c cp "+os.path.join(libs_path,exe)+" /system/bin/; "
-                cmd = cmd+" su -c chmod 0777 "+os.path.join("/system/bin/",exe)+"; "
+                cmd = cmd+" cp "+os.path.join(libs_path,exe)+" /system/bin/; "
+                cmd = cmd+" chmod 755 "+os.path.join("/system/bin/",exe)+"; "
 
         if cmd:
             #At least one lib should be copied
-            cmd = "su -c mount -o remount,rw /system; "+cmd
-            subprocess.Popen(cmd, executable="/system/bin/sh", shell=True)
+            cmd = "mount -o remount,rw /system; "+cmd
+            self._run_shell_cmd(cmd)
 
 
     def _add_log_line(self, s):
@@ -186,21 +228,6 @@ class HelloWorldScreen(GridLayout):
 
     def run_script_callback(self):
         no_error = True
-        if no_error:
-            try:
-                import mobile_insight
-                # self._add_log_line("Imported mobile_insight")
-            except:
-                self._add_log_line(str(traceback.format_exc()))
-                no_error = False
-        
-        if no_error:
-            try:
-                import mobile_insight.monitor.dm_collector.dm_collector_c as dm_collector_c
-                # self._add_log_line("Loaded dm_collector_c v%s" % dm_collector_c.version)
-            except:
-                self._add_log_line("Failed to load dm_collector_c")
-                no_error = False
 
         if no_error:
             try:
@@ -212,6 +239,7 @@ class HelloWorldScreen(GridLayout):
                 # Load the "app_log" variable from namespace and print it out
                 self._add_log_line(namespace["app_log"])
             except:
+                print str(traceback.format_exc())
                 self._add_log_line(str(traceback.format_exc()))
                 no_error = False
 
@@ -222,19 +250,49 @@ class HelloWorldScreen(GridLayout):
         return str(self.current_activity.getFilesDir().getAbsolutePath())
 
     def _get_app_list(self):
+
+        ret = {} #app_name->path
+
         APP_DIR = os.path.join(self._get_files_dir(), "app")
         l = os.listdir(APP_DIR)
-        ret = []
         for f in l:
             if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
-                ret.append(f)
+                # ret.append(f)
+                ret[f] = os.path.join(APP_DIR, f)
+
+        #Yuanjie: support alternative path for users to customize their own app
+        APP_DIR = "/sdcard/mobile_insight_app/"
+        if os.path.exists(APP_DIR):
+            l = os.listdir(APP_DIR)
+            for f in l:
+                if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+                    if f in ret:
+                        tmp_name = f+" (plugin)"
+                    else:
+                        tmp_name = f
+                    ret[tmp_name] = os.path.join(APP_DIR, f)
+        else:
+            #Create directory for user-customized apps
+            cmd = "mkdir \"%s\";" % APP_DIR
+            self._run_shell_cmd(cmd)
+
         return ret
 
     def on_checkbox_app_active(self, obj):
-        self.ids.checkbox_app.selected = ""
+        # self.ids.checkbox_app.selected = ""
         for cb in self.ids.checkbox_app_layout.children:
             if cb.active:
                 self.ids.checkbox_app.selected = cb.text
+        #Yuanjie: try to load readme.txt
+
+        app_path = self.app_list[self.ids.checkbox_app.selected]
+        if os.path.exists(os.path.join(app_path, "readme.txt")):
+            with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
+                self.error_log = self.ids.checkbox_app.selected+": "+ff.read()
+        else:
+            self.error_log = self.ids.checkbox_app.selected+": no descriptions."
+
+
         return True
 
     def start_collection(self):
@@ -262,16 +320,14 @@ class HelloWorldScreen(GridLayout):
                 self._add_log_line(repr(t))
             infos["qmdls_before"] = qmdls_after
 
-        cmd = "su -c mkdir \"%s\"" % LOG_DIR
-        subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
-        cmd = "su -c chmod -R 777 \"%s\"" % LOG_DIR
-        subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
-        cmd = "su -c diag_mdlog -s 1 -o \"%s\"" % LOG_DIR
-        subprocess.Popen(cmd, executable=ANDROID_SHELL, shell=True)
+        cmd = "mkdir \"%s\";" % LOG_DIR
+        cmd = cmd + " chmod -R 777 \"%s\";" % LOG_DIR
+        cmd = cmd + " diag_mdlog -s 1 -o \"%s\";" % LOG_DIR
+        self._run_shell_cmd(cmd)
 
-        from mobile_insight.monitor import QmdlReplayer
+        from mobile_insight.monitor import OfflineReplayer
         from mobile_insight.analyzer import RrcAnalyzer
-        self.qmdl_src = QmdlReplayer({  "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+        self.qmdl_src = OfflineReplayer({  "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
                                         "libwireshark_path": "/system/lib"})
         self.analyzer = RrcAnalyzer()
 
@@ -291,31 +347,40 @@ class HelloWorldScreen(GridLayout):
         for pid in pids:
             try:
                 cmdline = open(os.path.join("/proc", pid, "cmdline"), "rb").read()
-                if cmdline.startswith("diag_mdlog"):
+                if cmdline.startswith("diag_mdlog") or cmdline.startswith("/system/bin/diag_revealer"):
                     diag_procs.append(int(pid))
             except IOError:     # proc has been terminated
                 continue
 
         if len(diag_procs) > 0:
-            cmd2 = "su -c kill " + " ".join([str(pid) for pid in diag_procs])
-            subprocess.Popen(cmd2, executable=ANDROID_SHELL, shell=True)
+            # cmd2 = "su -c kill " + " ".join([str(pid) for pid in diag_procs])
+            # subprocess.Popen(cmd2, executable=ANDROID_SHELL, shell=True)
+            cmd2 = "kill " + " ".join([str(pid) for pid in diag_procs])
+            self._run_shell_cmd(cmd2)
 
     def start_service(self, app_name):
-        if platform == "android" and app_name:
+        if platform == "android" and app_name in self.app_list:
             if self.service:
                 #Stop the running service
                 self.stop_service()
             from android import AndroidService
             self.error_log="Running "+app_name+"..."
-            service = AndroidService("MobileInsight is running...", "Running")
-            service.start(app_name)   # app name
-            self.service = service
+            self.service = AndroidService("MobileInsight is running...", app_name)
+            self.service.start(self.app_list[app_name])   # app name
+            
 
     def stop_service(self):
         if self.service:
             self.service.stop()
             self.service = None
             self.error_log="Stopped"
+            self.stop_collection()  #close ongoing collections
+
+    def about(self):
+        popup = Popup(title='About MobileInsight',
+                      content=Label(text='Developers: Yuanjie Li, Zengwen Yuan,\n Jiayao Li, Haotian Deng'),
+                      size_hint=(.8, .4))
+        popup.open()
 
 
 class LabeledCheckBox(GridLayout):

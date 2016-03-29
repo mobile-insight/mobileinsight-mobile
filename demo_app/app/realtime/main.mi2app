@@ -7,7 +7,7 @@ import stat
 import traceback
 
 import mobile_insight
-from mobile_insight.monitor import AndroidDevDiagMonitor, QmdlReplayer
+from mobile_insight.monitor import AndroidDevDiagMonitor, OfflineReplayer
 from mobile_insight.analyzer import MsgLogger
 from mi2app_utils import get_cache_dir, get_phone_model
 
@@ -21,18 +21,19 @@ try:
     # # uses existing Diag.cfg
 
     lte_lvl1 = ["LTE_RRC_OTA_Packet",
-                "LTE_RRC_Serv_Cell_Info_Log_Packet",
-                "LTE_NAS_ESM_Plain_OTA_Incoming_Message",
-                "LTE_NAS_ESM_Plain_OTA_Outgoing_Message",
-                "LTE_NAS_EMM_Plain_OTA_Incoming_Message",
-                "LTE_NAS_EMM_Plain_OTA_Outgoing_Message",
+                "LTE_RRC_Serv_Cell_Info",
+                "LTE_NAS_ESM_OTA_Incoming_Packet",
+                "LTE_NAS_ESM_OTA_Outgoing_Packet",
+                "LTE_NAS_EMM_OTA_Incoming_Packet",
+                "LTE_NAS_EMM_OTA_Outgoing_Packet",
                 "LTE_NAS_EMM_State",
                 ]
-    lte_lvl2 = ["LTE_ML1_Connected_Mode_LTE_Intra_Freq_Meas_Results",
-                "LTE_ML1_IRAT_Measurement_Request",
-                "LTE_ML1_Serving_Cell_Measurement_Result",
-                "LTE_ML1_Connected_Mode_Neighbor_Meas_Req_Resp",
-                "LTE_LL1_PDSCH_Demapper_Configuration",
+    lte_lvl2 = [
+                # LTE_PHY_Connected_Mode_Intra_Freq_Meas,
+                # LTE_PHY_Inter_RAT_Measurement,
+                # LTE_PHY_Serv_Cell_Measurement,
+                # LTE_PHY_Connected_Mode_Neighbor_Measurement,
+                # LTE_PHY_PDSCH_Packet,
                 ]
     lte_lvl3 = ["LTE_PDCP_DL_SRB_Integrity_Data_PDU", 
                 "LTE_PDCP_UL_SRB_Integrity_Data_PDU", 
@@ -49,8 +50,9 @@ try:
         libwireshark_path = "/system/lib"
     # src = AndroidDevDiagMonitor()
 
-    src = QmdlReplayer({"ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
-                        "libwireshark_path": "/system/lib",})
+    # src = OfflineReplayer({"ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+    #                     "libwireshark_path": "/system/lib",})
+    src = OfflineReplayer()
     #                     # "libwireshark_path": "/sdcard/ws_dissector",})  # for LG
     src.set_input_path("/sdcard/diag_log_20151107_220332_TCP_DL_null_null_353300061842826_Samsung-SM-G900T_T-Mobile.qmdl")
     src.enable_log(lte_lvl1 + lte_lvl2 + lte_lvl3)

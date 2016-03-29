@@ -1,0 +1,1 @@
+A simple analyzers for 3G/4G RRC protocols. The RRC information are profiled in /sdcard/mobile_insight_dbs/
