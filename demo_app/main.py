@@ -53,12 +53,12 @@ Builder.load_string("""
         active: root.active
         group: root.group
         size_hint_x: None
-        font_size: "30sp"
+        font_size: "25sp"
         on_active: root.callback(*args)
 
     Label:
         text: root.text
-        font_size: "30sp"
+        font_size: "25sp"
         text_width: self.width
 
 # Main screen
@@ -72,20 +72,20 @@ Builder.load_string("""
     TextInput:
         id: filename
         size_hint_y: 2
-        font_size: "30sp"
+        font_size: "25sp"
         text: '/sdcard/main.py'
         multiline: False
 
     Button:
         text: 'Run test script'
         size_hint_y: 3
-        font_size: "30sp"
+        font_size: "25sp"
         on_release: root.run_script_callback()
 
     ScrollView:
         id: checkbox_app
         size_hint_y: 10
-        font_size: "30sp"
+        font_size: "25sp"
         selected: ""
 
         BoxLayout:
@@ -96,14 +96,14 @@ Builder.load_string("""
         text: 'Run app! %s' % root.ids.checkbox_app.selected
         disabled: root.ids.checkbox_app.selected == ''
         size_hint_y: 3
-        font_size: "30sp"
+        font_size: "25sp"
         on_release: root.start_service(root.ids.checkbox_app.selected)
 
     Button:
         text: 'Stop app' 
         disabled: root.ids.checkbox_app.selected == ''
         size_hint_y: 3
-        font_size: "30sp"
+        font_size: "25sp"
         on_release: root.stop_service()
 
 """)
