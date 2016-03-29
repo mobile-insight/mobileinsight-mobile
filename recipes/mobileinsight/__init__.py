@@ -125,8 +125,7 @@ class MobileInsightRecipe(Recipe):
         # remove unnecessary code
         # sed -i '' is using Mac OS X sed syntax
         # TODO
-        # given uname, choose GNU version sed
-        # 
+        # sed -i'' is using GNU version sed syntax
         sed -i '' '/### P4A:/d' ./mobile_insight/monitor/__init__.py
         sed -i '' '/### P4A:/d' ./mobile_insight/monitor/dm_collector/__init__.py
         sed -i '' '/### P4A:/d' ./mobile_insight/monitor/dm_collector/dm_endec/ws_dissector.py

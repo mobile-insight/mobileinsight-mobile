@@ -68,12 +68,7 @@ try:
     ## Use AndroidDevDiagMonitor
     print "MobileInsight2 (NetLogger): using the AndroidDevDiagMonitor"
     fifo_path = os.path.join(get_cache_dir(), "diag_revealer_fifo")
-    src = AndroidDevDiagMonitor({   "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
-                                    "libwireshark_path": "/system/lib",
-                                    # "libwireshark_path": "/sdcard/ws_dissector",
-                                    "diag_revealer_executable_path": "/system/bin/diag_revealer",
-                                    "diag_revealer_fifo_path": fifo_path,
-                                    })
+    src = AndroidDevDiagMonitor()
     src.set_skip_decoding(False)
 
     log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")

@@ -10,12 +10,14 @@ Author: Yuanjie Li
 
 
 from at_cmd import * 
+import config
 
 from mobile_insight.analyzer import Analyzer
 
 class IcellularExec(Analyzer):
 
-    def __init__(self, at_serial_port="/dev/smd11"):
+    # def __init__(self, at_serial_port="/dev/smd11"):
+    def __init__(self):
 
         '''
         Initialization
@@ -29,7 +31,7 @@ class IcellularExec(Analyzer):
         self.include_analyzer("IcellularDecision",[self.__run_switch])
 
         #FIXME: conflicts with AtCmd in IcellularMonitor
-        self.__at_cmd = AtCmd(at_serial_port)  # AT command port
+        self.__at_cmd = AtCmd(config.at_serial_port)  # AT command port
 
     def set_source(self,source):
         """
@@ -40,6 +42,9 @@ class IcellularExec(Analyzer):
         """
         Analyzer.set_source(self,source)
 
+    def _run_shell_cmd(self, cmd, wait = False):
+        return os.popen("su -c "+cmd).read()
+
     def __run_secret_code(self,code):
         """
         Dial a secret code in Android
@@ -47,7 +52,7 @@ class IcellularExec(Analyzer):
         :param code: the secret code to dail
         """
 
-        self.run_shell_cmd("am broadcast -a \"android.provider.Telephony.SECRET_CODE\" -d \"android_secret_code://" + code + "\"")
+        self._run_shell_cmd("am broadcast -a \"android.provider.Telephony.SECRET_CODE\" -d \"android_secret_code://" + code + "\"")
 
 
     def __get_network_type(self):
@@ -55,7 +60,7 @@ class IcellularExec(Analyzer):
         Return a current network type
         """
         #Nexus 6P only: setPreferredNetworkType=82
-        res = self.run_shell_cmd("service call phone 82")
+        res = self._run_shell_cmd("service call phone 82")
         # print "Current network type: ",str(int(res[31],16))
         return int(res[31], 16)
 
@@ -68,13 +73,13 @@ class IcellularExec(Analyzer):
         :type network_type: string
         """
 
-        if str(self.get_network_type()) != str(network_type):
+        if str(self.__get_network_type()) != str(network_type):
             #Nexus 6P only: setPreferredNetworkType=87
-            self.run_shell_cmd("service call phone 87 i32 " + str(network_type))
-            print "Current network type", self.get_network_type(), " switch to network type ", network_type
+            self._run_shell_cmd("service call phone 87 i32 " + str(network_type))
+            print "Current network type", self.__get_network_type(), " switch to network type ", network_type
 
 
-    def set_carrier(self, carrier_type):
+    def __set_carrier(self, carrier_type):
 
         """
         Change network carriers. It returns only after successful registeration
@@ -85,22 +90,22 @@ class IcellularExec(Analyzer):
 
         if carrier_type == "Sprint":
             #Check if the device is already in Sprint
-            res = self.run_shell_cmd("getprop gsm.operator.numeric")
+            res = self._run_shell_cmd("getprop gsm.operator.numeric")
             if res == "310120\r\n" or res == "310000\r\n":
                 return
             self.run_secret_code("34777")
             while True:
-                res = self.run_shell_cmd("getprop gsm.operator.numeric")
+                res = self._run_shell_cmd("getprop gsm.operator.numeric")
                 if res == "310120\r\n" or res == "310000\r\n":
                     break
         elif carrier_type == "T-Mobile":
             #Check if the device is already in T-Mobile
-            res = self.run_shell_cmd("getprop gsm.operator.numeric")
+            res = self._run_shell_cmd("getprop gsm.operator.numeric")
             if res == "310260\r\n":
                 return
             self.run_secret_code("34866")
             while True:
-                res = self.run_shell_cmd("getprop gsm.operator.numeric")
+                res = self._run_shell_cmd("getprop gsm.operator.numeric")
                 if res == "310260\r\n":
                     break
         elif carrier_type == "Auto":
@@ -131,8 +136,8 @@ class IcellularExec(Analyzer):
             else: #Unsupported carrier network
                 return
 
-        self.set_carrier(target_carrier)
-        self.set_network_type(network_type)
+        self.__set_carrier(target_carrier)
+        self.__set_network_type(network_type)
 
 
 

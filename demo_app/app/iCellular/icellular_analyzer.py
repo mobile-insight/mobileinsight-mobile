@@ -15,6 +15,7 @@ from mobile_insight.analyzer import Analyzer
 class IcellularAnalyzer(Analyzer):
     
     def __init__(self):
+        print "IcellularAnalyzer is called"
         Analyzer.__init__(self)
         self.include_analyzer("IcellularExec",[]) #NO action, include analyzer only
         # self.include_analyzer("IcellularDecision",[]) #NO action, include analyzer only

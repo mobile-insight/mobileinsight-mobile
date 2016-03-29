@@ -33,22 +33,32 @@ class AtCmd(object):
         :types at_device: string
         '''
 
-        # self._run_shell_cmd("su -c chown root "+at_device,True)
-        # self._run_shell_cmd("su -c chgrp sdcard_rw "+at_device,True)
-        self._run_shell_cmd("su -c chmod 777 " + at_device, True)
+        
+        # self._run_shell_cmd("su -c chmod 777 " + at_device, True)
+        self._run_shell_cmd("chmod 777 " + at_device, True)
 
         # self.phy_ser = open(at_device,"rw")
         self.at_device = at_device
 
-        # at_res_cmd = "su -c cat " + at_device + " | awk '{ print strftime(\"[%Y-%m-%d %H:%M:%S %Z]\"), $0; fflush(); }' >" + at_log_file
-        at_res_cmd = "su -c cat " + at_device + ">" + at_log_file
+        # at_res_cmd = "su -c cat " + at_device + ">" + at_log_file
+        at_res_cmd = "cat " + at_device + ">" + at_log_file
         self.at_proc = subprocess.Popen(at_res_cmd, executable = ANDROID_SHELL, shell = True)
 
         #disable echo mode
         self.run_cmd("ATE0")
 
+    # def _run_shell_cmd(self, cmd, wait = False):
+    #     p = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True)
+    #     if wait:
+    #         p.wait()
+    #         return p.returncode
+    #     else:
+    #         return None
+
     def _run_shell_cmd(self, cmd, wait = False):
-        p = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True)
+        p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        p.communicate(cmd+'\n')
+        # p.stdin.write(cmd+'\n')
         if wait:
             p.wait()
             return p.returncode
@@ -86,7 +96,7 @@ class AtCmd(object):
                 print "at command is NOT running: " + str(AtCmd.cmd_count) + " " + str(count)
                 return False
             else:
-                print "at command is running: AtCmd.cmd_count = " + str(AtCmd.cmd_count) + ", count = " + str(count)
+                # print "at command is running: AtCmd.cmd_count = " + str(AtCmd.cmd_count) + ", count = " + str(count)
                 return True
 
 
@@ -103,20 +113,26 @@ class AtCmd(object):
         :returns: the return value of AT command if wait==True, otherwise empty string
         '''
 
-        full_cmd = 'su -c \"echo -e \'' + cmd + '\\r\\n\' > ' + self.at_device + "\""
+        # full_cmd = 'su -c \"echo -e \'' + cmd + '\\r\\n\' > ' + self.at_device + "\""
 
+        # print "Running AT command: "+full_cmd
+
+        # p = subprocess.Popen(full_cmd, executable = ANDROID_SHELL, shell = True)
+        # p.wait()
+
+        full_cmd = 'echo -e \'' + cmd + '\\r\\n\' > ' + self.at_device + "\n"
         print "Running AT command: "+full_cmd
 
-        p = subprocess.Popen(full_cmd, executable = ANDROID_SHELL, shell = True)
-        p.wait()
-
-
+        proc = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        proc.stdin.write(full_cmd+'\n')
+        
 
         if not wait:
             AtCmd.cmd_count = AtCmd.cmd_count + 1
             return ""
         
         while True:
+            proc.wait()
             res = ""
             count = 0
             with codecs.open(at_log_file, encoding = 'utf8') as fp:

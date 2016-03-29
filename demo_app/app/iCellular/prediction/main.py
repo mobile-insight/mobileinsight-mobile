@@ -1,11 +1,11 @@
 from hoeffding import HoeffdingTree
-from hoeffding import E_BST_root
-from hoeffding import E_BST_other
+from hoeffding import E_BST_Root
+from hoeffding import E_BST_Other
 import math
 
 file = open("../skype-regression-train.txt", 'r')
 line = file.readline()
-regress_tree = HoeffdingTree(attr_num=4)
+regress_tree = HoeffdingTree(attrNum = 4)
 while line:
     sample = []
     list = line.split('\t')
@@ -58,5 +58,3 @@ while line:
     line = file.readline()
 
 file.close()
-
-

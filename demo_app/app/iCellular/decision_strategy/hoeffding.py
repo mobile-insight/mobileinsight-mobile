@@ -1,4 +1,5 @@
 import math
+# from cart import CARTNode
 
 class E_BST_Root:
     def __init__(self, stat = [0, 0, 0], data = None, left = None, right = None):
@@ -181,25 +182,25 @@ class E_BST_Other:
 class HoeffdingTree:
     # node split
     DELTA = 0.01
-    N_MIN = 200 # default 200
+    N_MIN = 30 # default 200
     TAU = 0.05
     # change adaption
-    T_MIN = 150 # default 150
+    T_MIN = 20 # default 150
     ALPHA = 0.005
     LAMBDA = 50
     MONITOR = 10 * N_MIN
     F = 0.995
-    def __init__(self, stat = [0,0], resPredict = None, left = None, right = None, attrNum = None,
+    def __init__(self, stat = [0, 0], resPredict = None, left = None, right = None, attrNum = None,
                 attrType = 'con', splitDis = None, splitCon = None, attrInd = None, counterN = 0, counterT = 0, counterG = 0,
-                PHStat = [0, 0, 0], altTree = None, sErr = 0, grow = 'false', lastQi = 1,  __attrTree = []):
+                PHStat = [0, 0, 0], altTree = None, sErr = 0, grow = 'false', lastQi = 1):
         self.stat = stat #(N, Sigma y)
         self.resPredict = resPredict
         self.left = left
         self.right = right
         self.attrNum = attrNum
         self.attrType = attrType # discrete/continuous
-        self.splitDis = splitDis
-        self.splitCon = splitCon # current version not included
+        self.splitDis = splitDis # current version not included
+        self.splitCon = splitCon
         self.attrInd = attrInd
         self.counterN = counterN # #samples in each period (T = Nmin)
         self.counterT = counterT # #samples in each period (T = Tmin)
@@ -214,6 +215,55 @@ class HoeffdingTree:
             rootNode = E_BST_Root(stat = [0,0,0])
             self.__attrTree.append(rootNode)
         return
+
+    def getDepth(self):
+        if (self.left == None) & (self.right == None):
+            return 1
+        depthLeft = 0
+        depthRight = 0
+        if self.left != None:
+            depthLeft = self.left.getDepth() + 1
+        if self.right != None:
+            depthRight = self.right.getDepth() + 1
+        return max(depthLeft, depthRight)
+
+    def getNodeNum(self):
+        if (self.left == None) & (self.right == None):
+            return 1
+        nodeNumLeft = 0
+        nodeNumRight = 0
+        if self.left != None:
+            nodeNumLeft = self.left.getNodeNum()
+        if self.right != None:
+            nodeNumRight = self.right.getNodeNum()
+        return nodeNumLeft + nodeNumRight + 1
+
+    # def importCART(self, CARTNode):
+    #     if CARTNode.L == None & CARTNode.R == None: # leaf node
+    #         self.resPredict = CARTNode.M # to be added
+    #         return
+    #     else: # internal of root node
+    #         self.attrInd = CARTNode.V - 1
+    #         self.splitType = 'con'
+    #         self.splitCon = CARTNode.S
+    #     if CARTNode.L != None:
+    #         self.left = HoeffdingTree(stat = [0, 0])
+    #         self.left.importCART(CARTNode.L)
+    #     if CARTNode.R != None:
+    #         self.right = HoeffdingTree(stat = [0, 0])
+    #         self.right.importCART(CARTNode.R)
+    #     return
+    
+    def importTree(self, treeNode):
+         self.resPredict = treeNode["M"]
+         if treeNode.has_key('V'):
+             self.left = HoeffdingTree(attrNum = 4)
+             self.left.importTree(treeNode["L"])
+             self.right = HoeffdingTree(attrNum = 4)
+             self.right.importTree(treeNode["R"])
+             self.attrType = 'con'
+             self.splitCon = treeNode["S"]
+             self.attrInd = treeNode["V"]
 
     def train(self, sample):
         self.update(sample)
@@ -256,10 +306,13 @@ class HoeffdingTree:
                             if SDR > SDRList[attr2]:
                                 attr2 = x
                 epsilon = math.sqrt(math.log(1 / self.DELTA) / (2 * self.N_MIN))
-                if SDRList[attr2] / SDRList[attr1] + epsilon < 1: # criterion_is_satisfied
-                    self.split(attr1, splitSpot, sample, leftSigmayTotal / leftTotal, (self.stat[1] - leftSigmayTotal) / (self.stat[0] - leftTotal))
-                elif SDRList[attr2] / SDRList[attr1] + self.TAU >= 1: # tie -> either is okay
-                    self.split(attr1, splitSpot, sample, leftSigmayTotal / leftTotal, (self.stat[1] - leftSigmayTotal) / (self.stat[0] - leftTotal))
+                # if SDRList[attr1] == 0:
+                #     print "I'm here"
+                if SDRList[attr1] != 0:
+                    if SDRList[attr2] / SDRList[attr1] + epsilon < 1: # criterion_is_satisfied
+                        self.split(attr1, splitSpot, sample, leftSigmayTotal / leftTotal, (self.stat[1] - leftSigmayTotal) / (self.stat[0] - leftTotal))
+                    elif SDRList[attr2] / SDRList[attr1] + self.TAU >= 1: # tie -> either is okay
+                        self.split(attr1, splitSpot, sample, leftSigmayTotal / leftTotal, (self.stat[1] - leftSigmayTotal) / (self.stat[0] - leftTotal))
                 # reset E-BST for each node
                 self.stat = [0,0]
                 for x in range (0, len(sample)-1):
@@ -422,10 +475,11 @@ class HoeffdingTree:
                             if SDR > SDRList[attr2]:
                                 attr2 = x
                 epsilon = math.sqrt(math.log(1 / self.DELTA) / (2 * self.N_MIN))
-                if SDRList[attr2] / SDRList[attr1] + epsilon < 1: # criterion_is_satisfied
-                    self.split(attr1, splitSpot, sample, leftSigmayTotal / leftTotal, (self.stat[1] - leftSigmayTotal) / (self.stat[0] - leftTotal))
-                elif SDRList[attr2] / SDRList[attr1] + self.TAU >= 1: # tie -> either is okay
-                    self.split(attr1, splitSpot, sample, leftSigmayTotal / leftTotal, (self.stat[1] - leftSigmayTotal) / (self.stat[0] - leftTotal))
+                if SDRList[attr1] != 0:
+                    if SDRList[attr2] / SDRList[attr1] + epsilon < 1: # criterion_is_satisfied
+                        self.split(attr1, splitSpot, sample, leftSigmayTotal / leftTotal, (self.stat[1] - leftSigmayTotal) / (self.stat[0] - leftTotal))
+                    elif SDRList[attr2] / SDRList[attr1] + self.TAU >= 1: # tie -> either is okay
+                        self.split(attr1, splitSpot, sample, leftSigmayTotal / leftTotal, (self.stat[1] - leftSigmayTotal) / (self.stat[0] - leftTotal))
                 # reset E-BST for each node
                 self.stat = [0,0]
                 for x in range (0, len(sample)-1):

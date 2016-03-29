@@ -47,11 +47,7 @@ try:
         libwireshark_path = "/sdcard/ws_dissector"
     else:
         libwireshark_path = "/system/lib"
-    # src = AndroidDevDiagMonitor({   "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
-    #                                 "libwireshark_path": libwireshark_path,
-    #                                 "diag_revealer_executable_path": "/system/bin/diag_revealer",
-    #                                 "diag_revealer_fifo_path": fifo_path,
-    #                                 })
+    # src = AndroidDevDiagMonitor()
 
     src = QmdlReplayer({"ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
                         "libwireshark_path": "/system/lib",})
