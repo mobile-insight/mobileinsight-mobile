@@ -28,4 +28,14 @@ if __name__ == "__main__":
         namespace = {"service_context": mi2app_utils.get_service_context()}
         execfile(app_file, namespace)
     except:
-        print str(traceback.format_exc())
+        try:
+            print str(traceback.format_exc())
+            APP_DIR = "/sdcard/mobile_insight_app/"
+            sys.path.append(os.path.join(APP_DIR, arg)) # add this dir to module search path
+            app_file = os.path.join(APP_DIR, arg, "main.mi2app")
+            print "Phone model: " + mi2app_utils.get_phone_model()
+            print "Running app: " + app_file
+            namespace = {"service_context": mi2app_utils.get_service_context()}
+            execfile(app_file, namespace)
+        except:
+            print str(traceback.format_exc())

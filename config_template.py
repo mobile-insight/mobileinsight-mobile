@@ -1,8 +1,8 @@
-app_name = 'MobileInsight2'
+app_name = 'MobileInsight'
 
-app_version = '1.0'
+app_version = '2.0'
 
-pkg_name = 'edu.ucla.cs.wing.mobileinsight2'
+pkg_name = 'edu.ucla.cs.wing.mobileinsight'
 
 dist_name = 'mi2'
 
@@ -14,13 +14,13 @@ requirements = 'pyserial,kivy,mobileinsight'
 # p4a_path = 'replace it with your path of pythonforandroid'
 
 # replace it with your application icon path
-icon_path = '/Users/Dale/Workspace/mobileInsight/demo_app/data/icon.png'
+icon_path = '/Users/Dale/Workspace/mobileInsight/MobileInsight2/icon.png'
 
 # replace it with your application presplash path
-presplash_path = '/Users/Dale/Workspace/mobileInsight/demo_app/data/presplash.jpg'
+presplash_path = '/Users/Dale/Workspace/mobileInsight/MobileInsight2/presplash.jpg'
 
 # replace it with your applicaiton path
-app_path = '/Users/Dale/Workspace/mobileInsight/demo_app'
+app_path = '/Users/Dale/Workspace/mobileInsight/MobileInsight2/demo_app'
 
 # replace it with your path of Android SDK
 sdk_path = '/Users/Dale/Library/Android/sdk'

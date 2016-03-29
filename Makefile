@@ -9,10 +9,10 @@ clean_apk:
 	python deploy.py clean_apk
 
 config:
-	python deploy.py run_config
+	python deploy.py config
 
 apk:
-	python deploy.py run_apk
+	python deploy.py apk
 
 install:
 	adb install -r "$(P4A_DIST_ROOT)/bin/MobileInsight2-0.1-debug.apk"

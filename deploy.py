@@ -9,9 +9,9 @@ def run_config():
 
 
 def run_apk():
-    from make_config import *
+    import make_config
 
-    build_dist_cmd = 'python-for-android create'
+    build_dist_cmd = 'python-for-android create' \
             + ' --dist_name=' + dist_name \
             + ' --bootstrap=' + bootstrap \
             + ' --requirements=' + requirements
