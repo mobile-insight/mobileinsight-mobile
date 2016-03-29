@@ -399,7 +399,7 @@ class HoeffdingTree:
                 self.altTree.sErr += lAltTree
                 return -1
 
-   def subUpdate(self, sample): # traverse the tree till the leaf node where the sample lies in, return the leaf node
+    def subUpdate(self, sample): # traverse the tree till the leaf node where the sample lies in, return the leaf node
         if (self.left == None) & (self.right == None): # initilized root or leaf node
             for x in range (0, len(sample)-1):
                 self.__attrTree[x].add(float(sample[x]), float(sample[-1]))
