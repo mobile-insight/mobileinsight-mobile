@@ -71,20 +71,8 @@ Builder.load_string("""
     ScrollableLabel:
         text: '%s' % root.error_log
         size_hint_y: 5
+        bar_color: [0,0,0,1]
 
-    TextInput:
-        id: filename
-        size_hint_y: 2
-        font_size: "25sp"
-        text: '/sdcard/main.py'
-        multiline: False
-
-
-    Button:
-        text: 'Run test script'
-        size_hint_y: 3
-        font_size: "25sp"
-        on_release: root.run_script_callback()
 
     ScrollView:
         id: checkbox_app
@@ -384,7 +372,7 @@ class HelloWorldScreen(GridLayout):
                    + 'UCLA Wing Group & OSU MSSN Lab\n\n' 
                    + 'Developers: \n    Yuanjie Li, \n    Zengwen Yuan,\n'
                    + '    Jiayao Li, \n    Haotian Deng\n\n'
-                   + 'Copyright © 2015-2016')
+                   + 'Copyright © 2014-2016')
         popup = Popup(title='About MobileInsight',
                       content=Label(text=about_text),
                       size_hint=(.8, .4))
