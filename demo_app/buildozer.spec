@@ -13,7 +13,7 @@ package.domain = edu.ucla.cs.wing
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,mi2app,so,json
+source.include_exts = py,png,jpg,kv,atlas,mi2app,so,json,txt
 
 # (list) Source files to exclude (let empty to not exclude anything)
 #source.exclude_exts = spec
@@ -43,10 +43,11 @@ requirements = kivy,mobile_insight
 #garden_requirements =
 
 # (str) Presplash of the application
-#presplash.filename = %(source.dir)s/data/presplash.png
+presplash.filename = %(source.dir)s/mi-presplash.jpg
 
 # (str) Icon of the application
-icon.filename = %(source.dir)s/data/icon.png
+# icon.filename = %(source.dir)s/data/icon.png
+icon.filename = %(source.dir)s/icon.png
 
 # (str) Supported orientation (one of landscape, portrait or all)
 orientation = portrait
