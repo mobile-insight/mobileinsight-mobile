@@ -12,7 +12,8 @@ import sys
 import traceback
 
 import mobile_insight
-from mobile_insight.monitor import AndroidDevDiagMonitor
+# from mobile_insight.monitor import AndroidDevDiagMonitor
+from mobile_insight.monitor import OnlineMonitor
 from upload_analyzer import UploadAnalyzer
 
 import logging
@@ -41,7 +42,7 @@ try:
     ## Use AndroidDevDiagMonitor
     logging.info("MobileInsight2 (NetLogger): using the AndroidDevDiagMonitor")
     fifo_path = os.path.join(get_cache_dir(), "diag_revealer_fifo")
-    src = AndroidDevDiagMonitor()
+    src = OnlineMonitor()
     src.set_skip_decoding(False)
 
     log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")

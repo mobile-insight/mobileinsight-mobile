@@ -1,4 +1,4 @@
-__version__ = "0.1"
+# __version__ = "0.1"
 
 import kivy
 kivy.require('1.0.9')
@@ -187,7 +187,8 @@ class HelloWorldScreen(GridLayout):
         "libgthread-2.0.so","libwireshark.so","libwiretap.so","libwsutil.so"]
 
         for lib in libs:
-            if not os.path.isfile(os.path.join("/system/lib",lib)):
+            # if not os.path.isfile(os.path.join("/system/lib",lib)):
+            if True:
                 cmd = cmd+" cp "+os.path.join(libs_path,lib)+" /system/lib/; "
                 cmd = cmd+" chmod 777 "+os.path.join("/system/lib",lib)+"; "
         
@@ -203,7 +204,8 @@ class HelloWorldScreen(GridLayout):
 
         for lib in libs_mapping:
             for sym_lib in libs_mapping[lib]:
-                if not os.path.isfile("/system/lib/"+sym_lib):
+                # if not os.path.isfile("/system/lib/"+sym_lib):
+                if True:
                    cmd = cmd+" ln -s /system/lib/"+lib+" /system/lib/"+sym_lib+"; "
                    cmd = cmd+" chmod 777 /system/lib/"+sym_lib+"; " 
 
@@ -212,7 +214,8 @@ class HelloWorldScreen(GridLayout):
         #bins
         exes=["diag_revealer","android_pie_ws_dissector","android_ws_dissector"]
         for exe in exes:
-            if not os.path.isfile(os.path.join("/system/bin",exe)):
+            # if not os.path.isfile(os.path.join("/system/bin",exe)):
+            if True:
                 cmd = cmd+" cp "+os.path.join(libs_path,exe)+" /system/bin/; "
                 cmd = cmd+" chmod 0777 "+os.path.join("/system/bin/",exe)+"; "
 
