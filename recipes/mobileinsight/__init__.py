@@ -126,9 +126,24 @@ class MobileInsightRecipe(Recipe):
         # sed -i '' is using Mac OS X sed syntax
         # TODO
         # sed -i'' is using GNU version sed syntax
-        sed -i '' '/### P4A:/d' ./mobile_insight/monitor/__init__.py
-        sed -i '' '/### P4A:/d' ./mobile_insight/monitor/dm_collector/__init__.py
-        sed -i '' '/### P4A:/d' ./mobile_insight/monitor/dm_collector/dm_endec/ws_dissector.py
+        # shprint(sh.sed,
+        #         '-i \'\'',
+        #         '\'/### P4A:/d\'',
+        #         join(build_dir, 'mobile_insight/monitor/__init__.py'),
+        #         _tail     = 20,
+        #         _critical = True)
+        # shprint(sh.sed,
+        #         '-i \'\'',
+        #         '\'/### P4A:/d\'',
+        #         join(build_dir, 'mobile_insight/monitor/dm_collector/__init__.py'),
+        #         _tail     = 20,
+        #         _critical = True)
+        # shprint(sh.sed,
+        #         '-i \'\'',
+        #         '\'/### P4A:/d\'',
+        #         join(build_dir, 'mobile_insight/monitor/dm_collector/dm_endec/ws_dissector.py'),
+        #         _tail     = 20,
+        #         _critical = True)
         # rm ./mobile_insight/monitor/dm_collector/dm_collector.py
 
     def build_arch(self, arch):
