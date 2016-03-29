@@ -5,6 +5,8 @@ kivy.require('1.0.9')
 
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
+from kivy.uix.popup import Popup
+from kivy.uix.label import Label
 from kivy.properties import *
 
 from kivy.app import App
@@ -12,6 +14,7 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.utils import platform
+
 
 from jnius import autoclass, cast
 
@@ -76,6 +79,7 @@ Builder.load_string("""
         text: '/sdcard/main.py'
         multiline: False
 
+
     Button:
         text: 'Run test script'
         size_hint_y: 3
@@ -105,6 +109,13 @@ Builder.load_string("""
         size_hint_y: 3
         font_size: "25sp"
         on_release: root.stop_service()
+
+    Button:
+        text: 'About' 
+        disabled: root.ids.checkbox_app.selected == ''
+        size_hint_y: 3
+        font_size: "25sp"
+        on_release: root.about()
 
 """)
 
@@ -364,6 +375,12 @@ class HelloWorldScreen(GridLayout):
             self.service = None
             self.error_log="Stopped"
             self.stop_collection()  #close ongoing collections
+
+    def about(self):
+        popup = Popup(title='About MobileInsight',
+                      content=Label(text='Developers: Yuanjie Li, Zengwen Yuan,\n Jiayao Li, Haotian Deng'),
+                      size_hint=(.8, .4))
+        popup.open()
 
 
 class LabeledCheckBox(GridLayout):
