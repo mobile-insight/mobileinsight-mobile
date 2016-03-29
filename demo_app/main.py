@@ -377,8 +377,13 @@ class HelloWorldScreen(GridLayout):
             self.stop_collection()  #close ongoing collections
 
     def about(self):
+        about_text = ('MobileInsight 2.0 \n' 
+                   + 'UCLA WiNG Group & OSU MSSN Lab\n\n' 
+                   + 'Developers: \n    Yuanjie Li,\n    Zengwen Yuan,\n'
+                   + '    Jiayao Li,\n    Haotian Deng\n\n'
+                   + 'Copyright © 2015 – 2016')
         popup = Popup(title='About MobileInsight',
-                      content=Label(text='Developers: Yuanjie Li, Zengwen Yuan,\n Jiayao Li, Haotian Deng'),
+                      content=Label(text=about_text),
                       size_hint=(.8, .4))
         popup.open()
 
