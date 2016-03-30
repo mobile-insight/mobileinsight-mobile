@@ -84,7 +84,7 @@ Builder.load_string("""
             orientation: 'vertical'
 
     Button:
-        text: 'Run app! %s' % root.ids.checkbox_app.selected
+        text: 'Run! %s' % root.ids.checkbox_app.selected
         disabled: root.ids.checkbox_app.selected == ''
         size_hint_y: 3
         font_size: "25sp"
@@ -251,7 +251,7 @@ class HelloWorldScreen(GridLayout):
                 ret[f] = os.path.join(APP_DIR, f)
 
         #Yuanjie: support alternative path for users to customize their own app
-        APP_DIR = "/sdcard/mobile_insight_app/"
+        APP_DIR = "/sdcard/mobile_insight/apps/"
         if os.path.exists(APP_DIR):
             l = os.listdir(APP_DIR)
             for f in l:
