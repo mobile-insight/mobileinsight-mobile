@@ -1,5 +1,3 @@
-# __version__ = "0.1"
-
 import kivy
 kivy.require('1.0.9')
 
@@ -14,7 +12,6 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.utils import platform
-
 
 from jnius import autoclass, cast
 
@@ -107,7 +104,7 @@ Builder.load_string("""
 """)
 
 class HelloWorldScreen(GridLayout):
-    error_log = StringProperty("MobileInsight 2.0\nUCLA Wing Group & OSU MSSN Lab")
+    error_log = StringProperty("MobileInsight 2.0\nUCLA WiNG Group & OSU MSSN Lab")
     collecting = BooleanProperty(False)
     current_activity = cast("android.app.Activity",
                             autoclass("org.renpy.android.PythonActivity").mActivity)
@@ -152,8 +149,7 @@ class HelloWorldScreen(GridLayout):
         """
         Check if diagnostic mode is enabled.
         """
-
-        # return os.path.exists("/dev/diag")    #This fails if /dev/ is not permitted for access
+        
         cmd = " test -e /dev/diag"
         res=self._run_shell_cmd(cmd,True)
         if res:
@@ -177,7 +173,7 @@ class HelloWorldScreen(GridLayout):
             # if not os.path.isfile(os.path.join("/system/lib",lib)):
             if True:
                 cmd = cmd+" cp "+os.path.join(libs_path,lib)+" /system/lib/; "
-                cmd = cmd+" chmod 777 "+os.path.join("/system/lib",lib)+"; "
+                cmd = cmd+" chmod 755 "+os.path.join("/system/lib",lib)+"; "
         
 
         #sym links for some libs
@@ -194,7 +190,7 @@ class HelloWorldScreen(GridLayout):
                 # if not os.path.isfile("/system/lib/"+sym_lib):
                 if True:
                    cmd = cmd+" ln -s /system/lib/"+lib+" /system/lib/"+sym_lib+"; "
-                   cmd = cmd+" chmod 777 /system/lib/"+sym_lib+"; " 
+                   cmd = cmd+" chmod 755 /system/lib/"+sym_lib+"; " 
 
         print cmd
 
@@ -204,7 +200,7 @@ class HelloWorldScreen(GridLayout):
             # if not os.path.isfile(os.path.join("/system/bin",exe)):
             if True:
                 cmd = cmd+" cp "+os.path.join(libs_path,exe)+" /system/bin/; "
-                cmd = cmd+" chmod 0777 "+os.path.join("/system/bin/",exe)+"; "
+                cmd = cmd+" chmod 755 "+os.path.join("/system/bin/",exe)+"; "
 
         if cmd:
             #At least one lib should be copied
@@ -334,10 +330,13 @@ class HelloWorldScreen(GridLayout):
 
     def about(self):
         about_text = ('MobileInsight 2.0 \n' 
-                   + 'UCLA Wing Group & OSU MSSN Lab\n\n' 
-                   + 'Developers: \n    Yuanjie Li, \n    Zengwen Yuan,\n'
-                   + '    Jiayao Li, \n    Haotian Deng\n\n'
-                   + 'Copyright © 2014-2016')
+                   + 'UCLA WiNG Group & OSU MSSN Lab\n\n' 
+                   + 'Developers:\n'
+                   + '     Yuanjie Li,\n'
+                   + '     Zengwen Yuan,\n'
+                   + '     Jiayao Li,\n'
+                   + '     Haotian Deng\n\n'
+                   + 'Copyright © 2015 – 2016')
         popup = Popup(title='About MobileInsight',
                       content=Label(text=about_text),
                       size_hint=(.8, .4))
