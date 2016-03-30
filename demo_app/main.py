@@ -71,7 +71,6 @@ Builder.load_string("""
     ScrollableLabel:
         text: '%s' % root.error_log
         size_hint_y: 5
-        bar_color: [0,0,0,1]
 
 
     ScrollView:
