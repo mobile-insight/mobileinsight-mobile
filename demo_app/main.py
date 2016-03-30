@@ -216,7 +216,7 @@ class HelloWorldScreen(GridLayout):
     def _create_folder(self):
         cmd = "mkdir /sdcard/mobile_insight;"
         cmd = cmd + "mkdir /sdcard/mobile_insight/log;"
-        cmd = cmd + "mkdir /sdcard/mobile_insight/db;"
+        cmd = cmd + "mkdir /sdcard/mobile_insight/dbs;"
         cmd = cmd + "mkdir /sdcard/mobile_insight/apps;"
         self._run_shell_cmd(cmd)
 
