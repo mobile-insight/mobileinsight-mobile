@@ -379,8 +379,11 @@ class HelloWorldScreen(GridLayout):
     def about(self):
         about_text = ('MobileInsight 2.0 \n' 
                    + 'UCLA WiNG Group & OSU MSSN Lab\n\n' 
-                   + 'Developers: \n    Yuanjie Li,\n    Zengwen Yuan,\n'
-                   + '    Jiayao Li,\n    Haotian Deng\n\n'
+                   + 'Developers:\n\t'
+                   + 'Yuanjie Li,\n\t'
+                   + 'Zengwen Yuan,\n\t'
+                   + 'Jiayao Li,\n\t'
+                   + 'Haotian Deng\n\n'
                    + 'Copyright © 2015 – 2016')
         popup = Popup(title='About MobileInsight',
                       content=Label(text=about_text),
