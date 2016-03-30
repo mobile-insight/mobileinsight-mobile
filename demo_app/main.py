@@ -112,7 +112,6 @@ class HelloWorldScreen(GridLayout):
     current_activity = cast("android.app.Activity",
                             autoclass("org.renpy.android.PythonActivity").mActivity)
     service = None
-    qmdl_src = None
     analyzer = None
 
     def __init__(self):
@@ -293,48 +292,6 @@ class HelloWorldScreen(GridLayout):
 
 
         return True
-
-    def start_collection(self):
-        # The subprocess module uses "/bin/sh" by default, which must be changed on Android.
-        # See http://grokbase.com/t/gg/python-for-android/1343rm7q1w/py4a-subprocess-popen-oserror-errno-8-exec-format-error
-        ANDROID_SHELL = "/system/bin/sh"
-        LOG_DIR = self._get_cache_dir() + "/mobile_insight_log"
-        self._add_log_line("LOG_DIR: %s" % LOG_DIR)
-
-        def clock_callback(infos, dt):
-            if not self.collecting:
-                self._add_log_line("Stop")
-                return False    # Cancel it
-
-            qmdls_after = set(os.listdir(LOG_DIR))
-            log_files = sorted(list(qmdls_after - infos["qmdls_before"]))
-            for log_file in [l for l in log_files if l.endswith(".qmdl")]:
-                self._add_log_line("=== %s ===" % log_file)
-                self.qmdl_src.set_input_path(os.path.join(LOG_DIR, log_file))
-                self.analyzer.set_source(self.qmdl_src)
-                self.qmdl_src.run()
-
-            if self.analyzer.get_cur_cell():
-                t = (self.analyzer.get_cur_cell().rat, self.analyzer.get_cur_cell().id)
-                self._add_log_line(repr(t))
-            infos["qmdls_before"] = qmdls_after
-
-        cmd = "mkdir \"%s\";" % LOG_DIR
-        cmd = cmd + " chmod -R 777 \"%s\";" % LOG_DIR
-        cmd = cmd + " diag_mdlog -s 1 -o \"%s\";" % LOG_DIR
-        self._run_shell_cmd(cmd)
-
-        from mobile_insight.monitor import OfflineReplayer
-        from mobile_insight.analyzer import RrcAnalyzer
-        self.qmdl_src = OfflineReplayer({  "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
-                                        "libwireshark_path": "/system/lib"})
-        self.analyzer = RrcAnalyzer()
-
-        infos = {
-            "qmdls_before": set(os.listdir(LOG_DIR)),
-        }
-        self.collecting = True
-        Clock.schedule_interval(functools.partial(clock_callback, infos), 1)
 
     def stop_collection(self):
         ANDROID_SHELL = "/system/bin/sh"
