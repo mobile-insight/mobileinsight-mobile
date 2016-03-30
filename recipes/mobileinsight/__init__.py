@@ -8,7 +8,7 @@ class MobileInsightRecipe(Recipe):
 
     mi_git            = 'http://metro.cs.ucla.edu:8081/likayo/automator.git'
     mi_branch         = 'new-analyzer'
-    version           = '1.1'
+    version           = '2.1'
     toolchain_version = 4.8          # default GCC toolchain version we try to use
     depends           = ['python2']  # any other recipe names that must be built before this one
 
@@ -68,6 +68,7 @@ class MobileInsightRecipe(Recipe):
             arch                = arch)
         env['LDFLAGS'] += ' -shared'
         env['LDFLAGS'] += ' -lgnustl_shared'
+        env['STRIP']    = str.split(env['STRIP'])[0]
 
         # warning("I am printing the env now")
         # shprint(sh.echo, '$PATH', _env=env)
@@ -78,12 +79,13 @@ class MobileInsightRecipe(Recipe):
         # warning("I am printing self.ctx = {}".format(str(self.ctx)))
         return env
 
+
     def prebuild_arch(self, arch):
         super(MobileInsightRecipe, self).prebuild_arch(arch)
 
         build_dir = self.get_build_dir(arch.arch)
         tmp_dir = join(build_dir, 'mi_tmp')
-        info("clean old MI sources at {}".format(build_dir))
+        info("clean old MI2 sources at {}".format(build_dir))
         try:
             shprint(sh.rm, '-r',
                     build_dir,
@@ -101,6 +103,7 @@ class MobileInsightRecipe(Recipe):
                 tmp_dir,
                 _tail     = 20,
                 _critical = True)
+        
         shprint(sh.mv,
                 join(tmp_dir, 'mobile_insight'),
                 build_dir,
@@ -116,12 +119,10 @@ class MobileInsightRecipe(Recipe):
         shprint(sh.rm, '-r', tmp_dir,
                 _tail     = 20,
                 _critical = True)
-        # Do any extra prebuilding you want, e.g.:
-        # self.apply_patch('path/to/patch.patch')
 
         self.get_newest_toolchain(arch)
 
-        warning("Should also clean and remove unnecessary codes, skipping now.")
+        warning("MI2 -- Should also clean and remove unnecessary codes, skipping now.")
         # remove unnecessary code
         # sed -i '' is using Mac OS X sed syntax
         # TODO
@@ -162,7 +163,11 @@ class MobileInsightRecipe(Recipe):
         #         _tail     = 20,
         #         _critical = True)
 
-        # rm ./mobile_insight/monitor/dm_collector/dm_collector.py
+        # shprint(sh.rm,
+        #         join(build_dir, 'mobile_insight/monitor/dm_collector/dm_collector.py'),
+        #         _tail     = 20,
+        #         _critical = True)
+
 
     def build_arch(self, arch):
         super(MobileInsightRecipe, self).build_arch(arch)
@@ -183,11 +188,12 @@ class MobileInsightRecipe(Recipe):
             shprint(hostpython, 'setup.py', 'build_ext', '-v', _env = env, _tail = 10, _critical = True)
             shprint(hostpython, 'setup.py', 'install',  '-O2', _env = env, _tail = 10, _critical = True)
 
-            # warning('strip is ' + env['STRIP'])
             build_lib = glob.glob('./build/lib*')
             assert len(build_lib) == 1
-            warning('stripping mobileinsight')
-            shprint(sh.find, build_lib[0], '-name', '*.o', '-exec', env['STRIP'], '{}', ';')
+            warning('MI2 -- stripping mobileinsight')
+
+            # shprint(sh.find, build_lib[0], '-name', '*.o', '-exec', env['STRIP'], '{}', ';', _tail = 20, _critical = True)
+            shprint(sh.find, build_lib[0], '-name', '*.so', '-exec', env['STRIP'], '{}', ';', _tail = 20, _critical = True)
 
         try:
             warning('copying GNU STL shared lib to {libs_dir}/{arch}'.format(
