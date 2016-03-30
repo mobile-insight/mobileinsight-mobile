@@ -1,8 +1,17 @@
 #!/usr/bin/python
+# Filename: deploy.py
 
-import os, sys, commands
-# from os.path import exists, join,
-import yaml
+'''
+deploy.py
+
+It deploys compiling environment and parameters for mobileInsight.
+
+Author: Zengwen Yuan
+        Kainan Wang
+Version: 2.0
+'''
+
+import os, sys, commands, yaml
 
 
 def run_config():
@@ -60,29 +69,47 @@ def run_apk(build_release):
             + ' -keystore ' + cfg['keystore'] \
             + ' ' + os.path.join(cfg['p4a_path'], 'dists', cfg['dist_name'], 'bin') \
                 + '/' + cfg['app_name'] + '-' + str(cfg['app_version']) + '-release-unsigned.apk ' + cfg['signkey']
-        align_cmd = 'zipalign -v 4 ' \
+
+        zipalign_path = ""
+        for subdir, dirs, files in os.walk(os.path.join(cfg['sdk_path'], 'build-tools')):
+             for f in files:
+                 if f == "zipalign":
+                     zipalign_path = os.path.join(subdir, f)
+                     break;
+
+        align_cmd = zipalign_path + ' -v 4 ' \
             + os.path.join(cfg['p4a_path'], 'dists', cfg['dist_name'], 'bin') \
                 + '/' + cfg['app_name'] + '-' + str(cfg['app_version']) + '-release-unsigned.apk ' \
             + cfg['app_name'] + '-' + str(cfg['app_version']) + '.apk'
 
-        print build_cmd
-        print sign_cmd
-        print align_cmd
         os.system(rm_cmd)
         os.system(build_cmd)
         os.system(sign_cmd)
         os.system(align_cmd)
+
+        print "build command was: \n" + build_cmd
+        print "sign command was: \n" + sign_cmd
+        print "align command was: \n" + align_cmd
     else:
-        print build_cmd
         os.system(build_cmd)
+        print "build command was: \n" + build_cmd
 
 
 if __name__ == '__main__':
     arg = sys.argv[1]
+
     try:
         debug = sys.argv[2]
     except:
         debug = ""
+
+    try:
+        with open("config.yml", 'r') as ymlfile:
+            cfg = yaml.load(ymlfile)
+    except:
+        print "Compilation environment is not configured!\nPlease modify the environment in config.yml file first."
+        run_config()
+        sys.exit()
 
     if arg == 'config':
         run_config()
@@ -94,13 +121,28 @@ if __name__ == '__main__':
         else:
             print "Usage: python deploy.py apk [debug|release]"
     elif arg == 'clean':
-        # TODO
-        # finish clean up script
-        # mainly clean the pyo files
-        pass
+        for subdir, dirs, files in os.walk(cfg['app_path']):
+            for f in files:
+                if f.endswith(".pyo") or f.endswith(".DS_Store"):
+                    filepath = os.path.join(subdir, f)
+                    os.remove(filepath)
+    elif arg == 'clean_apk':
+        try:
+            os.remove('./' + cfg['app_name'] + '-' + str(cfg['app_version']) + '.apk')
+            os.remove('./' + cfg['app_name'] + '-' + str(cfg['app_version']) + '-debug.apk')
+        except:
+            print "APK clean failed."
+    elif arg == 'clean_dist':
+        try:
+            os.system('rm -rf ' + os.path.join(cfg['p4a_path'], 'dists', cfg['dist_name']))
+            os.system('rm -rf ' + os.path.join(cfg['p4a_path'], 'build/aars', cfg['dist_name']))
+            os.system('rm -rf ' + os.path.join(cfg['p4a_path'], 'build/javaclasses', cfg['dist_name']))
+            os.system('rm -rf ' + os.path.join(cfg['p4a_path'], 'build/libs_collections', cfg['dist_name']))
+            os.system('rm -rf ' + os.path.join(cfg['p4a_path'], 'build/python-installs', cfg['dist_name']))
+            print "Dist %s successfully cleaned." % cfg['dist_name']
+        except:
+            print "Dist %s clean failed."
     elif arg == 'install':
-        with open("config.yml", 'r') as ymlfile:
-            cfg = yaml.load(ymlfile)
         try:
             os.system('adb install -r ' + cfg['app_name'] + '-' + str(cfg['app_version']) + '.apk')
         except:

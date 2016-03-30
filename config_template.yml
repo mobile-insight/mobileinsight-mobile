@@ -8,7 +8,7 @@ dist_name : mi2
 
 bootstrap : pygame
 
-requirements : kivy,mobileinsight
+requirements : pyserial,kivy,mobileinsight
 
 # replace it with your path of python-for-android
 p4a_path : /Users/Dale/.python-for-android/

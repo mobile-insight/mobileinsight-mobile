@@ -1,4 +1,4 @@
-all: apk-release install
+all: apk_release install clean
 
 .PHONY: apk install
 
@@ -7,6 +7,9 @@ clean:
 
 clean_apk:
 	python deploy.py clean_apk
+
+clean_dist:
+	python deploy.py clean_dist
 
 config:
 	python deploy.py config
@@ -17,8 +20,8 @@ install:
 apk:
 	python deploy.py apk
 
-apk-debug:
+apk_debug:
 	python deploy.py apk debug
 
-apk-release:
+apk_release:
 	python deploy.py apk release
