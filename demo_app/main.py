@@ -121,6 +121,7 @@ class HelloWorldScreen(GridLayout):
         # self.app_list.sort()
 
         self.__init_libs()
+        self._create_folder()
 
         if not self.__check_diag_mode():
             self.error_log = "WARINING: the diagnostic mode is disabled. Please check your phone settings."
@@ -210,6 +211,14 @@ class HelloWorldScreen(GridLayout):
             #At least one lib should be copied
             cmd = "mount -o remount,rw /system; "+cmd
             self._run_shell_cmd(cmd)
+
+
+    def _create_folder(self):
+        cmd = "mkdir /sdcard/mobile_insight;"
+        cmd = cmd + "mkdir /sdcard/mobile_insight/log;"
+        cmd = cmd + "mkdir /sdcard/mobile_insight/db;"
+        cmd = cmd + "mkdir /sdcard/mobile_insight/apps;"
+        self._run_shell_cmd(cmd)
 
 
     def _add_log_line(self, s):
