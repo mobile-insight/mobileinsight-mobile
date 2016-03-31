@@ -14,10 +14,10 @@ requirements : pyserial,kivy,mobileinsight
 p4a_path : /Users/Dale/.python-for-android/
 
 # replace it with your application icon path
-icon_path : /Users/Dale/Workspace/mobileInsight/MobileInsight2/icon.png
+icon_path : /Users/Dale/Workspace/mobileInsight/MobileInsight2/resources/icon.png
 
 # replace it with your application presplash path
-presplash_path : /Users/Dale/Workspace/mobileInsight/MobileInsight2/presplash.jpg
+presplash_path : /Users/Dale/Workspace/mobileInsight/MobileInsight2/resources/presplash.jpg
 
 # replace it with your applicaiton path
 app_path : /Users/Dale/Workspace/mobileInsight/MobileInsight2/demo_app
@@ -45,9 +45,9 @@ ndk_version : r10e
 
 orientation : portrait
 
-whitelist : whitelist.txt
+whitelist : /Users/zyuan/Projects/metro/MobileInsight2/config/whitelist.txt
 
-keystore : /Users/zyuan/Projects/metro/MobileInsight2/mi2-release-key.keystore
+keystore : /Users/zyuan/Projects/metro/MobileInsight2/config/mi2-release-key.keystore
 
 signkey : mi2-key
 

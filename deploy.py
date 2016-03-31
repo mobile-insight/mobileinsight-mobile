@@ -103,7 +103,7 @@ if __name__ == '__main__':
         debug = ""
 
     try:
-        with open("config.yml", 'r') as ymlfile:
+        with open("./config/config.yml", 'r') as ymlfile:
             cfg = yaml.load(ymlfile)
     except:
         print "Compilation environment is not configured!\nPlease modify the environment in config.yml file first."
