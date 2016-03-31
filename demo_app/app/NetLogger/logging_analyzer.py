@@ -48,9 +48,6 @@ class LoggingAnalyzer(Analyzer):
         if msg.type_id.find("new_diag_log") != -1:
             self.__log_timestamp     = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
             self.__original_filename = msg.data
-            # chmodcmd = "chmod 644 " + self.__original_filename
-            # proc = subprocess.Popen(chmodcmd, executable = ANDROID_SHELL, shell = True)
-            # proc.wait()
             self._save_log()
 
 
@@ -59,10 +56,6 @@ class LoggingAnalyzer(Analyzer):
         orig_dirname   = os.path.dirname(self.__original_filename)
         milog_basename = "milog_" + self.__log_timestamp + '_' + self.__get_phone_info() + '.mi2log'
         milog_absname  = os.path.join(self.__logdir, milog_basename)
-
-        print "MobileInsight (NetLogger): original filename = " + self.__original_filename
-        print "MobileInsight (NetLogger): uploadfileabsname = " + uploadfileabsname
-
         shutil.copyfile(self.__original_filename, milog_fileabsname)
         try:
             os.remove(self.__original_filename)

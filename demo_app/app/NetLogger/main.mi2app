@@ -2,7 +2,7 @@
 # Filename: main.mi2app
 
 """
-Trace uploader main app
+Cellular event logging main app
 
 Author: Zengwen Yuan
 """
@@ -54,7 +54,7 @@ umts     = [
 try:
     cache_directory = mi2app_utils.get_cache_dir()
     files_directory = mi2app_utils.get_files_dir()
-    log_directory   = os.path.join(cache_directory, "cellular_log")
+    log_directory   = os.path.join(cache_directory, "mi2log")
     app_directory   = os.path.join(files_directory, "app/NetLogger")
     fifo_path       = os.path.join(cache_directory, "diag_revealer_fifo")
     
