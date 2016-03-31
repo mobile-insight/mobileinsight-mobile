@@ -25,13 +25,9 @@ import traceback
 
 ANDROID_SHELL = "/system/bin/sh"
 
-# Prevent Android on-screen keyboard from hiding text input
-# See http://stackoverflow.com/questions/26799084/android-on-screen-keyboard-hiding-python-kivy-textinputs
 Window.softinput_mode = "pan"
 
 Builder.load_string("""
-# A scrollable label class.
-# Taken from http://tune.pk/video/2639621/kivy-crash-course-9-creating-a-scrollable-label
 <ScrollableLabel@ScrollView>:
     text: ''
 
@@ -39,7 +35,7 @@ Builder.load_string("""
         text: root.text
         text_size: self.width, None
         size_hint_y: None
-        font_size: "25sp"
+        font_size: "24sp"
         height: self.texture_size[1]
         valign: 'top'
 
@@ -53,12 +49,12 @@ Builder.load_string("""
         active: root.active
         group: root.group
         size_hint_x: None
-        font_size: "25sp"
+        font_size: "24sp"
         on_active: root.callback(*args)
 
     Label:
         text: root.text
-        font_size: "25sp"
+        font_size: "24sp"
         text_width: self.width
 
 # Main screen
@@ -67,13 +63,14 @@ Builder.load_string("""
 
     ScrollableLabel:
         text: '%s' % root.error_log
-        size_hint_y: 5
+        font_size: "16sp"
+        size_hint_y: 6
 
 
     ScrollView:
         id: checkbox_app
-        size_hint_y: 10
-        font_size: "25sp"
+        size_hint_y: 8
+        font_size: "24sp"
         selected: ""
 
         BoxLayout:
@@ -81,24 +78,24 @@ Builder.load_string("""
             orientation: 'vertical'
 
     Button:
-        text: 'Run! %s' % root.ids.checkbox_app.selected
+        text: 'Run %s' % root.ids.checkbox_app.selected
         disabled: root.ids.checkbox_app.selected == ''
-        size_hint_y: 3
-        font_size: "25sp"
+        size_hint_y: 2.5
+        font_size: "24sp"
         on_release: root.start_service(root.ids.checkbox_app.selected)
 
     Button:
-        text: 'Stop app' 
+        text: 'Stop %s' % root.ids.checkbox_app.selected
         disabled: root.ids.checkbox_app.selected == ''
-        size_hint_y: 3
-        font_size: "25sp"
+        size_hint_y: 2.5
+        font_size: "24sp"
         on_release: root.stop_service()
 
     Button:
         text: 'About' 
         disabled: root.ids.checkbox_app.selected == ''
-        size_hint_y: 3
-        font_size: "25sp"
+        size_hint_y: 2.5
+        font_size: "24sp"
         on_release: root.about()
 
 """)
@@ -190,8 +187,8 @@ class MobileInsightScreen(GridLayout):
             for sym_lib in libs_mapping[lib]:
                 # if not os.path.isfile("/system/lib/"+sym_lib):
                 if True:
-                   cmd = cmd+" ln -s /system/lib/"+lib+" /system/lib/"+sym_lib+"; "
-                   cmd = cmd+" chmod 755 /system/lib/"+sym_lib+"; " 
+                   cmd = cmd + " ln -s /system/lib/" + lib + " /system/lib/" + sym_lib + "; "
+                   cmd = cmd + " chmod 755 /system/lib/" + sym_lib + "; " 
 
         print cmd
 
@@ -200,12 +197,12 @@ class MobileInsightScreen(GridLayout):
         for exe in exes:
             # if not os.path.isfile(os.path.join("/system/bin",exe)):
             if True:
-                cmd = cmd+" cp "+os.path.join(libs_path,exe)+" /system/bin/; "
-                cmd = cmd+" chmod 755 "+os.path.join("/system/bin/",exe)+"; "
+                cmd = cmd + " cp " + os.path.join(libs_path, exe) + " /system/bin/; "
+                cmd = cmd + " chmod 755 " + os.path.join("/system/bin/", exe) + "; "
 
         if cmd:
             # at least one lib should be copied
-            cmd = "mount -o remount,rw /system; "+cmd
+            cmd = "mount -o remount,rw /system; " + cmd
             self._run_shell_cmd(cmd)
 
 
@@ -266,7 +263,7 @@ class MobileInsightScreen(GridLayout):
             for f in l:
                 if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
                     if f in ret:
-                        tmp_name = f+" (plugin)"
+                        tmp_name = f + " (plugin)"
                     else:
                         tmp_name = f
                     ret[tmp_name] = os.path.join(APP_DIR, f)
@@ -286,9 +283,9 @@ class MobileInsightScreen(GridLayout):
         app_path = self.app_list[self.ids.checkbox_app.selected]
         if os.path.exists(os.path.join(app_path, "readme.txt")):
             with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
-                self.error_log = self.ids.checkbox_app.selected+": "+ff.read()
+                self.error_log = self.ids.checkbox_app.selected + ": " + ff.read()
         else:
-            self.error_log = self.ids.checkbox_app.selected+": no descriptions."
+            self.error_log = self.ids.checkbox_app.selected + ": no descriptions."
 
         return True
 
@@ -309,8 +306,6 @@ class MobileInsightScreen(GridLayout):
                 continue
 
         if len(diag_procs) > 0:
-            # cmd2 = "su -c kill " + " ".join([str(pid) for pid in diag_procs])
-            # subprocess.Popen(cmd2, executable=ANDROID_SHELL, shell=True)
             cmd2 = "kill " + " ".join([str(pid) for pid in diag_procs])
             self._run_shell_cmd(cmd2)
 
@@ -320,7 +315,7 @@ class MobileInsightScreen(GridLayout):
             if self.service:
                 self.stop_service() # stop the running service
             from android import AndroidService
-            self.error_log="Running "+app_name+"..."
+            self.error_log = "Running " + app_name + "..."
             self.service = AndroidService("MobileInsight is running...", app_name)
             self.service.start(self.app_list[app_name])   # app name
             
@@ -357,8 +352,8 @@ class LabeledCheckBox(GridLayout):
         self.register_event_type("on_active")
         super(LabeledCheckBox, self).__init__(**kwargs)
         self.active = kwargs.get("active", False)
-        self.text = kwargs.get("text", False)
-        self.group = kwargs.get("group", None)
+        self.text   = kwargs.get("text", False)
+        self.group  = kwargs.get("group", None)
 
     def on_active(self, *args):
         pass
