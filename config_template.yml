@@ -1,6 +1,6 @@
 app_name : MobileInsight
 
-app_version : 2.0
+app_version : 2.x.y
 
 pkg_name : edu.ucla.cs.wing.mobileinsight
 
@@ -48,6 +48,9 @@ orientation : portrait
 whitelist : whitelist.txt
 
 keystore : /Users/zyuan/Projects/metro/MobileInsight2/mi2-release-key.keystore
+
 signkey : mi2-key
-keystorepw : keystore-password
-signkeypw : key-password
+
+# This should work but currently has bug
+# keystorepw : keystore-password
+# signkeypw : key-password
