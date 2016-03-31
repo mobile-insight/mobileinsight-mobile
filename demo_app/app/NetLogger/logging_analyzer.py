@@ -14,6 +14,7 @@ import sys
 import subprocess
 import datetime
 import shutil
+import signal
 
 from mobile_insight.analyzer import Analyzer
 
@@ -49,6 +50,22 @@ class LoggingAnalyzer(Analyzer):
             self.__log_timestamp     = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
             self.__original_filename = msg.data
             self._save_log()
+
+        for i in [x for x in dir(signal) if (x == "SIGINT" or x == "SIGQUIT" or x == "SIGABRT" or x == "SIGKILL")]:
+            try:
+                signum = getattr(signal, i)
+                signal.signal(signum, _signal_handler)
+                print('MobileInsight (NetLogger): application killed')
+                signal.pause()
+            except RuntimeError,m:
+                pass
+        #         print "Skipping %s" % i
+        # signal.signal(signal.SIGKILL, _signal_handler)
+
+
+    def _signal_handler(signal, frame):
+        print('MobileInsight (NetLogger): You killed NetLogger!')
+        self._save_log()
 
 
     def _save_log(self):
