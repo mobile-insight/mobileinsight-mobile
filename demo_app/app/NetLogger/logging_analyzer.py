@@ -48,8 +48,8 @@ class LoggingAnalyzer(Analyzer):
         if msg.type_id.find("new_diag_log") != -1:
             self.__log_timestamp     = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
             self.__original_filename = msg.data
-            # uploadcmd = "chmod 644 " + self.__original_filename
-            # proc = subprocess.Popen(uploadcmd, executable = ANDROID_SHELL, shell = True)
+            # chmodcmd = "chmod 644 " + self.__original_filename
+            # proc = subprocess.Popen(chmodcmd, executable = ANDROID_SHELL, shell = True)
             # proc.wait()
             self._save_log()
 

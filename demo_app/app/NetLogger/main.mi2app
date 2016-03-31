@@ -11,15 +11,12 @@ import os
 import sys
 import traceback
 
+import mi2app_utils
 import mobile_insight
 from mobile_insight.monitor import OnlineMonitor
 from logging_analyzer import LoggingAnalyzer
 
-def get_cache_dir():
-    return str(service_context.getCacheDir().getAbsolutePath())
-
-
-cfg_log_collection_file = "/sdcard/mobileinsight/cfg/netlogger.cfg"
+cfg_file = "netlogger.cfg"
 
 lte_lvl1 = [
             'LTE_RRC_OTA_Packet',
@@ -55,19 +52,24 @@ umts     = [
             ]
 
 try:
+    cache_directory = mi2app_utils.get_cache_dir()
+    files_directory = mi2app_utils.get_files_dir()
+    log_directory   = os.path.join(cache_directory, "cellular_log")
+    app_directory   = os.path.join(files_directory, "app/NetLogger")
+    fifo_path       = os.path.join(cache_directory, "diag_revealer_fifo")
+    
     print "MobileInsight (NetLogger): using the OnlineMonitor"
-    fifo_path = os.path.join(get_cache_dir(), "diag_revealer_fifo")
     src = OnlineMonitor()
     src.set_skip_decoding(False)
-
-    log_directory = os.path.join(get_cache_dir(), "cellular_log")
     src.set_log_directory(log_directory)
-    
+
     # try to read the config file
     try:
-        cfg = open(cfg_log_collection_file, 'r')
-        lines = cfg.read().splitlines()
+        cfg = open(os.path.join("/sdcard/mobileinsight/cfg/", cfg_file), 'r')
+    except IOError:
+        cfg = open(os.path.join(app_directory, cfg_file), 'r')
 
+        lines = cfg.read().splitlines()
         for line in lines:
             if line.rstrip('\n'):
                 if '#' in line:
@@ -76,7 +78,7 @@ try:
                     print "MobileInsight (NetLogger): config_log -- src.enable_log(" + line + ")"
                     src.enable_log(line)
         cfg.close()
-    except:
+    else:
         print "MobileInsight (NetLogger): config file open failed, use default logs"
         src.enable_log(lte_lvl1 + lte_lvl2 + lte_lvl3 + wcdma + umts)
 
