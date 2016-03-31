@@ -1,0 +1,90 @@
+#!/usr/bin/python
+# Filename: main.mi2app
+
+import errno
+import os
+import stat
+import traceback
+
+import mobile_insight
+from mobile_insight.monitor import AndroidDevDiagMonitor, OfflineReplayer
+from mobile_insight.analyzer import MsgLogger
+from mi2app_utils import get_cache_dir, get_phone_model
+
+from realtime_analyzer import RealtimeAnalyzer
+
+try:
+    # src = AndroidQmdlMonitor({  "ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+    #                             "libwireshark_path": "/system/lib"})
+    # log_directory = os.path.join(get_cache_dir(), "mobile_insight_log")
+    # src.set_log_directory(log_directory)
+    # # uses existing Diag.cfg
+
+    lte_lvl1 = ["LTE_RRC_OTA_Packet",
+                "LTE_RRC_Serv_Cell_Info",
+                "LTE_NAS_ESM_OTA_Incoming_Packet",
+                "LTE_NAS_ESM_OTA_Outgoing_Packet",
+                "LTE_NAS_EMM_OTA_Incoming_Packet",
+                "LTE_NAS_EMM_OTA_Outgoing_Packet",
+                "LTE_NAS_EMM_State",
+                ]
+    lte_lvl2 = [
+                # LTE_PHY_Connected_Mode_Intra_Freq_Meas,
+                # LTE_PHY_Inter_RAT_Measurement,
+                # LTE_PHY_Serv_Cell_Measurement,
+                # LTE_PHY_Connected_Mode_Neighbor_Measurement,
+                # LTE_PHY_PDSCH_Packet,
+                ]
+    lte_lvl3 = ["LTE_PDCP_DL_SRB_Integrity_Data_PDU", 
+                "LTE_PDCP_UL_SRB_Integrity_Data_PDU", 
+                # "LTE_MAC_Configuration", 
+                "LTE_MAC_UL_Transport_Block",
+                "LTE_MAC_DL_Transport_Block",
+                ]
+
+    fifo_path = os.path.join(get_cache_dir(), "diag_revealer_fifo")
+
+    if get_phone_model() == "LGLS660":  # LG Tribute
+        libwireshark_path = "/sdcard/ws_dissector"
+    else:
+        libwireshark_path = "/system/lib"
+    # src = AndroidDevDiagMonitor()
+
+    # src = OfflineReplayer({"ws_dissect_executable_path": "/system/bin/android_pie_ws_dissector",
+    #                     "libwireshark_path": "/system/lib",})
+    src = OfflineReplayer()
+    #                     # "libwireshark_path": "/sdcard/ws_dissector",})  # for LG
+    src.set_input_path("/sdcard/diag_log_20151107_220332_TCP_DL_null_null_353300061842826_Samsung-SM-G900T_T-Mobile.qmdl")
+    src.enable_log(lte_lvl1 + lte_lvl2 + lte_lvl3)
+    # src.set_skip_decoding(False)
+    # if get_phone_model() == "LGLS660":
+    #     src.set_log_directory("/storage/external_SD/mobile_insight2/logs")
+    # else:
+    #     src.set_log_directory(os.path.join(get_cache_dir(), "logs"))
+    # src.set_log_cut_size(5.0)
+
+    # directory = "/sdcard/decode_test"
+    # logs = sorted(os.listdir(directory))
+
+    
+    
+    l = RealtimeAnalyzer()
+    if get_phone_model() == "LGLS660":
+        l.set_log_directory("/storage/external_SD/mobile_insight2")
+    else:
+        l.set_log_directory(get_cache_dir())
+
+    # i = 0
+    # for f in logs:
+    #     print "=== %s ===" % f
+    #     src.set_input_path(os.path.join(directory, f))
+    #     l.set_source(src)
+    #     src.run()
+    #     i += 1
+
+    l.set_source(src)
+    # l.calibrate_timestamp()
+    src.run() # Note that the collection can't stop ...
+
+except:
+    print str(traceback.format_exc())
