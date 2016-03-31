@@ -28,10 +28,12 @@ ANDROID_SHELL = "/system/bin/sh"
 # Prevent Android on-screen keyboard from hiding text input
 # See http://stackoverflow.com/questions/26799084/android-on-screen-keyboard-hiding-python-kivy-textinputs
 Window.softinput_mode = "pan"
+Window.clearcolor = (1, 1, 1, 1)
 
 Builder.load_string("""
 # A scrollable label class.
 # Taken from http://tune.pk/video/2639621/kivy-crash-course-9-creating-a-scrollable-label
+
 <ScrollableLabel@ScrollView>:
     text: ''
 
@@ -40,6 +42,7 @@ Builder.load_string("""
         text_size: self.width, None
         size_hint_y: None
         font_size: "25sp"
+        color: 0,0,0,1
         height: self.texture_size[1]
         valign: 'top'
 
@@ -50,6 +53,12 @@ Builder.load_string("""
     group: None
 
     CheckBox:
+        canvas.before:
+            Color:
+                rgba: 0,0,0,1
+            Rectangle:
+                pos: self.pos
+                size: self.size
         active: root.active
         group: root.group
         size_hint_x: None
@@ -57,8 +66,16 @@ Builder.load_string("""
         on_active: root.callback(*args)
 
     Label:
+        canvas.before:
+            Color:
+                rgba: 0,0,0,1
+            Rectangle:
+                pos: self.pos
+                size: self.size
         text: root.text
         font_size: "25sp"
+        color: 1,1,1,1
+        bcolor: 0,0,0,1
         text_width: self.width
 
 # Main screen
