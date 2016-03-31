@@ -19,10 +19,7 @@ def run_config():
     print 'Edit config.yml to set up the configuration'
 
 
-def run_apk(build_release):
-    with open("config.yml", 'r') as ymlfile:
-        cfg = yaml.load(ymlfile)
-
+def run_dist():
     build_dist_cmd = 'python-for-android create' \
             + ' --dist_name=' + cfg['dist_name'] \
             + ' --bootstrap=' + cfg['bootstrap'] \
@@ -31,6 +28,8 @@ def run_apk(build_release):
     print build_dist_cmd
     os.system(build_dist_cmd)
 
+
+def run_apk(build_release):
     build_cmd = 'python-for-android apk' \
             + ' --compile-pyo' \
             + ' --copy-libs' \
@@ -113,6 +112,8 @@ if __name__ == '__main__':
 
     if arg == 'config':
         run_config()
+    elif arg == 'dist':
+        run_dist()
     elif arg == 'apk':
         if debug == "debug" or debug == "":
             run_apk(False)
