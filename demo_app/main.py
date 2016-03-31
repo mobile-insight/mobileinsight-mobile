@@ -210,11 +210,11 @@ class MobileInsightScreen(GridLayout):
 
 
     def _create_folder(self):
-        cmd = "mkdir /sdcard/mobile_insight;"
-        cmd = cmd + "mkdir /sdcard/mobileinsight/log;"
-        cmd = cmd + "mkdir /sdcard/mobileinsight/cfg;"
-        cmd = cmd + "mkdir /sdcard/mobileinsight/dbs;"
-        cmd = cmd + "mkdir /sdcard/mobileinsight/apps;"
+        cmd = "mkdir /sdcard/mobileinsight; "
+        cmd = cmd + "mkdir /sdcard/mobileinsight/log; "
+        cmd = cmd + "mkdir /sdcard/mobileinsight/cfg; "
+        cmd = cmd + "mkdir /sdcard/mobileinsight/dbs; "
+        cmd = cmd + "mkdir /sdcard/mobileinsight/apps; "
         self._run_shell_cmd(cmd)
 
 
@@ -260,7 +260,7 @@ class MobileInsightScreen(GridLayout):
                 ret[f] = os.path.join(APP_DIR, f)
 
         # Yuanjie: support alternative path for users to customize their own app
-        APP_DIR = "/sdcard/mobile_insight/apps/"
+        APP_DIR = "/sdcard/mobileinsight/apps/"
         if os.path.exists(APP_DIR):
             l = os.listdir(APP_DIR)
             for f in l:
@@ -341,7 +341,7 @@ class MobileInsightScreen(GridLayout):
                    + '     Zengwen Yuan,\n'
                    + '     Jiayao Li,\n'
                    + '     Haotian Deng\n\n'
-                   + 'Copyright © 2015 – 2016')
+                   + 'Copyright © 2014 – 2016')
         popup = Popup(title='About MobileInsight',
                       content=Label(text=about_text),
                       size_hint=(.8, .4))
@@ -376,7 +376,7 @@ class MobileInsightApp(App):
         return self.screen
 
     def on_pause(self):
-        return True     # go into Pause mode
+        return True  # go into Pause mode
 
     def on_stop(self):
         self.screen.stop_service()
