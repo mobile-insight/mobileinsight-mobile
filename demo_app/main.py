@@ -156,21 +156,28 @@ class MobileInsightScreen(GridLayout):
         else:
             return None
 
+
     def __check_diag_mode(self):
         """
         Check if diagnostic mode is enabled.
         """
-        # cmd = " test -e /dev/diag"
         
-        hasDiag = True
-        res = subprocess.check_output("ls /dev/diag", executable=ANDROID_SHELL, shell=True, stderr=subprocess.STDOUT)
-        if "No such file or directory" in str(res):
-            print "MAIN: __check_diag_mode() res = false"
-            hasDiag = False
+        cmd = " test -e /dev/diag"
+        res = self._run_shell_cmd(cmd, True)
+        if res:
+            return False
         else:
-            print "MAIN: __check_diag_mode() res = true"
+            return True
+        
+        # hasDiag = True
+        # res = subprocess.check_output("ls /dev/diag", executable=ANDROID_SHELL, shell=True, stderr=subprocess.STDOUT)
+        # if "No such file or directory" in str(res):
+        #     print "MAIN: __check_diag_mode() res = false"
+        #     hasDiag = False
+        # else:
+        #     print "MAIN: __check_diag_mode() res = true"
 
-        return hasDiag    
+        # return hasDiag    
 
 
     def __init_libs(self):
