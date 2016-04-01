@@ -1,4 +1,4 @@
-all: apk_debug install clean
+all: apk_release install clean
 
 .PHONY: apk install config dist debug release
 

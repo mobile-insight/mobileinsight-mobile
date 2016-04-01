@@ -1,5 +1,7 @@
 app_name : MobileInsight
 
+# 2016-04-01: 2.0.0 released
+# currently switched to 2.0.1
 app_version : 2.x.y
 
 pkg_name : edu.ucla.cs.wing.mobileinsight
