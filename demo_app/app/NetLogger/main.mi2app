@@ -65,7 +65,7 @@ try:
 
     # try to read the config file
     try:
-        cfg = open(os.path.join("/sdcard/mobileinsight/cfg/", cfg_file), 'r')
+        cfg = open(os.path.join("/sdcard/mobile_insight/cfg/", cfg_file), 'r')
     except IOError:
         cfg = open(os.path.join(app_directory, cfg_file), 'r')
 

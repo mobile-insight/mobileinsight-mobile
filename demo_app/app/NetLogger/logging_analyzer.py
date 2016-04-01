@@ -30,7 +30,7 @@ class LoggingAnalyzer(Analyzer):
     def __init__(self):
         Analyzer.__init__(self)
 
-        self.__logdir            = "/sdcard/mobileinsight/log/"
+        self.__logdir            = "/sdcard/mobile_insight/log/"
         self.__original_filename = ""
 
         if not os.path.exists(self.__logdir):
