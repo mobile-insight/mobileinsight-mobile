@@ -1,6 +1,6 @@
-all: apk_release install clean
+all: apk_debug install clean
 
-.PHONY: apk install
+.PHONY: apk install config dist debug release
 
 config:
 	python deploy.py config

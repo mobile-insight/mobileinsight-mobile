@@ -15,7 +15,7 @@ import os, sys, commands, yaml
 
 
 def run_config():
-    commands.getstatusoutput('cp config_template.yml config.yml') 
+    commands.getstatusoutput('cp ./config/config_template.yml ./config/config.yml') 
     print 'Edit config.yml to set up the configuration'
 
 
