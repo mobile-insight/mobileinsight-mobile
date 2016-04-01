@@ -14,7 +14,10 @@ import sys
 import subprocess
 import datetime
 import shutil
-import signal
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
 
 from mobile_insight.analyzer import Analyzer
 
@@ -33,16 +36,21 @@ class LoggingAnalyzer(Analyzer):
         self.__logdir            = "/sdcard/mobile_insight/log/"
         self.__txtlogdir         = "/sdcard/mobile_insight/log/decoded"
         self.__original_filename = ""
-        self.__decodemsg         = []
+        self.__rawmsg            = {}
+        self.__rawmsg_key        = ""
         self.__msg_cnt           = 0
-        self.__decode_cnt        = 0
-        self.__txt_log_name = "mi2log_" + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + ".txt"
-        self.__txt_log_path = os.path.join(self.__txtlogdir, self.__txt_log_name)
+        self.__decodemsg         = []
+        self.__txt_log_name      = "mi2log_" + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + ".txt"
+        self.__txt_log_path      = os.path.join(self.__txtlogdir, self.__txt_log_name)
 
         if not os.path.exists(self.__logdir):
             os.makedirs(self.__logdir)
         if not os.path.exists(self.__txtlogdir):
             os.makedirs(self.__txtlogdir)
+
+        with open(self.__txt_log_path, 'a') as f:
+            pass
+        print "MobileInsight (NetLogger): decoded cellular log being saved to %s, please check." % self.__txt_log_path
 
         self.add_source_callback(self._logger_filter)
 
@@ -63,37 +71,43 @@ class LoggingAnalyzer(Analyzer):
 
         # save decoded txt
         if (msg.type_id.startswith("LTE_") or msg.type_id.startswith("WCDMA_") or msg.type_id.startswith("UMTS_")):
-            # print "MobileInsight (NetLogger): oh yeah new msg!"
-            
-            try:
-                log_item      = msg.data.decode()
-                log_item_dict = dict(log_item)
-                if not log_item_dict.has_key('Msg'):
-                    return
+            self.__rawmsg[self.__msg_cnt] = msg.data
+            self.__msg_cnt += 1
+            # self.__decode_cnt += 1
+            print "MobileInsight (NetLogger): oh yeah new msg!"
+            print "MobileInsight (NetLogger): dict len is %s " % str(len(self.__rawmsg))
 
-                self.__decodemsg.append("type_id: %s\n" % str(log_item_dict["type_id"]))
-                self.__decodemsg.append("timestamp: %s GMT\n" % str(log_item_dict["timestamp"]))
-                self.__decodemsg.append(log_item_dict['Msg'])
-                self.__msg_cnt += 1
-                self.__decode_cnt += 1
-            except:
-                pass
+            if len(self.__rawmsg) >= 20:
+                try:
+                    with open(self.__txt_log_path, 'a') as f:
+                        for key in self.__rawmsg:
+                            log_item = self.__rawmsg[key].decode_xml()
+                            # log_item = self.__rawmsg[key].decode()
+                            # log_item_dict = dict(log_item)
+                            # if log_item_dict.has_key('Msg'):
+                            #     print "MobileInsight (NetLogger): decoded +1"
 
-            if self.__decode_cnt >= 20:
-                with open(self.__txt_log_path, 'a') as f:
-                    f.writelines(self.__decodemsg)
-                self.__decodemsg         = []
-                self.__decode_cnt        = 0
-                # print "MobileInsight (NetLogger): txt log saved"
+                            #     f.writelines("type_id: %s\ntimestamp: %s GMT\n%s" % \
+                            #         (str(log_item_dict["type_id"]), \
+                            #         str(log_item_dict["timestamp"])), \
+                            #         log_item_dict['Msg'])
+                            f.writelines(log_item)
+                except:
+                    pass
+
+                self.__rawmsg.clear()  # reset the dict
+                print "MobileInsight (NetLogger): reset dict len is %s " % str(len(self.__rawmsg))
+                print "MobileInsight (NetLogger): msgs batch saved to txt log"
 
             if self.__msg_cnt >= 200:  # open a new file
-                self.__txt_log_name      = "mi2log_" + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + ".txt"
+                self.__txt_log_name = "mi2log_" + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + ".txt"
                 self.__txt_log_path = os.path.join(self.__txtlogdir, self.__txt_log_name)
                 print "save path is " + self.__txt_log_path
-                self.__decodemsg         = []
-                self.__msg_cnt           = 0
-                self.__decode_cnt        = 0
-                # print "MobileInsight (NetLogger): new txt log saved"
+                print "MobileInsight (NetLogger): decoded cellular log being saved to %s, please check." % self.__txt_log_path
+                self.__rawmsg.clear()  # reset the dict
+                print "MobileInsight (NetLogger): reset dict len is %s " % str(len(self.__rawmsg))
+                self.__msg_cnt = 0
+                print "MobileInsight (NetLogger): log saved to new txt"
 
 
     def _save_log(self):
