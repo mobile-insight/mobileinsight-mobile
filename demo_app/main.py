@@ -160,13 +160,17 @@ class MobileInsightScreen(GridLayout):
         """
         Check if diagnostic mode is enabled.
         """
+        # cmd = " test -e /dev/diag"
         
-        cmd = " test -e /dev/diag"
-        res = self._run_shell_cmd(cmd,True)
-        if res:
-            return False
+        hasDiag = True
+        res = subprocess.check_output("ls /dev/diag", executable=ANDROID_SHELL, shell=True, stderr=subprocess.STDOUT)
+        if "No such file or directory" in str(res):
+            print "MAIN: __check_diag_mode() res = false"
+            hasDiag = False
         else:
-            return True    
+            print "MAIN: __check_diag_mode() res = true"
+
+        return hasDiag    
 
 
     def __init_libs(self):
@@ -189,12 +193,12 @@ class MobileInsightScreen(GridLayout):
         for lib in libs:
             # if not os.path.isfile(os.path.join("/system/lib",lib)):
             if True:
-                cmd = cmd+" cp "+os.path.join(libs_path,lib)+" /system/lib/; "
-                cmd = cmd+" chmod 755 "+os.path.join("/system/lib",lib)+"; "
+                cmd = cmd + " cp " + os.path.join(libs_path, lib) + " /system/lib/; "
+                cmd = cmd + " chmod 755 " + os.path.join("/system/lib", lib) + "; "
         
 
         # sym links for some libs
-        libs_mapping={"libwireshark.so": ["libwireshark.so.6", "libwireshark.so.6.0.1"],
+        libs_mapping = {"libwireshark.so": ["libwireshark.so.6", "libwireshark.so.6.0.1"],
                       "libwiretap.so": ["libwiretap.so.5", "libwiretap.so.5.0.1"],
                       "libwsutil.so": ["libwsutil.so.6", "libwsutil.so.6.0.0"]}
 
@@ -207,8 +211,10 @@ class MobileInsightScreen(GridLayout):
 
         print cmd  # debug mode
 
-        #bins
-        exes=["diag_revealer","android_pie_ws_dissector","android_ws_dissector"]
+        # bins
+        exes = ["diag_revealer",
+                "android_pie_ws_dissector",
+                "android_ws_dissector"]
         for exe in exes:
             # if not os.path.isfile(os.path.join("/system/bin",exe)):
             if True:
