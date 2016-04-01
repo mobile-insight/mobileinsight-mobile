@@ -2,7 +2,7 @@
 logging_analyzer.py
 
 It analyses newly generated cellular event log file,
-log it and saves to external storage.
+log and decode them, then save the log to external storage.
 
 Author: Zengwen Yuan
 Version: 3.0
@@ -14,10 +14,6 @@ import sys
 import subprocess
 import datetime
 import shutil
-try:
-    import xml.etree.cElementTree as ET
-except ImportError:
-    import xml.etree.ElementTree as ET
 
 from mobile_insight.analyzer import Analyzer
 
@@ -77,13 +73,8 @@ class LoggingAnalyzer(Analyzer):
                 try:
                     with open(self.__txt_log_path, 'a') as f:
                         for key in self.__rawmsg:
-                            log_item = self.__rawmsg[key].decode()
-                            log_item_dict = dict(log_item)
-                            if log_item_dict.has_key('Msg'):
-                                f.writelines("type_id: %s\ntimestamp: %s GMT\n%s" % \
-                                    (str(log_item_dict["type_id"]), \
-                                    str(log_item_dict["timestamp"])), \
-                                    log_item_dict['Msg'])
+                            log_item = self.__rawmsg[key].decode_xml()
+                            f.writelines(log_item)
                 except:
                     pass
 
