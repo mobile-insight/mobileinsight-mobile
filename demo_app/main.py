@@ -209,7 +209,7 @@ class MobileInsightScreen(GridLayout):
                    cmd = cmd + " ln -s /system/lib/" + lib + " /system/lib/" + sym_lib + "; "
                    cmd = cmd + " chmod 755 /system/lib/" + sym_lib + "; " 
 
-        print cmd  # debug mode
+        # print cmd  # debug mode
 
         # bins
         exes = ["diag_revealer",
