@@ -41,8 +41,8 @@ class LoggingAnalyzer(Analyzer):
 
         if not os.path.exists(self.__logdir):
             os.makedirs(self.__logdir)
-        if not os.path.exists(self.__txt_log_path):
-            os.makedirs(self.__txt_log_path)
+        if not os.path.exists(self.__txtlogdir):
+            os.makedirs(self.__txtlogdir)
 
         self.add_source_callback(self._logger_filter)
 
@@ -56,14 +56,14 @@ class LoggingAnalyzer(Analyzer):
         """
         # save mi2log
         if msg.type_id.find("new_diag_log") != -1:
-            print "MobileInsight (NetLogger): oh new mi2log save!"
+            # print "MobileInsight (NetLogger): oh new mi2log save!"
             self.__log_timestamp     = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
             self.__original_filename = msg.data
             self._save_log()
 
         # save decoded txt
         if (msg.type_id.startswith("LTE_") or msg.type_id.startswith("WCDMA_") or msg.type_id.startswith("UMTS_")):
-            print "MobileInsight (NetLogger): oh yeah new msg!"
+            # print "MobileInsight (NetLogger): oh yeah new msg!"
             
             try:
                 log_item      = msg.data.decode()
@@ -79,12 +79,12 @@ class LoggingAnalyzer(Analyzer):
             except:
                 pass
 
-            if self.__decodecnt >= 20:
+            if self.__decode_cnt >= 20:
                 with open(self.__txt_log_path, 'a') as f:
                     f.writelines(self.__decodemsg)
                 self.__decodemsg         = []
                 self.__decode_cnt        = 0
-                print "MobileInsight (NetLogger): txt log saved"
+                # print "MobileInsight (NetLogger): txt log saved"
 
             if self.__msg_cnt >= 200:  # open a new file
                 self.__txt_log_name      = "mi2log_" + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + ".txt"
@@ -93,7 +93,7 @@ class LoggingAnalyzer(Analyzer):
                 self.__decodemsg         = []
                 self.__msg_cnt           = 0
                 self.__decode_cnt        = 0
-                print "MobileInsight (NetLogger): new txt log saved"
+                # print "MobileInsight (NetLogger): new txt log saved"
 
 
     def _save_log(self):
