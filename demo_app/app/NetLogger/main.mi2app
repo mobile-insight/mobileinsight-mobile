@@ -57,6 +57,7 @@ try:
     log_directory   = os.path.join(cache_directory, "mi2log")
     app_directory   = os.path.join(files_directory, "app/NetLogger")
     fifo_path       = os.path.join(cache_directory, "diag_revealer_fifo")
+    cfg_path        = os.path.join("/sdcard/mobile_insight/cfg/", cfg_file)
     
     print "MobileInsight (NetLogger): using the OnlineMonitor"
     src = OnlineMonitor()
@@ -65,10 +66,7 @@ try:
 
     # try to read the config file
     try:
-        cfg = open(os.path.join("/sdcard/mobile_insight/cfg/", cfg_file), 'r')
-    except IOError:
-        cfg = open(os.path.join(app_directory, cfg_file), 'r')
-
+        cfg = open(cfg_path, 'r')
         lines = cfg.read().splitlines()
         for line in lines:
             if line.rstrip('\n'):
@@ -78,9 +76,11 @@ try:
                     print "MobileInsight (NetLogger): config_log -- src.enable_log(" + line + ")"
                     src.enable_log(line)
         cfg.close()
-    else:
+    except IOError:
         print "MobileInsight (NetLogger): config file open failed, use default logs"
         src.enable_log(lte_lvl1 + lte_lvl2 + lte_lvl3 + wcdma + umts)
+        print "MobileInsight (NetLogger): config file copied to %s, you can edit it for collection next time" % cfg_path
+        shutil.copyfile(os.path.join(app_directory, cfg_file), cfg_path)
 
     loggingAnalyzer = LoggingAnalyzer()
     loggingAnalyzer.set_source(src)
