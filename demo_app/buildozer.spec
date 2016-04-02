@@ -4,7 +4,7 @@
 title = MobileInsight2
 
 # (str) Package name
-package.name = mobile_insight2
+package.name = mobileinsight
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = edu.ucla.cs.wing
@@ -13,7 +13,7 @@ package.domain = edu.ucla.cs.wing
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,mi2app,so,json,txt
+source.include_exts = py,png,jpg,kv,atlas,mi2app,so,json,txt,cfg
 
 # (list) Source files to exclude (let empty to not exclude anything)
 #source.exclude_exts = spec
@@ -25,11 +25,11 @@ source.include_exts = py,png,jpg,kv,atlas,mi2app,so,json,txt
 source.exclude_patterns = Makefile
 
 # (str) Application versioning (method 1)
-version.regex = __version__ = ['"](.*)['"]
-version.filename = %(source.dir)s/main.py
+# version.regex = __version__ = ['"](.*)['"]
+# version.filename = %(source.dir)s/main.py
 
 # (str) Application versioning (method 2)
-# version = 1.2.0
+version = 0.1
 
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy

@@ -2,20 +2,20 @@
 import os
 import sys
 
-# Import MobileInsight modules
-from mobile_insight.monitor import OnlineMonitor
-from mobile_insight.analyzer import LteNasAnalyzer, UmtsNasAnalyzer
+#Import MobileInsight modules
+from mobile_insight.monitor import AndroidDevDiagMonitor
+from mobile_insight.analyzer import LteNasAnalyzer,UmtsNasAnalyzer
     
 # Initialize a 3G/4G monitor
-src = OnlineMonitor()
+src = AndroidDevDiagMonitor()
 src.set_skip_decoding(False)
 
-# Enable 3G/4G NAS analysis
+#Enable 3G/4G NAS analysis
 lte_nas_analyzer = LteNasAnalyzer()
 lte_nas_analyzer.set_source(src)
 
 umts_nas_analyzer = UmtsNasAnalyzer()
 umts_nas_analyzer.set_source(src)
 
-# Start the monitoring
+#Start the monitoring
 src.run()

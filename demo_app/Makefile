@@ -21,7 +21,7 @@ BUILDOZER_FLAGS=APP_ANDROID_NDK_PATH=/Users/yuanjieli/Documents/android-ndk \
 # 				APP_ANDROID_SDK=14 \
 # 				APP_ANDROID_P4A_DIR=$(P4A_ROOT)
 
-P4A_DIST_ROOT=$(P4A_ROOT)/dist/mobile_insight2
+P4A_DIST_ROOT=$(P4A_ROOT)/dist/mobileinsight
 ROOT_DIR=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 
