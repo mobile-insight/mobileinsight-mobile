@@ -122,7 +122,7 @@ if __name__ == '__main__':
         else:
             print "Usage: python deploy.py apk [debug|release]"
     elif arg == 'clean':
-        for subdir, dirs, files in os.walk(cfg['app_path']):
+        for subdir, dirs, files in os.walk('.'):
             for f in files:
                 if f.endswith(".pyo") or f.endswith(".DS_Store"):
                     filepath = os.path.join(subdir, f)
@@ -148,3 +148,11 @@ if __name__ == '__main__':
             os.system('adb install -r ' + cfg['app_name'] + '-' + str(cfg['app_version']) + '.apk')
         except:
             os.system('adb install -r ' + cfg['app_name'] + '-' + str(cfg['app_version']) + '-debug.apk')
+    elif arg == 'update':
+        try:
+            if debug == 'icellular':
+                os.system('adb push ./internal_app/iCellular/ /sdcard/mobile_insight/apps/iCellular/')
+            elif debug == 'netlogger':
+                os.system('adb push ./internal_app/NetLoggerInternal/ /sdcard/mobile_insight/apps/NetLoggerInternal/')
+        except:
+            print "Sorry, your arguments are not supported for this moment."
