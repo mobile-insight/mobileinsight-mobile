@@ -6,7 +6,7 @@ import glob
 
 class MobileInsightRecipe(Recipe):
 
-    mi_git            = 'http://metro.cs.ucla.edu:8081/likayo/automator.git'
+    mi_git            = 'http://metro.cs.ucla.edu:8081/root/automator.git'
     mi_branch         = 'new-analyzer'
     version           = '2.1'
     toolchain_version = 4.8          # default GCC toolchain version we try to use
