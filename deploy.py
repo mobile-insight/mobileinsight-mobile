@@ -151,6 +151,7 @@ if __name__ == '__main__':
     elif arg == 'update':
         try:
             if debug == 'icellular':
+                os.system('adb shell "rm -r /sdcard/mobile_insight/apps/iCellular/"')
                 os.system('adb push ./internal_app/iCellular/ /sdcard/mobile_insight/apps/iCellular/')
             elif debug == 'netlogger':
                 os.system('adb push ./internal_app/NetLoggerInternal/ /sdcard/mobile_insight/apps/NetLoggerInternal/')
