@@ -257,7 +257,7 @@ manager_start_new_log (struct LogManagerState *pstate, int fifo_fd) {
 		// Write filename of ended log to pipe
 		write(fifo_fd, filename, msg_len);
         char tmp[4096];
-        sprintf(tmp,"su -c chmod 777 %s\n",filename);
+        sprintf(tmp,"su -c chmod 644 %s\n",filename);
         system(tmp);
 
 	} else {
