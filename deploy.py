@@ -136,14 +136,11 @@ if __name__ == '__main__':
     elif arg == 'clean_dist':
         try:
             os.system('rm -rf ' + os.path.join(cfg['p4a_path'], 'dists', cfg['dist_name']))
-            # os.system('rm -rf ' + os.path.join(cfg['p4a_path'], 'build', cfg['dist_name']))
-            os.system('p4a clean_builds')
+            os.system('rm -rf ' + os.path.join(cfg['p4a_path'], 'build/aars', cfg['dist_name']))
+            os.system('rm -rf ' + os.path.join(cfg['p4a_path'], 'build/javaclasses', cfg['dist_name']))
+            os.system('rm -rf ' + os.path.join(cfg['p4a_path'], 'build/libs_collections', cfg['dist_name']))
+            os.system('rm -rf ' + os.path.join(cfg['p4a_path'], 'build/python-installs', cfg['dist_name']))
             os.system('p4a clean_dists')
-            os.system('p4a clean_download_cache')
-            # os.system('rm -rf ' + os.path.join(cfg['p4a_path'], 'build/aars', cfg['dist_name']))
-            # os.system('rm -rf ' + os.path.join(cfg['p4a_path'], 'build/javaclasses', cfg['dist_name']))
-            # os.system('rm -rf ' + os.path.join(cfg['p4a_path'], 'build/libs_collections', cfg['dist_name']))
-            # os.system('rm -rf ' + os.path.join(cfg['p4a_path'], 'build/python-installs', cfg['dist_name']))
             print "Dist %s successfully cleaned." % cfg['dist_name']
         except:
             print "Dist %s clean failed."
