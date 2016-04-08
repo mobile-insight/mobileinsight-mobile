@@ -145,14 +145,14 @@ if __name__ == '__main__':
         except:
             print "Dist %s clean failed."
     elif arg == 'clean_all':
-    	try:
-    		os.system('p4a clean_all')
-    		os.system('p4a clean_builds')
-    		os.system('p4a clean_dists')
-    		os.system('p4a clean_download_cache')
-    		os.system('p4a clean_recipe_build')
-    	except:
-    		pass
+        try:
+            os.system('p4a clean_all')
+            os.system('p4a clean_builds')
+            os.system('p4a clean_dists')
+            os.system('p4a clean_download_cache')
+            os.system('p4a clean_recipe_build')
+        except:
+            pass
     elif arg == 'install':
         try:
             os.system('adb install -r ' + cfg['app_name'] + '-' + str(cfg['app_version']) + '.apk')
@@ -164,6 +164,7 @@ if __name__ == '__main__':
                 os.system('adb shell "rm -r /sdcard/mobile_insight/apps/iCellular/"')
                 os.system('adb push ./internal_app/iCellular/ /sdcard/mobile_insight/apps/iCellular/')
             elif debug == 'netlogger':
+                os.system('adb shell "rm -r /sdcard/mobile_insight/apps/NetLoggerInternal/"')
                 os.system('adb push ./internal_app/NetLoggerInternal/ /sdcard/mobile_insight/apps/NetLoggerInternal/')
         except:
             print "Sorry, your arguments are not supported for this moment."
