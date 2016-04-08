@@ -29,6 +29,14 @@
 #include <sys/time.h>
 // #include <linux/diagchar.h>
 
+#include <android/log.h>
+#define  LOG_TAG    "diag_revealer"
+
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+#define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG,__VA_ARGS__)
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
+#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+
 // NOTE: the following number should be updated every time.
 #define DIAG_REVEALER_VERSION "1.2.0"
 
@@ -244,9 +252,9 @@ manager_start_new_log (struct LogManagerState *pstate, int fifo_fd) {
 	pstate->log_id = (pstate->log_id < 0? 0: pstate->log_id + 1);
 	manager_get_log_name(pstate, filename, sizeof(filename));
 	pstate->log_fp = fopen(filename, "wb");
-	printf("creating %s ...\n", filename);
+	LOGD("creating %s ...\n", filename);
 	if (pstate->log_fp != NULL) {
-		printf("success\n");
+		// printf("success\n");
 		pstate->log_size = 0;
 		short fifo_msg_type = FIFO_MSG_TYPE_START_LOG_FILE;
 		short msg_len = strlen(filename);
@@ -352,14 +360,14 @@ main (int argc, char **argv)
 		ioarg.proc = 1000;
 		ret = ioctl(fd, DIAG_IOCTL_GET_REAL_TIME, (char *) &ioarg);
 		perror("ioctl DIAG_IOCTL_GET_REAL_TIME");
-		printf ("ioctl DIAG_IOCTL_GET_REAL_TIME returns %d\n", ret);
-		printf ("real_time = %d\n", ioarg.real_time);
+		LOGD ("ioctl DIAG_IOCTL_GET_REAL_TIME returns %d\n", ret);
+		LOGD ("real_time = %d\n", ioarg.real_time);
 	}
 
 	// Write commands to /dev/diag device to enable log collecting.
-	printf("Before write_commands\n");
+	// LOGD("Before write_commands\n");
 	ret = write_commands(fd, &buf_write);
-	printf("After write_commands\n");
+	// LOGD("After write_commands\n");
 	fflush(stdout);
 	free(buf_write.p);
 	if (ret != 0) {
@@ -372,7 +380,7 @@ main (int argc, char **argv)
 		perror("open fifo");
 		return -8005;
 	} else {
-		printf("FIFO opened\n");
+		LOGD("FIFO opened\n");
 	}
 
 	struct LogManagerState state;
