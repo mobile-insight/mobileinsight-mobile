@@ -167,6 +167,7 @@ class MobileInsightScreen(GridLayout):
         if res:
             return False
         else:
+            self._run_shell_cmd("chmod 755 /dev/diag")
             return True
         
         # hasDiag = True
