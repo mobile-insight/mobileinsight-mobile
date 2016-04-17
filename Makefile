@@ -20,6 +20,9 @@ apk_release:
 install:
 	python deploy.py install
 
+clean_all:
+	python deploy.py clean_all
+
 clean:
 	python deploy.py clean
 
