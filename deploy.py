@@ -39,6 +39,7 @@ def run_apk(build_release):
             + ' --package=' + cfg['pkg_name'] \
             + ' --permission INTERNET' \
             + ' --permission WRITE_EXTERNAL_STORAGE' \
+            + ' --permission WAKE_LOCK' \
             + ' --icon=' + cfg['icon_path'] \
             + ' --presplash=' + cfg['presplash_path'] \
             + ' --orientation=' + cfg['orientation'] \
