@@ -166,7 +166,6 @@ diag_write(int fd, const void *buf, size_t count){
 	//Yuanjie: safe write. If pipe is full, keep trying until succeeds
 	int ret_err;
 	do{
-
 		ret_err = write(fd, buf, count);
 
 	}while(ret_err==-1);
@@ -382,8 +381,8 @@ main (int argc, char **argv)
 		ioarg.proc = 1000;
 		ret = ioctl(fd, DIAG_IOCTL_GET_REAL_TIME, (char *) &ioarg);
 		perror("ioctl DIAG_IOCTL_GET_REAL_TIME");
-		LOGD ("ioctl DIAG_IOCTL_GET_REAL_TIME returns %d\n", ret);
-		LOGD ("real_time = %d\n", ioarg.real_time);
+		// LOGD ("ioctl DIAG_IOCTL_GET_REAL_TIME returns %d\n", ret);
+		// LOGD ("real_time = %d\n", ioarg.real_time);
 	}
 
 	// Write commands to /dev/diag device to enable log collecting.
@@ -405,8 +404,8 @@ main (int argc, char **argv)
 	} else {
 		LOGD("FIFO opened\n");
 	}
-	int pipesize = 1024*1024*1024;
-	fcntl(fifo_fd, F_SETPIPE_SZ, &pipesize);
+	int pipesize = 1024*1024*32;	//32MB
+	fcntl(fifo_fd, F_SETPIPE_SZ, pipesize);
 
 	struct LogManagerState state;
 	if (argc >= 4) {
