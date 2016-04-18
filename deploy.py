@@ -50,7 +50,8 @@ def run_apk(build_release):
             + ' --ndk_version=' + str(cfg['ndk_version']) \
             + ' --arch=' + cfg['arch'] \
             + ' --dist_name=' + cfg['dist_name'] \
-            + ' --whitelist=' + cfg['whitelist']
+            + ' --whitelist=' + cfg['whitelist'] \
+            + ' --wakelock'  #Wakelock is to prevent timeout problem
 
     if build_release is True:
         # This should work but currently has bug
