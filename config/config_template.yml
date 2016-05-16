@@ -1,7 +1,20 @@
+#############################
+# DO NOT MODIFY THIS FILE   #
+# Configuration template    #
+# Customize your own config #
+# file in config.yml        #
+#############################
+
+# replace it with your path of MobileInsight2
+mi_dev_path : /path/to/MobileInsight2
+
+# replace it with python-for-android storage dir
+p4a_path : /path/to/.python-for-android/
+
 app_name : MobileInsight
 
 # 2016-04-01: 2.0.0 released
-# currently switched to 2.0.1
+# 2016-05-16: currently switched to 2.0.4
 app_version : 2.x.y
 
 pkg_name : edu.ucla.cs.wing.mobileinsight
@@ -10,46 +23,41 @@ dist_name : mi2
 
 bootstrap : pygame
 
+# replace it with your minimal Android API level
+# For bootstrap purpose
+minsdk : 14
+
 requirements : pyserial,kivy,mobileinsight
 
-# replace it with your path of python-for-android
-p4a_path : /Users/Dale/.python-for-android/
-
 # replace it with your application icon path
-icon_path : /Users/Dale/Workspace/mobileInsight/MobileInsight2/resources/icon.png
+icon_path : resources/icon.png
 
 # replace it with your application presplash path
-presplash_path : /Users/Dale/Workspace/mobileInsight/MobileInsight2/resources/presplash.jpg
+presplash_path : resources/presplash.jpg
 
-# replace it with your applicaiton path
-app_path : /Users/Dale/Workspace/mobileInsight/MobileInsight2/demo_app
+# replace it with your application path
+app_path : demo_app
 
 # replace it with your path of Android SDK
-sdk_path : /Users/Dale/Library/Android/sdk
-
-# replace it with your Android NDK path
-ndk_path : /Users/Dale/Library/Android/android-ndk-r10e
-
-# replace it with your desired target arch
-arch : armeabi
+sdk_path : /path/to/sdk
 
 # replace it with your Android SDK version (compiling Android API level)
-sdk_version : 19
-
-# replace it with your target Android API level
 api_level : 19
 
-# replace it with your minimal Android API level
-minsdk : 14
+# replace it with your Android NDK path
+ndk_path : /path/to/ndk
 
 # replace it with your Android NDK version
 ndk_version : r10e
 
+# replace it with your desired target arch
+arch : armeabi
+
 orientation : portrait
 
-whitelist : /Users/zyuan/Projects/metro/MobileInsight2/config/whitelist.txt
+whitelist : config/whitelist.txt
 
-keystore : /Users/zyuan/Projects/metro/MobileInsight2/config/mi2-release-key.keystore
+keystore : config/mi2-release-key.keystore
 
 signkey : mi2-key
 

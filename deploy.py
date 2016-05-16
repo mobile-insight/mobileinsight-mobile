@@ -6,23 +6,26 @@ deploy.py
 
 It deploys compiling environment and parameters for mobileInsight.
 
-Author: Zengwen Yuan
-        Kainan Wang
-Version: 2.0
+Authors : Zengwen Yuan
+          Kainan Wang
+Version : 2.1 -- 2015/05/16 reformat building commands
 '''
 
 import os, sys, commands, yaml
 
 
 def run_config():
-    commands.getstatusoutput('cp ./config/config_template.yml ./config/config.yml') 
-    print 'Edit config.yml to set up the configuration'
+    commands.getstatusoutput('tail -n+8 ./config/config_template.yml > ./config/config.yml')
+    print 'Edit ./config/config.yml to set up the configuration'
 
 
 def run_dist():
     build_dist_cmd = 'python-for-android create' \
-            + ' --dist_name=' + cfg['dist_name'] \
+            + ' --dist-name=' + cfg['dist_name'] \
             + ' --bootstrap=' + cfg['bootstrap'] \
+            + ' --sdk-dir={}'.format(cfg['sdk_path']) \
+            + ' --android-api={}'.format(cfg['api_level']) \
+            + ' --minsdk={}'.format(cfg['minsdk']) \
             + ' --requirements=' + cfg['requirements']
 
     print build_dist_cmd
@@ -33,25 +36,24 @@ def run_apk(build_release):
     build_cmd = 'python-for-android apk' \
             + ' --compile-pyo' \
             + ' --copy-libs' \
-            + ' --name=' + cfg['app_name'] \
-            + ' --version=' + str(cfg['app_version']) \
-            + ' --private=' + cfg['app_path'] \
-            + ' --package=' + cfg['pkg_name'] \
-            + ' --permission INTERNET' \
+            + ' --name={}'.format(cfg['app_name']) \
+            + ' --dist-name={}'.format(cfg['dist_name']) \
+            + ' --version={}'.format(cfg['app_version']) \
+            + ' --private={}/{}'.format(cfg['mi_dev_path'], cfg['app_path']) \
+            + ' --package={}'.format(cfg['pkg_name']) \
+            + ' --icon={}/{}'.format(cfg['mi_dev_path'], cfg['icon_path']) \
+            + ' --presplash={}/{}'.format(cfg['mi_dev_path'], cfg['presplash_path']) \
+            + ' --orientation={}'.format(cfg['orientation']) \
+            + ' --sdk-dir={}'.format(cfg['sdk_path']) \
+            + ' --android-api={}'.format(cfg['api_level']) \
+            + ' --minsdk={}'.format(cfg['minsdk']) \
+            + ' --ndk-dir={}'.format(cfg['ndk_path']) \
+            + ' --ndk-version={}'.format(cfg['ndk_version']) \
+            + ' --arch={}'.format(cfg['arch']) \
+            + ' --whitelist={}/{}'.format(cfg['mi_dev_path'], cfg['whitelist']) \
             + ' --permission WRITE_EXTERNAL_STORAGE' \
+            + ' --permission INTERNET' \
             + ' --permission WAKE_LOCK' \
-            + ' --icon=' + cfg['icon_path'] \
-            + ' --presplash=' + cfg['presplash_path'] \
-            + ' --orientation=' + cfg['orientation'] \
-            + ' --sdk=' + str(cfg['sdk_version']) \
-            + ' --minsdk=' + str(cfg['minsdk']) \
-            + ' --android_api=' + str(cfg['api_level']) \
-            + ' --sdk_dir=' + cfg['sdk_path'] \
-            + ' --ndk_dir=' + cfg['ndk_path'] \
-            + ' --ndk_version=' + str(cfg['ndk_version']) \
-            + ' --arch=' + cfg['arch'] \
-            + ' --dist_name=' + cfg['dist_name'] \
-            + ' --whitelist=' + cfg['whitelist'] \
             + ' --wakelock'  #Wakelock is to prevent timeout problem
 
     if build_release is True:
@@ -62,14 +64,16 @@ def run_apk(build_release):
         #         + ' --keystorepw=' + str(cfg['keystorepw']) \
         #         + ' --signkeypw=' + str(cfg['signkeypw'])
 
-        rm_cmd = 'rm ' + cfg['app_name'] + '-' + str(cfg['app_version']) + '.apk'
+        rm_cmd = 'rm {}-{}.apk'.format(cfg['app_name'], cfg['app_version'])
         build_cmd = build_cmd + ' --release'
-        sign_cmd = 'jarsigner -verbose' \
-            + ' -sigalg SHA1withRSA' \
-            + ' -digestalg SHA1' \
-            + ' -keystore ' + cfg['keystore'] \
-            + ' ' + os.path.join(cfg['p4a_path'], 'dists', cfg['dist_name'], 'bin') \
-                + '/' + cfg['app_name'] + '-' + str(cfg['app_version']) + '-release-unsigned.apk ' + cfg['signkey']
+        sign_cmd = 'jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1' \
+            + ' -keystore {keystore} {p4a}/dists/{dist}/bin/{app}-{ver}-release-unsigned.apk {key}'.format(
+            keystore=cfg['keystore'],
+            p4a=cfg['p4a_path'],
+            dist=cfg['dist_name'],
+            app=cfg['app_name'],
+            ver=cfg['app_version'],
+            key=cfg['signkey'])
 
         zipalign_path = ""
         for subdir, dirs, files in os.walk(os.path.join(cfg['sdk_path'], 'build-tools')):
@@ -78,10 +82,12 @@ def run_apk(build_release):
                      zipalign_path = os.path.join(subdir, f)
                      break;
 
-        align_cmd = zipalign_path + ' -v 4 ' \
-            + os.path.join(cfg['p4a_path'], 'dists', cfg['dist_name'], 'bin') \
-                + '/' + cfg['app_name'] + '-' + str(cfg['app_version']) + '-release-unsigned.apk ' \
-            + cfg['app_name'] + '-' + str(cfg['app_version']) + '.apk'
+        align_cmd = '{zipalign} -v 4 {p4a}/dists/{dist}/bin/{app}-{ver}-release-unsigned.apk {app}-{ver}.apk'.format(
+            zipalign=zipalign_path,
+            p4a=cfg['p4a_path'],
+            dist=cfg['dist_name'],
+            app=cfg['app_name'],
+            ver=cfg['app_version'])
 
         os.system(rm_cmd)
         os.system(build_cmd)
@@ -131,8 +137,8 @@ if __name__ == '__main__':
                     os.remove(filepath)
     elif arg == 'clean_apk':
         try:
-            os.remove('./' + cfg['app_name'] + '-' + str(cfg['app_version']) + '.apk')
-            os.remove('./' + cfg['app_name'] + '-' + str(cfg['app_version']) + '-debug.apk')
+            os.remove('{path}/{app}-{ver}.apk'.format(path=cfg['mi_dev_path'], app=cfg['app_name'], ver=cfg['app_version']))
+            os.remove('{path}/{app}-{ver}-debug.apk'.format(path=cfg['mi_dev_path'], app=cfg['app_name'], ver=cfg['app_version']))
         except:
             print "APK clean failed."
     elif arg == 'clean_dist':
@@ -156,9 +162,9 @@ if __name__ == '__main__':
             pass
     elif arg == 'install':
         try:
-            os.system('adb install -r ' + cfg['app_name'] + '-' + str(cfg['app_version']) + '.apk')
+            os.system('adb install -r {app}-{ver}.apk'.format(app=cfg['app_name'], ver=cfg['app_version']))
         except:
-            os.system('adb install -r ' + cfg['app_name'] + '-' + str(cfg['app_version']) + '-debug.apk')
+            os.system('adb install -r {app}-{ver}-debug.apk'.format(app=cfg['app_name'], ver=cfg['app_version']))
     elif arg == 'update':
         try:
             if debug == 'icellular':
