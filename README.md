@@ -13,6 +13,7 @@ Then clone this repository
 ```shell
 $ git clone https://wing1.cs.ucla.edu/gitlab/root/MobileInsight2.git
 $ cd MobileInsight2
+$ make config
 $ make dist
 $ make apk
 ```
