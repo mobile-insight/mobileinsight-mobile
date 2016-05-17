@@ -21,12 +21,14 @@ def run_config():
 
 def run_dist():
     build_dist_cmd = 'python-for-android create' \
-            + ' --dist-name=' + cfg['dist_name'] \
-            + ' --bootstrap=' + cfg['bootstrap'] \
+            + ' --dist-name={}'.format(cfg['dist_name']) \
+            + ' --bootstrap={}'.format(cfg['bootstrap']) \
+            + ' --storage-dir={}'.format(cfg['p4a_path']) \
             + ' --sdk-dir={}'.format(cfg['sdk_path']) \
+            + ' --arch={}'.format(cfg['arch']) \
             + ' --android-api={}'.format(cfg['api_level']) \
             + ' --minsdk={}'.format(cfg['minsdk']) \
-            + ' --requirements=' + cfg['requirements']
+            + ' --requirements={}'.format(cfg['requirements'])
 
     print build_dist_cmd
     os.system(build_dist_cmd)
@@ -38,6 +40,7 @@ def run_apk(build_release):
             + ' --copy-libs' \
             + ' --name={}'.format(cfg['app_name']) \
             + ' --dist-name={}'.format(cfg['dist_name']) \
+            + ' --storage-dir={}'.format(cfg['p4a_path']) \
             + ' --version={}'.format(cfg['app_version']) \
             + ' --private={}/{}'.format(cfg['mi_dev_path'], cfg['app_path']) \
             + ' --package={}'.format(cfg['pkg_name']) \
