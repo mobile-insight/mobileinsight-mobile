@@ -1,0 +1,66 @@
+#############################
+# DO NOT MODIFY THIS FILE   #
+# Configuration template    #
+# Customize your own config #
+# file in config.yml        #
+#############################
+
+# replace it with your path of MobileInsight2
+mi_dev_path : /path/to/MobileInsight2
+
+# replace it with python-for-android storage dir
+p4a_path : /path/to/.python-for-android/
+
+app_name : MobileInsight
+
+# 2016-04-01: 2.0.0 released
+# 2016-05-16: currently switched to 2.0.4
+app_version : 2.x.y
+
+pkg_name : edu.ucla.cs.wing.mobileinsight
+
+dist_name : mi2
+
+bootstrap : pygame
+
+# replace it with your minimal Android API level
+# For bootstrap purpose
+minsdk : 14
+
+requirements : pyserial,kivy,mobileinsight
+
+# replace it with your application icon path
+icon_path : resources/icon.png
+
+# replace it with your application presplash path
+presplash_path : resources/presplash.jpg
+
+# replace it with your application path
+app_path : demo_app
+
+# replace it with your path of Android SDK
+sdk_path : /path/to/sdk
+
+# replace it with your Android SDK version (compiling Android API level)
+api_level : 19
+
+# replace it with your Android NDK path
+ndk_path : /path/to/ndk
+
+# replace it with your Android NDK version
+ndk_version : r10e
+
+# replace it with your desired target arch
+arch : armeabi
+
+orientation : portrait
+
+whitelist : config/whitelist.txt
+
+keystore : config/mi2-release-key.keystore
+
+signkey : mi2-key
+
+# This should work but currently has bug
+# keystorepw : keystore-password
+# signkeypw : key-password

@@ -28,11 +28,25 @@
 #include <sys/ioctl.h>
 #include <sys/time.h>
 // #include <linux/diagchar.h>
+#define _GNU_SOURCE 
+#define F_SETPIPE_SZ (F_LINUX_SPECIFIC_BASE + 7) 
+#define F_GETPIPE_SZ (F_LINUX_SPECIFIC_BASE + 8)
+#include <fcntl.h>
+
+#include <android/log.h>
+#define  LOG_TAG    "diag_revealer"
+
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+#define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG,__VA_ARGS__)
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
+#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 
 // NOTE: the following number should be updated every time.
-#define DIAG_REVEALER_VERSION "1.1.0"
+#define DIAG_REVEALER_VERSION "1.2.0"
 
 #define LOG_CUT_SIZE_DEFAULT (1 * 1024 * 1024)
+// #define BUFFER_SIZE	8192
+#define BUFFER_SIZE	32768
 
 #define FIFO_MSG_TYPE_LOG 1
 #define FIFO_MSG_TYPE_START_LOG_FILE 2
@@ -82,10 +96,8 @@ struct real_time_query_t {
 	int proc;
 } __packed;
 
+char buf_read[BUFFER_SIZE] = {};	// From Haotian: improve reliability
 
-#define BUFFER_SIZE	8192
-// char buf_read[4096] = {};
-char buf_read[BUFFER_SIZE] = {};	//From Haotian: improve diag_revealer reliability
 
 static double
 get_posix_timestamp () {
@@ -110,7 +122,6 @@ read_diag_cfg (const char *filename)
 	size_t file_sz = ftell(fp);
 	fseek(fp, 0L, SEEK_SET);
 
-	// if (file_sz > 0 && file_sz <= 4096) {
 	if (file_sz > 0 && file_sz <= BUFFER_SIZE) {
 		ret.p = (char *) malloc(file_sz);
 		if (ret.p == NULL) {
@@ -148,6 +159,19 @@ print_hex (const char *buf, int len)
 	}
 	if ((i % 16) != 0)
 		printf("\n");
+}
+
+
+static ssize_t 
+diag_write(int fd, const void *buf, size_t count){
+	//Yuanjie: safe write. If pipe is full, keep trying until succeeds
+	int ret_err;
+	do{
+		ret_err = write(fd, buf, count);
+
+	}while(ret_err==-1);
+
+	return ret_err;
 }
 
 // Write commands to /dev/diag device.
@@ -247,9 +271,9 @@ manager_start_new_log (struct LogManagerState *pstate, int fifo_fd) {
 	pstate->log_id = (pstate->log_id < 0? 0: pstate->log_id + 1);
 	manager_get_log_name(pstate, filename, sizeof(filename));
 	pstate->log_fp = fopen(filename, "wb");
-	printf("creating %s ...\n", filename);
+	LOGD("creating %s ...\n", filename);
 	if (pstate->log_fp != NULL) {
-		printf("success\n");
+		// printf("success\n");
 		pstate->log_size = 0;
 		short fifo_msg_type = FIFO_MSG_TYPE_START_LOG_FILE;
 		short msg_len = strlen(filename);
@@ -259,6 +283,10 @@ manager_start_new_log (struct LogManagerState *pstate, int fifo_fd) {
 		write(fifo_fd, &msg_len, sizeof(short));
 		// Write filename of ended log to pipe
 		write(fifo_fd, filename, msg_len);
+        // char tmp[4096];
+        // sprintf(tmp,"su -c chmod 644 %s\n",filename);
+        // system(tmp);
+
 	} else {
 		return -1;
 	}
@@ -269,6 +297,7 @@ manager_start_new_log (struct LogManagerState *pstate, int fifo_fd) {
 // If the size of the current log exceeds log_cut_size, a new log file is created.
 static int
 manager_append_log (struct LogManagerState *pstate, int fifo_fd, size_t msg_len) {
+
 	if (pstate->log_size + msg_len > pstate->log_cut_size) {
 		int ret = manager_start_new_log(pstate, fifo_fd);
 		if (ret < 0) {
@@ -294,6 +323,8 @@ main (int argc, char **argv)
 		return -8001;
 	}
 	// print_hex(buf_write.p, buf_write.len);
+
+	// system("su -c chmod 777 /dev/diag");
 
 	int fd = open("/dev/diag", O_RDWR);
 	if (fd < 0) {
@@ -351,14 +382,14 @@ main (int argc, char **argv)
 		ioarg.proc = 1000;
 		ret = ioctl(fd, DIAG_IOCTL_GET_REAL_TIME, (char *) &ioarg);
 		perror("ioctl DIAG_IOCTL_GET_REAL_TIME");
-		printf ("ioctl DIAG_IOCTL_GET_REAL_TIME returns %d\n", ret);
-		printf ("real_time = %d\n", ioarg.real_time);
+		// LOGD ("ioctl DIAG_IOCTL_GET_REAL_TIME returns %d\n", ret);
+		// LOGD ("real_time = %d\n", ioarg.real_time);
 	}
 
 	// Write commands to /dev/diag device to enable log collecting.
-	printf("Before write_commands\n");
+	// LOGD("Before write_commands\n");
 	ret = write_commands(fd, &buf_write);
-	printf("After write_commands\n");
+	// LOGD("After write_commands\n");
 	fflush(stdout);
 	free(buf_write.p);
 	if (ret != 0) {
@@ -366,13 +397,16 @@ main (int argc, char **argv)
 	}
 
 	// Messages are output to this FIFO pipe
+	// int fifo_fd = open(argv[2], O_WRONLY | O_NONBLOCK);	// block until the other end also calls open()
 	int fifo_fd = open(argv[2], O_WRONLY);	// block until the other end also calls open()
 	if (fifo_fd < 0) {
 		perror("open fifo");
 		return -8005;
 	} else {
-		printf("FIFO opened\n");
+		LOGD("FIFO opened\n");
 	}
+	int pipesize = 1024*1024*32;	//32MB
+	fcntl(fifo_fd, F_SETPIPE_SZ, pipesize);
 
 	struct LogManagerState state;
 	if (argc >= 4) {
@@ -388,10 +422,12 @@ main (int argc, char **argv)
 			log_cut_size = LOG_CUT_SIZE_DEFAULT;
 		}
 		manager_init_state(&state, argv[3], log_cut_size);
-		printf("log_cut_size = %lld\n", log_cut_size);
+
+		printf("log_cut_size = %lld\n", (long long int) log_cut_size);
+
 		int ret2 = manager_start_new_log(&state, fifo_fd);
 		if (ret2 < 0 || state.log_fp == NULL) {
-			perror("open qmdl");
+			perror("open diag log");
 			return -8006;
 		}
 	}
@@ -402,25 +438,35 @@ main (int argc, char **argv)
 			if (*((int *)buf_read) == USER_SPACE_DATA_TYPE) {
 				int num_data = *((int *)(buf_read + 4));
 				int i = 0;
-				int offset = 8;
+				long long offset = 8;
 				for (i = 0; i < num_data; i++) {
 					short fifo_msg_type = FIFO_MSG_TYPE_LOG;
 					int msg_len;
 					short fifo_msg_len;
 					double ts = get_posix_timestamp();
 					memcpy(&msg_len, buf_read + offset, 4);
-					printf("%d %.5f\n", msg_len, ts);
+					// printf("%d %.5f\n", msg_len, ts);
 					// print_hex(buf_read + offset + 4, msg_len);
 					// Wirte msg type to pipe
-					write(fifo_fd, &fifo_msg_type, sizeof(short));
+					int ret_err;
+					// LOGD("ret_err0");
+					// ret_err = write(fifo_fd, &fifo_msg_type, sizeof(short));
+					ret_err = diag_write(fifo_fd, &fifo_msg_type, sizeof(short));
+					// LOGD("ret_err1=%d",ret_err);
 					// Write size of (payload + timestamp)
 					fifo_msg_len = (short) msg_len + 8;
-					write(fifo_fd, &fifo_msg_len, sizeof(short));
+					// ret_err = write(fifo_fd, &fifo_msg_len, sizeof(short));
+					ret_err = diag_write(fifo_fd, &fifo_msg_len, sizeof(short));
+					// LOGD("ret_err2=%d",ret_err);
 					// Write timestamp of sending payload to pipe
-					write(fifo_fd, &ts, sizeof(double));
+					// ret_err = write(fifo_fd, &ts, sizeof(double));
+					ret_err = diag_write(fifo_fd, &ts, sizeof(double));
+					// LOGD("ret_err3=%d",ret_err);
 					// Write payload to pipe
-					write(fifo_fd, buf_read + offset + 4, msg_len);
-					// Write qmdl output if necessary
+					// ret_err = write(fifo_fd, buf_read + offset + 4, msg_len);
+					ret_err = diag_write(fifo_fd, buf_read + offset + 4, msg_len);
+					// LOGD("ret_err4=%d",ret_err);
+					// Write mi2log output if necessary
 					if (state.log_fp != NULL) {
 						int ret2 = manager_append_log(&state, fifo_fd, msg_len);
 						if (ret2 == 0) {

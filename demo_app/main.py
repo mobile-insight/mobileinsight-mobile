@@ -146,18 +146,25 @@ class MobileInsightScreen(GridLayout):
             widget.bind(on_active=self.on_checkbox_app_active)
             self.ids.checkbox_app_layout.add_widget(widget)
 
+        # Init a wakelock for continuous MI service
+        Context = autoclass('android.content.Context')
+        PowerManager = autoclass('android.os.PowerManager')
+        current_activity = cast("android.app.Activity",
+                            autoclass("org.renpy.android.PythonActivity").mActivity)
+        pm = current_activity.getSystemService(Context.POWER_SERVICE)
+        self.wakelock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MobileInsight");
+
 
     def _run_shell_cmd(self, cmd, wait = False):
-        # su_cmd = "su " + cmd
-        # res = subprocess.check_call(su_cmd, executable=ANDROID_SHELL, shell=True, stderr=subprocess.STDOUT)
-
         p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        p.stdin.write(cmd+'\n')
+        p.communicate(cmd+'\n')
+
         if wait:
             p.wait()
             return p.returncode
         else:
             return None
+
 
     def __check_diag_mode(self):
         """
@@ -165,11 +172,22 @@ class MobileInsightScreen(GridLayout):
         """
         
         cmd = " test -e /dev/diag"
-        res=self._run_shell_cmd(cmd,True)
+        res = self._run_shell_cmd(cmd, True)
         if res:
             return False
         else:
+            self._run_shell_cmd("chmod 755 /dev/diag")
             return True
+        
+        # hasDiag = True
+        # res = subprocess.check_output("ls /dev/diag", executable=ANDROID_SHELL, shell=True, stderr=subprocess.STDOUT)
+        # if "No such file or directory" in str(res):
+        #     print "MAIN: __check_diag_mode() res = false"
+        #     hasDiag = False
+        # else:
+        #     print "MAIN: __check_diag_mode() res = true"
+
+        # return hasDiag
 
 
     def __init_libs(self):
@@ -208,6 +226,7 @@ class MobileInsightScreen(GridLayout):
                    cmd = cmd + " ln -s /system/lib/" + lib + " /system/lib/" + sym_lib + "; "
                    cmd = cmd + " chmod 755 /system/lib/" + sym_lib + "; " 
 
+        # print cmd  # debug mode
 
         # bins
         exes = ["diag_revealer",
@@ -337,6 +356,7 @@ class MobileInsightScreen(GridLayout):
             self.error_log = "Running " + app_name + "..."
             self.service = AndroidService("MobileInsight is running...", app_name)
             self.service.start(self.app_list[app_name])   # app name
+            self.wakelock.acquire()
             
 
     def stop_service(self):
@@ -345,6 +365,7 @@ class MobileInsightScreen(GridLayout):
             self.service = None
             self.error_log="Stopped"
             self.stop_collection()  # close ongoing collections
+            self.wakelock.release()
 
 
     def about(self):

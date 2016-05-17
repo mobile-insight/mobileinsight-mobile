@@ -1,1 +1,0 @@
-A basic logger for cellular messge collection.

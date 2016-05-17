@@ -11,6 +11,6 @@ The app has 3 functions at the point of writing:
 An app is just a Python script, but has a ".mi2app" extension and is located under the res/ directory.
 3. Start and stop trace collection, similar to MobileInsight2 demo (not complete)
 
-![App Screenshot](docs/MobileInsight2_screenshot.png)
+![App Screenshot](docs/screenshots-2.0/MobileInsight2.0_scrn1.jpg)
 
    

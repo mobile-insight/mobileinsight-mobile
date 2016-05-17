@@ -1,0 +1,68 @@
+# Filename: 	netlogger.cfg
+# Description: 	config file for trace collection
+# 				put it under /sdcard/mobile_insight/cfg/netlogger.cfg
+# 				comment out the line to disable that log type
+# Author: 		Zengwen Yuan
+
+############
+# lte_lvl1 #
+############
+
+LTE_RRC_OTA_Packet
+LTE_RRC_Serv_Cell_Info
+LTE_RRC_MIB_Packet
+LTE_RRC_MIB_Message_Log_Packet
+
+LTE_NAS_ESM_State
+LTE_NAS_ESM_OTA_Incoming_Packet
+LTE_NAS_ESM_OTA_Outgoing_Packet
+LTE_NAS_EMM_State
+LTE_NAS_EMM_OTA_Incoming_Packet
+LTE_NAS_EMM_OTA_Outgoing_Packet
+
+############
+# lte_lvl2 #
+############
+
+LTE_PDCP_DL_SRB_Integrity_Data_PDU
+LTE_PDCP_UL_SRB_Integrity_Data_PDU
+
+LTE_RLC_UL_Config_Log_Packet
+LTE_RLC_DL_Config_Log_Packet
+LTE_RLC_UL_AM_All_PDU
+LTE_RLC_DL_AM_All_PDU
+
+LTE_MAC_Configuration
+LTE_MAC_UL_Transport_Block
+LTE_MAC_DL_Transport_Block
+LTE_MAC_UL_Buffer_Status_Internal
+LTE_MAC_UL_Tx_Statistics
+LTE_MAC_Rach_Trigger
+LTE_MAC_Rach_Attempt
+
+############
+# lte_lvl3 #
+############
+
+LTE_PHY_PDSCH_Packet
+LTE_PHY_Serv_Cell_Measurement
+LTE_PHY_Connected_Mode_Intra_Freq_Meas
+LTE_PHY_Inter_RAT_Measurement
+LTE_PHY_Serv_Cell_Measurement
+LTE_PHY_Connected_Mode_Neighbor_Measurement
+
+############
+#  wcdma   #
+############
+
+WCDMA_RRC_OTA_Packet
+WCDMA_RRC_Serv_Cell_Info
+
+############
+#   umts   #
+############
+
+UMTS_NAS_OTA_Packet
+UMTS_NAS_GMM_State
+UMTS_NAS_MM_State
+UMTS_NAS_MM_REG_State

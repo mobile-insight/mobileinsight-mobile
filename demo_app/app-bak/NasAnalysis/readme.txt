@@ -1,1 +1,0 @@
-A simple analyzers for 3G/4G NAS protocols, including mobility management (3G MM/GMM and 4G EMM) and session management (3G CM/SM and 4G ESM). The protocol information are profiled in /sdcard/mobile_insight_dbs/
