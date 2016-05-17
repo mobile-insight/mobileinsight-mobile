@@ -16,12 +16,16 @@ import os, sys, commands, yaml
 
 
 def run_config():
-    commands.getstatusoutput('git clone https://wing1.cs.ucla.edu/gitlab/zyuan/mobile-insight-libs.git')
-    os.system('mkdir ./demo_app/data')
+    # commands.getstatusoutput('wget --no-check-certificate https://wing1.cs.ucla.edu/gitlab/zyuan/mobile-insight-libs/repository/archive.zip\?ref\=master master.zip')
+    os.system('git clone https://wing1.cs.ucla.edu/gitlab/zyuan/mobile-insight-libs.git')
+    if os.path.isdir('./demo_app/data') is False:
+        os.makedirs('./demo_app/data')
     os.system('cp mobile-insight-libs/lib/* ./demo_app/data')
     os.system('cp mobile-insight-libs/bin/* ./demo_app/data')
-    os.system('rm -r mobile-insight-libs')
-    commands.getstatusoutput('tail -n+8 ./config/config_template.yml > ./config/config.yml')
+    os.system('rm -rf mobile-insight-libs')
+    if os.path.isfile('./config/config.yml') is True:
+        os.system('cp ./config/config.yml ./config/config.yml.bak')
+    os.system('tail -n+8 ./config/config_template.yml > ./config/config.yml')
     print 'Edit ./config/config.yml to set up the configuration'
 
 
@@ -31,9 +35,11 @@ def run_dist():
             + ' --bootstrap={}'.format(cfg['bootstrap']) \
             + ' --storage-dir={}'.format(cfg['p4a_path']) \
             + ' --sdk-dir={}'.format(cfg['sdk_path']) \
-            + ' --arch={}'.format(cfg['arch']) \
             + ' --android-api={}'.format(cfg['api_level']) \
             + ' --minsdk={}'.format(cfg['minsdk']) \
+            + ' --ndk-dir={}'.format(cfg['ndk_path']) \
+            + ' --ndk-version={}'.format(cfg['ndk_version']) \
+            + ' --arch={}'.format(cfg['arch']) \
             + ' --requirements={}'.format(cfg['requirements'])
 
     print build_dist_cmd

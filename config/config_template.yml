@@ -24,7 +24,6 @@ dist_name : mi2
 bootstrap : pygame
 
 # replace it with your minimal Android API level
-# For bootstrap purpose
 minsdk : 14
 
 requirements : pyserial,kivy,mobileinsight

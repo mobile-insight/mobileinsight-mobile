@@ -1,933 +1,0 @@
-[INFO]:    This python-for-android revamp is an experimental alpha release!
-[INFO]:    It should work (mostly), but you may experience missing features or bugs.
-[INFO]:    Will compile for the following archs: armeabi
-[INFO]:    Found Android API target in $ANDROIDAPI
-[INFO]:    Available Android APIs are (19, 23)
-[INFO]:    Requested API target 19 is available, continuing.
-[INFO]:    Found NDK dir in $ANDROIDNDK
-[INFO]:    Got NDK version from $ANDROIDNDKVER
-[INFO]:    Using Google NDK r10e
-[INFO]:    Found virtualenv at /usr/local/bin/virtualenv
-[INFO]:    ccache is missing, the build will not be optimized in the future.
-[INFO]:    Found the following toolchain versions: ['4.8', '4.9', 'clang3.5', 'clang3.6']
-[INFO]:    Picking the latest gcc toolchain, here 4.9
-[WARNING]: Missing executable: libtoolize is not installed
-[INFO]:    No existing dists meet the given requirements!
-[INFO]:    No dist exists that meets your requirements, so one will be built.
-[INFO]:    Bootstrap requires recipes ['hostpython2', 'python2', 'pyjnius', 'sdl', 'pygame', 'android', 'kivy']
-[INFO]:    Loaded recipe mobileinsight (depends on ['python2'])
-[INFO]:    Loaded recipe hostpython2 (depends on [], conflicts ['hostpython3'])
-[INFO]:    Loaded recipe pygame (depends on ['python2', 'sdl'], conflicts ['sdl2'])
-[INFO]:    Loaded recipe kivy (depends on ['pyjnius', ('sdl2', 'pygame'), ('python2', 'python3crystax')])
-[INFO]:    Loaded recipe sdl (depends on ['python2', 'pygame_bootstrap_components'], conflicts ['sdl2'])
-[INFO]:    Loaded recipe pyjnius (depends on ['six', ('sdl2', 'sdl'), ('python2', 'python3crystax')])
-[INFO]:    Loaded recipe android (depends on [('python2', 'python3'), ('pygame', 'sdl2'), ('python2', 'python3crystax')])
-[INFO]:    No recipe named pyserial; will attempt to install with pip
-[INFO]:    Loaded recipe python2 (depends on ['hostpython2'], conflicts ['python3crystax', 'python3'])
-[INFO]:    Loaded recipe pygame_bootstrap_components (depends on [])
-[INFO]:    Loaded recipe six (depends on [('python2', 'python3crystax')])
-[INFO]:    Found a single valid recipe set (this is good)
-[INFO]:    The selected bootstrap is pygame
-[INFO]:    # Creating dist with pygame bootstrap
-[INFO]:    Dist will have name mi2 and recipes (pyserial, kivy, mobileinsight)
-[DEBUG]:   -> running cp -r /Library/Python/2.7/site-packages/python_for_android-0.3-py2.7.egg/pythonforandroid/bootstraps/pygame/build /Users/Dale/.python-for-android/build/bootstrap_builds/pygame
-[INFO]:    -> directory context /Users/Dale/.python-for-android/build/bootstrap_builds/pygame
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Recipe build order is ['hostpython2', 'pygame_bootstrap_components', 'python2', u'mobileinsight', 'sdl', 'six', 'pygame', 'pyjnius', 'android', u'kivy']
-[INFO]:    The requirements (pyserial) were not found as recipes, they will be installed with pip.
-[INFO]:    # Downloading recipes 
-[INFO]:    Downloading hostpython2
-[DEBUG]:   -> running mkdir -p /Users/Dale/.python-for-android/packages/hostpython2
-[INFO]:    -> directory context /Users/Dale/.python-for-android/packages/hostpython2
-[DEBUG]:   -> running basename http://python.org/ftp/python/2.7.2/Python-2.7.2.tar.bz2
-[DEBUG]:   	Python-2.7.2.tar.bz2
-[INFO]:    hostpython2 download already cached, skipping
-[WARNING]: Should check headers here! Skipping for now.
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Downloading pygame_bootstrap_components
-[DEBUG]:   -> running mkdir -p /Users/Dale/.python-for-android/packages/pygame_bootstrap_components
-[INFO]:    -> directory context /Users/Dale/.python-for-android/packages/pygame_bootstrap_components
-[DEBUG]:   -> running basename https://github.com/kivy/p4a-pygame-bootstrap-components/archive/master.zip
-[DEBUG]:   	master.zip
-[INFO]:    pygame_bootstrap_components download already cached, skipping
-[WARNING]: Should check headers here! Skipping for now.
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Downloading python2
-[DEBUG]:   -> running mkdir -p /Users/Dale/.python-for-android/packages/python2
-[INFO]:    -> directory context /Users/Dale/.python-for-android/packages/python2
-[DEBUG]:   -> running basename http://python.org/ftp/python/2.7.2/Python-2.7.2.tar.bz2
-[DEBUG]:   	Python-2.7.2.tar.bz2
-[INFO]:    python2 download already cached, skipping
-[WARNING]: Should check headers here! Skipping for now.
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Downloading mobileinsight
-[INFO]:    Skipping mobileinsight download as no URL is set
-[INFO]:    Downloading sdl
-[INFO]:    Skipping sdl download as no URL is set
-[INFO]:    Downloading six
-[DEBUG]:   -> running mkdir -p /Users/Dale/.python-for-android/packages/six
-[INFO]:    -> directory context /Users/Dale/.python-for-android/packages/six
-[DEBUG]:   -> running basename https://pypi.python.org/packages/source/s/six/six-1.9.0.tar.gz
-[DEBUG]:   	six-1.9.0.tar.gz
-[INFO]:    six download already cached, skipping
-[WARNING]: Should check headers here! Skipping for now.
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Downloading pygame
-[DEBUG]:   -> running mkdir -p /Users/Dale/.python-for-android/packages/pygame
-[INFO]:    -> directory context /Users/Dale/.python-for-android/packages/pygame
-[DEBUG]:   -> running basename http://pygame.org/ftp/pygame-1.9.1release.tar.gz
-[DEBUG]:   	pygame-1.9.1release.tar.gz
-[INFO]:    pygame download already cached, skipping
-[WARNING]: Should check headers here! Skipping for now.
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Downloading pyjnius
-[DEBUG]:   -> running mkdir -p /Users/Dale/.python-for-android/packages/pyjnius
-[INFO]:    -> directory context /Users/Dale/.python-for-android/packages/pyjnius
-[DEBUG]:   -> running basename https://github.com/kivy/pyjnius/archive/master.zip
-[DEBUG]:   	master.zip
-[INFO]:    pyjnius download already cached, skipping
-[WARNING]: Should check headers here! Skipping for now.
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Downloading android
-[INFO]:    Skipping android download as no URL is set
-[INFO]:    Downloading kivy
-[DEBUG]:   -> running mkdir -p /Users/Dale/.python-for-android/packages/kivy
-[INFO]:    -> directory context /Users/Dale/.python-for-android/packages/kivy
-[DEBUG]:   -> running basename https://github.com/kivy/kivy/archive/master.zip
-[DEBUG]:   	master.zip
-[INFO]:    kivy download already cached, skipping
-[WARNING]: Should check headers here! Skipping for now.
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    # Building all recipes for arch armeabi
-[INFO]:    # Unpacking recipes
-[INFO]:    Unpacking hostpython2 for armeabi
-[DEBUG]:   -> running basename http://python.org/ftp/python/2.7.2/Python-2.7.2.tar.bz2
-[DEBUG]:   	Python-2.7.2.tar.bz2
-[INFO]:    -> directory context /Users/Dale/.python-for-android/build/other_builds/hostpython2/desktop
-[INFO]:    hostpython2 is already unpacked, skipping
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Unpacking pygame_bootstrap_components for armeabi
-[DEBUG]:   -> running basename https://github.com/kivy/p4a-pygame-bootstrap-components/archive/master.zip
-[DEBUG]:   	master.zip
-[INFO]:    -> directory context /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/jni
-[INFO]:    pygame_bootstrap_components is already unpacked, skipping
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Unpacking python2 for armeabi
-[DEBUG]:   -> running basename http://python.org/ftp/python/2.7.2/Python-2.7.2.tar.bz2
-[DEBUG]:   	Python-2.7.2.tar.bz2
-[INFO]:    -> directory context /Users/Dale/.python-for-android/build/other_builds/python2/armeabi
-[INFO]:    python2 is already unpacked, skipping
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Unpacking mobileinsight for armeabi
-[INFO]:    Skipping mobileinsight unpack as no URL is set
-[INFO]:    Unpacking sdl for armeabi
-[INFO]:    Skipping sdl unpack as no URL is set
-[INFO]:    Unpacking six for armeabi
-[DEBUG]:   -> running basename https://pypi.python.org/packages/source/s/six/six-1.9.0.tar.gz
-[DEBUG]:   	six-1.9.0.tar.gz
-[INFO]:    -> directory context /Users/Dale/.python-for-android/build/other_builds/six-python2/armeabi
-[INFO]:    six is already unpacked, skipping
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Unpacking pygame for armeabi
-[DEBUG]:   -> running basename http://pygame.org/ftp/pygame-1.9.1release.tar.gz
-[DEBUG]:   	pygame-1.9.1release.tar.gz
-[INFO]:    -> directory context /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi
-[INFO]:    pygame is already unpacked, skipping
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Unpacking pyjnius for armeabi
-[DEBUG]:   -> running basename https://github.com/kivy/pyjnius/archive/master.zip
-[DEBUG]:   	master.zip
-[INFO]:    -> directory context /Users/Dale/.python-for-android/build/other_builds/pyjnius-python2-sdl/armeabi
-[INFO]:    pyjnius is already unpacked, skipping
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[DEBUG]:   -> running rm -rf /Users/Dale/.python-for-android/build/other_builds/android-pygame-python2-python2/armeabi/android
-[DEBUG]:   -> running cp -a /Library/Python/2.7/site-packages/python_for_android-0.3-py2.7.egg/pythonforandroid/recipes/android/src /Users/Dale/.python-for-android/build/other_builds/android-pygame-python2-python2/armeabi/android
-[INFO]:    Unpacking kivy for armeabi
-[DEBUG]:   -> running basename https://github.com/kivy/kivy/archive/master.zip
-[DEBUG]:   	master.zip
-[INFO]:    -> directory context /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi
-[INFO]:    kivy is already unpacked, skipping
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    # Prebuilding recipes
-[INFO]:    Prebuilding hostpython2 for armeabi
-[DEBUG]:   -> running cp /Library/Python/2.7/site-packages/python_for_android-0.3-py2.7.egg/pythonforandroid/recipes/hostpython2/Setup /Users/Dale/.python-for-android/build/other_builds/hostpython2/desktop/hostpython2/Modules/Setup
-[INFO]:    Prebuilding pygame_bootstrap_components for armeabi
-[INFO]:    Unpacking pygame bootstrap JNI dir components
-[INFO]:    -> directory context /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/jni
-[INFO]:    sdl dir exists, so it looks like the JNI componentsare already unpacked. Skipping.
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Prebuilding python2 for armeabi
-[INFO]:    python2 has no prebuild_armeabi, skipping
-[INFO]:    Applying patches for python2[armeabi]
-[INFO]:    python2 already patched, skipping
-[INFO]:    Prebuilding mobileinsight for armeabi
-[INFO]:    mobileinsight has no prebuild_armeabi, skipping
-[INFO]:    clean old MI sources at /Users/Dale/.python-for-android/build/other_builds/mobileinsight/armeabi/mobileinsight
-[DEBUG]:   -> running rm -r /Users/Dale/.python-for-android/build/other_builds/mobileinsight/armeabi/mobileinsight
-[INFO]:    clone MobileInsight sources from http://metro.cs.ucla.edu:8081/likayo/automator.git
-[DEBUG]:   -> running git clone -b new-analyzer --depth=1 http://metro.cs.ucla.edu:8081/likayo/automator.git /Users/Dale/.python-for-android/build/other_builds/mobileinsight/armeabi/mobileinsight/mi_tmp
-[DEBUG]:   	Cloning into '/Users/Dale/.python-for-android/build/other_builds/mobileinsight/armeabi/mobileinsight/mi_tmp'...
-[DEBUG]:   	remote: Counting objects: 304, done.[K
-[DEBUG]:   	remote: Compressing objects:   0% (1/223)   [Kremote: Compressing objects:   1% (3/223)   [Kremote: Compressing objects:   2% (5/223)   [Kremote: Compressing objects:   3% (7/223)   [Kremote: Compressing objects:   4% (9/223)   [Kremote: Compressing objects:   5% (12/223)   [Kremote: Compressing objects:   6% (14/223)   [Kremote: Compressing objects:   7% (16/223)   [Kremote: Compressing objects:   8% (18/223)   [Kremote: Compressing objects:   9% (21/223)   [Kremote: Compressing objects:  10% (23/223)   [Kremote: Compressing objects:  11% (25/223)   [Kremote: Compressing objects:  12% (27/223)   [Kremote: Compressing objects:  13% (29/223)   [Kremote: Compressing objects:  14% (32/223)   [Kremote: Compressing objects:  15% (34/223)   [Kremote: Compressing objects:  16% (36/223)   [Kremote: Compressing objects:  17% (38/223)   [Kremote: Compressing objects:  18% (41/223)   [Kremote: Compressing objects:  19% (43/223)   [Kremote: Compressing objects:  20% (45/223)   [Kremote: Compressing objects:  21% (47/223)   [Kremote: Compressing objects:  22% (50/223)   [Kremote: Compressing objects:  23% (52/223)   [Kremote: Compressing objects:  24% (54/223)   [Kremote: Compressing objects:  25% (56/223)   [Kremote: Compressing objects:  26% (58/223)   [Kremote: Compressing objects:  27% (61/223)   [Kremote: Compressing objects:  28% (63/223)   [Kremote: Compressing objects:  29% (65/223)   [Kremote: Compressing objects:  30% (67/223)   [Kremote: Compressing objects:  31% (70/223)   [Kremote: Compressing objects:  32% (72/223)   [Kremote: Compressing objects:  33% (74/223)   [Kremote: Compressing objects:  34% (76/223)   [Kremote: Compressing objects:  35% (79/223)   [Kremote: Compressing objects:  36% (81/223)   [Kremote: Compressing objects:  37% (83/223)   [Kremote: Compressing objects:  38% (85/223)   [Kremote: Compressing objects:  39% (87/223)   [Kremote: Compressing objects:  40% (90/223)   [Kremote: Compressing objects:  41% (92/223)   [Kremote: Compressing objects:  42% (94/223)   [Kremote: Compressing objects:  43% (96/223)   [Kremote: Compressing objects:  44% (99/223)   [Kremote: Compressing objects:  45% (101/223)   [Kremote: Compressing objects:  46% (103/223)   [Kremote: Compressing objects:  47% (105/223)   [Kremote: Compressing objects:  48% (108/223)   [Kremote: Compressing objects:  49% (110/223)   [Kremote: Compressing objects:  50% (112/223)   [Kremote: Compressing objects:  51% (114/223)   [Kremote: Compressing objects:  52% (116/223)   [Kremote: Compressing objects:  53% (119/223)   [Kremote: Compressing objects:  54% (121/223)   [Kremote: Compressing objects:  55% (123/223)   [Kremote: Compressing objects:  56% (125/223)   [Kremote: Compressing objects:  57% (128/223)   [Kremote: Compressing objects:  58% (130/223)   [Kremote: Compressing objects:  59% (132/223)   [Kremote: Compressing objects:  60% (134/223)   [Kremote: Compressing objects:  61% (137/223)   [Kremote: Compressing objects:  62% (139/223)   [Kremote: Compressing objects:  63% (141/223)   [Kremote: Compressing objects:  64% (143/223)   [Kremote: Compressing objects:  65% (145/223)   [Kremote: Compressing objects:  66% (148/223)   [Kremote: Compressing objects:  67% (150/223)   [Kremote: Compressing objects:  68% (152/223)   [Kremote: Compressing objects:  69% (154/223)   [Kremote: Compressing objects:  70% (157/223)   [Kremote: Compressing objects:  71% (159/223)   [Kremote: Compressing objects:  72% (161/223)   [Kremote: Compressing objects:  73% (163/223)   [Kremote: Compressing objects:  74% (166/223)   [Kremote: Compressing objects:  75% (168/223)   [Kremote: Compressing objects:  76% (170/223)   [Kremote: Compressing objects:  77% (172/223)   [Kremote: Compressing objects:  78% (174/223)   [Kremote: Compressing objects:  79% (177/223)   [Kremote: Compressing objects:  80% (179/223)   [Kremote: Compressing objects:  81% (181/223)   [Kremote: Compressing objects:  82% (183/223)   [Kremote: Compressing objects:  83% (186/223)   [Kremote: Compressing objects:  84% (188/223)   [Kremote: Compressing objects:  85% (190/223)   [Kremote: Compressing objects:  86% (192/223)   [Kremote: Compressing objects:  87% (195/223)   [Kremote: Compressing objects:  88% (197/223)   [Kremote: Compressing objects:  89% (199/223)   [Kremote: Compressing objects:  90% (201/223)   [Kremote: Compressing objects:  91% (203/223)   [Kremote: Compressing objects:  92% (206/223)   [Kremote: Compressing objects:  93% (208/223)   [Kremote: Compressing objects:  94% (210/223)   [Kremote: Compressing objects:  95% (212/223)   [Kremote: Compressing objects:  96% (215/223)   [Kremote: Compressing objects:  97% (217/223)   [Kremote: Compressing objects:  98% (219/223)   [Kremote: Compressing objects:  99% (221/223)   [Kremote: Compressing objects: 100% (223/223)   [Kremote: Compressing objects: 100% (223/223), done.[K
-[DEBUG]:   	Receiving objects:   0% (1/304)   Receiving objects:   1% (4/304)   Receiving objects:   2% (7/304)   Receiving objects:   3% (10/304)   Receiving objects:   4% (13/304)   Receiving objects:   5% (16/304)   Receiving objects:   6% (19/304)   Receiving objects:   7% (22/304)   Receiving objects:   8% (25/304)   Receiving objects:   9% (28/304)   Receiving objects:  10% (31/304)   Receiving objects:  11% (34/304)   Receiving objects:  12% (37/304)   Receiving objects:  13% (40/304)   Receiving objects:  14% (43/304)   Receiving objects:  15% (46/304)   Receiving objects:  16% (49/304)   Receiving objects:  17% (52/304)   Receiving objects:  18% (55/304)   Receiving objects:  19% (58/304)   Receiving objects:  20% (61/304)   Receiving objects:  21% (64/304)   Receiving objects:  22% (67/304)   Receiving objects:  23% (70/304)   Receiving objects:  24% (73/304)   Receiving objects:  25% (76/304)   Receiving objects:  26% (80/304)   Receiving objects:  27% (83/304)   Receiving objects:  28% (86/304)   Receiving objects:  29% (89/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  30% (92/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  31% (95/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  32% (98/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  33% (101/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  34% (104/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  35% (107/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  36% (110/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  37% (113/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  38% (116/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  39% (119/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  40% (122/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  41% (125/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  42% (128/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  43% (131/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  44% (134/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  45% (137/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  46% (140/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  47% (143/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  48% (146/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  49% (149/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  50% (152/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  51% (156/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  52% (159/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  53% (162/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  54% (165/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  55% (168/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  56% (171/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  57% (174/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  58% (177/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  59% (180/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  60% (183/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  61% (186/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  62% (189/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  63% (192/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  64% (195/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  65% (198/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  66% (201/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  67% (204/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  68% (207/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  69% (210/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  70% (213/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  71% (216/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  72% (219/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  73% (222/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  74% (225/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  75% (228/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  76% (232/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  77% (235/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  78% (238/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  79% (241/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  80% (244/304), 724.00 KiB | 1.40 MiB/s   Receiving objects:  80% (244/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  81% (247/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  82% (250/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  83% (253/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  84% (256/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  85% (259/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  86% (262/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  87% (265/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  88% (268/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  89% (271/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  90% (274/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  91% (277/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  92% (280/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  93% (283/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  94% (286/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  95% (289/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  96% (292/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  97% (295/304), 1.69 MiB | 1.68 MiB/s   Receiving objects:  97% (296/304), 2.89 MiB | 1.35 MiB/s   Receiving objects:  98% (298/304), 3.92 MiB | 1.48 MiB/s   remote: Total 304 (delta 90), reused 199 (delta 78)[K
-[DEBUG]:   	Receiving objects:  98% (299/304), 3.92 MiB | 1.48 MiB/s   Receiving objects:  99% (301/304), 3.92 MiB | 1.48 MiB/s   Receiving objects: 100% (304/304), 3.92 MiB | 1.48 MiB/s   Receiving objects: 100% (304/304), 4.75 MiB | 1.48 MiB/s, done.
-[DEBUG]:   	Resolving deltas:   0% (0/90)   Resolving deltas:   1% (1/90)   Resolving deltas:   2% (2/90)   Resolving deltas:   3% (3/90)   Resolving deltas:  10% (9/90)   Resolving deltas:  11% (10/90)   Resolving deltas:  20% (18/90)   Resolving deltas:  21% (19/90)   Resolving deltas:  22% (20/90)   Resolving deltas:  23% (21/90)   Resolving deltas:  25% (23/90)   Resolving deltas:  26% (24/90)   Resolving deltas:  27% (25/90)   Resolving deltas:  28% (26/90)   Resolving deltas:  30% (27/90)   Resolving deltas:  31% (28/90)   Resolving deltas:  32% (29/90)   Resolving deltas:  38% (35/90)   Resolving deltas:  53% (48/90)   Resolving deltas:  58% (53/90)   Resolving deltas:  61% (55/90)   Resolving deltas:  62% (56/90)   Resolving deltas:  63% (57/90)   Resolving deltas:  66% (60/90)   Resolving deltas:  68% (62/90)   Resolving deltas:  72% (65/90)   Resolving deltas:  73% (66/90)   Resolving deltas:  78% (71/90)   Resolving deltas:  81% (73/90)   Resolving deltas:  82% (74/90)   Resolving deltas:  84% (76/90)   Resolving deltas:  86% (78/90)   Resolving deltas:  88% (80/90)   Resolving deltas:  90% (81/90)   Resolving deltas:  97% (88/90)   Resolving deltas: 100% (90/90)   Resolving deltas: 100% (90/90), done.
-[DEBUG]:   	Checking connectivity... done.
-[DEBUG]:   -> running mv /Users/Dale/.python-for-android/build/other_builds/mobileinsight/armeabi/mobileinsight/mi_tmp/mobile_insight /Users/Dale/.python-for-android/build/other_builds/mobileinsight/armeabi/mobileinsight
-[DEBUG]:   -> running mv /Users/Dale/.python-for-android/build/other_builds/mobileinsight/armeabi/mobileinsight/mi_tmp/dm_collector_c /Users/Dale/.python-for-android/build/other_builds/mobileinsight/armeabi/mobileinsight
-[DEBUG]:   -> running rm -r /Users/Dale/.python-for-android/build/other_builds/mobileinsight/armeabi/mobileinsight/mi_tmp
-[WARNING]: MI2 -- Should also clean and remove unnecessary codes, skipping now.
-[INFO]:    Prebuilding sdl for armeabi
-[INFO]:    sdl has no prebuild_armeabi, skipping
-[INFO]:    Prebuilding six for armeabi
-[INFO]:    six has no prebuild_armeabi, skipping
-[INFO]:    Prebuilding pygame for armeabi
-[INFO]:    Applying patches for pygame[armeabi]
-[INFO]:    pygame already patched, skipping
-[INFO]:    Prebuilding pyjnius for armeabi
-[INFO]:    pyjnius has no prebuild_armeabi, skipping
-[INFO]:    Applying patches for pyjnius[armeabi]
-[INFO]:    pyjnius already patched, skipping
-[INFO]:    Prebuilding android for armeabi
-[INFO]:    android has no prebuild_armeabi, skipping
-[INFO]:    -> directory context /Users/Dale/.python-for-android/build/other_builds/android-pygame-python2-python2/armeabi/android
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Prebuilding kivy for armeabi
-[INFO]:    kivy has no prebuild_armeabi, skipping
-[INFO]:    # Building recipes
-[INFO]:    Building hostpython2 for armeabi
-[INFO]:    -> directory context /Users/Dale/.python-for-android/build/other_builds/hostpython2/desktop/hostpython2
-[INFO]:    hostpython already exists, skipping build
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Building pygame_bootstrap_components for armeabi
-[INFO]:    Building python2 for armeabi
-[INFO]:    Copying hostpython binary to targetpython folder
-[DEBUG]:   -> running cp /Users/Dale/.python-for-android/build/other_builds/hostpython2/desktop/hostpython2/hostpython /Users/Dale/.python-for-android/build/python-installs/mi2/bin/python.host
-[INFO]:    Building mobileinsight for armeabi
-[WARNING]: get_recipe_env(self, arch), use toolchain version = 4.9
-[INFO]:    -> directory context /Users/Dale/.python-for-android/build/other_builds/mobileinsight/armeabi/mobileinsight
-[DEBUG]:   -> running cp /Library/Python/2.7/site-packages/python_for_android-0.3-py2.7.egg/pythonforandroid/recipes/mobileinsight/Application.mk /Users/Dale/.python-for-android/build/other_builds/mobileinsight/armeabi/mobileinsight/Application.mk
-[DEBUG]:   -> running cp /Library/Python/2.7/site-packages/python_for_android-0.3-py2.7.egg/pythonforandroid/recipes/mobileinsight/setup.py /Users/Dale/.python-for-android/build/other_builds/mobileinsight/armeabi/mobileinsight/setup.py
-[DEBUG]:   -> running python.host setup.py build_ext -v
-[DEBUG]:   	running build_ext
-[DEBUG]:   	building 'mobile_insight.monitor.dm_collector.dm_collector_c' extension
-[DEBUG]:   	creating build
-[DEBUG]:   	creating build/temp.macosx-10.11-x86_64-2.7
-[DEBUG]:   	creating build/temp.macosx-10.11-x86_64-2.7/dm_collector_c
-[DEBUG]:   	arm-linux-androideabi-gcc -DANDROID -mandroid -fomit-frame-pointer --sysroot /Users/Dale/Library/Android/android-ndk-r10e/platforms/android-19/arch-arm -DNDEBUG -g -O3 -Wall -Wstrict-prototypes -DANDROID -mandroid -fomit-frame-pointer --sysroot /Users/Dale/Library/Android/android-ndk-r10e/platforms/android-19/arch-arm -fPIC -I/Users/Dale/Library/Android/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.9/include -I/Users/Dale/Library/Android/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi/include -DEXPOSE_INTERNAL_LOGS=1 -I/Users/Dale/.python-for-android/build/python-installs/mi2/include/python2.7 -c dm_collector_c/dm_collector_c.cpp -o build/temp.macosx-10.11-x86_64-2.7/dm_collector_c/dm_collector_c.o
-[DEBUG]:   	cc1plus: warning: command line option '-Wstrict-prototypes' is valid for C/ObjC but not for C++
-[DEBUG]:   	In file included from /Users/Dale/.python-for-android/build/python-installs/mi2/include/python2.7/Python.h:80:0,
-[DEBUG]:   	                 from dm_collector_c/dm_collector_c.cpp:7:
-[DEBUG]:   	dm_collector_c/dm_collector_c.cpp: In function 'PyObject* dm_collector_c_disable_logs(PyObject*, PyObject*)':
-[DEBUG]:   	/Users/Dale/.python-for-android/build/python-installs/mi2/include/python2.7/object.h:757:22: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]
-[DEBUG]:   	     ((PyObject*)(op))->ob_refcnt++)
-[DEBUG]:   	                      ^
-[DEBUG]:   	/Users/Dale/.python-for-android/build/python-installs/mi2/include/python2.7/boolobject.h:28:32: note: in expansion of macro 'Py_INCREF'
-[DEBUG]:   	 #define Py_RETURN_FALSE return Py_INCREF(Py_False), Py_False
-[DEBUG]:   	                                ^
-[DEBUG]:   	dm_collector_c/dm_collector_c.cpp:150:9: note: in expansion of macro 'Py_RETURN_FALSE'
-[DEBUG]:   	         Py_RETURN_FALSE;
-[DEBUG]:   	         ^
-[DEBUG]:   	/Users/Dale/.python-for-android/build/python-installs/mi2/include/python2.7/object.h:757:22: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]
-[DEBUG]:   	     ((PyObject*)(op))->ob_refcnt++)
-[DEBUG]:   	                      ^
-[DEBUG]:   	/Users/Dale/.python-for-android/build/python-installs/mi2/include/python2.7/boolobject.h:27:31: note: in expansion of macro 'Py_INCREF'
-[DEBUG]:   	 #define Py_RETURN_TRUE return Py_INCREF(Py_True), Py_True
-[DEBUG]:   	                               ^
-[DEBUG]:   	dm_collector_c/dm_collector_c.cpp:155:5: note: in expansion of macro 'Py_RETURN_TRUE'
-[DEBUG]:   	     Py_RETURN_TRUE;
-[DEBUG]:   	     ^
-[DEBUG]:   	dm_collector_c/dm_collector_c.cpp: In function 'PyObject* dm_collector_c_enable_logs(PyObject*, PyObject*)':
-[DEBUG]:   	/Users/Dale/.python-for-android/build/python-installs/mi2/include/python2.7/object.h:757:22: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]
-[DEBUG]:   	     ((PyObject*)(op))->ob_refcnt++)
-[DEBUG]:   	                      ^
-[DEBUG]:   	/Users/Dale/.python-for-android/build/python-installs/mi2/include/python2.7/boolobject.h:27:31: note: in expansion of macro 'Py_INCREF'
-[DEBUG]:   	 #define Py_RETURN_TRUE return Py_INCREF(Py_True), Py_True
-[DEBUG]:   	                               ^
-[DEBUG]:   	dm_collector_c/dm_collector_c.cpp:266:5: note: in expansion of macro 'Py_RETURN_TRUE'
-[DEBUG]:   	     Py_RETURN_TRUE;
-[DEBUG]:   	     ^
-[DEBUG]:   	dm_collector_c/dm_collector_c.cpp: In function 'PyObject* dm_collector_c_generate_diag_cfg(PyObject*, PyObject*)':
-[DEBUG]:   	/Users/Dale/.python-for-android/build/python-installs/mi2/include/python2.7/object.h:757:22: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]
-[DEBUG]:   	     ((PyObject*)(op))->ob_refcnt++)
-[DEBUG]:   	                      ^
-[DEBUG]:   	/Users/Dale/.python-for-android/build/python-installs/mi2/include/python2.7/boolobject.h:27:31: note: in expansion of macro 'Py_INCREF'
-[DEBUG]:   	 #define Py_RETURN_TRUE return Py_INCREF(Py_True), Py_True
-[DEBUG]:   	                               ^
-[DEBUG]:   	dm_collector_c/dm_collector_c.cpp:314:5: note: in expansion of macro 'Py_RETURN_TRUE'
-[DEBUG]:   	     Py_RETURN_TRUE;
-[DEBUG]:   	     ^
-[DEBUG]:   	dm_collector_c/dm_collector_c.cpp: In function 'void initdm_collector_c()':
-[DEBUG]:   	dm_collector_c/dm_collector_c.cpp:465:27: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
-[DEBUG]:   	         for (int i = 0; i < ARRAY_SIZE(LogPacketTypeID_To_Name, ValueName); i++)
-[DEBUG]:   	                           ^
-[DEBUG]:   	dm_collector_c/dm_collector_c.cpp:472:27: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
-[DEBUG]:   	         for (int i = 0; i < ARRAY_SIZE(LogPacketTypeID_To_Name, ValueName); i++)
-[DEBUG]:   	                           ^
-[DEBUG]:   	arm-linux-androideabi-gcc -DANDROID -mandroid -fomit-frame-pointer --sysroot /Users/Dale/Library/Android/android-ndk-r10e/platforms/android-19/arch-arm -DNDEBUG -g -O3 -Wall -Wstrict-prototypes -DANDROID -mandroid -fomit-frame-pointer --sysroot /Users/Dale/Library/Android/android-ndk-r10e/platforms/android-19/arch-arm -fPIC -I/Users/Dale/Library/Android/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.9/include -I/Users/Dale/Library/Android/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi/include -DEXPOSE_INTERNAL_LOGS=1 -I/Users/Dale/.python-for-android/build/python-installs/mi2/include/python2.7 -c dm_collector_c/hdlc.cpp -o build/temp.macosx-10.11-x86_64-2.7/dm_collector_c/hdlc.o
-[DEBUG]:   	cc1plus: warning: command line option '-Wstrict-prototypes' is valid for C/ObjC but not for C++
-[DEBUG]:   	arm-linux-androideabi-gcc -DANDROID -mandroid -fomit-frame-pointer --sysroot /Users/Dale/Library/Android/android-ndk-r10e/platforms/android-19/arch-arm -DNDEBUG -g -O3 -Wall -Wstrict-prototypes -DANDROID -mandroid -fomit-frame-pointer --sysroot /Users/Dale/Library/Android/android-ndk-r10e/platforms/android-19/arch-arm -fPIC -I/Users/Dale/Library/Android/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.9/include -I/Users/Dale/Library/Android/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi/include -DEXPOSE_INTERNAL_LOGS=1 -I/Users/Dale/.python-for-android/build/python-installs/mi2/include/python2.7 -c dm_collector_c/log_config.cpp -o build/temp.macosx-10.11-x86_64-2.7/dm_collector_c/log_config.o
-[DEBUG]:   	cc1plus: warning: command line option '-Wstrict-prototypes' is valid for C/ObjC but not for C++
-[DEBUG]:   	arm-linux-androideabi-gcc -DANDROID -mandroid -fomit-frame-pointer --sysroot /Users/Dale/Library/Android/android-ndk-r10e/platforms/android-19/arch-arm -DNDEBUG -g -O3 -Wall -Wstrict-prototypes -DANDROID -mandroid -fomit-frame-pointer --sysroot /Users/Dale/Library/Android/android-ndk-r10e/platforms/android-19/arch-arm -fPIC -I/Users/Dale/Library/Android/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.9/include -I/Users/Dale/Library/Android/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi/include -DEXPOSE_INTERNAL_LOGS=1 -I/Users/Dale/.python-for-android/build/python-installs/mi2/include/python2.7 -c dm_collector_c/log_packet.cpp -o build/temp.macosx-10.11-x86_64-2.7/dm_collector_c/log_packet.o
-[DEBUG]:   	cc1plus: warning: command line option '-Wstrict-prototypes' is valid for C/ObjC but not for C++
-[DEBUG]:   	dm_collector_c/log_packet.cpp:46:14: warning: "/*" within comment [-Wcomment]
-[DEBUG]:   	  * - "raw_msg/*": The value is a binary string that contains raw messages.
-[DEBUG]:   	 ^
-[DEBUG]:   	dm_collector_c/log_packet.cpp: In function 'int _decode_modem_debug_msg(const char*, int, int, PyObject*)':
-[DEBUG]:   	dm_collector_c/log_packet.cpp:1560:40: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
-[DEBUG]:   	         else if(argc==10 && tmp_argv[0]==0x81700a47)
-[DEBUG]:   	                                        ^
-[DEBUG]:   	arm-linux-androideabi-gcc -DANDROID -mandroid -fomit-frame-pointer --sysroot /Users/Dale/Library/Android/android-ndk-r10e/platforms/android-19/arch-arm -DNDEBUG -g -O3 -Wall -Wstrict-prototypes -DANDROID -mandroid -fomit-frame-pointer --sysroot /Users/Dale/Library/Android/android-ndk-r10e/platforms/android-19/arch-arm -fPIC -I/Users/Dale/Library/Android/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.9/include -I/Users/Dale/Library/Android/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi/include -DEXPOSE_INTERNAL_LOGS=1 -I/Users/Dale/.python-for-android/build/python-installs/mi2/include/python2.7 -c dm_collector_c/utils.cpp -o build/temp.macosx-10.11-x86_64-2.7/dm_collector_c/utils.o
-[DEBUG]:   	cc1plus: warning: command line option '-Wstrict-prototypes' is valid for C/ObjC but not for C++
-[DEBUG]:   	creating build/lib.macosx-10.11-x86_64-2.7
-[DEBUG]:   	creating build/lib.macosx-10.11-x86_64-2.7/mobile_insight
-[DEBUG]:   	creating build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor
-[DEBUG]:   	creating build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/dm_collector
-[DEBUG]:   	arm-linux-androideabi-g++ -DANDROID -mandroid -fomit-frame-pointer --sysroot /Users/Dale/Library/Android/android-ndk-r10e/platforms/android-19/arch-arm -shared -lm -L/Users/Dale/.python-for-android/build/libs_collections/mi2/armeabi -lm -L/Users/Dale/.python-for-android/build/libs_collections/mi2/armeabi -L/Users/Dale/Library/Android/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi -shared -lgnustl_shared -DANDROID -mandroid -fomit-frame-pointer --sysroot /Users/Dale/Library/Android/android-ndk-r10e/platforms/android-19/arch-arm -fPIC -I/Users/Dale/Library/Android/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.9/include -I/Users/Dale/Library/Android/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi/include build/temp.macosx-10.11-x86_64-2.7/dm_collector_c/dm_collector_c.o build/temp.macosx-10.11-x86_64-2.7/dm_collector_c/hdlc.o build/temp.macosx-10.11-x86_64-2.7/dm_collector_c/log_config.o build/temp.macosx-10.11-x86_64-2.7/dm_collector_c/log_packet.o build/temp.macosx-10.11-x86_64-2.7/dm_collector_c/utils.o -L/Users/Dale/.python-for-android/build/other_builds/python2/armeabi/python2/python-install/lib -lpython2.7 -o build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/dm_collector/dm_collector_c.so
-[DEBUG]:   -> running python.host setup.py install -O2
-[DEBUG]:   	running install
-[DEBUG]:   	running build
-[DEBUG]:   	running build_py
-[DEBUG]:   	copying mobile_insight/__init__.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight
-[DEBUG]:   	copying mobile_insight/element.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight
-[DEBUG]:   	copying mobile_insight/utils.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight
-[DEBUG]:   	creating build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/__init__.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/analyzer.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/handoff_loop_analyzer.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/log_analyzer.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/lte_measurement_analyzer.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/lte_nas_analyzer.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/lte_phy_analyzer.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/lte_rrc_analyzer.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/mm_analyzer.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/mobility_mngt.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/modem_debug_analyzer.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/msg_logger.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/msg_serializer.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/msg_statistics.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/nas_util.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/profile.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/protocol_analyzer.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/rrc_analyzer.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/state_machine.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/umts_nas_analyzer.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/analyzer/wcdma_rrc_analyzer.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer
-[DEBUG]:   	copying mobile_insight/monitor/__init__.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor
-[DEBUG]:   	copying mobile_insight/monitor/android_dev_diag_monitor.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor
-[DEBUG]:   	copying mobile_insight/monitor/android_qmdl_monitor.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor
-[DEBUG]:   	copying mobile_insight/monitor/monitor.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor
-[DEBUG]:   	copying mobile_insight/monitor/offline_replayer.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor
-[DEBUG]:   	copying mobile_insight/monitor/online_monitor.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor
-[DEBUG]:   	copying mobile_insight/monitor/replayer.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor
-[DEBUG]:   	copying mobile_insight/monitor/dm_collector/__init__.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/dm_collector
-[DEBUG]:   	copying mobile_insight/monitor/dm_collector/dm_collector.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/dm_collector
-[DEBUG]:   	creating build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/dm_collector/dm_endec
-[DEBUG]:   	copying mobile_insight/monitor/dm_collector/dm_endec/__init__.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/dm_collector/dm_endec
-[DEBUG]:   	copying mobile_insight/monitor/dm_collector/dm_endec/dm_log_packet.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/dm_collector/dm_endec
-[DEBUG]:   	copying mobile_insight/monitor/dm_collector/dm_endec/ws_dissector.py -> build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/dm_collector/dm_endec
-[DEBUG]:   	running build_ext
-[DEBUG]:   	running install_lib
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/__init__.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/__init__.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/analyzer.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/handoff_loop_analyzer.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/log_analyzer.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/lte_measurement_analyzer.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/lte_nas_analyzer.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/lte_phy_analyzer.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/lte_rrc_analyzer.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/mm_analyzer.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/mobility_mngt.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/modem_debug_analyzer.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/msg_logger.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/msg_serializer.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/msg_statistics.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/nas_util.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/profile.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/protocol_analyzer.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/rrc_analyzer.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/state_machine.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/umts_nas_analyzer.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/analyzer/wcdma_rrc_analyzer.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/element.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/__init__.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/android_dev_diag_monitor.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/android_qmdl_monitor.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/dm_collector/__init__.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/dm_collector
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/dm_collector/dm_collector.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/dm_collector
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/dm_collector/dm_collector_c.so -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/dm_collector
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/dm_collector/dm_endec/__init__.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/dm_collector/dm_endec
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/dm_collector/dm_endec/dm_log_packet.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/dm_collector/dm_endec
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/dm_collector/dm_endec/ws_dissector.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/dm_collector/dm_endec
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/monitor.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/offline_replayer.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/online_monitor.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/monitor/replayer.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor
-[DEBUG]:   	copying build/lib.macosx-10.11-x86_64-2.7/mobile_insight/utils.py -> /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/__init__.py to __init__.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/__init__.py to __init__.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/analyzer.py to analyzer.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/handoff_loop_analyzer.py to handoff_loop_analyzer.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/log_analyzer.py to log_analyzer.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/lte_measurement_analyzer.py to lte_measurement_analyzer.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/lte_nas_analyzer.py to lte_nas_analyzer.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/lte_phy_analyzer.py to lte_phy_analyzer.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/lte_rrc_analyzer.py to lte_rrc_analyzer.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/mm_analyzer.py to mm_analyzer.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/mobility_mngt.py to mobility_mngt.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/modem_debug_analyzer.py to modem_debug_analyzer.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/msg_logger.py to msg_logger.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/msg_serializer.py to msg_serializer.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/msg_statistics.py to msg_statistics.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/nas_util.py to nas_util.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/profile.py to profile.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/protocol_analyzer.py to protocol_analyzer.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/rrc_analyzer.py to rrc_analyzer.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/state_machine.py to state_machine.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/umts_nas_analyzer.py to umts_nas_analyzer.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer/wcdma_rrc_analyzer.py to wcdma_rrc_analyzer.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/element.py to element.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/__init__.py to __init__.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/android_dev_diag_monitor.py to android_dev_diag_monitor.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/android_qmdl_monitor.py to android_qmdl_monitor.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/dm_collector/__init__.py to __init__.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/dm_collector/dm_collector.py to dm_collector.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/dm_collector/dm_endec/__init__.py to __init__.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/dm_collector/dm_endec/dm_log_packet.py to dm_log_packet.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/dm_collector/dm_endec/ws_dissector.py to ws_dissector.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/monitor.py to monitor.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/offline_replayer.py to offline_replayer.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/online_monitor.py to online_monitor.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/replayer.py to replayer.pyc
-[DEBUG]:   	byte-compiling /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/utils.py to utils.pyc
-[DEBUG]:   	writing byte-compilation script '/tmp/tmp3itGq2.py'
-[DEBUG]:   	/Users/Dale/.python-for-android/build/python-installs/mi2/bin/python.host -OO /tmp/tmp3itGq2.py
-[DEBUG]:   	removing /tmp/tmp3itGq2.py
-[DEBUG]:   	running install_egg_info
-[DEBUG]:   	Removing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/MobileInsight-1.1-py2.7.egg-info
-[DEBUG]:   	Writing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/MobileInsight-1.1-py2.7.egg-info
-[WARNING]: MI2 -- strip is arm-linux-androideabi-strip
-[WARNING]: MI2 -- stripping mobileinsight
-[DEBUG]:   -> running find ./build/lib.macosx-10.11-x86_64-2.7 -name *.o -exec arm-linux-androideabi-strip {} ;
-[DEBUG]:   -> running find ./build/lib.macosx-10.11-x86_64-2.7 -name *.so -exec arm-linux-androideabi-strip {} ;
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[WARNING]: copying GNU STL shared lib to /Users/Dale/.python-for-android/build/libs_collections/mi2/armeabi
-[DEBUG]:   -> running cp /Users/Dale/Library/Android/android-ndk-r10e/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi/libgnustl_shared.so /Users/Dale/.python-for-android/build/libs_collections/mi2/armeabi
-[INFO]:    Building sdl for armeabi
-[INFO]:    libsdl.so already exists, skipping sdl build.
-[INFO]:    Building six for armeabi
-[INFO]:    Python package already exists in site-packages
-[INFO]:    six said it is already built, skipping
-[INFO]:    Building pygame for armeabi
-Traceback (most recent call last):
-  File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/logging/__init__.py", line 859, in emit
-    msg = self.format(record)
-  File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/logging/__init__.py", line 732, in format
-    return fmt.format(record)
-  File "/Library/Python/2.7/site-packages/python_for_android-0.3-py2.7.egg/pythonforandroid/logger.py", line 44, in format
-    return super(LevelDifferentiatingFormatter, self).format(record)
-  File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/logging/__init__.py", line 471, in format
-    record.message = record.getMessage()
-  File "/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/logging/__init__.py", line 335, in getMessage
-    msg = msg % self.args
-TypeError: not all arguments converted during string formatting
-Logged from file __init__.py, line 52
-[INFO]:    -> directory context /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/pygame
-[INFO]:    hostpython is /Users/Dale/.python-for-android/build/python-installs/mi2/bin/python.host
-[DEBUG]:   -> running python.host setup.py install -O2
-[DEBUG]:   	running install
-[DEBUG]:   	running build
-[DEBUG]:   	running build_py
-[DEBUG]:   	running build_ext
-[DEBUG]:   	running install_lib
-[DEBUG]:   	writing byte-compilation script '/tmp/tmp4P4Uzh.py'
-[DEBUG]:   	/Users/Dale/.python-for-android/build/python-installs/mi2/bin/python.host -OO /tmp/tmp4P4Uzh.py
-[DEBUG]:   	removing /tmp/tmp4P4Uzh.py
-[DEBUG]:   	running install_headers
-[DEBUG]:   	running install_data
-[DEBUG]:   	running install_egg_info
-[DEBUG]:   	Removing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame-1.9.1release-py2.7.egg-info
-[DEBUG]:   	Writing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame-1.9.1release-py2.7.egg-info
-[INFO]:    strip is arm-linux-androideabi-strip --strip-unneeded
-[DEBUG]:   -> running find ./build/lib.macosx-10.11-x86_64-2.7 -name *.o -exec arm-linux-androideabi-strip --strip-unneeded {} ;
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Building pyjnius for armeabi
-[INFO]:    Python package already exists in site-packages
-[INFO]:    pyjnius said it is already built, skipping
-[INFO]:    Building android for armeabi
-[INFO]:    Python package already exists in site-packages
-[INFO]:    android said it is already built, skipping
-[INFO]:    Building kivy for armeabi
-[INFO]:    Python package already exists in site-packages
-[INFO]:    kivy said it is already built, skipping
-[INFO]:    # Biglinking object files
-[INFO]:    Collating object files from each recipe
-[INFO]:    hostpython2 recipe has no biglinkable files dir, skipping
-[INFO]:    pygame_bootstrap_components recipe has no biglinkable files dir, skipping
-[INFO]:    python2 recipe has no biglinkable files dir, skipping
-[INFO]:    mobileinsight recipe has no biglinkable files dir, skipping
-[INFO]:    sdl recipe has no biglinkable files dir, skipping
-[INFO]:    six recipe has no biglinkable files dir, skipping
-[INFO]:    pygame recipe has object files, copying
-[DEBUG]:   -> running cp -r /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/_arraysurfarray.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/_arraysurfarray.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/base.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/base.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/bufferproxy.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/bufferproxy.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/cdrom.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/cdrom.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/color.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/color.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/constants.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/constants.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/display.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/display.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/draw.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/draw.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/event.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/event.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/fastevent.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/fastevent.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/font.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/font.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/gfxdraw.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/gfxdraw.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/image.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/image.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/imageext.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/imageext.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/joystick.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/joystick.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/key.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/key.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/mask.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/mask.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/mouse.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/mouse.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/overlay.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/overlay.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/pixelarray.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/pixelarray.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/rect.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/rect.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/rwobject.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/rwobject.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/surface.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/surface.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/surflock.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/surflock.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/time.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/time.so.o /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/transform.so.libs /Users/Dale/.python-for-android/build/other_builds/pygame/armeabi/objects_pygame/transform.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects
-[INFO]:    pyjnius recipe has object files, copying
-[DEBUG]:   -> running cp -r /Users/Dale/.python-for-android/build/other_builds/pyjnius-python2-sdl/armeabi/objects_pyjnius/jnius.so.libs /Users/Dale/.python-for-android/build/other_builds/pyjnius-python2-sdl/armeabi/objects_pyjnius/jnius.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects
-[INFO]:    android recipe has object files, copying
-[DEBUG]:   -> running cp -r /Users/Dale/.python-for-android/build/other_builds/android-pygame-python2-python2/armeabi/objects_android/_android.so.libs /Users/Dale/.python-for-android/build/other_builds/android-pygame-python2-python2/armeabi/objects_android/_android.so.o /Users/Dale/.python-for-android/build/other_builds/android-pygame-python2-python2/armeabi/objects_android/_android_billing.so.libs /Users/Dale/.python-for-android/build/other_builds/android-pygame-python2-python2/armeabi/objects_android/_android_billing.so.o /Users/Dale/.python-for-android/build/other_builds/android-pygame-python2-python2/armeabi/objects_android/_android_sound.so.libs /Users/Dale/.python-for-android/build/other_builds/android-pygame-python2-python2/armeabi/objects_android/_android_sound.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects
-[INFO]:    kivy recipe has object files, copying
-[DEBUG]:   -> running cp -r /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/_event.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/_event.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/buffer.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/buffer.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/c_opengl_debug.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/c_opengl_debug.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/c_opengl_mock.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/c_opengl_mock.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/compiler.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/compiler.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/context.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/context.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/context_instructions.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/context_instructions.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/fbo.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/fbo.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/gl_instructions.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/gl_instructions.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/instructions.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/instructions.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/opengl.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/opengl.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/opengl_utils.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/opengl_utils.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/properties.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/properties.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/scissor_instructions.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/scissor_instructions.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/shader.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/shader.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/stencil_instructions.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/stencil_instructions.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/svg.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/svg.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/tesselator.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/tesselator.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/text_layout.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/text_layout.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/texture.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/texture.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/transformation.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/transformation.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/vbo.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/vbo.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/vertex.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/vertex.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/vertex_instructions.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/vertex_instructions.so.o /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/weakproxy.so.libs /Users/Dale/.python-for-android/build/other_builds/kivy-pygame-python2/armeabi/objects_kivy/weakproxy.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects
-[INFO]:    Biglinking
-[INFO]:    target /Users/Dale/.python-for-android/build/libs_collections/mi2/armeabi/libpymodules.so
-[DEBUG]:   -> running arch-arm -shared -O3 -o /Users/Dale/.python-for-android/build/libs_collections/mi2/armeabi/libpymodules.so /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/_android.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/_android_billing.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/_android_sound.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/_arraysurfarray.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/_event.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/base.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/buffer.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/bufferproxy.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/c_opengl_debug.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/c_opengl_mock.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/cdrom.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/color.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/compiler.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/constants.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/context.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/context_instructions.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/display.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/draw.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/event.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/fastevent.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/fbo.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/font.so.o -lsdl_ttf /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/gfxdraw.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/gl_instructions.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/image.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/imageext.so.o -lsdl_image -lpng -ljpeg /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/instructions.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/jnius.so.o -Llibs/armeabi -llog /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/joystick.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/key.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/mask.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/mouse.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/opengl.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/opengl_utils.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/overlay.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/pixelarray.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/properties.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/rect.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/rwobject.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/scissor_instructions.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/shader.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/stencil_instructions.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/surface.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/surflock.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/svg.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/tesselator.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/text_layout.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/texture.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/time.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/transform.so.o -lz -lsdl /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/transformation.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/vbo.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/vertex.so.o /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/vertex_instructions.so.o -lGLESv2 /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects/weakproxy.so.o -L/Users/Dale/.python-for-android/build/libs_collections/mi2/armeabi -L/Users/Dale/.python-for-android/build/libs_collections/mi2 -L/Users/Dale/.python-for-android/build/bootstrap_builds/pygame/obj/local/armeabi -L/Users/Dale/.python-for-android/build/other_builds/python2/armeabi/python2/python-install/lib -lpython2.7 -lm
-[INFO]:    # Postbuilding recipes
-[INFO]:    Postbuilding hostpython2 for armeabi
-[INFO]:    Postbuilding pygame_bootstrap_components for armeabi
-[INFO]:    Postbuilding python2 for armeabi
-[INFO]:    Postbuilding mobileinsight for armeabi
-[WARNING]: Should remove mobileinsight build tools etc. here, but skipping for now
-[INFO]:    Postbuilding sdl for armeabi
-[INFO]:    Postbuilding six for armeabi
-[INFO]:    Postbuilding pygame for armeabi
-[INFO]:    Postbuilding pyjnius for armeabi
-[INFO]:    Copying pyjnius java class to classes build dir
-[INFO]:    -> directory context /Users/Dale/.python-for-android/build/other_builds/pyjnius-python2-sdl/armeabi/pyjnius
-[DEBUG]:   -> running cp -a jnius/src/org /Users/Dale/.python-for-android/build/javaclasses/mi2
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Postbuilding android for armeabi
-[INFO]:    Postbuilding kivy for armeabi
-[INFO]:    # Installing pure Python modules
-[INFO]:    The requirements (pyserial) don't have recipes, attempting to install them with pip
-[INFO]:    If this fails, it may mean that the module has compiled components and needs a recipe.
-[INFO]:    -> directory context /Users/Dale/.python-for-android/build
-[DEBUG]:   -> running virtualenv --python=python2.7 venv
-[DEBUG]:   	Running virtualenv with interpreter /usr/bin/python2.7
-[DEBUG]:   	New python executable in /Users/Dale/.python-for-android/build/venv/bin/python
-[DEBUG]:   	Installing setuptools, pip, wheel...done.
-[INFO]:    Creating a requirements.txt file for the Python modules
-[INFO]:    Installing Python modules with pip
-[INFO]:    If this fails with a message about /bin/false, this probably means the package cannot be installed with pip as it needs a compilation recipe.
-[DEBUG]:   -> running bash -c source venv/bin/activate && env CC=/bin/false CXX=/bin/false PYTHONPATH=/Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages pip install --target '/Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages' --no-deps -r requirements.txt
-[DEBUG]:   	Collecting pyserial (from -r requirements.txt (line 1))
-[DEBUG]:   	Installing collected packages: pyserial
-[DEBUG]:   	Successfully installed pyserial-3.0.1
-[DEBUG]:   	[33mTarget directory /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pyserial-3.0.1.dist-info already exists. Specify --upgrade to force replacement.[0m
-[DEBUG]:   	[33mTarget directory /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/serial already exists. Specify --upgrade to force replacement.[0m
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    # Creating Android project from build and pygame bootstrap
-[INFO]:    Bootstrap running with arch armeabi
-[INFO]:    -> directory context /Users/Dale/.python-for-android/dists/mi2
-[INFO]:    Creating initial layout
-[INFO]:    Copying default files
-[DEBUG]:   -> running cp -a /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/project.properties .
-[DEBUG]:   -> running cp -a /Library/Python/2.7/site-packages/python_for_android-0.3-py2.7.egg/pythonforandroid/bootstraps/pygame/build/local.properties .
-[DEBUG]:   -> running cp -a /Library/Python/2.7/site-packages/python_for_android-0.3-py2.7.egg/pythonforandroid/bootstraps/pygame/build/build.py .
-[DEBUG]:   -> running cp -a /Library/Python/2.7/site-packages/python_for_android-0.3-py2.7.egg/pythonforandroid/bootstraps/pygame/build/buildlib .
-[DEBUG]:   -> running cp -a /Library/Python/2.7/site-packages/python_for_android-0.3-py2.7.egg/pythonforandroid/bootstraps/pygame/build/src .
-[DEBUG]:   -> running cp -a /Library/Python/2.7/site-packages/python_for_android-0.3-py2.7.egg/pythonforandroid/bootstraps/pygame/build/templates .
-[DEBUG]:   -> running cp -a /Library/Python/2.7/site-packages/python_for_android-0.3-py2.7.egg/pythonforandroid/bootstraps/pygame/build/res .
-[DEBUG]:   -> running cp -a /Library/Python/2.7/site-packages/python_for_android-0.3-py2.7.egg/pythonforandroid/bootstraps/pygame/build/blacklist.txt .
-[DEBUG]:   -> running cp -a /Library/Python/2.7/site-packages/python_for_android-0.3-py2.7.egg/pythonforandroid/bootstraps/pygame/build/whitelist.txt .
-[INFO]:    Copying python distribution
-[DEBUG]:   -> running python.host -OO -m compileall /Users/Dale/.python-for-android/build/python-installs/mi2
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2 ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/bin ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/include ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/include/python2.7 ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/include/python2.7/pygame ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/pkgconfig ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7 ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/bsddb ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/bsddb/test ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/compiler ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/config ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/ctypes ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/ctypes/macholib ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/ctypes/test ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/distutils ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/distutils/command ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/email ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/email/mime ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/encodings ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/hotshot ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/idlelib ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/idlelib/Icons ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/importlib ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/json ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/lib-dynload ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/lib2to3 ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/lib2to3/fixes ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/lib2to3/pgen2 ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/logging ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/multiprocessing ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/multiprocessing/dummy ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/plat-darwin ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/plat-mac ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/plat-mac/Carbon ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/plat-mac/lib-scriptpackages ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/plat-mac/lib-scriptpackages/CodeWarrior ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/plat-mac/lib-scriptpackages/Explorer ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/plat-mac/lib-scriptpackages/Finder ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/plat-mac/lib-scriptpackages/Netscape ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/plat-mac/lib-scriptpackages/StdSuites ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/plat-mac/lib-scriptpackages/SystemEvents ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/plat-mac/lib-scriptpackages/Terminal ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/plat-mac/lib-scriptpackages/_builtinSuites ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/pydoc_data ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/android ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/jnius ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/adapters ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/core ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/core/audio ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/core/camera ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/core/clipboard ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/core/gl ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/core/image ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/core/spelling ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/core/text ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/core/video ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/core/window ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/data ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/data/fonts ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/data/glsl ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/data/images ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/data/keyboards ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/data/logo ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/deps ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/effects ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/ext ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/extras ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/garden ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/graphics ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/input ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/input/postproc ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/input/providers ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/lang ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/lib ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/lib/gstplayer ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/lib/osc ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/lib/vidcore_lite ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/modules ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/network ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/storage ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/tests ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/tools ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/tools/extensions ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/tools/gles_compat ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/tools/highlight ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/tools/packaging ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/tools/packaging/pyinstaller_hooks ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/uix ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/kivy/uix/behaviors ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/analyzer ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/dm_collector ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/mobile_insight/monitor/dm_collector/dm_endec ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/docs ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/docs/ref ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/docs/tut ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/docs/tut/chimp ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/docs/tut/intro ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/docs/tut/surfarray ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/docs/tut/tom ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/examples ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/examples/data ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/examples/macosx ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/examples/macosx/aliens_app_example ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/examples/macosx/aliens_app_example/English.lproj ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/examples/macosx/aliens_app_example/English.lproj/MainMenu.nib ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/gp2x ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/tests ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/tests/fixtures ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/tests/fixtures/xbm_cursors ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/tests/run_tests__tests ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/tests/run_tests__tests/all_ok ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/tests/run_tests__tests/everything ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/tests/run_tests__tests/exclude ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/tests/run_tests__tests/failures1 ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/tests/run_tests__tests/incomplete ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/tests/run_tests__tests/incomplete_todo ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/tests/run_tests__tests/infinite_loop ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/tests/run_tests__tests/print_stderr ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/tests/run_tests__tests/print_stdout ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/tests/run_tests__tests/timeout ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/tests/test_utils ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pygame/threads ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/pyserial-3.0.1.dist-info ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/serial ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/serial/threaded ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/serial/tools ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/site-packages/serial/urlhandler ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/sqlite3 ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/unittest ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/unittest/test ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/wsgiref ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/xml ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/xml/dom ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/xml/etree ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/xml/parsers ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/lib/python2.7/xml/sax ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/3Drendering ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/RST_Editor ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/android ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/android/compass ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/android/takepicture ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/animation ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/application ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/application/app_suite_data ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/application/template1 ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/audio ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/camera ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/canvas ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/container ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/container/kv ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/demo ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/demo/kivycatalog ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/demo/kivycatalog/container_kvs ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/demo/multistroke ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/demo/pictures ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/demo/pictures/images ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/demo/shadereditor ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/demo/showcase ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/demo/showcase/data ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/demo/showcase/data/icons ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/demo/showcase/data/screens ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/demo/touchtracer ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/frameworks ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/frameworks/twisted ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/gestures ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/guide ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/guide/designwithkv ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/guide/firstwidget ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/guide/quickstart ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/includes ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/keyboard ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/kinect ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/kv ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/kv/ids ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/kv/ids/id_in_kv ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/kv/ids/kv_and_py ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/miscellaneous ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/settings ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/shader ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/svg ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/tutorials ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/tutorials/notes ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/tutorials/notes/final ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/tutorials/notes/final/data ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/tutorials/pong ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/tutorials/pong/steps ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/tutorials/pong/steps/step1 ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/tutorials/pong/steps/step2 ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/tutorials/pong/steps/step3 ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/tutorials/pong/steps/step4 ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/tutorials/pong/steps/step5 ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/widgets ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/widgets/lists ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/widgets/lists/fruit_images ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/widgets/sequenced_images ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/widgets/sequenced_images/data ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/widgets/sequenced_images/data/images ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/kivy-examples/widgets/sequenced_images/uix ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/man ...
-[DEBUG]:   	Listing /Users/Dale/.python-for-android/build/python-installs/mi2/share/man/man1 ...
-[INFO]:    Copying libs
-[DEBUG]:   -> running cp -a /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/libs/armeabi/libapplication.so libs/armeabi
-[DEBUG]:   -> running cp -a /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/libs/armeabi/libsdl.so libs/armeabi
-[DEBUG]:   -> running cp -a /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/libs/armeabi/libsdl_image.so libs/armeabi
-[DEBUG]:   -> running cp -a /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/libs/armeabi/libsdl_main.so libs/armeabi
-[DEBUG]:   -> running cp -a /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/libs/armeabi/libsdl_mixer.so libs/armeabi
-[DEBUG]:   -> running cp -a /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/libs/armeabi/libsdl_ttf.so libs/armeabi
-[DEBUG]:   -> running cp -a /Users/Dale/.python-for-android/build/bootstrap_builds/pygame/libs/armeabi/libsqlite3.so libs/armeabi
-[DEBUG]:   -> running cp -a /Users/Dale/.python-for-android/build/libs_collections/mi2/armeabi/libgnustl_shared.so libs/armeabi
-[DEBUG]:   -> running cp -a /Users/Dale/.python-for-android/build/libs_collections/mi2/armeabi/libpymodules.so libs/armeabi
-[DEBUG]:   -> running cp -a /Users/Dale/.python-for-android/build/libs_collections/mi2/armeabi/libpython2.7.so libs/armeabi
-[INFO]:    Unpacking aars
-[INFO]:    Copying java files
-[DEBUG]:   -> running cp -a /Users/Dale/.python-for-android/build/javaclasses/mi2 src
-[INFO]:    Filling private directory
-[DEBUG]:   -> running mkdir -p private/include/python2.7
-[DEBUG]:   -> running mv libs/armeabi/libpymodules.so private/
-[DEBUG]:   -> running cp python-install/include/python2.7/pyconfig.h private/include/python2.7/
-[INFO]:    Removing some unwanted files
-[DEBUG]:   -> running rm -f private/lib/libpython2.7.so
-[DEBUG]:   -> running rm -rf private/lib/pkgconfig
-[INFO]:    -> directory context /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7
-[DEBUG]:   -> running rm -f __init__.py __init__.pyc db.py db.pyc dbobj.py dbobj.pyc dbrecio.py dbrecio.pyc dbshelve.py dbshelve.pyc dbtables.py dbtables.pyc dbutils.py dbutils.pyc __init__.py __init__.pyc test_all.py test_all.pyc test_associate.py test_associate.pyc test_basics.py test_basics.pyc test_compare.py test_compare.pyc test_compat.py test_compat.pyc test_cursor_pget_bug.py test_cursor_pget_bug.pyc test_db.py test_db.pyc test_dbenv.py test_dbenv.pyc test_dbobj.py test_dbobj.pyc test_dbshelve.py test_dbshelve.pyc test_dbtables.py test_dbtables.pyc test_distributed_transactions.py test_distributed_transactions.pyc test_early_close.py test_early_close.pyc test_fileid.py test_fileid.pyc test_get_none.py test_get_none.pyc test_join.py test_join.pyc test_lock.py test_lock.pyc test_misc.py test_misc.pyc test_pickle.py test_pickle.pyc test_queue.py test_queue.pyc test_recno.py test_recno.pyc test_replication.py test_replication.pyc test_sequence.py test_sequence.pyc test_thread.py test_thread.pyc __init__.py __init__.pyc ast.py ast.pyc consts.py consts.pyc future.py future.pyc misc.py misc.pyc pyassem.py pyassem.pyc pycodegen.py pycodegen.pyc symbols.py symbols.pyc syntax.py syntax.pyc transformer.py transformer.pyc visitor.py visitor.pyc __init__.py __init__.pyc _endian.py _endian.pyc util.py util.pyc wintypes.py wintypes.pyc __init__.py __init__.pyc dyld.py dyld.pyc dylib.py dylib.pyc framework.py framework.pyc __init__.py __init__.pyc runtests.py runtests.pyc test_anon.py test_anon.pyc test_array_in_pointer.py test_array_in_pointer.pyc test_arrays.py test_arrays.pyc test_as_parameter.py test_as_parameter.pyc test_bitfields.py test_bitfields.pyc test_buffers.py test_buffers.pyc test_byteswap.py test_byteswap.pyc test_callbacks.py test_callbacks.pyc test_cast.py test_cast.pyc test_cfuncs.py test_cfuncs.pyc test_checkretval.py test_checkretval.pyc test_delattr.py test_delattr.pyc test_errcheck.py test_errcheck.pyc test_errno.py test_errno.pyc test_find.py test_find.pyc test_frombuffer.py test_frombuffer.pyc test_funcptr.py test_funcptr.pyc test_functions.py test_functions.pyc test_incomplete.py test_incomplete.pyc test_init.py test_init.pyc test_integers.py test_integers.pyc test_internals.py test_internals.pyc test_keeprefs.py test_keeprefs.pyc test_libc.py test_libc.pyc test_loading.py test_loading.pyc test_macholib.py test_macholib.pyc test_memfunctions.py test_memfunctions.pyc test_numbers.py test_numbers.pyc test_objects.py test_objects.pyc test_parameters.py test_parameters.pyc test_pep3118.py test_pep3118.pyc test_pickling.py test_pickling.pyc test_pointers.py test_pointers.pyc test_prototypes.py test_prototypes.pyc test_python_api.py test_python_api.pyc test_random_things.py test_random_things.pyc test_refcounts.py test_refcounts.pyc test_repr.py test_repr.pyc test_returnfuncptrs.py test_returnfuncptrs.pyc test_simplesubclasses.py test_simplesubclasses.pyc test_sizes.py test_sizes.pyc test_slicing.py test_slicing.pyc test_stringptr.py test_stringptr.pyc test_strings.py test_strings.pyc test_struct_fields.py test_struct_fields.pyc test_structures.py test_structures.pyc test_unaligned_structures.py test_unaligned_structures.pyc test_unicode.py test_unicode.pyc test_values.py test_values.pyc test_varsize_struct.py test_varsize_struct.pyc test_win32.py test_win32.pyc __init__.py __init__.pyc archive_util.py archive_util.pyc bcppcompiler.py bcppcompiler.pyc ccompiler.py ccompiler.pyc cmd.py cmd.pyc config.py config.pyc core.py core.pyc cygwinccompiler.py cygwinccompiler.pyc debug.py debug.pyc dep_util.py dep_util.pyc dir_util.py dir_util.pyc dist.py dist.pyc emxccompiler.py emxccompiler.pyc errors.py errors.pyc extension.py extension.pyc fancy_getopt.py fancy_getopt.pyc file_util.py file_util.pyc filelist.py filelist.pyc log.py log.pyc msvc9compiler.py msvc9compiler.pyc msvccompiler.py msvccompiler.pyc spawn.py spawn.pyc sysconfig.py sysconfig.pyc text_file.py text_file.pyc unixccompiler.py unixccompiler.pyc util.py util.pyc version.py version.pyc versionpredicate.py versionpredicate.pyc __init__.py __init__.pyc bdist.py bdist.pyc bdist_dumb.py bdist_dumb.pyc bdist_msi.py bdist_msi.pyc bdist_rpm.py bdist_rpm.pyc bdist_wininst.py bdist_wininst.pyc build.py build.pyc build_clib.py build_clib.pyc build_ext.py build_ext.pyc build_py.py build_py.pyc build_scripts.py build_scripts.pyc check.py check.pyc clean.py clean.pyc config.py config.pyc install.py install.pyc install_data.py install_data.pyc install_egg_info.py install_egg_info.pyc install_headers.py install_headers.pyc install_lib.py install_lib.pyc install_scripts.py install_scripts.pyc register.py register.pyc sdist.py sdist.pyc upload.py upload.pyc __init__.py __init__.pyc _parseaddr.py _parseaddr.pyc base64mime.py base64mime.pyc charset.py charset.pyc encoders.py encoders.pyc errors.py errors.pyc feedparser.py feedparser.pyc generator.py generator.pyc header.py header.pyc iterators.py iterators.pyc message.py message.pyc parser.py parser.pyc quoprimime.py quoprimime.pyc utils.py utils.pyc __init__.py __init__.pyc application.py application.pyc audio.py audio.pyc base.py base.pyc image.py image.pyc message.py message.pyc multipart.py multipart.pyc nonmultipart.py nonmultipart.pyc text.py text.pyc __init__.py __init__.pyc aliases.py aliases.pyc ascii.py ascii.pyc base64_codec.py base64_codec.pyc big5.py big5.pyc big5hkscs.py big5hkscs.pyc bz2_codec.py bz2_codec.pyc charmap.py charmap.pyc cp037.py cp037.pyc cp1006.py cp1006.pyc cp1026.py cp1026.pyc cp1140.py cp1140.pyc cp1250.py cp1250.pyc cp1251.py cp1251.pyc cp1252.py cp1252.pyc cp1253.py cp1253.pyc cp1254.py cp1254.pyc cp1255.py cp1255.pyc cp1256.py cp1256.pyc cp1257.py cp1257.pyc cp1258.py cp1258.pyc cp424.py cp424.pyc cp437.py cp437.pyc cp500.py cp500.pyc cp720.py cp720.pyc cp737.py cp737.pyc cp775.py cp775.pyc cp850.py cp850.pyc cp852.py cp852.pyc cp855.py cp855.pyc cp856.py cp856.pyc cp857.py cp857.pyc cp858.py cp858.pyc cp860.py cp860.pyc cp861.py cp861.pyc cp862.py cp862.pyc cp863.py cp863.pyc cp864.py cp864.pyc cp865.py cp865.pyc cp866.py cp866.pyc cp869.py cp869.pyc cp874.py cp874.pyc cp875.py cp875.pyc cp932.py cp932.pyc cp949.py cp949.pyc cp950.py cp950.pyc euc_jis_2004.py euc_jis_2004.pyc euc_jisx0213.py euc_jisx0213.pyc euc_jp.py euc_jp.pyc euc_kr.py euc_kr.pyc gb18030.py gb18030.pyc gb2312.py gb2312.pyc gbk.py gbk.pyc hex_codec.py hex_codec.pyc hp_roman8.py hp_roman8.pyc hz.py hz.pyc idna.py idna.pyc iso2022_jp.py iso2022_jp.pyc iso2022_jp_1.py iso2022_jp_1.pyc iso2022_jp_2.py iso2022_jp_2.pyc iso2022_jp_2004.py iso2022_jp_2004.pyc iso2022_jp_3.py iso2022_jp_3.pyc iso2022_jp_ext.py iso2022_jp_ext.pyc iso2022_kr.py iso2022_kr.pyc iso8859_1.py iso8859_1.pyc iso8859_10.py iso8859_10.pyc iso8859_11.py iso8859_11.pyc iso8859_13.py iso8859_13.pyc iso8859_14.py iso8859_14.pyc iso8859_15.py iso8859_15.pyc iso8859_16.py iso8859_16.pyc iso8859_2.py iso8859_2.pyc iso8859_3.py iso8859_3.pyc iso8859_4.py iso8859_4.pyc iso8859_5.py iso8859_5.pyc iso8859_6.py iso8859_6.pyc iso8859_7.py iso8859_7.pyc iso8859_8.py iso8859_8.pyc iso8859_9.py iso8859_9.pyc johab.py johab.pyc koi8_r.py koi8_r.pyc koi8_u.py koi8_u.pyc latin_1.py latin_1.pyc mac_arabic.py mac_arabic.pyc mac_centeuro.py mac_centeuro.pyc mac_croatian.py mac_croatian.pyc mac_cyrillic.py mac_cyrillic.pyc mac_farsi.py mac_farsi.pyc mac_greek.py mac_greek.pyc mac_iceland.py mac_iceland.pyc mac_latin2.py mac_latin2.pyc mac_roman.py mac_roman.pyc mac_romanian.py mac_romanian.pyc mac_turkish.py mac_turkish.pyc mbcs.py mbcs.pyc palmos.py palmos.pyc ptcp154.py ptcp154.pyc punycode.py punycode.pyc quopri_codec.py quopri_codec.pyc raw_unicode_escape.py raw_unicode_escape.pyc rot_13.py rot_13.pyc shift_jis.py shift_jis.pyc shift_jis_2004.py shift_jis_2004.pyc shift_jisx0213.py shift_jisx0213.pyc string_escape.py string_escape.pyc tis_620.py tis_620.pyc undefined.py undefined.pyc unicode_escape.py unicode_escape.pyc unicode_internal.py unicode_internal.pyc utf_16.py utf_16.pyc utf_16_be.py utf_16_be.pyc utf_16_le.py utf_16_le.pyc utf_32.py utf_32.pyc utf_32_be.py utf_32_be.pyc utf_32_le.py utf_32_le.pyc utf_7.py utf_7.pyc utf_8.py utf_8.pyc utf_8_sig.py utf_8_sig.pyc uu_codec.py uu_codec.pyc zlib_codec.py zlib_codec.pyc __init__.py __init__.pyc log.py log.pyc stats.py stats.pyc stones.py stones.pyc __init__.py __init__.pyc __init__.py __init__.pyc decoder.py decoder.pyc encoder.py encoder.pyc scanner.py scanner.pyc tool.py tool.pyc __init__.py __init__.pyc config.py config.pyc handlers.py handlers.pyc __init__.py __init__.pyc connection.py connection.pyc forking.py forking.pyc heap.py heap.pyc managers.py managers.pyc pool.py pool.pyc process.py process.pyc queues.py queues.pyc reduction.py reduction.pyc sharedctypes.py sharedctypes.pyc synchronize.py synchronize.pyc util.py util.pyc __init__.py __init__.pyc connection.py connection.pyc IN.py IN.pyc aepack.py aepack.pyc aetools.py aetools.pyc aetypes.py aetypes.pyc applesingle.py applesingle.pyc appletrawmain.py appletrawmain.pyc appletrunner.py appletrunner.pyc argvemulator.py argvemulator.pyc Audio_mac.py Audio_mac.pyc bgenlocations.py bgenlocations.pyc buildtools.py buildtools.pyc bundlebuilder.py bundlebuilder.pyc cfmfile.py cfmfile.pyc EasyDialogs.py EasyDialogs.pyc findertools.py findertools.pyc FrameWork.py FrameWork.pyc gensuitemodule.py gensuitemodule.pyc ic.py ic.pyc icopen.py icopen.pyc macerrors.py macerrors.pyc macostools.py macostools.pyc macresource.py macresource.pyc MiniAEFrame.py MiniAEFrame.pyc pimp.py pimp.pyc PixMapWrapper.py PixMapWrapper.pyc terminalcommand.py terminalcommand.pyc videoreader.py videoreader.pyc __init__.py __init__.pyc AE.py AE.pyc AH.py AH.pyc Alias.py Alias.pyc Aliases.py Aliases.pyc App.py App.pyc Appearance.py Appearance.pyc AppleEvents.py AppleEvents.pyc AppleHelp.py AppleHelp.pyc CarbonEvents.py CarbonEvents.pyc CarbonEvt.py CarbonEvt.pyc CF.py CF.pyc CG.py CG.pyc Cm.py Cm.pyc Components.py Components.pyc ControlAccessor.py ControlAccessor.pyc Controls.py Controls.pyc CoreFoundation.py CoreFoundation.pyc CoreGraphics.py CoreGraphics.pyc Ctl.py Ctl.pyc Dialogs.py Dialogs.pyc Dlg.py Dlg.pyc Drag.py Drag.pyc Dragconst.py Dragconst.pyc Events.py Events.pyc Evt.py Evt.pyc File.py File.pyc Files.py Files.pyc Fm.py Fm.pyc Folder.py Folder.pyc Folders.py Folders.pyc Fonts.py Fonts.pyc Help.py Help.pyc IBCarbon.py IBCarbon.pyc IBCarbonRuntime.py IBCarbonRuntime.pyc Icn.py Icn.pyc Icons.py Icons.pyc Launch.py Launch.pyc LaunchServices.py LaunchServices.pyc List.py List.pyc Lists.py Lists.pyc MacHelp.py MacHelp.pyc MacTextEditor.py MacTextEditor.pyc MediaDescr.py MediaDescr.pyc Menu.py Menu.pyc Menus.py Menus.pyc Mlte.py Mlte.pyc OSA.py OSA.pyc OSAconst.py OSAconst.pyc Qd.py Qd.pyc Qdoffs.py Qdoffs.pyc QDOffscreen.py QDOffscreen.pyc Qt.py Qt.pyc QuickDraw.py QuickDraw.pyc QuickTime.py QuickTime.pyc Res.py Res.pyc Resources.py Resources.pyc Scrap.py Scrap.pyc Snd.py Snd.pyc Sndihooks.py Sndihooks.pyc Sound.py Sound.pyc TE.py TE.pyc TextEdit.py TextEdit.pyc Win.py Win.pyc Windows.py Windows.pyc __init__.py __init__.pyc builtin_Suite.py builtin_Suite.pyc __init__.py __init__.pyc CodeWarrior_suite.py CodeWarrior_suite.pyc Metrowerks_Shell_Suite.py Metrowerks_Shell_Suite.pyc Required.py Required.pyc Standard_Suite.py Standard_Suite.pyc __init__.py __init__.pyc Microsoft_Internet_Explorer.py Microsoft_Internet_Explorer.pyc Netscape_Suite.py Netscape_Suite.pyc Required_Suite.py Required_Suite.pyc Standard_Suite.py Standard_Suite.pyc URL_Suite.py URL_Suite.pyc Web_Browser_Suite.py Web_Browser_Suite.pyc __init__.py __init__.pyc Containers_and_folders.py Containers_and_folders.pyc Enumerations.py Enumerations.pyc Files.py Files.pyc Finder_Basics.py Finder_Basics.pyc Finder_items.py Finder_items.pyc Legacy_suite.py Legacy_suite.pyc Standard_Suite.py Standard_Suite.pyc Type_Definitions.py Type_Definitions.pyc Window_classes.py Window_classes.pyc __init__.py __init__.pyc Mozilla_suite.py Mozilla_suite.pyc PowerPlant.py PowerPlant.pyc Required_suite.py Required_suite.pyc Standard_Suite.py Standard_Suite.pyc Standard_URL_suite.py Standard_URL_suite.pyc Text.py Text.pyc WorldWideWeb_suite.py WorldWideWeb_suite.pyc __init__.py __init__.pyc AppleScript_Suite.py AppleScript_Suite.pyc Macintosh_Connectivity_Clas.py Macintosh_Connectivity_Clas.pyc QuickDraw_Graphics_Suite.py QuickDraw_Graphics_Suite.pyc QuickDraw_Graphics_Suppleme.py QuickDraw_Graphics_Suppleme.pyc Required_Suite.py Required_Suite.pyc Standard_Suite.py Standard_Suite.pyc Table_Suite.py Table_Suite.pyc Text_Suite.py Text_Suite.pyc Type_Names_Suite.py Type_Names_Suite.pyc __init__.py __init__.pyc Disk_Folder_File_Suite.py Disk_Folder_File_Suite.pyc Folder_Actions_Suite.py Folder_Actions_Suite.pyc Hidden_Suite.py Hidden_Suite.pyc Login_Items_Suite.py Login_Items_Suite.pyc Power_Suite.py Power_Suite.pyc Processes_Suite.py Processes_Suite.pyc Standard_Suite.py Standard_Suite.pyc System_Events_Suite.py System_Events_Suite.pyc Text_Suite.py Text_Suite.pyc __init__.py __init__.pyc Standard_Suite.py Standard_Suite.pyc Terminal_Suite.py Terminal_Suite.pyc Text_Suite.py Text_Suite.pyc __init__.py __init__.pyc topics.py topics.pyc jnius_config.py jnius_config.pyc six.py six.pyc __init__.py __init__.pyc activity.py activity.pyc billing.py billing.pyc broadcast.py broadcast.pyc config.py config.pyc mixer.py mixer.pyc runnable.py runnable.pyc __init__.py __init__.pyc reflect.py reflect.pyc signatures.py signatures.pyc __init__.py __init__.pyc animation.py animation.pyc app.py app.pyc atlas.py atlas.pyc base.py base.pyc cache.py cache.pyc clock.py clock.pyc compat.py compat.pyc config.py config.pyc context.py context.pyc event.py event.pyc factory.py factory.pyc factory_registers.py factory_registers.pyc geometry.py geometry.pyc gesture.py gesture.pyc interactive.py interactive.pyc loader.py loader.pyc logger.py logger.pyc metrics.py metrics.pyc multistroke.py multistroke.pyc parser.py parser.pyc resources.py resources.pyc setupconfig.py setupconfig.pyc support.py support.pyc utils.py utils.pyc vector.py vector.pyc weakmethod.py weakmethod.pyc __init__.py __init__.pyc adapter.py adapter.pyc args_converters.py args_converters.pyc dictadapter.py dictadapter.pyc listadapter.py listadapter.pyc models.py models.pyc simplelistadapter.py simplelistadapter.pyc __init__.py __init__.pyc __init__.py __init__.pyc audio_avplayer.py audio_avplayer.pyc audio_ffpyplayer.py audio_ffpyplayer.pyc audio_gi.py audio_gi.pyc audio_gstplayer.py audio_gstplayer.pyc audio_pygame.py audio_pygame.pyc audio_pygst.py audio_pygst.pyc __init__.py __init__.pyc camera_android.py camera_android.pyc camera_gi.py camera_gi.pyc camera_opencv.py camera_opencv.pyc camera_pygst.py camera_pygst.pyc camera_videocapture.py camera_videocapture.pyc __init__.py __init__.pyc _clipboard_ext.py _clipboard_ext.pyc clipboard_android.py clipboard_android.pyc clipboard_dbusklipper.py clipboard_dbusklipper.pyc clipboard_dummy.py clipboard_dummy.pyc clipboard_gtk3.py clipboard_gtk3.pyc clipboard_nspaste.py clipboard_nspaste.pyc clipboard_pygame.py clipboard_pygame.pyc clipboard_sdl2.py clipboard_sdl2.pyc clipboard_winctypes.py clipboard_winctypes.pyc clipboard_xclip.py clipboard_xclip.pyc clipboard_xsel.py clipboard_xsel.pyc __init__.py __init__.pyc __init__.py __init__.pyc img_dds.py img_dds.pyc img_ffpyplayer.py img_ffpyplayer.pyc img_gif.py img_gif.pyc img_pil.py img_pil.pyc img_pygame.py img_pygame.pyc img_sdl2.py img_sdl2.pyc img_tex.py img_tex.pyc __init__.py __init__.pyc spelling_enchant.py spelling_enchant.pyc spelling_osxappkit.py spelling_osxappkit.pyc __init__.py __init__.pyc markup.py markup.pyc text_pil.py text_pil.pyc text_pygame.py text_pygame.pyc text_sdl2.py text_sdl2.pyc __init__.py __init__.pyc video_ffmpeg.py video_ffmpeg.pyc video_ffpyplayer.py video_ffpyplayer.pyc video_gi.py video_gi.pyc video_gstplayer.py video_gstplayer.pyc video_null.py video_null.pyc video_pyglet.py video_pyglet.pyc video_pygst.py video_pygst.pyc __init__.py __init__.pyc window_egl_rpi.py window_egl_rpi.pyc window_pygame.py window_pygame.pyc window_sdl2.py window_sdl2.pyc __init__.py __init__.pyc __init__.py __init__.pyc dampedscroll.py dampedscroll.pyc kinetic.py kinetic.pyc opacityscroll.py opacityscroll.pyc scroll.py scroll.pyc __init__.py __init__.pyc __init__.py __init__.pyc highlight.py highlight.pyc __init__.py __init__.pyc __init__.py __init__.pyc __init__.py __init__.pyc factory.py factory.pyc motionevent.py motionevent.pyc provider.py provider.pyc recorder.py recorder.pyc shape.py shape.pyc __init__.py __init__.pyc calibration.py calibration.pyc dejitter.py dejitter.pyc doubletap.py doubletap.pyc ignorelist.py ignorelist.pyc retaintouch.py retaintouch.pyc tripletap.py tripletap.pyc __init__.py __init__.pyc androidjoystick.py androidjoystick.pyc hidinput.py hidinput.pyc leapfinger.py leapfinger.pyc linuxwacom.py linuxwacom.pyc mactouch.py mactouch.pyc mouse.py mouse.pyc mtdev.py mtdev.pyc probesysfs.py probesysfs.pyc tuio.py tuio.pyc wm_common.py wm_common.pyc wm_pen.py wm_pen.pyc wm_touch.py wm_touch.pyc __init__.py __init__.pyc builder.py builder.pyc parser.py parser.pyc __init__.py __init__.pyc ddsfile.py ddsfile.pyc mtdev.py mtdev.pyc __init__.py __init__.pyc __init__.py __init__.pyc OSC.py OSC.pyc oscAPI.py oscAPI.pyc __init__.py __init__.pyc __init__.py __init__.pyc _webdebugger.py _webdebugger.pyc console.py console.pyc inspector.py inspector.pyc keybinding.py keybinding.pyc monitor.py monitor.pyc recorder.py recorder.pyc screen.py screen.pyc touchring.py touchring.pyc webdebugger.py webdebugger.pyc __init__.py __init__.pyc urlrequest.py urlrequest.pyc __init__.py __init__.pyc dictstore.py dictstore.pyc jsonstore.py jsonstore.pyc redisstore.py redisstore.pyc __init__.py __init__.pyc common.py common.pyc perf_test_textinput.py perf_test_textinput.pyc test_adapters.py test_adapters.pyc test_animations.py test_animations.pyc test_app.py test_app.pyc test_audio.py test_audio.pyc test_clipboard.py test_clipboard.pyc test_clock.py test_clock.pyc test_doc_gallery.py test_doc_gallery.pyc test_filechooser.py test_filechooser.pyc test_filechooser_unicode.py test_filechooser_unicode.pyc test_fonts.py test_fonts.pyc test_graphics.py test_graphics.pyc test_image.py test_image.pyc test_invalid_lang.py test_invalid_lang.pyc test_issue_1084.py test_issue_1084.pyc test_issue_1091.py test_issue_1091.pyc test_issue_599.py test_issue_599.pyc test_issue_609.py test_issue_609.pyc test_issue_883.py test_issue_883.pyc test_knspace.py test_knspace.pyc test_lang.py test_lang.pyc test_lang_complex.py test_lang_complex.pyc test_multistroke.py test_multistroke.pyc test_properties.py test_properties.pyc test_selection.py test_selection.pyc test_storage.py test_storage.pyc test_uix_anchorlayout.py test_uix_anchorlayout.pyc test_uix_boxlayout.py test_uix_boxlayout.pyc test_uix_gridlayout.py test_uix_gridlayout.pyc test_uix_layout.py test_uix_layout.pyc test_uix_listview.py test_uix_listview.pyc test_uix_relativelayout.py test_uix_relativelayout.pyc test_uix_stacklayout.py test_uix_stacklayout.pyc test_uix_widget.py test_uix_widget.pyc test_urlrequest.py test_urlrequest.pyc test_utils.py test_utils.pyc test_vector.py test_vector.pyc test_video.py test_video.pyc test_widget.py test_widget.pyc test_widget_walk.py test_widget_walk.pyc visual_test_label.py visual_test_label.pyc __init__.py __init__.pyc benchmark.py benchmark.pyc generate-icons.py generate-icons.pyc report.py report.pyc stub-gl-debug.py stub-gl-debug.pyc texturecompress.py texturecompress.pyc __init__.py __init__.pyc make-kivyext.py make-kivyext.pyc __init__.py __init__.pyc __init__.py __init__.pyc factory.py factory.pyc __init__.py __init__.pyc __main__.py __main__.pyc hook-kivy.py hook-kivy.pyc pyi_rth_kivy.py pyi_rth_kivy.pyc __init__.py __init__.pyc abstractview.py abstractview.pyc accordion.py accordion.pyc actionbar.py actionbar.pyc anchorlayout.py anchorlayout.pyc boxlayout.py boxlayout.pyc bubble.py bubble.pyc button.py button.pyc camera.py camera.pyc carousel.py carousel.pyc checkbox.py checkbox.pyc codeinput.py codeinput.pyc colorpicker.py colorpicker.pyc dropdown.py dropdown.pyc effectwidget.py effectwidget.pyc filechooser.py filechooser.pyc floatlayout.py floatlayout.pyc gesturesurface.py gesturesurface.pyc gridlayout.py gridlayout.pyc image.py image.pyc label.py label.pyc layout.py layout.pyc listview.py listview.pyc modalview.py modalview.pyc pagelayout.py pagelayout.pyc popup.py popup.pyc progressbar.py progressbar.pyc relativelayout.py relativelayout.pyc rst.py rst.pyc sandbox.py sandbox.pyc scatter.py scatter.pyc scatterlayout.py scatterlayout.pyc screenmanager.py screenmanager.pyc scrollview.py scrollview.pyc selectableview.py selectableview.pyc settings.py settings.pyc slider.py slider.pyc spinner.py spinner.pyc splitter.py splitter.pyc stacklayout.py stacklayout.pyc stencilview.py stencilview.pyc switch.py switch.pyc tabbedpanel.py tabbedpanel.pyc textinput.py textinput.pyc togglebutton.py togglebutton.pyc treeview.py treeview.pyc video.py video.pyc videoplayer.py videoplayer.pyc vkeyboard.py vkeyboard.pyc widget.py widget.pyc __init__.py __init__.pyc button.py button.pyc codenavigation.py codenavigation.pyc compoundselection.py compoundselection.pyc drag.py drag.pyc emacs.py emacs.pyc focus.py focus.pyc knspace.py knspace.pyc togglebutton.py togglebutton.pyc __init__.py __init__.pyc element.py element.pyc utils.py utils.pyc __init__.py __init__.pyc analyzer.py analyzer.pyc handoff_loop_analyzer.py handoff_loop_analyzer.pyc log_analyzer.py log_analyzer.pyc lte_measurement_analyzer.py lte_measurement_analyzer.pyc lte_nas_analyzer.py lte_nas_analyzer.pyc lte_phy_analyzer.py lte_phy_analyzer.pyc lte_rrc_analyzer.py lte_rrc_analyzer.pyc mm_analyzer.py mm_analyzer.pyc mobility_mngt.py mobility_mngt.pyc modem_debug_analyzer.py modem_debug_analyzer.pyc msg_logger.py msg_logger.pyc msg_serializer.py msg_serializer.pyc msg_statistics.py msg_statistics.pyc nas_util.py nas_util.pyc profile.py profile.pyc protocol_analyzer.py protocol_analyzer.pyc rrc_analyzer.py rrc_analyzer.pyc state_machine.py state_machine.pyc umts_nas_analyzer.py umts_nas_analyzer.pyc wcdma_rrc_analyzer.py wcdma_rrc_analyzer.pyc __init__.py __init__.pyc android_dev_diag_monitor.py android_dev_diag_monitor.pyc android_qmdl_monitor.py android_qmdl_monitor.pyc monitor.py monitor.pyc offline_replayer.py offline_replayer.pyc online_monitor.py online_monitor.pyc replayer.py replayer.pyc __init__.py __init__.pyc dm_collector.py dm_collector.pyc __init__.py __init__.pyc dm_log_packet.py dm_log_packet.pyc ws_dissector.py ws_dissector.pyc __init__.py __init__.pyc _camera_opencv_highgui.py _camera_opencv_highgui.pyc _camera_vidcapture.py _camera_vidcapture.pyc _numpysndarray.py _numpysndarray.pyc _numpysurfarray.py _numpysurfarray.pyc camera.py camera.pyc colordict.py colordict.pyc compat.py compat.pyc cursors.py cursors.pyc locals.py locals.pyc mac_scrap.py mac_scrap.pyc macosx.py macosx.pyc midi.py midi.pyc pkgdata.py pkgdata.pyc sndarray.py sndarray.pyc sprite.py sprite.pyc surfarray.py surfarray.pyc sysfont.py sysfont.pyc version.py version.pyc __init__.py __init__.pyc __main__.py __main__.pyc __init__.py __init__.pyc aacircle.py aacircle.pyc aliens.py aliens.pyc arraydemo.py arraydemo.pyc blend_fill.py blend_fill.pyc blit_blends.py blit_blends.pyc camera.py camera.pyc chimp.py chimp.pyc cursors.py cursors.pyc eventlist.py eventlist.pyc fastevents.py fastevents.pyc fonty.py fonty.pyc glcube.py glcube.pyc headless_no_windows_needed.py headless_no_windows_needed.pyc liquid.py liquid.pyc mask.py mask.pyc midi.py midi.pyc moveit.py moveit.pyc movieplayer.py movieplayer.pyc oldalien.py oldalien.pyc overlay.py overlay.pyc pixelarray.py pixelarray.pyc scaletest.py scaletest.pyc scrap_clipboard.py scrap_clipboard.pyc scroll.py scroll.pyc sound.py sound.pyc sound_array_demos.py sound_array_demos.pyc stars.py stars.pyc testsprite.py testsprite.pyc vgrade.py vgrade.pyc macfont.py aliens.py setup.py __init__.py __init__.pyc constants.py constants.pyc locals.py locals.pyc __init__.py __init__.pyc __main__.py __main__.pyc base_test.py base_test.pyc blit_test.py blit_test.pyc bufferproxy_test.py bufferproxy_test.pyc cdrom_tags.py cdrom_tags.pyc cdrom_test.py cdrom_test.pyc color_test.py color_test.pyc cursors_test.py cursors_test.pyc display_test.py display_test.pyc draw_test.py draw_test.pyc event_test.py event_test.pyc fastevent_test.py fastevent_test.pyc font_test.py font_test.pyc gfxdraw_test.py gfxdraw_test.pyc image__save_gl_surface_test.py image__save_gl_surface_test.pyc image_test.py image_test.pyc joystick_test.py joystick_test.pyc key_test.py key_test.pyc mask_test.py mask_test.pyc midi_test.py midi_test.pyc mixer_music_test.py mixer_music_test.pyc mixer_test.py mixer_test.pyc mouse_test.py mouse_test.pyc movie_tags.py movie_tags.pyc movie_test.py movie_test.pyc overlay_test.py overlay_test.pyc pixelarray_test.py pixelarray_test.pyc rect_test.py rect_test.pyc scrap_tags.py scrap_tags.pyc scrap_test.py scrap_test.pyc sndarray_tags.py sndarray_tags.pyc sndarray_test.py sndarray_test.pyc sprite_test.py sprite_test.pyc surface_test.py surface_test.pyc surfarray_tags.py surfarray_tags.pyc surfarray_test.py surfarray_test.pyc surflock_test.py surflock_test.pyc sysfont_test.py sysfont_test.pyc test_test_.py test_test_.pyc threads_tags.py threads_tags.pyc threads_test.py threads_test.pyc time_test.py time_test.pyc transform_test.py transform_test.pyc __init__.py __init__.pyc run_tests__test.py run_tests__test.pyc __init__.py __init__.pyc fake_2_test.py fake_2_test.pyc fake_3_test.py fake_3_test.pyc fake_4_test.py fake_4_test.pyc fake_5_test.py fake_5_test.pyc fake_6_test.py fake_6_test.pyc no_assertions__ret_code_of_1__test.py no_assertions__ret_code_of_1__test.pyc zero_tests_test.py zero_tests_test.pyc __init__.py __init__.pyc fake_2_test.py fake_2_test.pyc incomplete_todo_test.py incomplete_todo_test.pyc magic_tag_test.py magic_tag_test.pyc sleep_test.py sleep_test.pyc __init__.py __init__.pyc fake_2_test.py fake_2_test.pyc invisible_tag_test.py invisible_tag_test.pyc magic_tag_test.py magic_tag_test.pyc __init__.py __init__.pyc fake_2_test.py fake_2_test.pyc fake_3_test.py fake_3_test.pyc fake_4_test.py fake_4_test.pyc __init__.py __init__.pyc fake_2_test.py fake_2_test.pyc fake_3_test.py fake_3_test.pyc __init__.py __init__.pyc fake_2_test.py fake_2_test.pyc fake_3_test.py fake_3_test.pyc __init__.py __init__.pyc fake_1_test.py fake_1_test.pyc fake_2_test.py fake_2_test.pyc __init__.py __init__.pyc fake_2_test.py fake_2_test.pyc fake_3_test.py fake_3_test.pyc fake_4_test.py fake_4_test.pyc __init__.py __init__.pyc fake_2_test.py fake_2_test.pyc fake_3_test.py fake_3_test.pyc fake_4_test.py fake_4_test.pyc __init__.py __init__.pyc fake_2_test.py fake_2_test.pyc sleep_test.py sleep_test.pyc __init__.py __init__.pyc async_sub.py async_sub.pyc run_tests.py run_tests.pyc test_runner.py test_runner.pyc unittest.py unittest.pyc unittest_patch.py unittest_patch.pyc __init__.py __init__.pyc Py25Queue.py Py25Queue.pyc __init__.py __init__.pyc aio.py aio.pyc rfc2217.py rfc2217.pyc rs485.py rs485.pyc serialcli.py serialcli.pyc serialjava.py serialjava.pyc serialposix.py serialposix.pyc serialutil.py serialutil.pyc serialwin32.py serialwin32.pyc win32.py win32.pyc __init__.py __init__.pyc __init__.py __init__.pyc hexlify_codec.py hexlify_codec.pyc list_ports.py list_ports.pyc list_ports_common.py list_ports_common.pyc list_ports_linux.py list_ports_linux.pyc list_ports_osx.py list_ports_osx.pyc list_ports_posix.py list_ports_posix.pyc list_ports_windows.py list_ports_windows.pyc miniterm.py miniterm.pyc __init__.py __init__.pyc protocol_alt.py protocol_alt.pyc protocol_hwgrep.py protocol_hwgrep.pyc protocol_loop.py protocol_loop.pyc protocol_rfc2217.py protocol_rfc2217.pyc protocol_socket.py protocol_socket.pyc protocol_spy.py protocol_spy.pyc __init__.py __init__.pyc dbapi2.py dbapi2.pyc dump.py dump.pyc __init__.py __init__.pyc __main__.py __main__.pyc case.py case.pyc loader.py loader.pyc main.py main.pyc result.py result.pyc runner.py runner.pyc signals.py signals.pyc suite.py suite.pyc util.py util.pyc __init__.py __init__.pyc dummy.py dummy.pyc support.py support.pyc test_assertions.py test_assertions.pyc test_break.py test_break.pyc test_case.py test_case.pyc test_discovery.py test_discovery.pyc test_functiontestcase.py test_functiontestcase.pyc test_loader.py test_loader.pyc test_program.py test_program.pyc test_result.py test_result.pyc test_runner.py test_runner.pyc test_setups.py test_setups.pyc test_skipping.py test_skipping.pyc test_suite.py test_suite.pyc __init__.py __init__.pyc handlers.py handlers.pyc headers.py headers.pyc simple_server.py simple_server.pyc util.py util.pyc validate.py validate.pyc __init__.py __init__.pyc __init__.py __init__.pyc domreg.py domreg.pyc expatbuilder.py expatbuilder.pyc minicompat.py minicompat.pyc minidom.py minidom.pyc NodeFilter.py NodeFilter.pyc pulldom.py pulldom.pyc xmlbuilder.py xmlbuilder.pyc __init__.py __init__.pyc cElementTree.py cElementTree.pyc ElementInclude.py ElementInclude.pyc ElementPath.py ElementPath.pyc ElementTree.py ElementTree.pyc __init__.py __init__.pyc expat.py expat.pyc __init__.py __init__.pyc _exceptions.py _exceptions.pyc expatreader.py expatreader.pyc handler.py handler.pyc saxutils.py saxutils.pyc xmlreader.py xmlreader.pyc
-[INFO]:    Deleting some other stuff not used on android
-[DEBUG]:   -> running rm -rf lib2to3
-[DEBUG]:   -> running rm -rf idlelib
-[DEBUG]:   -> running rm -rf config/python.o
-[DEBUG]:   -> running rm -rf lib-dynload/_ctypes_test.so
-[DEBUG]:   -> running rm -rf lib-dynload/_testcapi.so
-[INFO]:    <- directory context /Users/Dale/.python-for-android/dists/mi2
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    Stripping libraries
-[DEBUG]:   -> running find /Users/Dale/.python-for-android/dists/mi2/private /Users/Dale/.python-for-android/dists/mi2/libs -iname *.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/_codecs_cn.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/_codecs_hk.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/_codecs_iso2022.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/_codecs_jp.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/_codecs_kr.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/_codecs_tw.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/_csv.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/_heapq.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/_hotshot.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/_io.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/_json.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/_lsprof.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/_multibytecodec.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/audioop.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/future_builtins.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/grp.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/mmap.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/resource.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/syslog.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/termios.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/lib-dynload/unicodedata.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/android/_android.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/android/_android_billing.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/android/_android_sound.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/jnius/jnius.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/_event.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/core/text/text_layout.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/buffer.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/c_opengl_debug.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/c_opengl_mock.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/compiler.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/context.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/context_instructions.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/fbo.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/gl_instructions.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/instructions.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/opengl.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/opengl_utils.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/scissor_instructions.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/shader.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/stencil_instructions.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/svg.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/tesselator.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/texture.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/transformation.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/vbo.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/vertex.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/vertex_instructions.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/properties.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/weakproxy.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/mobile_insight/monitor/dm_collector/dm_collector_c.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/_arraysurfarray.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/base.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/bufferproxy.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/cdrom.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/color.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/constants.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/display.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/draw.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/event.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/fastevent.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/font.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/gfxdraw.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/image.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/imageext.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/joystick.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/key.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/mask.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/mouse.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/overlay.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/pixelarray.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/rect.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/rwobject.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/surface.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/surflock.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/time.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/transform.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/private/libpymodules.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/libs/armeabi/libapplication.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/libs/armeabi/libgnustl_shared.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/libs/armeabi/libpython2.7.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/libs/armeabi/libsdl.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/libs/armeabi/libsdl_image.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/libs/armeabi/libsdl_main.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/libs/armeabi/libsdl_mixer.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/libs/armeabi/libsdl_ttf.so
-[DEBUG]:   	/Users/Dale/.python-for-android/dists/mi2/libs/armeabi/libsqlite3.so
-[INFO]:    Stripping libraries in private dir
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/android/_android.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/android/_android_billing.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/android/_android_sound.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/jnius/jnius.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/_event.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/core/text/text_layout.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/buffer.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/c_opengl_debug.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/c_opengl_mock.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/compiler.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/context.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/context_instructions.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/fbo.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/gl_instructions.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/instructions.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/opengl.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/opengl_utils.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/scissor_instructions.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/shader.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/stencil_instructions.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/svg.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/tesselator.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/texture.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/transformation.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/vbo.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/vertex.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/graphics/vertex_instructions.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/properties.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/kivy/weakproxy.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/_arraysurfarray.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/base.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/bufferproxy.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/cdrom.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/color.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/constants.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/display.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/draw.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/event.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/fastevent.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/font.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/gfxdraw.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/image.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/imageext.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/joystick.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/key.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/mask.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/mouse.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/overlay.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/pixelarray.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/rect.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/rwobject.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/surface.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/surflock.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/time.so
-[DEBUG]:   Failed to strip /Users/Dale/.python-for-android/dists/mi2/private/lib/python2.7/site-packages/pygame/transform.so
-[DEBUG]:   Failed to strip 
-[INFO]:    -> directory context /Users/Dale/.python-for-android/dists/mi2
-[INFO]:    Saving distribution info
-[INFO]:    <- directory context /Users/Dale/Workspace/mobileInsight/MobileInsight2
-[INFO]:    # Your distribution was created successfully, exiting.
-[INFO]:    Dist can be found at (for now) /Users/Dale/.python-for-android/dists/mi2
-('path is', '/Users/Dale/Library/Android/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86/bin/:/Users/Dale/Library/Android/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/bin/:/Users/Dale/Library/Android/android-ndk-r10e:/Users/Dale/Library/Android/sdk/tools:/Users/Dale/Library/Android/android-ndk-r10e:/Users/Dale/Library/Android/sdk/platform-tools:/Users/Dale/Library/Android/sdk/tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/TeX/texbin:/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home:/Library/TeX/texbin:/Applications/Sublime Text.app/Contents/SharedSupport/bin:/usr/local/solr-5.0.0/bin:/Users/Dale/Library/Android/sdk/tools:/Users/Dale/Library/Android/sdk/platform-tools:/Users/Dale/Library/Android/android-ndk-r10e')
-('name is', None, <class 'pythonforandroid.recipes.six.SixRecipe'>)
-('path is', '/Users/Dale/Library/Android/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86/bin/:/Users/Dale/Library/Android/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/bin/:/Users/Dale/Library/Android/android-ndk-r10e:/Users/Dale/Library/Android/sdk/tools:/Users/Dale/Library/Android/android-ndk-r10e:/Users/Dale/Library/Android/sdk/platform-tools:/Users/Dale/Library/Android/sdk/tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/TeX/texbin:/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home:/Library/TeX/texbin:/Applications/Sublime Text.app/Contents/SharedSupport/bin:/usr/local/solr-5.0.0/bin:/Users/Dale/Library/Android/sdk/tools:/Users/Dale/Library/Android/sdk/platform-tools:/Users/Dale/Library/Android/android-ndk-r10e')
-stripping pygame
-Should remove pygame tests etc. here, but skipping for now
-('name is', 'jnius', <class 'pythonforandroid.recipes.pyjnius.PyjniusRecipe'>)
-('name is', None, <class 'pythonforandroid.recipes.android.AndroidRecipe'>)
-('name is', None, <class 'pythonforandroid.recipes.kivy.KivyRecipe'>)
-('path is', '/Users/Dale/Library/Android/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86/bin/:/Users/Dale/Library/Android/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/bin/:/Users/Dale/Library/Android/android-ndk-r10e:/Users/Dale/Library/Android/sdk/tools:/Users/Dale/Library/Android/android-ndk-r10e:/Users/Dale/Library/Android/sdk/platform-tools:/Users/Dale/Library/Android/sdk/tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/TeX/texbin:/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home:/Library/TeX/texbin:/Applications/Sublime Text.app/Contents/SharedSupport/bin:/usr/local/solr-5.0.0/bin:/Users/Dale/Library/Android/sdk/tools:/Users/Dale/Library/Android/sdk/platform-tools:/Users/Dale/Library/Android/android-ndk-r10e')
-objs_paths are ['/Users/Dale/.python-for-android/build/bootstrap_builds/pygame/collated_objects']
-('path is', '/Users/Dale/Library/Android/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86/bin/:/Users/Dale/Library/Android/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/darwin-x86_64/bin/:/Users/Dale/Library/Android/android-ndk-r10e:/Users/Dale/Library/Android/sdk/tools:/Users/Dale/Library/Android/android-ndk-r10e:/Users/Dale/Library/Android/sdk/platform-tools:/Users/Dale/Library/Android/sdk/tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/Library/TeX/texbin:/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home:/Library/TeX/texbin:/Applications/Sublime Text.app/Contents/SharedSupport/bin:/usr/local/solr-5.0.0/bin:/Users/Dale/Library/Android/sdk/tools:/Users/Dale/Library/Android/sdk/platform-tools:/Users/Dale/Library/Android/android-ndk-r10e')

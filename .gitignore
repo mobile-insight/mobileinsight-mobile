@@ -1,5 +1,6 @@
 *.pyc
 *.pyo
+*.log
 *.pcap
 *.pcapng
 /*.txt
@@ -12,7 +13,6 @@ dist/
 
 # OSX file
 .DS_Store
-._.DS_Store
 
 # Pickle output
 *.p
@@ -43,4 +43,4 @@ dist/
 demo_app/data/*
 
 # Personalized config file
-config.yml
+config.yml*
