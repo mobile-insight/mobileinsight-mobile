@@ -9,12 +9,18 @@ It deploys compiling environment and parameters for mobileInsight.
 Authors : Zengwen Yuan
           Kainan Wang
 Version : 2.1 -- 2015/05/16 reformat building commands
+          2.2 -- 2015/05/17 add config commands to copy libs
 '''
 
 import os, sys, commands, yaml
 
 
 def run_config():
+    commands.getstatusoutput('git clone https://wing1.cs.ucla.edu/gitlab/zyuan/mobile-insight-libs.git')
+    os.system('mkdir ./demo_app/data')
+    os.system('cp mobile-insight-libs/lib/* ./demo_app/data')
+    os.system('cp mobile-insight-libs/bin/* ./demo_app/data')
+    os.system('rm -r mobile-insight-libs')
     commands.getstatusoutput('tail -n+8 ./config/config_template.yml > ./config/config.yml')
     print 'Edit ./config/config.yml to set up the configuration'
 
@@ -117,7 +123,7 @@ if __name__ == '__main__':
         with open("./config/config.yml", 'r') as ymlfile:
             cfg = yaml.load(ymlfile)
     except:
-        print "Compilation environment is not configured!\nPlease modify the environment in config.yml file first."
+        print "Compilation environment is not configured!\nRunning make config automatically for you..."
         run_config()
         sys.exit()
 
