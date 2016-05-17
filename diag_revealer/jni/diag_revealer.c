@@ -450,21 +450,21 @@ main (int argc, char **argv)
 					// Wirte msg type to pipe
 					int ret_err;
 					// LOGD("ret_err0");
-					// ret_err = write(fifo_fd, &fifo_msg_type, sizeof(short));
-					ret_err = diag_write(fifo_fd, &fifo_msg_type, sizeof(short));
+					ret_err = write(fifo_fd, &fifo_msg_type, sizeof(short));
+					// ret_err = diag_write(fifo_fd, &fifo_msg_type, sizeof(short));
 					// LOGD("ret_err1=%d",ret_err);
 					// Write size of (payload + timestamp)
 					fifo_msg_len = (short) msg_len + 8;
-					// ret_err = write(fifo_fd, &fifo_msg_len, sizeof(short));
-					ret_err = diag_write(fifo_fd, &fifo_msg_len, sizeof(short));
+					ret_err = write(fifo_fd, &fifo_msg_len, sizeof(short));
+					// ret_err = diag_write(fifo_fd, &fifo_msg_len, sizeof(short));
 					// LOGD("ret_err2=%d",ret_err);
 					// Write timestamp of sending payload to pipe
-					// ret_err = write(fifo_fd, &ts, sizeof(double));
-					ret_err = diag_write(fifo_fd, &ts, sizeof(double));
+					ret_err = write(fifo_fd, &ts, sizeof(double));
+					// ret_err = diag_write(fifo_fd, &ts, sizeof(double));
 					// LOGD("ret_err3=%d",ret_err);
 					// Write payload to pipe
-					// ret_err = write(fifo_fd, buf_read + offset + 4, msg_len);
-					ret_err = diag_write(fifo_fd, buf_read + offset + 4, msg_len);
+					ret_err = write(fifo_fd, buf_read + offset + 4, msg_len);
+					// ret_err = diag_write(fifo_fd, buf_read + offset + 4, msg_len);
 					// LOGD("ret_err4=%d",ret_err);
 					// Write mi2log output if necessary
 					if (state.log_fp != NULL) {
