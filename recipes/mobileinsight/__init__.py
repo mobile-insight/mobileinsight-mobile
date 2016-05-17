@@ -7,7 +7,7 @@ import glob
 class MobileInsightRecipe(Recipe):
 
     mi_git            = 'https://wing1.cs.ucla.edu/gitlab/root/automator.git'
-    mi_branch         = 'new-analyzer'
+    mi_branch         = 'master'
     version           = '2.1'
     toolchain_version = 4.8          # default GCC toolchain version we try to use
     depends           = ['python2']  # any other recipe names that must be built before this one
