@@ -12,6 +12,7 @@ dist/
 
 # OSX file
 .DS_Store
+._.DS_Store
 
 # Pickle output
 *.p
@@ -27,8 +28,19 @@ dist/
 # Buildozer temporary files
 .buildozer
 
-# Android App
+# Android apk
 *.apk
+
+# Libraries
+*.so
+
+# Binaries
+*android_pie_ws_dissector
+*android_ws_dissector
+*diag_revealer
+
+# Data directory
+demo_app/data/*
 
 # Personalized config file
 config.yml
