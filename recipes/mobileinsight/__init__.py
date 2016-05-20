@@ -103,7 +103,7 @@ class MobileInsightRecipe(Recipe):
                 tmp_dir,
                 _tail     = 20,
                 _critical = True)
-        
+
         shprint(sh.mv,
                 join(tmp_dir, 'mobile_insight'),
                 build_dir,
@@ -150,7 +150,7 @@ class MobileInsightRecipe(Recipe):
         #         join(build_dir, 'mobile_insight/monitor/dm_collector/__init__.py'),
         #         _tail     = 20,
         #         _critical = True)
-        
+
         # shprint(sh.grep, '-v', '"### P4A.*"',
         #         join(build_dir, 'mobile_insight/monitor/dm_collector/dm_endec/ws_dissector.py'),
         #         '>',
