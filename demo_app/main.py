@@ -147,12 +147,12 @@ class MobileInsightScreen(GridLayout):
             self.ids.checkbox_app_layout.add_widget(widget)
 
         # Init a wakelock for continuous MI service
-        Context = autoclass('android.content.Context')
-        PowerManager = autoclass('android.os.PowerManager')
-        current_activity = cast("android.app.Activity",
-                            autoclass("org.renpy.android.PythonActivity").mActivity)
-        pm = current_activity.getSystemService(Context.POWER_SERVICE)
-        self.wakelock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MobileInsight");
+        # Context = autoclass('android.content.Context')
+        # PowerManager = autoclass('android.os.PowerManager')
+        # current_activity = cast("android.app.Activity",
+        #                     autoclass("org.renpy.android.PythonActivity").mActivity)
+        # pm = current_activity.getSystemService(Context.POWER_SERVICE)
+        # self.wakelock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MobileInsight");
 
 
     def _run_shell_cmd(self, cmd, wait = False):
@@ -356,7 +356,7 @@ class MobileInsightScreen(GridLayout):
             self.error_log = "Running " + app_name + "..."
             self.service = AndroidService("MobileInsight is running...", app_name)
             self.service.start(self.app_list[app_name])   # app name
-            self.wakelock.acquire()
+            # self.wakelock.acquire()
             
 
     def stop_service(self):
@@ -365,7 +365,7 @@ class MobileInsightScreen(GridLayout):
             self.service = None
             self.error_log="Stopped"
             self.stop_collection()  # close ongoing collections
-            self.wakelock.release()
+            # self.wakelock.release()
 
 
     def about(self):
