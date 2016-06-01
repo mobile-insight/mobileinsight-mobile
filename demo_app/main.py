@@ -1,6 +1,8 @@
 import kivy
 kivy.require('1.0.9')
 
+from kivy.uix.screenmanager import ScreenManager, Screen
+
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.popup import Popup
@@ -22,6 +24,8 @@ import sys
 import subprocess
 import time
 import traceback
+
+sm = ScreenManager()
 
 ANDROID_SHELL = "/system/bin/sh"
 
@@ -134,7 +138,11 @@ class MobileInsightScreen(GridLayout):
         if not self.__check_diag_mode():
             self.error_log = "WARINING: the diagnostic mode is disabled. Please check your phone settings."
 
-        self.stop_collection()  # clean up ongoing log collections
+        # clean up ongoing log collections
+        self.stop_collection()  
+
+        # TODO: resume service, rather than killing them. 
+        # TODO: resume UI. Why no response?
 
         first = True
         for name in self.app_list:
@@ -285,26 +293,35 @@ class MobileInsightScreen(GridLayout):
 
     def _get_app_list(self):
 
-        ret = {} # app_name->path
+        ret = {} # app_name->(path,with_UI)
 
         APP_DIR = os.path.join(self._get_files_dir(), "app")
         l = os.listdir(APP_DIR)
         for f in l:
-            if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+            if os.path.exists(os.path.join(APP_DIR, f, "main_ui.mi2app")):
+                ret[f] = (os.path.join(APP_DIR, f), True)
+            elif os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
                 # ret.append(f)
-                ret[f] = os.path.join(APP_DIR, f)
+                ret[f] = (os.path.join(APP_DIR, f), False)
 
         # Yuanjie: support alternative path for users to customize their own app
         APP_DIR = "/sdcard/mobile_insight/apps/"
+
         if os.path.exists(APP_DIR):
             l = os.listdir(APP_DIR)
             for f in l:
-                if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+                if os.path.exists(os.path.join(APP_DIR, f, "main_ui.mi2app")):
                     if f in ret:
                         tmp_name = f + " (plugin)"
                     else:
                         tmp_name = f
-                    ret[tmp_name] = os.path.join(APP_DIR, f)
+                    ret[tmp_name] = (os.path.join(APP_DIR, f), True)
+                elif os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+                    if f in ret:
+                        tmp_name = f + " (plugin)"
+                    else:
+                        tmp_name = f
+                    ret[tmp_name] = (os.path.join(APP_DIR, f), False)
         else: # create directory for user-customized apps
             cmd = "mkdir \"%s\";" % APP_DIR
             self._run_shell_cmd(cmd)
@@ -318,7 +335,7 @@ class MobileInsightScreen(GridLayout):
                 self.ids.checkbox_app.selected = cb.text
 
         # Yuanjie: try to load readme.txt
-        app_path = self.app_list[self.ids.checkbox_app.selected]
+        app_path = self.app_list[self.ids.checkbox_app.selected][0]
         if os.path.exists(os.path.join(app_path, "readme.txt")):
             with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
                 self.error_log = self.ids.checkbox_app.selected + ": " + ff.read()
@@ -352,11 +369,18 @@ class MobileInsightScreen(GridLayout):
         if platform == "android" and app_name in self.app_list:
             if self.service:
                 self.stop_service() # stop the running service
-            from android import AndroidService
-            self.error_log = "Running " + app_name + "..."
-            self.service = AndroidService("MobileInsight is running...", app_name)
-            self.service.start(self.app_list[app_name])   # app name
-            # self.wakelock.acquire()
+
+            if not self.app_list[app_name][1]:
+                #No UI: run as Android service
+                from android import AndroidService
+                self.error_log = "Running " + app_name + "..."
+                self.service = AndroidService("MobileInsight is running...", app_name)
+                self.service.start(self.app_list[app_name][0])   # app name
+                # self.wakelock.acquire()
+            else:
+                #With UI: run code directly
+                print "test???"
+                execfile(os.path.join(self.app_list[app_name][0],"main_ui.mi2app"))
             
 
     def stop_service(self):
@@ -406,12 +430,42 @@ class LabeledCheckBox(GridLayout):
 class MobileInsightApp(App):
     screen = None
 
+    config = [
+        { "type": "title",
+        "title": "Test application" },
+
+        { "type": "options",
+          "title": "My first key",
+          "desc": "Description of my first key",
+          "section": "section1",
+          "key": "key1",
+          "options": ["value1", "value2", "another value"] },
+
+        { "type": "numeric",
+          "title": "My second key",
+          "desc": "Description of my second key",
+          "section": "section1",
+          "key": "key2" }
+    ]    
+
+    def build_settings(self, settings):
+        jsondata = self.config
+        settings.add_json_panel('Test application',
+            self.config, data=jsondata)
+
     def build(self):
         self.screen = MobileInsightScreen()
         return self.screen
 
     def on_pause(self):
+        # Yuanjie: The following code prevents screen freeze when screen off -> screen on
+        current_activity = cast("android.app.Activity",
+                            autoclass("org.renpy.android.PythonActivity").mActivity)
+        current_activity.moveTaskToBack(True)
         return True  # go into Pause mode
+
+    def on_resume(self):
+        pass
 
     def on_stop(self):
         self.screen.stop_service()
