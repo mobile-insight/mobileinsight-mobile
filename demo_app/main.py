@@ -25,6 +25,8 @@ import subprocess
 import time
 import traceback
 
+import json
+
 ANDROID_SHELL = "/system/bin/sh"
 
 Window.softinput_mode = "pan"
@@ -304,6 +306,15 @@ class MobileInsightScreen(GridLayout):
                     for index in range(len(tmp)):
                         if tmp[index]['type'] == 'title':
                             result =  result+'{"type": "title","title": ""},'
+                        elif tmp[index]['type'] == 'options':
+                            default_val[tmp[index]['key']]=tmp[index]['default']
+                            result = result+'{"type": "'+tmp[index]['type'] \
+                                   + '","title":"'+tmp[index]['title'] \
+                                   + '","desc":"'+tmp[index]['desc'] \
+                                   + '","section":"'+APP_NAME \
+                                   + '","key":"'+tmp[index]['key'] \
+                                   + '","options":'+json.dumps(tmp[index]['options']) \
+                                   + '},'
                         else:
                             default_val[tmp[index]['key']]=tmp[index]['default']
                             result = result+'{"type": "'+tmp[index]['type'] \
