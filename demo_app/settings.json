@@ -1,0 +1,15 @@
+[
+    {
+        "type": "title",
+        "title": ""
+    },
+
+    {
+        "type": "bool",
+        "title": "Start MobileInsight on startup",
+        "desc": "Run MobileInsight services on startup",
+        "section": "mi_section",
+        "key": "bStartUp"
+    }
+
+]

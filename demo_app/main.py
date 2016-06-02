@@ -25,8 +25,6 @@ import subprocess
 import time
 import traceback
 
-sm = ScreenManager()
-
 ANDROID_SHELL = "/system/bin/sh"
 
 Window.softinput_mode = "pan"
@@ -111,6 +109,13 @@ Builder.load_string("""
         on_release: root.stop_service()
 
     Button:
+        text: 'Settings' 
+        disabled: root.ids.checkbox_app.selected == ''
+        size_hint_y: 2.5
+        font_size: "24sp"
+        on_release: app.open_settings()
+
+    Button:
         text: 'About' 
         disabled: root.ids.checkbox_app.selected == ''
         size_hint_y: 2.5
@@ -141,9 +146,6 @@ class MobileInsightScreen(GridLayout):
         # clean up ongoing log collections
         self.stop_collection()  
 
-        # TODO: resume service, rather than killing them. 
-        # TODO: resume UI. Why no response?
-
         first = True
         for name in self.app_list:
             widget = LabeledCheckBox(text=name, group="app")
@@ -153,14 +155,6 @@ class MobileInsightScreen(GridLayout):
                 first = False
             widget.bind(on_active=self.on_checkbox_app_active)
             self.ids.checkbox_app_layout.add_widget(widget)
-
-        # Init a wakelock for continuous MI service
-        # Context = autoclass('android.content.Context')
-        # PowerManager = autoclass('android.os.PowerManager')
-        # current_activity = cast("android.app.Activity",
-        #                     autoclass("org.renpy.android.PythonActivity").mActivity)
-        # pm = current_activity.getSystemService(Context.POWER_SERVICE)
-        # self.wakelock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MobileInsight");
 
 
     def _run_shell_cmd(self, cmd, wait = False):
@@ -290,6 +284,40 @@ class MobileInsightScreen(GridLayout):
     def _get_files_dir(self):
         return str(self.current_activity.getFilesDir().getAbsolutePath())
 
+    def create_app_settings(self,config,settings):
+
+        for app in self.app_list:
+            APP_NAME = app
+            APP_DIR = self.app_list[app][0]
+            setting_path = os.path.join(APP_DIR, "settings.json")
+            if os.path.exists(setting_path):
+                with open(setting_path, "r") as settings_json:
+                    raw_data = settings_json.read()
+
+
+                    # Regulate the config into the format that kivy can accept 
+                    tmp = eval(raw_data)
+
+                    result = "["
+                    default_val={}
+
+                    for index in range(len(tmp)):
+                        if tmp[index]['type'] == 'title':
+                            result =  result+'{"type": "title","title": ""},'
+                        else:
+                            default_val[tmp[index]['key']]=tmp[index]['default']
+                            result = result+'{"type": "'+tmp[index]['type'] \
+                                   + '","title":"'+tmp[index]['title'] \
+                                   + '","desc":"'+tmp[index]['desc'] \
+                                   + '","section":"'+APP_NAME \
+                                   + '","key":"'+tmp[index]['key'] \
+                                   + '"},'
+                    result = result[0:-1]+"]"
+
+                    #Update the default value and setting menu
+                    config.setdefaults(APP_NAME,default_val)
+                    settings.add_json_panel(APP_NAME, config, data=result)
+
 
     def _get_app_list(self):
 
@@ -379,7 +407,6 @@ class MobileInsightScreen(GridLayout):
                 # self.wakelock.acquire()
             else:
                 #With UI: run code directly
-                print "test???"
                 execfile(os.path.join(self.app_list[app_name][0],"main_ui.mi2app"))
             
 
@@ -430,31 +457,26 @@ class LabeledCheckBox(GridLayout):
 class MobileInsightApp(App):
     screen = None
 
-    config = [
-        { "type": "title",
-        "title": "Test application" },
-
-        { "type": "options",
-          "title": "My first key",
-          "desc": "Description of my first key",
-          "section": "section1",
-          "key": "key1",
-          "options": ["value1", "value2", "another value"] },
-
-        { "type": "numeric",
-          "title": "My second key",
-          "desc": "Description of my second key",
-          "section": "section1",
-          "key": "key2" }
-    ]    
-
     def build_settings(self, settings):
-        jsondata = self.config
-        settings.add_json_panel('Test application',
-            self.config, data=jsondata)
+
+        with open("settings.json", "r") as settings_json:
+            settings.add_json_panel('General settings', self.config, data=settings_json.read())
+
+        self.screen.create_app_settings(self.config, settings)
+
+    def build_config(self, config):
+        # Yuanjie: the ordering of the following options MUST be the same as those in settings.json!!!
+        config.setdefaults('mi_section', {
+            'bStartUp': True,
+            'bUseWiFi': True,
+            'bSingleLog': True,
+            'mi_log_size': '500',
+        })
+        pass
 
     def build(self):
         self.screen = MobileInsightScreen()
+        Window.borderless = False
         return self.screen
 
     def on_pause(self):
