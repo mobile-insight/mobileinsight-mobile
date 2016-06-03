@@ -169,10 +169,10 @@ if __name__ == '__main__':
             print "Dist %s clean failed."
     elif arg == 'clean_all':
         try:
-            # os.system('p4a clean_all')
-            # os.system('p4a clean_builds')
+            os.system('p4a clean_all')
+            os.system('p4a clean_builds')
             os.system('p4a clean_dists')
-            # os.system('p4a clean_download_cache')
+            os.system('p4a clean_download_cache')
         except:
             pass
     elif arg == 'install':
