@@ -68,8 +68,8 @@ def run_apk(build_release):
             + ' --whitelist={}/{}'.format(cfg['mi_dev_path'], cfg['whitelist']) \
             + ' --permission WRITE_EXTERNAL_STORAGE' \
             + ' --permission INTERNET' \
-            + ' --permission WAKE_LOCK' \
-            + ' --wakelock'  #Wakelock is to prevent timeout problem
+            + ' --permission RECEIVE_BOOT_COMPLETED' \
+            # + ' --intent-filters BOOT_COMPLETED'
 
     if build_release is True:
         # This should work but currently has bug
@@ -169,10 +169,10 @@ if __name__ == '__main__':
             print "Dist %s clean failed."
     elif arg == 'clean_all':
         try:
-            os.system('p4a clean_all')
-            os.system('p4a clean_builds')
+            # os.system('p4a clean_all')
+            # os.system('p4a clean_builds')
             os.system('p4a clean_dists')
-            os.system('p4a clean_download_cache')
+            # os.system('p4a clean_download_cache')
         except:
             pass
     elif arg == 'install':
