@@ -479,11 +479,7 @@ class MobileInsightApp(App):
         # Yuanjie: the ordering of the following options MUST be the same as those in settings.json!!!
         config.setdefaults('mi_section', {
             'bStartUp': True,
-            'bUseWiFi': True,
-            'bSingleLog': True,
-            'mi_log_size': '500',
         })
-        pass
 
     def build(self):
         self.screen = MobileInsightScreen()

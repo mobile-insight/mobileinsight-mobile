@@ -28,6 +28,7 @@ def get_cache_dir():
 def get_files_dir():
     return str(service_context.getFilesDir().getAbsolutePath())
 
+
 def get_phone_manufacturer():
     return android_os_build.MANUFACTURER
 
