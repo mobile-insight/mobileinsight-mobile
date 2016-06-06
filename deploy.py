@@ -182,11 +182,12 @@ if __name__ == '__main__':
             os.system('adb install -r {app}-{ver}-debug.apk'.format(app=cfg['app_name'], ver=cfg['app_version']))
     elif arg == 'update':
         try:
-            if debug == 'icellular':
-                os.system('adb shell "rm -r /sdcard/mobile_insight/apps/iCellular/"')
-                os.system('adb push ./internal_app/iCellular/ /sdcard/mobile_insight/apps/iCellular/')
-            elif debug == 'netlogger':
-                os.system('adb shell "rm -r /sdcard/mobile_insight/apps/NetLoggerInternal/"')
-                os.system('adb push ./internal_app/NetLoggerInternal/ /sdcard/mobile_insight/apps/NetLoggerInternal/')
+            phone_path = "/sdcard/mobile_insight/apps/"+debug
+            desktop_path = "./internal_app/"+debug
+            if os.path.isdir(desktop_path):
+                os.system('adb shell "rm -r '+phone_path+'"')
+                os.system('adb push '+desktop_path+' '+phone_path)
+            else:
+                print "Sorry the plugin "+debug+" does not exist"
         except:
             print "Sorry, your arguments are not supported for this moment."
