@@ -126,6 +126,46 @@ Builder.load_string("""
 
 """)
 
+
+def get_app_list():
+
+    current_activity = cast("android.app.Activity",
+                            autoclass("org.renpy.android.PythonActivity").mActivity)
+
+    ret = {} # app_name->(path,with_UI)
+
+    APP_DIR = os.path.join(str(current_activity.getFilesDir().getAbsolutePath()), "app")
+    l = os.listdir(APP_DIR)
+    for f in l:
+        if os.path.exists(os.path.join(APP_DIR, f, "main_ui.mi2app")):
+            ret[f] = (os.path.join(APP_DIR, f), True)
+        elif os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+            # ret.append(f)
+            ret[f] = (os.path.join(APP_DIR, f), False)
+
+    # Yuanjie: support alternative path for users to customize their own app
+    APP_DIR = "/sdcard/mobile_insight/apps/"
+
+    if os.path.exists(APP_DIR):
+        l = os.listdir(APP_DIR)
+        for f in l:
+            if os.path.exists(os.path.join(APP_DIR, f, "main_ui.mi2app")):
+                if f in ret:
+                    tmp_name = f + " (plugin)"
+                else:
+                    tmp_name = f
+                ret[tmp_name] = (os.path.join(APP_DIR, f), True)
+            elif os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+                if f in ret:
+                    tmp_name = f + " (plugin)"
+                else:
+                    tmp_name = f
+                ret[tmp_name] = (os.path.join(APP_DIR, f), False)
+    else: # create directory for user-customized apps
+        os.mkdir(APP_DIR)
+
+    return ret
+
 class MobileInsightScreen(GridLayout):
     error_log = StringProperty("MobileInsight 2.0\nUCLA WiNG Group & OSU MSSN Lab")
     collecting = BooleanProperty(False)
@@ -136,7 +176,9 @@ class MobileInsightScreen(GridLayout):
 
     def __init__(self):
         super(MobileInsightScreen, self).__init__()
-        self.app_list = self._get_app_list()
+        # self.app_list = self._get_app_list()
+        # self.app_list = self.get_app_list()
+        self.app_list = get_app_list()
         # self.app_list.sort()
 
         self.__init_libs()
@@ -286,88 +328,6 @@ class MobileInsightScreen(GridLayout):
     def _get_files_dir(self):
         return str(self.current_activity.getFilesDir().getAbsolutePath())
 
-    def create_app_settings(self,config,settings):
-
-        for app in self.app_list:
-            APP_NAME = app
-            APP_DIR = self.app_list[app][0]
-            setting_path = os.path.join(APP_DIR, "settings.json")
-            if os.path.exists(setting_path):
-                with open(setting_path, "r") as settings_json:
-                    raw_data = settings_json.read()
-
-
-                    # Regulate the config into the format that kivy can accept 
-                    tmp = eval(raw_data)
-
-                    result = "["
-                    default_val={}
-
-                    for index in range(len(tmp)):
-                        if tmp[index]['type'] == 'title':
-                            result =  result+'{"type": "title","title": ""},'
-                        elif tmp[index]['type'] == 'options':
-                            default_val[tmp[index]['key']]=tmp[index]['default']
-                            result = result+'{"type": "'+tmp[index]['type'] \
-                                   + '","title":"'+tmp[index]['title'] \
-                                   + '","desc":"'+tmp[index]['desc'] \
-                                   + '","section":"'+APP_NAME \
-                                   + '","key":"'+tmp[index]['key'] \
-                                   + '","options":'+json.dumps(tmp[index]['options']) \
-                                   + '},'
-                        else:
-                            default_val[tmp[index]['key']]=tmp[index]['default']
-                            result = result+'{"type": "'+tmp[index]['type'] \
-                                   + '","title":"'+tmp[index]['title'] \
-                                   + '","desc":"'+tmp[index]['desc'] \
-                                   + '","section":"'+APP_NAME \
-                                   + '","key":"'+tmp[index]['key'] \
-                                   + '"},'
-                    result = result[0:-1]+"]"
-
-                    #Update the default value and setting menu
-                    config.setdefaults(APP_NAME,default_val)
-                    settings.add_json_panel(APP_NAME, config, data=result)
-
-
-    def _get_app_list(self):
-
-        ret = {} # app_name->(path,with_UI)
-
-        APP_DIR = os.path.join(self._get_files_dir(), "app")
-        l = os.listdir(APP_DIR)
-        for f in l:
-            if os.path.exists(os.path.join(APP_DIR, f, "main_ui.mi2app")):
-                ret[f] = (os.path.join(APP_DIR, f), True)
-            elif os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
-                # ret.append(f)
-                ret[f] = (os.path.join(APP_DIR, f), False)
-
-        # Yuanjie: support alternative path for users to customize their own app
-        APP_DIR = "/sdcard/mobile_insight/apps/"
-
-        if os.path.exists(APP_DIR):
-            l = os.listdir(APP_DIR)
-            for f in l:
-                if os.path.exists(os.path.join(APP_DIR, f, "main_ui.mi2app")):
-                    if f in ret:
-                        tmp_name = f + " (plugin)"
-                    else:
-                        tmp_name = f
-                    ret[tmp_name] = (os.path.join(APP_DIR, f), True)
-                elif os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
-                    if f in ret:
-                        tmp_name = f + " (plugin)"
-                    else:
-                        tmp_name = f
-                    ret[tmp_name] = (os.path.join(APP_DIR, f), False)
-        else: # create directory for user-customized apps
-            cmd = "mkdir \"%s\";" % APP_DIR
-            self._run_shell_cmd(cmd)
-
-        return ret
-
-
     def on_checkbox_app_active(self, obj):
         for cb in self.ids.checkbox_app_layout.children:
             if cb.active:
@@ -444,7 +404,6 @@ class MobileInsightScreen(GridLayout):
                       size_hint=(.8, .4))
         popup.open()
 
-
 class LabeledCheckBox(GridLayout):
     active = BooleanProperty(False)
     text = StringProperty("")
@@ -473,13 +432,82 @@ class MobileInsightApp(App):
         with open("settings.json", "r") as settings_json:
             settings.add_json_panel('General settings', self.config, data=settings_json.read())
 
-        self.screen.create_app_settings(self.config, settings)
+        self.screen.create_app_settings(settings)
+
+    def create_app_settings(self,settings):
+        app_list = get_app_list()
+        for app in app_list:
+            APP_NAME = app
+            APP_DIR = app_list[app][0]
+            setting_path = os.path.join(APP_DIR, "settings.json")
+            if os.path.exists(setting_path):
+                with open(setting_path, "r") as settings_json:
+                    raw_data = settings_json.read()
+
+
+                    # Regulate the config into the format that kivy can accept 
+                    tmp = eval(raw_data)
+
+                    result = "["
+                    default_val={}
+
+                    for index in range(len(tmp)):
+                        if tmp[index]['type'] == 'title':
+                            result =  result+'{"type": "title","title": ""},'
+                        elif tmp[index]['type'] == 'options':
+                            default_val[tmp[index]['key']]=tmp[index]['default']
+                            result = result+'{"type": "'+tmp[index]['type'] \
+                                   + '","title":"'+tmp[index]['title'] \
+                                   + '","desc":"'+tmp[index]['desc'] \
+                                   + '","section":"'+APP_NAME \
+                                   + '","key":"'+tmp[index]['key'] \
+                                   + '","options":'+json.dumps(tmp[index]['options']) \
+                                   + '},'
+                        else:
+                            default_val[tmp[index]['key']]=tmp[index]['default']
+                            result = result+'{"type": "'+tmp[index]['type'] \
+                                   + '","title":"'+tmp[index]['title'] \
+                                   + '","desc":"'+tmp[index]['desc'] \
+                                   + '","section":"'+APP_NAME \
+                                   + '","key":"'+tmp[index]['key'] \
+                                   + '"},'
+                    result = result[0:-1]+"]"
+
+                    #Update the default value and setting menu
+                    settings.add_json_panel(APP_NAME, config, data=result)
 
     def build_config(self, config):
         # Yuanjie: the ordering of the following options MUST be the same as those in settings.json!!!
         config.setdefaults('mi_section', {
             'bStartUp': True,
         })
+        self.create_app_default_config(config)
+
+    def create_app_default_config(self, config):
+        app_list = get_app_list()
+        for app in app_list:
+            APP_NAME = app
+            APP_DIR = app_list[app][0]
+            setting_path = os.path.join(APP_DIR, "settings.json")
+            if os.path.exists(setting_path):
+                with open(setting_path, "r") as settings_json:
+                    raw_data = settings_json.read()
+
+                    # Regulate the config into the format that kivy can accept 
+                    tmp = eval(raw_data)
+
+                    default_val={}
+
+                    for index in range(len(tmp)):
+                        if tmp[index]['type'] == 'title':
+                            pass
+                        elif 'default' in tmp[index]:
+                            default_val[tmp[index]['key']]=tmp[index]['default']
+
+                    #Update the default value and setting menu
+                    config.setdefaults(APP_NAME,default_val)
+
+
 
     def build(self):
         self.screen = MobileInsightScreen()
