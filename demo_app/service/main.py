@@ -35,11 +35,13 @@ if __name__ == "__main__":
 
     ii = arg.rfind('/')
     section_name = arg[ii+1:]
-    config_options = config.options(section_name)
 
+    
     plugin_config={}
-    for item in config_options:
-        plugin_config[item] = config.get(section_name, item)
+    if section_name in config.sections():
+        config_options = config.options(section_name)
+        for item in config_options:
+            plugin_config[item] = config.get(section_name, item)
 
     namespace["plugin_config"] = plugin_config
 

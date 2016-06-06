@@ -28,10 +28,9 @@ import traceback
 import json
 
 ANDROID_SHELL = "/system/bin/sh"
-
+#Load main UI
 Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
-
 Builder.load_file('main_ui.kv')
 
 
@@ -77,6 +76,7 @@ def get_app_list():
         os.mkdir(APP_DIR)
 
     return ret
+
 
 class MobileInsightScreen(GridLayout):
     error_log = StringProperty("MobileInsight 2.0\nUCLA WiNG Group & OSU MSSN Lab")
@@ -136,16 +136,6 @@ class MobileInsightScreen(GridLayout):
         else:
             self._run_shell_cmd("chmod 755 /dev/diag")
             return True
-        
-        # hasDiag = True
-        # res = subprocess.check_output("ls /dev/diag", executable=ANDROID_SHELL, shell=True, stderr=subprocess.STDOUT)
-        # if "No such file or directory" in str(res):
-        #     print "MAIN: __check_diag_mode() res = false"
-        #     hasDiag = False
-        # else:
-        #     print "MAIN: __check_diag_mode() res = true"
-
-        # return hasDiag
 
 
     def __init_libs(self):
@@ -315,6 +305,7 @@ class MobileInsightScreen(GridLayout):
                       content=Label(text=about_text),
                       size_hint=(.8, .4))
         popup.open()
+
 
 class LabeledCheckBox(GridLayout):
     active = BooleanProperty(False)
