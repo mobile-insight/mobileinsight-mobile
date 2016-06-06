@@ -32,102 +32,14 @@ ANDROID_SHELL = "/system/bin/sh"
 Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
 
-Builder.load_string("""
-
-<ScrollableLabel@ScrollView>:
-    text: ''
-
-    Label:
-        text: root.text
-        text_size: self.width, None
-        size_hint_y: None
-        font_size: "24sp"
-        color: 0,0,0,1
-        height: self.texture_size[1]
-        valign: 'top'
-
-<LabeledCheckBox@GridLayout>:
-    cols: 2
-    active: False
-    text: ''
-    group: None
-
-    CheckBox:
-        canvas.before:
-            Color:
-                rgba: 0,0,0,1
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        active: root.active
-        group: root.group
-        size_hint_x: None
-        font_size: "24sp"
-        on_active: root.callback(*args)
-
-    Label:
-        canvas.before:
-            Color:
-                rgba: 0,0,0,1
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        text: root.text
-        font_size: "24sp"
-        color: 1,1,1,1
-        bcolor: 0,0,0,1
-        text_width: self.width
-
-# Main screen
-<MobileInsightScreen>:
-    cols: 1
-
-    ScrollableLabel:
-        text: '%s' % root.error_log
-        size_hint_y: 6
-
-    ScrollView:
-        id: checkbox_app
-        size_hint_y: 8
-        font_size: "24sp"
-        selected: ""
-
-        BoxLayout:
-            id: checkbox_app_layout
-            orientation: 'vertical'
-
-    Button:
-        text: 'Run %s' % root.ids.checkbox_app.selected
-        disabled: root.ids.checkbox_app.selected == ''
-        size_hint_y: 2.5
-        font_size: "24sp"
-        on_release: root.start_service(root.ids.checkbox_app.selected)
-
-    Button:
-        text: 'Stop %s' % root.ids.checkbox_app.selected
-        disabled: root.ids.checkbox_app.selected == ''
-        size_hint_y: 2.5
-        font_size: "24sp"
-        on_release: root.stop_service()
-
-    Button:
-        text: 'Settings' 
-        disabled: root.ids.checkbox_app.selected == ''
-        size_hint_y: 2.5
-        font_size: "24sp"
-        on_release: app.open_settings()
-
-    Button:
-        text: 'About' 
-        disabled: root.ids.checkbox_app.selected == ''
-        size_hint_y: 2.5
-        font_size: "24sp"
-        on_release: root.about()
-
-""")
+Builder.load_file('main_ui.kv')
 
 
 def get_app_list():
+
+    '''
+    Load plugin lists, including both buil-in and 3rd-party plugins
+    '''
 
     current_activity = cast("android.app.Activity",
                             autoclass("org.renpy.android.PythonActivity").mActivity)
@@ -432,9 +344,9 @@ class MobileInsightApp(App):
         with open("settings.json", "r") as settings_json:
             settings.add_json_panel('General settings', self.config, data=settings_json.read())
 
-        self.screen.create_app_settings(settings)
+        self.create_app_settings(self.config,settings)
 
-    def create_app_settings(self,settings):
+    def create_app_settings(self,config,settings):
         app_list = get_app_list()
         for app in app_list:
             APP_NAME = app
