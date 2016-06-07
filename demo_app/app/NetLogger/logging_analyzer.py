@@ -109,6 +109,14 @@ class LoggingAnalyzer(Analyzer):
         except:
             pass
 
+        # Haotian: should fix permision issue
+        chmodcmd = "rm -f " + self.__original_filename
+        p = subprocess.Popen("su ", executable = ANDROID_SHELL, shell = True, \
+                                    stdin = subprocess.PIPE, stdout = subprocess.PIPE)
+        p.communicate(chmodcmd + '\n')
+        p.wait()
+
+
         # return milog_absname
 
 
