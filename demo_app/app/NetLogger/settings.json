@@ -1,0 +1,15 @@
+[
+    {
+        "type": "title",
+        "title": ""
+    },
+
+    {
+        "type": "numeric",
+        "title": "MobileInsight log size (KB)",
+        "desc": "The size of each MobileInsight log",
+        "key": "mi_log_size",
+        "default": "500"
+    }
+
+]

@@ -65,6 +65,7 @@ try:
     src = OnlineMonitor()
     src.set_skip_decoding(False)
     src.set_log_directory(log_directory)
+    src.set_log_cut_size(float(plugin_config['mi_log_size'])/1000.0)
 
     # try to read the config file
     try:
