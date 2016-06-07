@@ -24,7 +24,10 @@ import sys
 import subprocess
 import time
 import traceback
-
+import re
+import datetime
+import shutil
+import stat
 import json
 
 ANDROID_SHELL = "/system/bin/sh"
@@ -128,7 +131,7 @@ class MobileInsightScreen(GridLayout):
         """
         Check if diagnostic mode is enabled.
         """
-        
+
         cmd = " test -e /dev/diag"
         res = self._run_shell_cmd(cmd, True)
         if res:
@@ -160,7 +163,7 @@ class MobileInsightScreen(GridLayout):
             if True:
                 cmd = cmd + " cp " + os.path.join(libs_path, lib) + " /system/lib/; "
                 cmd = cmd + " chmod 755 " + os.path.join("/system/lib", lib) + "; "
-        
+
 
         # sym links for some libs
         libs_mapping = {"libwireshark.so": ["libwireshark.so.6", "libwireshark.so.6.0.1"],
@@ -281,7 +284,6 @@ class MobileInsightScreen(GridLayout):
             else:
                 #With UI: run code directly
                 execfile(os.path.join(self.app_list[app_name][0],"main_ui.mi2app"))
-            
 
     def stop_service(self):
         if self.service:
@@ -290,7 +292,61 @@ class MobileInsightScreen(GridLayout):
             self.error_log="Stopped"
             self.stop_collection()  # close ongoing collections
             # self.wakelock.release()
+        # Haotian: save orphan log
+        self.__logdir = "/sdcard/mobile_insight/log/"
+        self.__phone_info = self._get_phone_info()
+        for subdir, dirs, files in os.walk(os.path.join(self._get_cache_dir(), "mi2log")):
+            for f in files:
+                self.__original_filename = os.path.join(subdir, f)
+                print "Orphan log file: " + str(self.__original_filename)
+                chmodcmd = "chmod 644 " + self.__original_filename
+                p = subprocess.Popen("su ", executable = ANDROID_SHELL, shell = True, \
+                                            stdin = subprocess.PIPE, stdout = subprocess.PIPE)
+                p.communicate(chmodcmd + '\n')
+                p.wait()
+                self._save_log()
 
+    def _save_log(self):
+        orig_basename  = os.path.basename(self.__original_filename)
+        orig_dirname   = os.path.dirname(self.__original_filename)
+        self.__log_timestamp     = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        milog_basename = "diag_log_%s_%s_%s.mi2log" % (self.__log_timestamp, self.__phone_info, self._get_opeartor_info())
+        milog_absname  = os.path.join(self.__logdir, milog_basename)
+        shutil.copyfile(self.__original_filename, milog_absname)
+        chmodcmd = "rm -f " + self.__original_filename
+        p = subprocess.Popen("su ", executable = ANDROID_SHELL, shell = True, \
+                                    stdin = subprocess.PIPE, stdout = subprocess.PIPE)
+        p.communicate(chmodcmd + '\n')
+        p.wait()
+
+    def _get_phone_info(self):
+        cmd          = "getprop ro.product.model; getprop ro.product.manufacturer;"
+        proc         = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
+        res          = proc.stdout.read().split('\n')
+        model        = res[0].replace(" ", "")
+        manufacturer = res[1].replace(" ", "")
+        phone_info   = self._get_device_id() + '_' + manufacturer + '-' + model
+        # print "_get_phone_info() = " + phone_info
+        return phone_info
+
+
+    def _get_opeartor_info(self):
+        cmd          = "getprop gsm.operator.alpha"
+        proc         = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
+        operator     = proc.stdout.read().split('\n')[0].replace(" ", "")
+        if operator == '' or operator is None:
+            operator = 'null'
+        return operator
+
+
+    def _get_device_id(self):
+        cmd = "service call iphonesubinfo 1"
+        proc = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
+        out = proc.communicate()[0]
+        tup = re.findall("\'.+\'", out)
+        tupnum = re.findall("\d+", "".join(tup))
+        deviceId = "".join(tupnum)
+        return deviceId
 
     def about(self):
         about_text = ('MobileInsight 2.0 \n' 
