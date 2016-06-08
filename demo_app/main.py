@@ -53,9 +53,7 @@ def get_app_list():
     APP_DIR = os.path.join(str(current_activity.getFilesDir().getAbsolutePath()), "app")
     l = os.listdir(APP_DIR)
     for f in l:
-        if os.path.exists(os.path.join(APP_DIR, f, "main_ui.mi2app")):
-            ret[f] = (os.path.join(APP_DIR, f), True)
-        elif os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+        if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
             # ret.append(f)
             ret[f] = (os.path.join(APP_DIR, f), False)
 
@@ -283,17 +281,13 @@ class MobileInsightScreen(GridLayout):
     def start_service(self, app_name):
         if platform == "android" and app_name in self.app_list:
             if self.service:
-                self.stop_service() # stop the running service
-
-            if not self.app_list[app_name][1]:
-                #No UI: run as Android service
-                from android import AndroidService
-                self.error_log = "Running " + app_name + "..."
-                self.service = AndroidService("MobileInsight is running...", app_name)
-                self.service.start(self.app_list[app_name][0])   # app name
-            else:
-                #With UI: run code directly
-                execfile(os.path.join(self.app_list[app_name][0],"main_ui.mi2app"))
+                # stop the running service
+                self.stop_service() 
+            
+            from android import AndroidService
+            self.error_log = "Running " + app_name + "..."
+            self.service = AndroidService("MobileInsight is running...", app_name)
+            self.service.start(self.app_list[app_name][0])   # app name
 
         else:
         	self.error_log = "Error: " + app_name + "cannot be launched!"
@@ -304,26 +298,27 @@ class MobileInsightScreen(GridLayout):
             self.service = None
             self.error_log = LOGO_STRING
             self.stop_collection()  # close ongoing collections
-        # Haotian: save orphan log
-        dated_files = []
-        self.__logdir = "/sdcard/mobile_insight/log/"
-        self.__phone_info = self._get_phone_info()
-        mi2log_folder = os.path.join(self._get_cache_dir(), "mi2log")
-        for subdir, dirs, files in os.walk(mi2log_folder):
-            for f in files:
-                fn = os.path.join(subdir, f)
-                dated_files.append((os.path.getmtime(fn), fn))
-        dated_files.sort()
-        dated_files.reverse()
-        if len(dated_files)>0:
-	        self.__original_filename = dated_files[0][1]
-	        print "The last orphan log file: " + str(self.__original_filename)
-	        chmodcmd = "chmod 644 " + self.__original_filename
-	        p = subprocess.Popen("su ", executable = ANDROID_SHELL, shell = True, \
-	                                    stdin = subprocess.PIPE, stdout = subprocess.PIPE)
-	        p.communicate(chmodcmd + '\n')
-	        p.wait()
-	        self._save_log()
+            
+            # Haotian: save orphan log
+            dated_files = []
+            self.__logdir = "/sdcard/mobile_insight/log/"
+            self.__phone_info = self._get_phone_info()
+            mi2log_folder = os.path.join(self._get_cache_dir(), "mi2log")
+            for subdir, dirs, files in os.walk(mi2log_folder):
+                for f in files:
+                    fn = os.path.join(subdir, f)
+                    dated_files.append((os.path.getmtime(fn), fn))
+            dated_files.sort()
+            dated_files.reverse()
+            if len(dated_files)>0:
+    	        self.__original_filename = dated_files[0][1]
+    	        print "The last orphan log file: " + str(self.__original_filename)
+    	        chmodcmd = "chmod 644 " + self.__original_filename
+    	        p = subprocess.Popen("su ", executable = ANDROID_SHELL, shell = True, \
+    	                                    stdin = subprocess.PIPE, stdout = subprocess.PIPE)
+    	        p.communicate(chmodcmd + '\n')
+    	        p.wait()
+    	        self._save_log()
 
     def _save_log(self):
         orig_basename  = os.path.basename(self.__original_filename)
