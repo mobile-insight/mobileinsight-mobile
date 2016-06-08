@@ -325,7 +325,6 @@ class MobileInsightScreen(GridLayout):
 	        p.wait()
 	        self._save_log()
 
-
     def _save_log(self):
         orig_basename  = os.path.basename(self.__original_filename)
         orig_dirname   = os.path.dirname(self.__original_filename)
