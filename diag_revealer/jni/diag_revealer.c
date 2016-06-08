@@ -162,18 +162,6 @@ print_hex (const char *buf, int len)
 }
 
 
-static ssize_t 
-diag_write(int fd, const void *buf, size_t count){
-	//Yuanjie: safe write. If pipe is full, keep trying until succeeds
-	int ret_err;
-	do{
-		ret_err = write(fd, buf, count);
-
-	}while(ret_err==-1);
-
-	return ret_err;
-}
-
 // Write commands to /dev/diag device.
 static int
 write_commands (int fd, BinaryBuffer *pbuf_write)
@@ -405,10 +393,16 @@ main (int argc, char **argv)
 	} else {
 		LOGD("FIFO opened\n");
 	}
-	int pipesize = 1024*1024*32;	//32MB
+	int pipesize = 1024*1024*128;	//128MB
 	fcntl(fifo_fd, F_SETPIPE_SZ, pipesize);
 
+	int res = fcntl(fifo_fd, F_GETPIPE_SZ,pipesize);
+	LOGI("F_GETPIPE_SZ: res=%d pipesize=%d\n",res,pipesize);
+
 	struct LogManagerState state;
+	// Initialize state
+	manager_init_state(&state, NULL, 0);
+
 	if (argc >= 4) {
 		size_t log_cut_size = 0;
 		if (argc == 5) {
@@ -451,21 +445,17 @@ main (int argc, char **argv)
 					int ret_err;
 					// LOGD("ret_err0");
 					ret_err = write(fifo_fd, &fifo_msg_type, sizeof(short));
-					// ret_err = diag_write(fifo_fd, &fifo_msg_type, sizeof(short));
-					// LOGD("ret_err1=%d",ret_err);
+
 					// Write size of (payload + timestamp)
 					fifo_msg_len = (short) msg_len + 8;
 					ret_err = write(fifo_fd, &fifo_msg_len, sizeof(short));
-					// ret_err = diag_write(fifo_fd, &fifo_msg_len, sizeof(short));
-					// LOGD("ret_err2=%d",ret_err);
+
 					// Write timestamp of sending payload to pipe
 					ret_err = write(fifo_fd, &ts, sizeof(double));
-					// ret_err = diag_write(fifo_fd, &ts, sizeof(double));
-					// LOGD("ret_err3=%d",ret_err);
+
 					// Write payload to pipe
 					ret_err = write(fifo_fd, buf_read + offset + 4, msg_len);
-					// ret_err = diag_write(fifo_fd, buf_read + offset + 4, msg_len);
-					// LOGD("ret_err4=%d",ret_err);
+
 					// Write mi2log output if necessary
 					if (state.log_fp != NULL) {
 						int ret2 = manager_append_log(&state, fifo_fd, msg_len);
@@ -485,6 +475,5 @@ main (int argc, char **argv)
 	}
 
 	close(fd);
-	// clsoe(fifo_fd);
 	return (ret < 0? ret: 0);
 }
