@@ -293,18 +293,24 @@ class MobileInsightScreen(GridLayout):
             self.stop_collection()  # close ongoing collections
             # self.wakelock.release()
         # Haotian: save orphan log
+        dated_files = []
         self.__logdir = "/sdcard/mobile_insight/log/"
         self.__phone_info = self._get_phone_info()
-        for subdir, dirs, files in os.walk(os.path.join(self._get_cache_dir(), "mi2log")):
+        mi2log_folder = os.path.join(self._get_cache_dir(), "mi2log")
+        for subdir, dirs, files in os.walk(mi2log_folder):
             for f in files:
-                self.__original_filename = os.path.join(subdir, f)
-                print "Orphan log file: " + str(self.__original_filename)
-                chmodcmd = "chmod 644 " + self.__original_filename
-                p = subprocess.Popen("su ", executable = ANDROID_SHELL, shell = True, \
-                                            stdin = subprocess.PIPE, stdout = subprocess.PIPE)
-                p.communicate(chmodcmd + '\n')
-                p.wait()
-                self._save_log()
+                fn = os.path.join(subdir, f)
+                dated_files.append((os.path.getmtime(fn), fn))
+        dated_files.sort()
+        dated_files.reverse()
+        self.__original_filename = dated_files[0][1]
+        print "The last orphan log file: " + str(self.__original_filename)
+        chmodcmd = "chmod 644 " + self.__original_filename
+        p = subprocess.Popen("su ", executable = ANDROID_SHELL, shell = True, \
+                                    stdin = subprocess.PIPE, stdout = subprocess.PIPE)
+        p.communicate(chmodcmd + '\n')
+        p.wait()
+        self._save_log()
 
     def _save_log(self):
         orig_basename  = os.path.basename(self.__original_filename)
