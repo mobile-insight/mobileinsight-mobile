@@ -14,6 +14,7 @@ from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.utils import platform
+from kivy.config import ConfigParser
 
 from jnius import autoclass, cast
 
@@ -31,6 +32,7 @@ import stat
 import json
 
 ANDROID_SHELL = "/system/bin/sh"
+LOGO_STRING = "MobileInsight 2.0\nUCLA WiNG Group & OSU MSSN Lab"
 #Load main UI
 Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
@@ -82,7 +84,7 @@ def get_app_list():
 
 
 class MobileInsightScreen(GridLayout):
-    error_log = StringProperty("MobileInsight 2.0\nUCLA WiNG Group & OSU MSSN Lab")
+    error_log = StringProperty(LOGO_STRING)
     collecting = BooleanProperty(False)
     current_activity = cast("android.app.Activity",
                             autoclass("org.renpy.android.PythonActivity").mActivity)
@@ -114,6 +116,15 @@ class MobileInsightScreen(GridLayout):
                 first = False
             widget.bind(on_active=self.on_checkbox_app_active)
             self.ids.checkbox_app_layout.add_widget(widget)
+
+
+        # If default service exists, launch it
+        config = ConfigParser()
+        config.read('/sdcard/.mobileinsight.ini')
+        default_app_name = config.get("mi_general", "start_service")
+        launch_service = config.get("mi_general", "bstartup_service")
+        if default_app_name and launch_service=="1":
+        	self.start_service(default_app_name)
 
 
     def _run_shell_cmd(self, cmd, wait = False):
@@ -280,31 +291,40 @@ class MobileInsightScreen(GridLayout):
                 self.error_log = "Running " + app_name + "..."
                 self.service = AndroidService("MobileInsight is running...", app_name)
                 self.service.start(self.app_list[app_name][0])   # app name
-                # self.wakelock.acquire()
             else:
                 #With UI: run code directly
                 execfile(os.path.join(self.app_list[app_name][0],"main_ui.mi2app"))
+
+        else:
+        	self.error_log = "Error: " + app_name + "cannot be launched!"
 
     def stop_service(self):
         if self.service:
             self.service.stop()
             self.service = None
-            self.error_log="Stopped"
+            self.error_log = LOGO_STRING
             self.stop_collection()  # close ongoing collections
-            # self.wakelock.release()
         # Haotian: save orphan log
+        dated_files = []
         self.__logdir = "/sdcard/mobile_insight/log/"
         self.__phone_info = self._get_phone_info()
-        for subdir, dirs, files in os.walk(os.path.join(self._get_cache_dir(), "mi2log")):
+        mi2log_folder = os.path.join(self._get_cache_dir(), "mi2log")
+        for subdir, dirs, files in os.walk(mi2log_folder):
             for f in files:
-                self.__original_filename = os.path.join(subdir, f)
-                print "Orphan log file: " + str(self.__original_filename)
-                chmodcmd = "chmod 644 " + self.__original_filename
-                p = subprocess.Popen("su ", executable = ANDROID_SHELL, shell = True, \
-                                            stdin = subprocess.PIPE, stdout = subprocess.PIPE)
-                p.communicate(chmodcmd + '\n')
-                p.wait()
-                self._save_log()
+                fn = os.path.join(subdir, f)
+                dated_files.append((os.path.getmtime(fn), fn))
+        dated_files.sort()
+        dated_files.reverse()
+        if len(dated_files)>0:
+	        self.__original_filename = dated_files[0][1]
+	        print "The last orphan log file: " + str(self.__original_filename)
+	        chmodcmd = "chmod 644 " + self.__original_filename
+	        p = subprocess.Popen("su ", executable = ANDROID_SHELL, shell = True, \
+	                                    stdin = subprocess.PIPE, stdout = subprocess.PIPE)
+	        p.communicate(chmodcmd + '\n')
+	        p.wait()
+	        self._save_log()
+
 
     def _save_log(self):
         orig_basename  = os.path.basename(self.__original_filename)
@@ -437,8 +457,10 @@ class MobileInsightApp(App):
 
     def build_config(self, config):
         # Yuanjie: the ordering of the following options MUST be the same as those in settings.json!!!
-        config.setdefaults('mi_section', {
-            'bStartUp': True,
+        config.setdefaults('mi_general', {
+            'bstartup': True,
+            'bstartup_service': False,
+            'start_service': 'NetLogger',
         })
         self.create_app_default_config(config)
 
@@ -465,8 +487,6 @@ class MobileInsightApp(App):
 
                     #Update the default value and setting menu
                     config.setdefaults(APP_NAME,default_val)
-
-
 
     def build(self):
         self.screen = MobileInsightScreen()
