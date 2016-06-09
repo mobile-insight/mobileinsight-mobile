@@ -93,10 +93,12 @@ class CrashApp(App):
         self.popup.open()
         
     def _on_answer(self, instance, answer):
-        phone_info = get_phone_info()
-        log_name= "/sdcard/crash_report_" \
-                + phone_info+'_' \
-                + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') \
-                + '.txt'
-        run_shell_cmd('logcat -d | grep -E "python|diag" >'+log_name,True)
+        if answer=="yes":
+            phone_info = get_phone_info()
+            log_name= "/sdcard/crash_report_" \
+                    + phone_info+'_' \
+                    + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') \
+                    + '.txt'
+            run_shell_cmd('logcat -d | grep -E "python|diag" >'+log_name,True)
+            
         self.popup.dismiss()
