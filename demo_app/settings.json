@@ -14,7 +14,7 @@
 
     {
         "type": "bool",
-        "title": "Start plugin on MobileInsight startup",
+        "title": "Start plugin on startup",
         "desc": "Run plugin services on MobileInsight startup",
         "section": "mi_general",
         "key": "bstartup_service"
@@ -22,7 +22,7 @@
 
     {
         "type": "string",
-        "title": "Default plugin on MobileInsight startup",
+        "title": "Default plugin on startup",
         "desc": "The default plugin to run on MobileInsight startup. If empty, no service is to be started",
         "section": "mi_general",
         "key": "start_service"

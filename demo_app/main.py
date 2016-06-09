@@ -7,6 +7,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
+from kivy.uix.button import Button
 from kivy.properties import *
 
 from kivy.app import App
@@ -37,7 +38,6 @@ LOGO_STRING = "MobileInsight 2.0\nUCLA WiNG Group & OSU MSSN Lab"
 Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
 Builder.load_file('main_ui.kv')
-
 
 def get_app_list():
 
@@ -80,6 +80,15 @@ def get_app_list():
 
     return ret
 
+def run_shell_cmd(cmd, wait = False):
+    p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    p.communicate(cmd+'\n')
+
+    if wait:
+        p.wait()
+        return p.returncode
+    else:
+        return None
 
 class MobileInsightScreen(GridLayout):
     error_log = StringProperty(LOGO_STRING)
@@ -125,28 +134,17 @@ class MobileInsightScreen(GridLayout):
         	self.start_service(default_app_name)
 
 
-    def _run_shell_cmd(self, cmd, wait = False):
-        p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        p.communicate(cmd+'\n')
-
-        if wait:
-            p.wait()
-            return p.returncode
-        else:
-            return None
-
-
     def __check_diag_mode(self):
         """
         Check if diagnostic mode is enabled.
         """
 
         cmd = " test -e /dev/diag"
-        res = self._run_shell_cmd(cmd, True)
+        res = run_shell_cmd(cmd, True)
         if res:
             return False
         else:
-            self._run_shell_cmd("chmod 755 /dev/diag")
+            run_shell_cmd("chmod 755 /dev/diag")
             return True
 
 
@@ -201,7 +199,7 @@ class MobileInsightScreen(GridLayout):
         if cmd:
             # at least one lib should be copied
             cmd = "mount -o remount,rw /system; " + cmd
-            self._run_shell_cmd(cmd)
+            run_shell_cmd(cmd)
 
 
     def _create_folder(self):
@@ -210,7 +208,7 @@ class MobileInsightScreen(GridLayout):
         cmd = cmd + "mkdir /sdcard/mobile_insight/cfg; "
         cmd = cmd + "mkdir /sdcard/mobile_insight/dbs; "
         cmd = cmd + "mkdir /sdcard/mobile_insight/apps; "
-        self._run_shell_cmd(cmd)
+        run_shell_cmd(cmd)
 
 
     def _add_log_line(self, s):
@@ -275,7 +273,7 @@ class MobileInsightScreen(GridLayout):
 
         if len(diag_procs) > 0:
             cmd2 = "kill " + " ".join([str(pid) for pid in diag_procs])
-            self._run_shell_cmd(cmd2)
+            run_shell_cmd(cmd2)
 
 
     def start_service(self, app_name):
@@ -500,6 +498,11 @@ class MobileInsightApp(App):
     def on_stop(self):
         self.screen.stop_service()
 
-
 if __name__ == "__main__":
-    MobileInsightApp().run()
+    try:
+        MobileInsightApp().run()
+    except Exception, e:
+        import traceback,crash_app
+        print str(traceback.format_exc())
+        crash_app.CrashApp().run()
+
