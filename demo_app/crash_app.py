@@ -13,6 +13,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate, formataddr
 
+import httplib, urllib, urllib2
+
 import subprocess
 from os.path import basename
 import re
@@ -98,6 +100,61 @@ class CrashApp(App):
                             size=(1200,600),
                             auto_dismiss= False)
         self.popup.open()
+
+    def __upload_crash_log(self, file_path):
+
+        http_url='http://metro.cs.ucla.edu/mobile_insight/upload_crash_log.php'
+        
+        # Find log path
+        tmp_index = file_path.rfind('/')
+        file_name = file_path[tmp_index+1:]
+
+        # Tokens for http POST
+        boundary = "----WebKitFormBoundaryEOdH94ZkJz9PCjBh"
+        twoHyphens = "--"
+        lineEnd = "\r\n"
+
+        # Read the crash log (as http body)
+        data = []
+
+        fr=open(file_path,'r')
+        data.append(twoHyphens+boundary)
+        data.append('Content-Disposition: form-data; name="file[]";filename="'+file_name+ '"')
+        data.append('Content-Type: application/octet-stream' + lineEnd)
+        data.append(fr.read())
+        # data.append(lineEnd)
+        fr.close()
+
+        data.append(twoHyphens+boundary)
+        data.append('Content-Disposition: form-data;name="submit"'+lineEnd)
+        data.append('0x11dd')
+
+        data.append(twoHyphens+boundary+twoHyphens+lineEnd)
+
+        http_body='\r\n'.join(data)
+
+        try:
+            #buld http request
+            req=urllib2.Request(http_url)
+            #header
+            req.add_header('Host', 'metro.cs.ucla.edu')
+            req.add_header('Cache-Control', 'max-age=0')
+            req.add_header('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8')
+            req.add_header('Accept-Encoding', 'gzip, deflate')
+            req.add_header('Connection', 'keep-alive')
+            req.add_header('Content-Type', 'multipart/form-data; boundary=%s' % boundary)
+            # req.add_header('file[]',file_name)
+            req.add_data(http_body)
+
+            #post data to server
+            resp = urllib2.urlopen(req, timeout=5)
+            #get response
+            qrcont=resp.read()
+            
+        except Exception,e:
+            "Fail to send bug report!"
+            import traceback
+            print str(traceback.format_exc())
         
     def _on_answer(self, instance, answer):
         if answer=="yes":
@@ -107,28 +164,8 @@ class CrashApp(App):
                     + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') \
                     + '.txt'
             run_shell_cmd('logcat -d | grep -E "python|diag" >'+log_name,True)
+            self.__upload_crash_log(log_name)
 
-            # Send bug report to us
-            msg = MIMEMultipart('Help me!')
-            msg['To'] = formataddr(('Recipient', 'yuanjie.li@cs.ucla.edu'))
-            msg['From'] = formataddr(('Author', 'author@example.com'))
-            msg['Subject'] = 'MobileInsight bug report'
-            with open(log_name, "rb") as fil:
-                part = MIMEApplication(
-                    fil.read(),
-                    Name=basename(log_name)
-                )
-                part['Content-Disposition'] = 'attachment; filename="%s"' % basename(log_name)
-                msg.attach(part)
-
-            try:
-                smtp = smtplib.SMTP()
-                smtp.connect()
-                smtp.sendmail('author@example.com', 'yuanjie.li@cs.ucla.edu', msg.as_string())
-                smtp.close()
-            except Exception, e:
-                print "Fail to send bug report!"
-                import traceback
-                print str(traceback.format_exc())
+            
 
         self.popup.dismiss()
