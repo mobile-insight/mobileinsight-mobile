@@ -208,6 +208,7 @@ class MobileInsightScreen(GridLayout):
         cmd = cmd + "mkdir /sdcard/mobile_insight/cfg; "
         cmd = cmd + "mkdir /sdcard/mobile_insight/dbs; "
         cmd = cmd + "mkdir /sdcard/mobile_insight/apps; "
+        cmd = cmd + "mkdir /sdcard/mobile_insight/crash_logs; "
         run_shell_cmd(cmd)
 
 

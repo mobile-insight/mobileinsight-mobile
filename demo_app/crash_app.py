@@ -159,7 +159,8 @@ class CrashApp(App):
     def _on_answer(self, instance, answer):
         if answer=="yes":
             phone_info = get_phone_info()
-            log_name= "/sdcard/crash_report_" \
+            log_name= "/sdcard/mobile_insight/crash_logs/" \
+                    + "crash_report_" \
                     + phone_info+'_' \
                     + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') \
                     + '.txt'
