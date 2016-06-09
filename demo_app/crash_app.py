@@ -7,7 +7,14 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
 from kivy.properties import *
 
+import smtplib
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.utils import COMMASPACE, formatdate, formataddr
+
 import subprocess
+from os.path import basename
 import re
 import datetime
 ANDROID_SHELL = "/system/bin/sh"
@@ -100,5 +107,28 @@ class CrashApp(App):
                     + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') \
                     + '.txt'
             run_shell_cmd('logcat -d | grep -E "python|diag" >'+log_name,True)
-            
+
+            # Send bug report to us
+            msg = MIMEMultipart('Help me!')
+            msg['To'] = formataddr(('Recipient', 'yuanjie.li@cs.ucla.edu'))
+            msg['From'] = formataddr(('Author', 'author@example.com'))
+            msg['Subject'] = 'MobileInsight bug report'
+            with open(log_name, "rb") as fil:
+                part = MIMEApplication(
+                    fil.read(),
+                    Name=basename(log_name)
+                )
+                part['Content-Disposition'] = 'attachment; filename="%s"' % basename(log_name)
+                msg.attach(part)
+
+            try:
+                smtp = smtplib.SMTP()
+                smtp.connect()
+                smtp.sendmail('author@example.com', 'yuanjie.li@cs.ucla.edu', msg.as_string())
+                smtp.close()
+            except Exception, e:
+                print "Fail to send bug report!"
+                import traceback
+                print str(traceback.format_exc())
+
         self.popup.dismiss()
