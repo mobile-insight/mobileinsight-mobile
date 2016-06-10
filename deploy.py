@@ -182,12 +182,13 @@ if __name__ == '__main__':
             os.system('adb install -r {app}-{ver}-debug.apk'.format(app=cfg['app_name'], ver=cfg['app_version']))
     elif arg == 'update':
         try:
-            phone_path = "/sdcard/mobile_insight/apps/"+debug
-            desktop_path = "./internal_app/"+debug
+            plg = sys.argv[2]
+            phone_path = "/sdcard/mobile_insight/apps/" + plg
+            desktop_path = "./internal_app/" + plg
             if os.path.isdir(desktop_path):
-                os.system('adb shell "rm -r '+phone_path+'"')
-                os.system('adb push '+desktop_path+' '+phone_path)
+                os.system('adb shell "rm -r /sdcard/mobile_insight/apps/{plugin}"'.format(plugin=plg))
+                os.system('adb push ./internal_app/{plugin} /sdcard/mobile_insight/apps/{plugin}'.format(plugin=plg))
             else:
-                print "Sorry the plugin "+debug+" does not exist"
+                print "Sorry, the plugin {plugin} does not exist".format(plugin=plg)
         except:
-            print "Sorry, your arguments are not supported for this moment."
+            print "Sorry, the plugin {plugin} does not exist".format(plugin=plg)
