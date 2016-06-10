@@ -69,6 +69,7 @@ def run_apk(build_release):
             + ' --permission WRITE_EXTERNAL_STORAGE' \
             + ' --permission INTERNET' \
             + ' --permission RECEIVE_BOOT_COMPLETED' \
+            + ' --permission ACCESS_NETWORK_STATE'
             # + ' --intent-filters BOOT_COMPLETED'
 
     if build_release is True:
