@@ -24,6 +24,7 @@ import os
 import shlex
 import sys
 import subprocess
+import threading
 import time
 import traceback
 import re
@@ -90,8 +91,17 @@ def run_shell_cmd(cmd, wait = False):
     else:
         return None
 
+
+
+def update_log():
+    p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    stdout,stderr = p.communicate('logcat | grep -E "python|diag"\n')
+    MobileInsightScreen.error_log = stdout
+        
+
 class MobileInsightScreen(GridLayout):
     error_log = StringProperty(LOGO_STRING)
+    default_app_name = StringProperty("")
     collecting = BooleanProperty(False)
     current_activity = cast("android.app.Activity",
                             autoclass("org.renpy.android.PythonActivity").mActivity)
@@ -131,8 +141,10 @@ class MobileInsightScreen(GridLayout):
         default_app_name = config.get("mi_general", "start_service")
         launch_service = config.get("mi_general", "bstartup_service")
         if default_app_name and launch_service=="1":
-        	self.start_service(default_app_name)
-
+            self.start_service(default_app_name)
+            p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+            # self.log_thread = threading.Thread(target=update_log)
+            # self.log_thread.start()
 
     def __check_diag_mode(self):
         """
@@ -247,6 +259,9 @@ class MobileInsightScreen(GridLayout):
                 self.ids.checkbox_app.selected = cb.text
 
         # Yuanjie: try to load readme.txt
+        if self.service:
+            return True
+
         app_path = self.app_list[self.ids.checkbox_app.selected][0]
         if os.path.exists(os.path.join(app_path, "readme.txt")):
             with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
@@ -287,6 +302,7 @@ class MobileInsightScreen(GridLayout):
             self.error_log = "Running " + app_name + "..."
             self.service = AndroidService("MobileInsight is running...", app_name)
             self.service.start(self.app_list[app_name][0])   # app name
+            self.default_app_name = app_name
 
         else:
         	self.error_log = "Error: " + app_name + "cannot be launched!"
@@ -482,6 +498,10 @@ class MobileInsightApp(App):
                     config.setdefaults(APP_NAME,default_val)
 
     def build(self):
+        # from kivy.config import Config
+        # Config.set('kivy', 'log_dir', '/sdcard/')
+        # Config.set('kivy', 'log_name', 'kivy_%y-%m-%d_%_.txt')
+        # Config.write()
         self.screen = MobileInsightScreen()
         Window.borderless = False
         return self.screen
