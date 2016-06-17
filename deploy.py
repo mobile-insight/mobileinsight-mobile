@@ -16,12 +16,12 @@ import os, sys, commands, yaml
 
 
 def run_config():
-    # commands.getstatusoutput('wget --no-check-certificate https://wing1.cs.ucla.edu/gitlab/zyuan/mobile-insight-libs/repository/archive.zip\?ref\=master master.zip')
-    os.system('git clone https://wing1.cs.ucla.edu/gitlab/zyuan/mobile-insight-libs.git')
+    # commands.getstatusoutput('wget --no-check-certificate https://wing1.cs.ucla.edu/gitlab/zyuan/mobileInsight-libs/repository/archive.zip\?ref\=master master.zip')
+    os.system('git clone https://wing1.cs.ucla.edu/gitlab/zyuan/mobileInsight-libs.git')
     if os.path.isdir('./demo_app/data') is False:
         os.makedirs('./demo_app/data')
-    os.system('cp mobile-insight-libs/lib/* ./demo_app/data')
-    os.system('cp mobile-insight-libs/bin/* ./demo_app/data')
+    os.system('cp mobileInsight-libs/lib/* ./demo_app/data')
+    os.system('cp mobileInsight-libs/bin/* ./demo_app/data')
     os.system('rm -rf mobile-insight-libs')
     if os.path.isfile('./config/config.yml') is True:
         os.system('cp ./config/config.yml ./config/config.yml.bak')
