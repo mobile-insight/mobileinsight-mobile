@@ -68,7 +68,7 @@
         on_release: root.start_service(root.ids.checkbox_app.selected)
 
     Button:
-        text: 'Stop plugin (%s)' % root.default_app_name
+        text: 'Stop %s' % root.default_app_name
         disabled: root.ids.checkbox_app.selected == ''
         size_hint_y: 2.5
         font_size: "24sp"

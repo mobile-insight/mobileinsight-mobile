@@ -110,13 +110,14 @@ class MobileInsightScreen(GridLayout):
 
     def __init__(self):
         super(MobileInsightScreen, self).__init__()
+
+        self.__init_libs()
+        self._create_folder()
+
         # self.app_list = self._get_app_list()
         # self.app_list = self.get_app_list()
         self.app_list = get_app_list()
         # self.app_list.sort()
-
-        self.__init_libs()
-        self._create_folder()
 
         if not self.__check_diag_mode():
             self.error_log = "WARINING: the diagnostic mode is disabled. Please check your phone settings."
@@ -142,7 +143,7 @@ class MobileInsightScreen(GridLayout):
         launch_service = config.get("mi_general", "bstartup_service")
         if default_app_name and launch_service=="1":
             self.start_service(default_app_name)
-            p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+            # p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
             # self.log_thread = threading.Thread(target=update_log)
             # self.log_thread.start()
 
@@ -469,7 +470,7 @@ class MobileInsightApp(App):
         config.setdefaults('mi_general', {
             'bstartup': True,
             'bstartup_service': False,
-            'start_service': 'NetLogger',
+            'start_service': 'NetLoggerInternal',
         })
         self.create_app_default_config(config)
 
