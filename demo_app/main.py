@@ -40,6 +40,15 @@ Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
 Builder.load_file('main_ui.kv')
 
+def create_folder():
+    cmd = "mkdir /sdcard/mobile_insight; "
+    cmd = cmd + "mkdir /sdcard/mobile_insight/log; "
+    cmd = cmd + "mkdir /sdcard/mobile_insight/cfg; "
+    cmd = cmd + "mkdir /sdcard/mobile_insight/dbs; "
+    cmd = cmd + "mkdir /sdcard/mobile_insight/apps; "
+    cmd = cmd + "mkdir /sdcard/mobile_insight/crash_logs; "
+    run_shell_cmd(cmd)
+
 def get_app_list():
 
     '''
@@ -77,7 +86,7 @@ def get_app_list():
                     tmp_name = f
                 ret[tmp_name] = (os.path.join(APP_DIR, f), False)
     else: # create directory for user-customized apps
-        os.mkdir(APP_DIR)
+        create_folder()
 
     return ret
 
@@ -112,7 +121,8 @@ class MobileInsightScreen(GridLayout):
         super(MobileInsightScreen, self).__init__()
 
         self.__init_libs()
-        self._create_folder()
+        # self._create_folder()
+        create_folder()
 
         # self.app_list = self._get_app_list()
         # self.app_list = self.get_app_list()
