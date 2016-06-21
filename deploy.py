@@ -67,6 +67,7 @@ def run_apk(build_release):
             + ' --arch={}'.format(cfg['arch']) \
             + ' --whitelist={}/{}'.format(cfg['mi_dev_path'], cfg['whitelist']) \
             + ' --permission WRITE_EXTERNAL_STORAGE' \
+            + ' --permission READ_EXTERNAL_STORAGE' \
             + ' --permission INTERNET' \
             + ' --permission RECEIVE_BOOT_COMPLETED' \
             + ' --permission ACCESS_WIFI_STATE'
