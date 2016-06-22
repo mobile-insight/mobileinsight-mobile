@@ -530,6 +530,10 @@ class MobileInsightApp(App):
     def on_stop(self):
         self.screen.stop_service()
 
+    def check_update(self):
+        import check_update
+        check_update.check_update()
+
 if __name__ == "__main__":
     try:
         MobileInsightApp().run()
