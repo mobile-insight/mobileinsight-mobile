@@ -10,6 +10,8 @@ __all__ = [ "get_service_context",
             "get_phone_manufacturer",
             "get_phone_model",
             "run_shell_cmd",
+            "File",
+            "FileOutputStream"
             ]
 
 from jnius import autoclass
@@ -18,6 +20,8 @@ import subprocess
 
 service_context = autoclass('org.renpy.android.PythonService').mService
 android_os_build = autoclass("android.os.Build")
+File = autoclass("java.io.File")
+FileOutputStream = autoclass('java.io.FileOutputStream')
 
 def get_service_context():
     return service_context
