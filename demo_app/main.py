@@ -100,13 +100,21 @@ def run_shell_cmd(cmd, wait = False):
     else:
         return None
 
-
-
 def update_log():
     p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     stdout,stderr = p.communicate('logcat | grep -E "python|diag"\n')
     MobileInsightScreen.error_log = stdout
         
+def check_update():
+    try:
+        config = ConfigParser()
+        config.read('/sdcard/.mobileinsight.ini')
+        bcheck_update = config.get("mi_general", "bcheck_update")
+        if bcheck_update=="1":
+            import check_update
+            check_update.check_update()
+    except Exception, e:
+        pass
 
 class MobileInsightScreen(GridLayout):
     error_log = StringProperty(LOGO_STRING)
@@ -147,15 +155,15 @@ class MobileInsightScreen(GridLayout):
 
 
         # If default service exists, launch it
-        config = ConfigParser()
-        config.read('/sdcard/.mobileinsight.ini')
-        default_app_name = config.get("mi_general", "start_service")
-        launch_service = config.get("mi_general", "bstartup_service")
-        if default_app_name and launch_service=="1":
-            self.start_service(default_app_name)
-            # p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-            # self.log_thread = threading.Thread(target=update_log)
-            # self.log_thread.start()
+        try:
+            config = ConfigParser()
+            config.read('/sdcard/.mobileinsight.ini')
+            default_app_name = config.get("mi_general", "start_service")
+            launch_service = config.get("mi_general", "bstartup_service")
+            if default_app_name and launch_service=="1":
+                self.start_service(default_app_name)
+        except Exception, e:
+            pass
 
     def __check_diag_mode(self):
         """
@@ -478,6 +486,7 @@ class MobileInsightApp(App):
     def build_config(self, config):
         # Yuanjie: the ordering of the following options MUST be the same as those in settings.json!!!
         config.setdefaults('mi_general', {
+            'bcheck_update': True,
             'bstartup': True,
             'bstartup_service': False,
             'start_service': 'NetLoggerInternal',
@@ -509,10 +518,6 @@ class MobileInsightApp(App):
                     config.setdefaults(APP_NAME,default_val)
 
     def build(self):
-        # from kivy.config import Config
-        # Config.set('kivy', 'log_dir', '/sdcard/')
-        # Config.set('kivy', 'log_name', 'kivy_%y-%m-%d_%_.txt')
-        # Config.write()
         self.screen = MobileInsightScreen()
         Window.borderless = False
         return self.screen
@@ -521,18 +526,19 @@ class MobileInsightApp(App):
         # Yuanjie: The following code prevents screen freeze when screen off -> screen on
         current_activity = cast("android.app.Activity",
                             autoclass("org.renpy.android.PythonActivity").mActivity)
-        current_activity.moveTaskToBack(True)
+        pm = current_activity.getSystemService(autoclass('android.content.Context').POWER_SERVICE);
+        if not pm.isInteractive():
+            current_activity.moveTaskToBack(True)
         return True  # go into Pause mode
 
     def on_resume(self):
         pass
 
+    def on_start(self):
+        check_update()
+
     def on_stop(self):
         self.screen.stop_service()
-
-    def check_update(self):
-        import check_update
-        check_update.check_update()
 
 if __name__ == "__main__":
     try:

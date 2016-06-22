@@ -82,13 +82,6 @@
         on_release: app.open_settings()
 
     Button:
-        text: 'Check update' 
-        disabled: root.ids.checkbox_app.selected == ''
-        size_hint_y: 2.5
-        font_size: "24sp"
-        on_release: app.check_update()
-
-    Button:
         text: 'About' 
         disabled: root.ids.checkbox_app.selected == ''
         size_hint_y: 2.5

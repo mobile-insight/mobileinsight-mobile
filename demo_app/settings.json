@@ -26,6 +26,20 @@
         "desc": "The default plugin to run on MobileInsight startup. If empty, no service is to be started",
         "section": "mi_general",
         "key": "start_service"
+    },
+
+    {
+        "type": "title",
+        "title": "Update"
+    },
+
+    {
+        "type": "bool",
+        "title": "Automatically check for update",
+        "desc": "Check available MobileInsight updates automatically",
+        "section": "mi_general",
+        "key": "bcheck_update"
     }
+
 
 ]

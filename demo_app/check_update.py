@@ -27,10 +27,7 @@ Builder.load_string('''
     cols:1
     Label:
         text: root.text
-        size_hint_y: None
-    Label:
-        text: 'Would like to update?'
-        size_hint_y: None
+        size_hint_y: 16
     GridLayout:
         cols: 2
         size_hint_y: None
@@ -84,14 +81,32 @@ def cmp_version(version1, version2):
     return cmp(normalize(version1), normalize(version2))
 
 
+def install_apk(apk_path):
+    IntentClass = autoclass("android.content.Intent")
+    FileClass = autoclass("java.io.File")
+    Uri = autoclass('android.net.Uri')
+    f = FileClass(apk_path)
+    if not f.exists():
+    	return
+    intent = IntentClass()
+    intent.setAction(IntentClass.ACTION_VIEW)
+    # intent.setDataAndType(Uri.fromFile(f), "application/vnd.android.package-archive")
+    intent.setDataAndType(Uri.parse("file://" + f.toString()), "application/vnd.android.package-archive")
+    cur_activity.startActivity(intent)
+
+
 def download_apk(instance, answer):
     global popup
     if answer=="yes":
         global apk_url
-        apk_path = os.path.join(get_cache_dir(), "update.apk") 
+        # apk_path = os.path.join(get_cache_dir(), "update.apk") 
+        apk_path = "/sdcard/update.apk"
+        os.remove(apk_path)
         urllib.urlretrieve (apk_url, apk_path)
+        install_apk(apk_path)
 
     popup.dismiss()
+
 
 def check_update():
     """
@@ -101,6 +116,12 @@ def check_update():
 
     update_meta_url = "http://metro.cs.ucla.edu/mobile_insight/update_meta.json"
     update_meta_path = os.path.join(get_cache_dir(), "update_meta.json")
+
+    os.remove(update_meta_path)
+
+
+
+    #Retrieve latest metadata
     urllib.urlretrieve (update_meta_url, update_meta_path)
 
     if not os.path.isfile(update_meta_path):
@@ -121,12 +142,14 @@ def check_update():
 
     	global popup
 
-        content = ConfirmPopup(text='New updates:\n '+update_meta["Description"])
+        content = ConfirmPopup(text='New updates in v'+update_meta["Version"]
+        	                       +':\n '+update_meta["Description"]
+        	                       +'Would you like to update?')
         content.bind(on_answer=download_apk)
-        popup = Popup(title='New version '+update_meta["Version"]+' is available',
+        popup = Popup(title='New update is available',
                             content=content,
                             size_hint=(None, None),
-                            size=(1200,600),
+                            size=(1200,900),
                             auto_dismiss= False)
         popup.open()
             
