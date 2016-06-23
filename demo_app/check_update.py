@@ -6,6 +6,8 @@ from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
 from kivy.properties import *
+from kivy.uix.progressbar import ProgressBar
+
 
 from jnius import autoclass, cast
 
@@ -101,7 +103,7 @@ def download_apk(instance, answer):
         global apk_url
         # apk_path = os.path.join(get_cache_dir(), "update.apk") 
         apk_path = "/sdcard/update.apk"
-        if os.isfile(apk_path):
+        if os.path.isfile(apk_path):
             os.remove(apk_path)
         urllib.urlretrieve (apk_url, apk_path)
         install_apk(apk_path)
