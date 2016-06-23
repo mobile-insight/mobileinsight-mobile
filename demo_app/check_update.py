@@ -7,6 +7,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
 from kivy.properties import *
 from kivy.uix.progressbar import ProgressBar
+from kivy.clock import Clock
 
 
 from jnius import autoclass, cast
@@ -15,6 +16,7 @@ import urllib
 import json
 import re
 import os
+import threading
 
 import subprocess
 from os.path import basename
@@ -89,13 +91,16 @@ def install_apk(apk_path):
     Uri = autoclass('android.net.Uri')
     f = FileClass(apk_path)
     if not f.exists():
-    	return
+        return
     intent = IntentClass()
     intent.setAction(IntentClass.ACTION_VIEW)
     # intent.setDataAndType(Uri.fromFile(f), "application/vnd.android.package-archive")
     intent.setDataAndType(Uri.parse("file://" + f.toString()), "application/vnd.android.package-archive")
     cur_activity.startActivity(intent)
 
+def download_thread(apk_url, apk_path):
+    urllib.urlretrieve (apk_url, apk_path)
+    install_apk(apk_path)    
 
 def download_apk(instance, answer):
     global popup
@@ -105,11 +110,28 @@ def download_apk(instance, answer):
         apk_path = "/sdcard/update.apk"
         if os.path.isfile(apk_path):
             os.remove(apk_path)
-        urllib.urlretrieve (apk_url, apk_path)
-        install_apk(apk_path)
 
-    popup.dismiss()
+        t = threading.Thread(target=download_thread, args=(apk_url, apk_path))
+        t.start()
 
+        progress_bar = ProgressBar()
+        progress_bar.value = 1
+        def download_progress(instance):
+            def next_update(dt):
+                if progress_bar.value>=100:
+                    return False
+                progress_bar.value += 1
+            Clock.schedule_interval(next_update, 1/25)
+
+        progress_popup = Popup(
+            title='Downloading MobileInsight...',
+            content=progress_bar
+        )
+
+        progress_popup.bind(on_open=download_progress)
+        progress_popup.open()
+
+    popup.dismiss()    
 
 def check_update():
     """
@@ -144,11 +166,11 @@ def check_update():
     if cmp_version(cur_version,update_meta['Version'])<0:
 
 
-    	global popup
+        global popup
 
         content = ConfirmPopup(text='New updates in v'+update_meta["Version"]
-        	                       +':\n '+update_meta["Description"]
-        	                       +'Would you like to update?')
+                                   +':\n '+update_meta["Description"]
+                                   +'Would you like to update?')
         content.bind(on_answer=download_apk)
         popup = Popup(title='New update is available',
                             content=content,
