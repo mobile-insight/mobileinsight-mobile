@@ -34,11 +34,20 @@ import stat
 import json
 
 ANDROID_SHELL = "/system/bin/sh"
-LOGO_STRING = "MobileInsight 2.0\nUCLA WiNG Group & OSU MSSN Lab"
 #Load main UI
 Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
 Builder.load_file('main_ui.kv')
+current_activity = cast("android.app.Activity", autoclass("org.renpy.android.PythonActivity").mActivity)
+
+def get_cur_version():
+    """
+    Get current apk version string
+    """
+    pkg_name = current_activity.getPackageName()
+    return str(current_activity.getPackageManager().getPackageInfo(pkg_name, 0).versionName)
+
+LOGO_STRING = "MobileInsight "+get_cur_version()+"\nUCLA WiNG Group & OSU MSSN Lab"
 
 def create_folder():
     cmd = "mkdir /sdcard/mobile_insight; "
@@ -54,9 +63,6 @@ def get_app_list():
     '''
     Load plugin lists, including both buil-in and 3rd-party plugins
     '''
-
-    current_activity = cast("android.app.Activity",
-                            autoclass("org.renpy.android.PythonActivity").mActivity)
 
     ret = {} # app_name->(path,with_UI)
 
@@ -121,8 +127,8 @@ class MobileInsightScreen(GridLayout):
     error_log = StringProperty(LOGO_STRING)
     default_app_name = StringProperty("")
     collecting = BooleanProperty(False)
-    current_activity = cast("android.app.Activity",
-                            autoclass("org.renpy.android.PythonActivity").mActivity)
+    # current_activity = cast("android.app.Activity",
+    #                         autoclass("org.renpy.android.PythonActivity").mActivity)
     service = None
     analyzer = None
 
@@ -267,11 +273,11 @@ class MobileInsightScreen(GridLayout):
                 no_error = False
 
     def _get_cache_dir(self):
-        return str(self.current_activity.getCacheDir().getAbsolutePath())
+        return str(current_activity.getCacheDir().getAbsolutePath())
 
 
     def _get_files_dir(self):
-        return str(self.current_activity.getFilesDir().getAbsolutePath())
+        return str(current_activity.getFilesDir().getAbsolutePath())
 
     def on_checkbox_app_active(self, obj):
         for cb in self.ids.checkbox_app_layout.children:
@@ -398,7 +404,7 @@ class MobileInsightScreen(GridLayout):
         return deviceId
 
     def about(self):
-        about_text = ('MobileInsight 2.0 \n' 
+        about_text = ('MobileInsight '+get_cur_version()+' \n' 
                    + 'UCLA WiNG Group & OSU MSSN Lab\n\n' 
                    + 'Developers:\n'
                    + '     Yuanjie Li,\n'
@@ -438,7 +444,7 @@ class MobileInsightApp(App):
     def build_settings(self, settings):
 
         with open("settings.json", "r") as settings_json:
-            settings.add_json_panel('General settings', self.config, data=settings_json.read())
+            settings.add_json_panel('General', self.config, data=settings_json.read())
 
         self.create_app_settings(self.config,settings)
 
