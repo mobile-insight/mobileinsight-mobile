@@ -101,7 +101,8 @@ def download_apk(instance, answer):
         global apk_url
         # apk_path = os.path.join(get_cache_dir(), "update.apk") 
         apk_path = "/sdcard/update.apk"
-        os.remove(apk_path)
+        if os.isfile(apk_path):
+            os.remove(apk_path)
         urllib.urlretrieve (apk_url, apk_path)
         install_apk(apk_path)
 
@@ -117,7 +118,8 @@ def check_update():
     update_meta_url = "http://metro.cs.ucla.edu/mobile_insight/update_meta.json"
     update_meta_path = os.path.join(get_cache_dir(), "update_meta.json")
 
-    os.remove(update_meta_path)
+    if os.path.isfile(update_meta_path):
+        os.remove(update_meta_path)
 
 
 

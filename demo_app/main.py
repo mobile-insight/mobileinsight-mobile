@@ -114,7 +114,8 @@ def check_update():
             import check_update
             check_update.check_update()
     except Exception, e:
-        pass
+        import traceback,crash_app
+        print str(traceback.format_exc())
 
 class MobileInsightScreen(GridLayout):
     error_log = StringProperty(LOGO_STRING)
@@ -486,9 +487,9 @@ class MobileInsightApp(App):
     def build_config(self, config):
         # Yuanjie: the ordering of the following options MUST be the same as those in settings.json!!!
         config.setdefaults('mi_general', {
-            'bcheck_update': True,
-            'bstartup': True,
-            'bstartup_service': False,
+            'bcheck_update': 1,
+            'bstartup': 1,
+            'bstartup_service': 0,
             'start_service': 'NetLoggerInternal',
         })
         self.create_app_default_config(config)
