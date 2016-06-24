@@ -493,7 +493,6 @@ class MobileInsightApp(App):
 
 if __name__ == "__main__":
     try:
-        x = y
         MobileInsightApp().run()
     except Exception, e:
         import traceback,crash_app
