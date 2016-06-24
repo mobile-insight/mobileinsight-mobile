@@ -50,13 +50,28 @@ def get_cur_version():
 LOGO_STRING = "MobileInsight "+get_cur_version()+"\nUCLA WiNG Group & OSU MSSN Lab"
 
 def create_folder():
-    cmd = "mkdir /sdcard/mobile_insight; "
-    cmd = cmd + "mkdir /sdcard/mobile_insight/log; "
-    cmd = cmd + "mkdir /sdcard/mobile_insight/cfg; "
-    cmd = cmd + "mkdir /sdcard/mobile_insight/dbs; "
-    cmd = cmd + "mkdir /sdcard/mobile_insight/apps; "
-    cmd = cmd + "mkdir /sdcard/mobile_insight/crash_logs; "
+    Environment = autoclass("android.os.Environment")
+
+    state = Environment.getExternalStorageState()
+    if not Environment.MEDIA_MOUNTED==state:
+        return False
+
+    sdcard_path = Environment.getExternalStorageDirectory().toString()
+
+    mobile_insight_path = os.path.join(sdcard_path,"mobile_insight")
+
+    print "mobile_insight_path", mobile_insight_path
+
+    cmd = "mkdir "+mobile_insight_path+"; "
+    cmd = cmd + "mkdir " + os.path.join(mobile_insight_path,"log")+"; "
+    cmd = cmd + "mkdir " + os.path.join(mobile_insight_path,"cfg")+"; "
+    cmd = cmd + "mkdir " + os.path.join(mobile_insight_path,"dbs")+"; "
+    cmd = cmd + "mkdir " + os.path.join(mobile_insight_path,"apps")+"; "
+    cmd = cmd + "mkdir " + os.path.join(mobile_insight_path,"crash_logs")+"; "
+    cmd = cmd + "chmod -R 777 "+mobile_insight_path+"; "
     run_shell_cmd(cmd)
+
+    return True
 
 def get_app_list():
 
