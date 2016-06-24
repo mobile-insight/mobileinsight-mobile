@@ -10,10 +10,13 @@ from kivy.properties import *
 import httplib, urllib, urllib2
 
 import subprocess
-from os.path import basename
+import os
+import sys
 import re
 import datetime
-ANDROID_SHELL = "/system/bin/sh"
+
+
+import main_utils
 
 __all__=["ConfirmPopup","CrashApp"]
 
@@ -33,45 +36,6 @@ Builder.load_string('''
             text: 'No'
             on_release: root.dispatch('on_answer', 'no')
 ''')
-
-
-def run_shell_cmd(cmd, wait = False):
-    p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    p.communicate(cmd+'\n')
-
-    if wait:
-        p.wait()
-        return p.returncode
-    else:
-        return None
-
-def get_phone_info():
-    cmd          = "getprop ro.product.model; getprop ro.product.manufacturer;"
-    proc         = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
-    res          = proc.stdout.read().split('\n')
-    model        = res[0].replace(" ", "")
-    manufacturer = res[1].replace(" ", "")
-    phone_info   = get_device_id() + '_' + manufacturer + '-' + model
-    return phone_info
-
-
-def get_opeartor_info():
-    cmd          = "getprop gsm.operator.alpha"
-    proc         = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
-    operator     = proc.stdout.read().split('\n')[0].replace(" ", "")
-    if operator == '' or operator is None:
-        operator = 'null'
-    return operator
-
-
-def get_device_id():
-    cmd = "service call iphonesubinfo 1"
-    proc = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
-    out = proc.communicate()[0]
-    tup = re.findall("\'.+\'", out)
-    tupnum = re.findall("\d+", "".join(tup))
-    deviceId = "".join(tupnum)
-    return deviceId
 
 class ConfirmPopup(GridLayout):
     text = StringProperty()
@@ -143,7 +107,8 @@ class CrashApp(App):
             #post data to server
             resp = urllib2.urlopen(req, timeout=5)
             #get response
-            qrcont=resp.read()
+            if resp:
+                qrcont=resp.read()
             
         except Exception,e:
             "Fail to send bug report!"
@@ -152,15 +117,19 @@ class CrashApp(App):
         
     def _on_answer(self, instance, answer):
         if answer=="yes":
-            phone_info = get_phone_info()
-            log_name= "/sdcard/mobile_insight/crash_logs/" \
-                    + "crash_report_" \
+            phone_info = main_utils.get_phone_info()
+            log_name = "crash_report_" \
                     + phone_info+'_' \
                     + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') \
                     + '.txt'
-            run_shell_cmd('logcat -d | grep -E "python|diag" >'+log_name,True)
+            log_name = os.path.join(main_utils.get_mobile_insight_crash_log_path(),log_name)
+            main_utils.run_shell_cmd('logcat -d | grep -E "python|diag" >'+log_name,True)
             self.__upload_crash_log(log_name)
 
             
 
         self.popup.dismiss()
+
+        sys.exit(1)
+
+

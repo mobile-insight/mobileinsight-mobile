@@ -17,12 +17,10 @@ import json
 import re
 import os
 import threading
-
-import subprocess
-from os.path import basename
 import re
 import datetime
-ANDROID_SHELL = "/system/bin/sh"
+
+import main_utils
 
 __all__=["check_update"]
 
@@ -106,8 +104,7 @@ def download_apk(instance, answer):
     global popup
     if answer=="yes":
         global apk_url
-        # apk_path = os.path.join(get_cache_dir(), "update.apk") 
-        apk_path = "/sdcard/update.apk"
+        apk_path = os.path.join(main_utils.get_mobile_insight_path(),"update.apk")
         if os.path.isfile(apk_path):
             os.remove(apk_path)
 

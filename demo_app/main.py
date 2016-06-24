@@ -33,43 +33,31 @@ import shutil
 import stat
 import json
 
-ANDROID_SHELL = "/system/bin/sh"
+import main_utils
+
 #Load main UI
 Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
 Builder.load_file('main_ui.kv')
 current_activity = cast("android.app.Activity", autoclass("org.renpy.android.PythonActivity").mActivity)
 
-def get_cur_version():
-    """
-    Get current apk version string
-    """
-    pkg_name = current_activity.getPackageName()
-    return str(current_activity.getPackageManager().getPackageInfo(pkg_name, 0).versionName)
-
-LOGO_STRING = "MobileInsight "+get_cur_version()+"\nUCLA WiNG Group & OSU MSSN Lab"
+LOGO_STRING = "MobileInsight "+main_utils.get_cur_version()+"\nUCLA WiNG Group & OSU MSSN Lab"
 
 def create_folder():
-    Environment = autoclass("android.os.Environment")
 
-    state = Environment.getExternalStorageState()
-    if not Environment.MEDIA_MOUNTED==state:
+    mobile_insight_path = main_utils.get_mobile_insight_path()
+
+    if not mobile_insight_path:
         return False
 
-    sdcard_path = Environment.getExternalStorageDirectory().toString()
-
-    mobile_insight_path = os.path.join(sdcard_path,"mobile_insight")
-
-    print "mobile_insight_path", mobile_insight_path
-
     cmd = "mkdir "+mobile_insight_path+"; "
-    cmd = cmd + "mkdir " + os.path.join(mobile_insight_path,"log")+"; "
-    cmd = cmd + "mkdir " + os.path.join(mobile_insight_path,"cfg")+"; "
-    cmd = cmd + "mkdir " + os.path.join(mobile_insight_path,"dbs")+"; "
-    cmd = cmd + "mkdir " + os.path.join(mobile_insight_path,"apps")+"; "
-    cmd = cmd + "mkdir " + os.path.join(mobile_insight_path,"crash_logs")+"; "
+    cmd = cmd + "mkdir " + main_utils.get_mobile_insight_log_path() +"; "
+    cmd = cmd + "mkdir " + main_utils.get_mobile_insight_cfg_path()+"; "
+    cmd = cmd + "mkdir " + main_utils.get_mobile_insight_db_path()+"; "
+    cmd = cmd + "mkdir " + main_utils.get_mobile_insight_plugin_path()+"; "
+    cmd = cmd + "mkdir " + main_utils.get_mobile_insight_crash_log_path()+"; "
     cmd = cmd + "chmod -R 777 "+mobile_insight_path+"; "
-    run_shell_cmd(cmd)
+    main_utils.run_shell_cmd(cmd)
 
     return True
 
@@ -89,7 +77,7 @@ def get_app_list():
             ret[f] = (os.path.join(APP_DIR, f), False)
 
     # Yuanjie: support alternative path for users to customize their own app
-    APP_DIR = "/sdcard/mobile_insight/apps/"
+    APP_DIR = main_utils.get_mobile_insight_plugin_path()
 
     if os.path.exists(APP_DIR):
         l = os.listdir(APP_DIR)
@@ -111,20 +99,6 @@ def get_app_list():
 
     return ret
 
-def run_shell_cmd(cmd, wait = False):
-    p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    p.communicate(cmd+'\n')
-
-    if wait:
-        p.wait()
-        return p.returncode
-    else:
-        return None
-
-def update_log():
-    p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    stdout,stderr = p.communicate('logcat | grep -E "python|diag"\n')
-    MobileInsightScreen.error_log = stdout
         
 def check_update():
     try:
@@ -151,16 +125,16 @@ class MobileInsightScreen(GridLayout):
         super(MobileInsightScreen, self).__init__()
 
         self.__init_libs()
-        # self._create_folder()
-        create_folder()
+        
+        if not create_folder():
+            # MobileInsight folders unavailable. Add warnings
+            self.error_log._add_log_line("WARINING: SDcard is unavailable. Please check.")
 
-        # self.app_list = self._get_app_list()
-        # self.app_list = self.get_app_list()
         self.app_list = get_app_list()
         # self.app_list.sort()
 
         if not self.__check_diag_mode():
-            self.error_log = "WARINING: the diagnostic mode is disabled. Please check your phone settings."
+            self.error_log._add_log_line("WARINING: the diagnostic mode is disabled. Please check your phone settings.")
 
         # clean up ongoing log collections
         self.stop_collection()  
@@ -193,11 +167,11 @@ class MobileInsightScreen(GridLayout):
         """
 
         cmd = " test -e /dev/diag"
-        res = run_shell_cmd(cmd, True)
+        res = main_utils.run_shell_cmd(cmd, True)
         if res:
             return False
         else:
-            run_shell_cmd("chmod 755 /dev/diag")
+            main_utils.run_shell_cmd("chmod 755 /dev/diag")
             return True
 
 
@@ -206,7 +180,7 @@ class MobileInsightScreen(GridLayout):
         Initialize libs required by MobileInsight
         """
 
-        libs_path = os.path.join(self._get_files_dir(), "data")
+        libs_path = os.path.join(main_utils.get_files_dir(), "data")
 
         libs = ["libglib-2.0.so",
                 "libgmodule-2.0.so",
@@ -252,17 +226,7 @@ class MobileInsightScreen(GridLayout):
         if cmd:
             # at least one lib should be copied
             cmd = "mount -o remount,rw /system; " + cmd
-            run_shell_cmd(cmd)
-
-
-    def _create_folder(self):
-        cmd = "mkdir /sdcard/mobile_insight; "
-        cmd = cmd + "mkdir /sdcard/mobile_insight/log; "
-        cmd = cmd + "mkdir /sdcard/mobile_insight/cfg; "
-        cmd = cmd + "mkdir /sdcard/mobile_insight/dbs; "
-        cmd = cmd + "mkdir /sdcard/mobile_insight/apps; "
-        cmd = cmd + "mkdir /sdcard/mobile_insight/crash_logs; "
-        run_shell_cmd(cmd)
+            main_utils.run_shell_cmd(cmd)
 
 
     def _add_log_line(self, s):
@@ -287,13 +251,6 @@ class MobileInsightScreen(GridLayout):
                 self._add_log_line(str(traceback.format_exc()))
                 no_error = False
 
-    def _get_cache_dir(self):
-        return str(current_activity.getCacheDir().getAbsolutePath())
-
-
-    def _get_files_dir(self):
-        return str(current_activity.getFilesDir().getAbsolutePath())
-
     def on_checkbox_app_active(self, obj):
         for cb in self.ids.checkbox_app_layout.children:
             if cb.active:
@@ -314,7 +271,6 @@ class MobileInsightScreen(GridLayout):
 
 
     def stop_collection(self):
-        ANDROID_SHELL = "/system/bin/sh"
         self.collecting = False
 
         # Find diag_mdlog process
@@ -330,7 +286,7 @@ class MobileInsightScreen(GridLayout):
 
         if len(diag_procs) > 0:
             cmd2 = "kill " + " ".join([str(pid) for pid in diag_procs])
-            run_shell_cmd(cmd2)
+            main_utils.run_shell_cmd(cmd2)
 
 
     def start_service(self, app_name):
@@ -357,9 +313,9 @@ class MobileInsightScreen(GridLayout):
             
             # Haotian: save orphan log
             dated_files = []
-            self.__logdir = "/sdcard/mobile_insight/log/"
-            self.__phone_info = self._get_phone_info()
-            mi2log_folder = os.path.join(self._get_cache_dir(), "mi2log")
+            self.__logdir = main_utils.get_mobile_insight_log_path()
+            self.__phone_info = main_utils.get_phone_info()
+            mi2log_folder = os.path.join(main_utils.get_cache_dir(), "mi2log")
             for subdir, dirs, files in os.walk(mi2log_folder):
                 for f in files:
                     fn = os.path.join(subdir, f)
@@ -370,7 +326,7 @@ class MobileInsightScreen(GridLayout):
     	        self.__original_filename = dated_files[0][1]
     	        print "The last orphan log file: " + str(self.__original_filename)
     	        chmodcmd = "chmod 644 " + self.__original_filename
-    	        p = subprocess.Popen("su ", executable = ANDROID_SHELL, shell = True, \
+    	        p = subprocess.Popen("su ", executable = main_utils.ANDROID_SHELL, shell = True, \
     	                                    stdin = subprocess.PIPE, stdout = subprocess.PIPE)
     	        p.communicate(chmodcmd + '\n')
     	        p.wait()
@@ -380,46 +336,17 @@ class MobileInsightScreen(GridLayout):
         orig_basename  = os.path.basename(self.__original_filename)
         orig_dirname   = os.path.dirname(self.__original_filename)
         self.__log_timestamp     = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-        milog_basename = "diag_log_%s_%s_%s.mi2log" % (self.__log_timestamp, self.__phone_info, self._get_opeartor_info())
+        milog_basename = "diag_log_%s_%s_%s.mi2log" % (self.__log_timestamp, self.__phone_info, main_utils.get_opeartor_info())
         milog_absname  = os.path.join(self.__logdir, milog_basename)
         shutil.copyfile(self.__original_filename, milog_absname)
         chmodcmd = "rm -f " + self.__original_filename
-        p = subprocess.Popen("su ", executable = ANDROID_SHELL, shell = True, \
+        p = subprocess.Popen("su ", executable = main_utils.ANDROID_SHELL, shell = True, \
                                     stdin = subprocess.PIPE, stdout = subprocess.PIPE)
         p.communicate(chmodcmd + '\n')
         p.wait()
 
-    def _get_phone_info(self):
-        cmd          = "getprop ro.product.model; getprop ro.product.manufacturer;"
-        proc         = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
-        res          = proc.stdout.read().split('\n')
-        model        = res[0].replace(" ", "")
-        manufacturer = res[1].replace(" ", "")
-        phone_info   = self._get_device_id() + '_' + manufacturer + '-' + model
-        # print "_get_phone_info() = " + phone_info
-        return phone_info
-
-
-    def _get_opeartor_info(self):
-        cmd          = "getprop gsm.operator.alpha"
-        proc         = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
-        operator     = proc.stdout.read().split('\n')[0].replace(" ", "")
-        if operator == '' or operator is None:
-            operator = 'null'
-        return operator
-
-
-    def _get_device_id(self):
-        cmd = "service call iphonesubinfo 1"
-        proc = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
-        out = proc.communicate()[0]
-        tup = re.findall("\'.+\'", out)
-        tupnum = re.findall("\d+", "".join(tup))
-        deviceId = "".join(tupnum)
-        return deviceId
-
     def about(self):
-        about_text = ('MobileInsight '+get_cur_version()+' \n' 
+        about_text = ('MobileInsight '+main_utils.get_cur_version()+' \n' 
                    + 'UCLA WiNG Group & OSU MSSN Lab\n\n' 
                    + 'Developers:\n'
                    + '     Yuanjie Li,\n'
@@ -546,11 +473,13 @@ class MobileInsightApp(App):
 
     def on_pause(self):
         # Yuanjie: The following code prevents screen freeze when screen off -> screen on
-        current_activity = cast("android.app.Activity",
-                            autoclass("org.renpy.android.PythonActivity").mActivity)
-        pm = current_activity.getSystemService(autoclass('android.content.Context').POWER_SERVICE);
-        if not pm.isInteractive():
-            current_activity.moveTaskToBack(True)
+        try:
+            pm = current_activity.getSystemService(autoclass('android.content.Context').POWER_SERVICE);
+            if not pm.isInteractive():
+                current_activity.moveTaskToBack(True)
+        except Exception, e:
+            import traceback,crash_app
+            print str(traceback.format_exc())
         return True  # go into Pause mode
 
     def on_resume(self):
@@ -564,6 +493,7 @@ class MobileInsightApp(App):
 
 if __name__ == "__main__":
     try:
+        x = y
         MobileInsightApp().run()
     except Exception, e:
         import traceback,crash_app
