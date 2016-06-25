@@ -172,7 +172,7 @@ def check_update():
         popup = Popup(title='New update is available',
                             content=content,
                             size_hint=(None, None),
-                            size=(1200,900),
+                            size=(1000,800),
                             auto_dismiss= False)
         popup.open()
             

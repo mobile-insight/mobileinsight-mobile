@@ -43,6 +43,20 @@ current_activity = cast("android.app.Activity", autoclass("org.renpy.android.Pyt
 
 LOGO_STRING = "MobileInsight "+main_utils.get_cur_version()+"\nUCLA WiNG Group & OSU MSSN Lab"
 
+
+def show_log(err_log):
+    mobile_insight_path = main_utils.get_mobile_insight_path()
+    if not mobile_insight_path:
+        print "show_log exits?"
+        return
+    logpath = os.path.join(mobile_insight_path,"tmp.txt")
+    cmd = "logcat -d | grep python > "+logpath+"&"
+    main_utils.run_shell_cmd(cmd)
+
+    with open(logpath, 'r') as f:
+        for line in f:
+            err_log = err_log + "\n"
+
 def create_folder():
 
     mobile_insight_path = main_utils.get_mobile_insight_path()
@@ -98,8 +112,7 @@ def get_app_list():
         create_folder()
 
     return ret
-
-        
+       
 def check_update():
     try:
         config = ConfigParser()
@@ -301,6 +314,11 @@ class MobileInsightScreen(GridLayout):
             self.service.start(self.app_list[app_name][0])   # app name
             self.default_app_name = app_name
 
+            # self.t = threading.Thread(target=show_log, args=(self.error_log,))
+            # self.t.start()
+
+            # show_log(self.error_log)
+
         else:
         	self.error_log = "Error: " + app_name + "cannot be launched!"
 
@@ -359,7 +377,6 @@ class MobileInsightScreen(GridLayout):
                       size_hint=(.8, .4))
         popup.open()
 
-
 class LabeledCheckBox(GridLayout):
     active = BooleanProperty(False)
     text = StringProperty("")
@@ -378,7 +395,6 @@ class LabeledCheckBox(GridLayout):
     def callback(self, cb, value):
         self.active = value
         self.dispatch("on_active")
-
 
 class MobileInsightApp(App):
     screen = None
@@ -478,8 +494,14 @@ class MobileInsightApp(App):
             if not pm.isInteractive():
                 current_activity.moveTaskToBack(True)
         except Exception, e:
-            import traceback,crash_app
-            print str(traceback.format_exc())
+            try:
+                # API 20: pm.isScreenOn is depreciated
+                pm = current_activity.getSystemService(autoclass('android.content.Context').POWER_SERVICE);
+                if not pm.isScreenOn():
+                    current_activity.moveTaskToBack(True)
+            except Exception, e:
+                import traceback,crash_app
+                print str(traceback.format_exc())
         return True  # go into Pause mode
 
     def on_resume(self):
