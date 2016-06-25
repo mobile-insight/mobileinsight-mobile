@@ -34,13 +34,13 @@ def get_cur_version():
 
 def run_shell_cmd(cmd, wait = False):
     p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    p.communicate(cmd+'\n')
+    res,err = p.communicate(cmd+'\n')
 
     if wait:
         p.wait()
-        return p.returncode
+        return res
     else:
-        return None
+        return res
 
 def get_sdcard_path():
     """
@@ -154,8 +154,7 @@ def get_files_dir():
 
 def get_phone_info():
     cmd          = "getprop ro.product.model; getprop ro.product.manufacturer;"
-    proc         = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
-    res          = proc.stdout.read().split('\n')
+    res = run_shell_cmd(cmd).split('\n')
     model        = res[0].replace(" ", "")
     manufacturer = res[1].replace(" ", "")
     phone_info   = get_device_id() + '_' + manufacturer + '-' + model
@@ -163,16 +162,14 @@ def get_phone_info():
 
 def get_opeartor_info():
     cmd          = "getprop gsm.operator.alpha"
-    proc         = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
-    operator     = proc.stdout.read().split('\n')[0].replace(" ", "")
+    operator = run_shell_cmd(cmd).split('\n')[0].replace(" ", "")
     if operator == '' or operator is None:
         operator = 'null'
     return operator
 
 def get_device_id():
     cmd = "service call iphonesubinfo 1"
-    proc = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
-    out = proc.communicate()[0]
+    out = run_shell_cmd(cmd)
     tup = re.findall("\'.+\'", out)
     tupnum = re.findall("\d+", "".join(tup))
     deviceId = "".join(tupnum)

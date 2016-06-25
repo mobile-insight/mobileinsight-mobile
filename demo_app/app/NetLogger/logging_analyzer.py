@@ -31,7 +31,7 @@ class LoggingAnalyzer(Analyzer):
 
         self.__logdir            = mi2app_utils.get_mobile_insight_log_path()
         self.__txtlogdir         = mi2app_utils.get_mobile_insight_log_decoded_path()
-        self.__phone_info        = self._get_phone_info()
+        self.__phone_info        = mi2app_utils.get_phone_info()
         self.__original_filename = ""
         self.__rawmsg            = {}
         self.__rawmsg_key        = ""
@@ -100,7 +100,7 @@ class LoggingAnalyzer(Analyzer):
     def _save_log(self):
         orig_basename  = os.path.basename(self.__original_filename)
         orig_dirname   = os.path.dirname(self.__original_filename)
-        milog_basename = "diag_log_%s_%s_%s.mi2log" % (self.__log_timestamp, self.__phone_info, self._get_opeartor_info())
+        milog_basename = "diag_log_%s_%s_%s.mi2log" % (self.__log_timestamp, self.__phone_info, mi2app_utils.get_opeartor_info())
         milog_absname  = os.path.join(self.__logdir, milog_basename)
         shutil.copyfile(self.__original_filename, milog_absname)
 
@@ -119,32 +119,3 @@ class LoggingAnalyzer(Analyzer):
 
         # return milog_absname
 
-
-    def _get_phone_info(self):
-        cmd          = "getprop ro.product.model; getprop ro.product.manufacturer;"
-        proc         = subprocess.Popen(cmd, executable = mi2app_utils.ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
-        res          = proc.stdout.read().split('\n')
-        model        = res[0].replace(" ", "")
-        manufacturer = res[1].replace(" ", "")
-        phone_info   = self._get_device_id() + '_' + manufacturer + '-' + model
-        # print "_get_phone_info() = " + phone_info
-        return phone_info
-
-
-    def _get_opeartor_info(self):
-        cmd          = "getprop gsm.operator.alpha"
-        proc         = subprocess.Popen(cmd, executable = mi2app_utils.ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
-        operator     = proc.stdout.read().split('\n')[0].replace(" ", "")
-        if operator == '' or operator is None:
-            operator = 'null'
-        return operator
-
-
-    def _get_device_id(self):
-        cmd = "service call iphonesubinfo 1"
-        proc = subprocess.Popen(cmd, executable = mi2app_utils.ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
-        out = proc.communicate()[0]
-        tup = re.findall("\'.+\'", out)
-        tupnum = re.findall("\d+", "".join(tup))
-        deviceId = "".join(tupnum)
-        return deviceId
