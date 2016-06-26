@@ -484,6 +484,7 @@ class MobileInsightApp(App):
 
     def build(self):
         self.screen = MobileInsightScreen()
+        self.manager = ScreenManager()
         Window.borderless = False
         return self.screen
 
@@ -508,10 +509,24 @@ class MobileInsightApp(App):
         pass
 
     def on_start(self):
+        # from kivy.base import EventLoop
+        # EventLoop.window.bind(on_keyboard=self.hook_keyboard)
+
+        import android
+        android.map_key(android.KEYCODE_BACK, 1001)
+
         check_update()
 
+    def my_key_handler(self, window, keycode1, keycode2, text, modifiers):
+        if keycode1 in [27, 1001]:
+            print "Hello world?"
+            self.manager.go_back()
+            return True
+        return False
+
     def on_stop(self):
-        self.screen.stop_service()
+        pass
+        # self.screen.stop_service()
 
 if __name__ == "__main__":
     try:
