@@ -39,14 +39,14 @@ def run_shell_cmd(cmd, wait = False):
     else:
         return res
 
-def get_PythonService():
-    return PythonService
+def get_service_context():
+    return pyService
 
 def get_cache_dir():
-    return str(PythonService.getCacheDir().getAbsolutePath())
+    return str(pyService.getCacheDir().getAbsolutePath())
 
 def get_files_dir():
-    return str(PythonService.getFilesDir().getAbsolutePath())
+    return str(pyService.getFilesDir().getAbsolutePath())
 
 def get_phone_manufacturer():
     return androidOsBuild.MANUFACTURER
