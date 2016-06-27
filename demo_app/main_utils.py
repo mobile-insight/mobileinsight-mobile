@@ -24,6 +24,10 @@ import json
 current_activity = cast("android.app.Activity", autoclass("org.renpy.android.PythonActivity").mActivity)
 ANDROID_SHELL = "/system/bin/sh"
 
+File = autoclass("java.io.File")
+FileOutputStream = autoclass('java.io.FileOutputStream')
+
+
 
 def get_cur_version():
     """

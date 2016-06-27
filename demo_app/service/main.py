@@ -5,6 +5,8 @@ import sys
 import threading
 import time
 import traceback
+import logging
+import datetime as dt
 
 from kivy.config import ConfigParser
 
@@ -12,6 +14,44 @@ from kivy.config import ConfigParser
 def alive_worker(secs):
     while True:
         time.sleep(secs)
+
+class MyFormatter(logging.Formatter):
+    converter=dt.datetime.fromtimestamp
+    def formatTime(self, record, datefmt=None):
+        ct = self.converter(record.created)
+        if datefmt:
+            s = ct.strftime(datefmt)
+        else:
+            t = ct.strftime("%Y-%m-%d %H:%M:%S")
+            s = "%s,%03d" % (t, record.msecs)
+        return s
+
+def setup_logger(level=logging.INFO):
+    '''Setup the analyzer logger.
+
+    NOTE: All analyzers share the same logger.
+
+    :param level: the loggoing level. The default value is logging.INFO.
+    '''
+
+    l = logging.getLogger("mobileinsight_logger")
+    if len(l.handlers)<1:
+        # formatter = MyFormatter('%(asctime)s %(message)s',datefmt='%Y-%m-%d,%H:%M:%S.%f')
+        formatter = MyFormatter('%(message)s')
+        streamHandler = logging.StreamHandler()
+        streamHandler.setFormatter(formatter)
+
+        l.setLevel(level)
+        l.addHandler(streamHandler)
+        l.propagate = False
+
+
+        log_file = os.path.join(mi2app_utils.get_mobile_insight_path(),"log.txt")
+
+        fileHandler = logging.FileHandler(log_file, mode='w')
+        fileHandler.setFormatter(formatter)
+        l.addHandler(fileHandler)  
+        l.disabled = False
 
 if __name__ == "__main__":
 
@@ -44,6 +84,9 @@ if __name__ == "__main__":
                 plugin_config[item] = config.get(section_name, item)
 
         namespace["plugin_config"] = plugin_config
+
+
+        setup_logger()
 
         execfile(app_file, namespace)
 

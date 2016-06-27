@@ -44,18 +44,35 @@ current_activity = cast("android.app.Activity", autoclass("org.renpy.android.Pyt
 LOGO_STRING = "MobileInsight "+main_utils.get_cur_version()+"\nUCLA WiNG Group & OSU MSSN Lab"
 
 
-def show_log(err_log):
-    mobile_insight_path = main_utils.get_mobile_insight_path()
-    if not mobile_insight_path:
-        print "show_log exits?"
-        return
-    logpath = os.path.join(mobile_insight_path,"tmp.txt")
-    cmd = "logcat -d | grep python > "+logpath+"&"
-    main_utils.run_shell_cmd(cmd)
+def show_log(self):
 
-    with open(logpath, 'r') as f:
-        for line in f:
-            err_log = err_log + "\n"
+    log_name = os.path.join(main_utils.get_mobile_insight_path(),"log.txt")
+    while not self.terminal_stop.is_set() \
+    and not os.path.exists(log_name):
+        continue
+
+    log_file = open(log_name,'r')
+
+    while True:
+        if self.terminal_stop.is_set():
+            log_file.close()
+            return
+        where = log_file.tell()
+        line = log_file.readline()
+        if not line:
+            log_file.seek(where)
+        else:
+            # Show MAX_LINE lines at most
+            # TODO: make the code more efficient
+            MAX_LINE = 8
+            tmp = self.error_log.split('\n')
+            tmp.append(line)
+            if len(tmp)>MAX_LINE:
+                self.error_log = '\n'.join(tmp[-MAX_LINE:])
+            else:
+                self.error_log = '\n'.join(tmp)
+
+            # self.add_log_line(line)
 
 def create_folder():
 
@@ -129,10 +146,10 @@ class MobileInsightScreen(GridLayout):
     error_log = StringProperty(LOGO_STRING)
     default_app_name = StringProperty("")
     collecting = BooleanProperty(False)
-    # current_activity = cast("android.app.Activity",
-    #                         autoclass("org.renpy.android.PythonActivity").mActivity)
     service = None
     analyzer = None
+    terminal_thread = None
+    terminal_stop = None
 
     def __init__(self):
         super(MobileInsightScreen, self).__init__()
@@ -141,13 +158,13 @@ class MobileInsightScreen(GridLayout):
         
         if not create_folder():
             # MobileInsight folders unavailable. Add warnings
-            self.error_log._add_log_line("WARINING: SDcard is unavailable. Please check.")
+            self.error_log.add_log_line("WARINING: SDcard is unavailable. Please check.")
 
         self.app_list = get_app_list()
         # self.app_list.sort()
 
         if not self.__check_diag_mode():
-            self.error_log._add_log_line("WARINING: the diagnostic mode is disabled. Please check your phone settings.")
+            self.error_log.add_log_line("WARINING: the diagnostic mode is disabled. Please check your phone settings.")
 
         # clean up ongoing log collections
         self.stop_collection()  
@@ -242,7 +259,7 @@ class MobileInsightScreen(GridLayout):
             main_utils.run_shell_cmd(cmd)
 
 
-    def _add_log_line(self, s):
+    def add_log_line(self, s):
         self.error_log += "\n"
         self.error_log += s
 
@@ -253,15 +270,15 @@ class MobileInsightScreen(GridLayout):
         if no_error:
             try:
                 filename = self.ids["filename"].text
-                self._add_log_line("")
-                self._add_log_line("execfile: %s" % filename)
+                self.add_log_line("")
+                self.add_log_line("execfile: %s" % filename)
                 namespace = { "app_log": "" }
                 execfile(filename, namespace)
                 # Load the "app_log" variable from namespace and print it out
-                self._add_log_line(namespace["app_log"])
+                self.add_log_line(namespace["app_log"])
             except:
                 print str(traceback.format_exc())
-                self._add_log_line(str(traceback.format_exc()))
+                self.add_log_line(str(traceback.format_exc()))
                 no_error = False
 
     def on_checkbox_app_active(self, obj):
@@ -307,17 +324,18 @@ class MobileInsightScreen(GridLayout):
             if self.service:
                 # stop the running service
                 self.stop_service() 
+
+            # Show logs on screen
+            self.terminal_stop = threading.Event()
+            self.terminal_thread = threading.Thread(target=show_log, args=(self,))
+            self.terminal_thread.start()
+
             
             from android import AndroidService
             self.error_log = "Running " + app_name + "..."
             self.service = AndroidService("MobileInsight is running...", app_name)
             self.service.start(self.app_list[app_name][0])   # app name
             self.default_app_name = app_name
-
-            # self.t = threading.Thread(target=show_log, args=(self.error_log,))
-            # self.t.start()
-
-            # show_log(self.error_log)
 
         else:
         	self.error_log = "Error: " + app_name + "cannot be launched!"
@@ -326,6 +344,8 @@ class MobileInsightScreen(GridLayout):
         if self.service:
             self.service.stop()
             self.service = None
+            if self.terminal_stop:
+                self.terminal_stop.set()
             self.error_log = LOGO_STRING
             self.stop_collection()  # close ongoing collections
             
@@ -516,13 +536,6 @@ class MobileInsightApp(App):
         android.map_key(android.KEYCODE_BACK, 1001)
 
         check_update()
-
-    def my_key_handler(self, window, keycode1, keycode2, text, modifiers):
-        if keycode1 in [27, 1001]:
-            print "Hello world?"
-            self.manager.go_back()
-            return True
-        return False
 
     def on_stop(self):
         pass

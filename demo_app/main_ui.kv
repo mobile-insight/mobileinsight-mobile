@@ -5,10 +5,12 @@
         text: root.text
         text_size: self.width, None
         size_hint_y: None
-        font_size: "24sp"
+        font_size: "12sp"
         color: 0,0,0,1
         height: self.texture_size[1]
         valign: 'top'
+        max_lines: 4
+        markup: True
 
 <LabeledCheckBox@GridLayout>:
     cols: 2
