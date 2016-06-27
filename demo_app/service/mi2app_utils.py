@@ -115,6 +115,18 @@ def get_mobile_insight_log_decoded_path():
 
     return os.path.join(log_path, "decoded")
 
+def get_mobile_insight_log_uploaded_path():
+    """
+    Return the uploaded log path of MobileInsight, or None if not accessible
+    """
+
+    log_path = get_mobile_insight_log_path()
+
+    if not log_path:
+        return None
+
+    return os.path.join(log_path, "uploaded")
+
 def get_mobile_insight_cfg_path():
     """
     Return the configuration path of MobileInsight, or None if not accessible

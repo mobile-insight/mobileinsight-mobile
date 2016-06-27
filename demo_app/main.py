@@ -86,8 +86,10 @@ def create_folder():
     cmd = cmd + "mkdir " + main_utils.get_mobile_insight_cfg_path()+"; "
     cmd = cmd + "mkdir " + main_utils.get_mobile_insight_db_path()+"; "
     cmd = cmd + "mkdir " + main_utils.get_mobile_insight_plugin_path()+"; "
+    cmd = cmd + "mkdir " + main_utils.get_mobile_insight_log_decoded_path()+"; "
+    cmd = cmd + "mkdir " + main_utils.get_mobile_insight_log_uploaded_path()+"; "
     cmd = cmd + "mkdir " + main_utils.get_mobile_insight_crash_log_path()+"; "
-    cmd = cmd + "chmod -R 777 "+mobile_insight_path+"; "
+    cmd = cmd + "chmod -R 755 "+mobile_insight_path+"; "
     main_utils.run_shell_cmd(cmd)
 
     return True
