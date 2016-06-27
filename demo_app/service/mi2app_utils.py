@@ -4,41 +4,55 @@ mi2app_utils.py
 Define utility variables and functions for apps.
 """
 
-from jnius import autoclass
-# FIXME(likayo): subprocess module in Python 2.7 is not thread-safe. Use subprocess32 instead.
-import subprocess
+# FIXME (likayo): subprocess module in Python 2.7 is not thread-safe.
+# Use subprocess32 instead.
+import subprocess as sp
 import os
 import re
 
-ANDROID_SHELL = "/system/bin/sh"
-service_context = autoclass('org.renpy.android.PythonService').mService
-android_os_build = autoclass("android.os.Build")
-File = autoclass("java.io.File")
+from jnius import autoclass
+
+ANDROID_SHELL    = "/system/bin/sh"
+
+# This one works with Pygame, current bootstrap
+PythonService    = autoclass('org.renpy.android.PythonService')
+
+# This one works with SDL2
+# PythonActivity = autoclass('org.kivy.android.PythonActivity')
+# PythonService  = autoclass('org.kivy.android.PythonService')
+
+pyService        = PythonService.mService
+androidOsBuild   = autoclass("android.os.Build")
+Context          = autoclass('android.content.Context')
+File             = autoclass("java.io.File")
 FileOutputStream = autoclass('java.io.FileOutputStream')
+ConnManager      = autoclass('android.net.ConnectivityManager')
+mWifiManager     = pyService.getSystemService(Context.WIFI_SERVICE);
+
 
 def run_shell_cmd(cmd, wait = False):
-    p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    res,err = p.communicate(cmd+'\n')
+    p = sp.Popen("su", executable = ANDROID_SHELL, shell = True, stdin = sp.PIPE, stdout = sp.PIPE)
+    res, err = p.communicate(cmd + '\n')
     if wait:
         p.wait()
         return res
     else:
         return res
 
-def get_service_context():
-    return service_context
+def get_PythonService():
+    return PythonService
 
 def get_cache_dir():
-    return str(service_context.getCacheDir().getAbsolutePath())
+    return str(PythonService.getCacheDir().getAbsolutePath())
 
 def get_files_dir():
-    return str(service_context.getFilesDir().getAbsolutePath())
+    return str(PythonService.getFilesDir().getAbsolutePath())
 
 def get_phone_manufacturer():
-    return android_os_build.MANUFACTURER
+    return androidOsBuild.MANUFACTURER
 
 def get_phone_model():
-    return android_os_build.MODEL
+    return androidOsBuild.MODEL
 
 def get_phone_info():
     cmd          = "getprop ro.product.model; getprop ro.product.manufacturer;"
@@ -48,7 +62,7 @@ def get_phone_info():
     phone_info   = get_device_id() + '_' + manufacturer + '-' + model
     return phone_info
 
-def get_opeartor_info():
+def get_operator_info():
     cmd          = "getprop gsm.operator.alpha"
     operator     = run_shell_cmd(cmd).split('\n')[0].replace(" ", "")
     if operator == '' or operator is None:
@@ -70,11 +84,11 @@ def get_mobile_insight_path():
 
     Environment = autoclass("android.os.Environment")
     state = Environment.getExternalStorageState()
-    if not Environment.MEDIA_MOUNTED==state:
+    if not Environment.MEDIA_MOUNTED == state:
         return None
 
     sdcard_path = Environment.getExternalStorageDirectory().toString()
-    mobile_insight_path = os.path.join(sdcard_path,"mobile_insight")
+    mobile_insight_path = os.path.join(sdcard_path, "mobile_insight")
     return mobile_insight_path
 
 def get_mobile_insight_log_path():
@@ -99,7 +113,7 @@ def get_mobile_insight_log_decoded_path():
     if not log_path:
         return None
 
-    return os.path.join(log_path,"decoded")
+    return os.path.join(log_path, "decoded")
 
 def get_mobile_insight_cfg_path():
     """
@@ -148,3 +162,7 @@ def get_mobile_insight_crash_log_path():
         return None
 
     return os.path.join(mobile_insight_path, "crash_logs")
+
+
+def get_wifi_status():
+    return mWifiManager.isWifiEnabled()

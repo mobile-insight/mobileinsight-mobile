@@ -158,7 +158,7 @@ def get_phone_info():
     return phone_info
 
 
-def get_opeartor_info():
+def get_operator_info():
     cmd          = "getprop gsm.operator.alpha"
     operator     = run_shell_cmd(cmd).split('\n')[0].replace(" ", "")
     if operator == '' or operator is None:
