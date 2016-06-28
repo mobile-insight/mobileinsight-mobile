@@ -26,7 +26,7 @@ class MyFormatter(logging.Formatter):
             s = "%s,%03d" % (t, record.msecs)
         return s
 
-def setup_logger(level=logging.INFO):
+def setup_logger(app_name,level=logging.INFO):
     '''Setup the analyzer logger.
 
     NOTE: All analyzers share the same logger.
@@ -86,7 +86,7 @@ if __name__ == "__main__":
         namespace["plugin_config"] = plugin_config
 
 
-        setup_logger()
+        setup_logger(arg)
 
         execfile(app_file, namespace)
 

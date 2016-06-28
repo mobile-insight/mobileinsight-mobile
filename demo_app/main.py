@@ -334,7 +334,7 @@ class MobileInsightScreen(GridLayout):
             # Show logs on screen
 
             # Clean up old logs
-            self.log_name = os.path.join(main_utils.get_mobile_insight_path(),app_name+"_log.txt")
+            self.log_name = os.path.join(main_utils.get_mobile_insight_path(),"log.txt")
             if os.path.exists(self.log_name):
                 os.remove(self.log_name)
 
