@@ -260,15 +260,15 @@ class MobileInsightScreen(GridLayout):
             else:
                 # # Show MAX_LINE lines at most
                 # # TODO: make the code more efficient
-                # MAX_LINE = 8
-                # tmp = self.error_log.split('\n')
-                # tmp.append(line)
-                # if len(tmp)>MAX_LINE:
-                #     self.error_log = '\n'.join(tmp[-MAX_LINE:])
-                # else:
-                #     self.error_log = '\n'.join(tmp)
+                MAX_LINE = 10
+                tmp = self.error_log.split('\n')
+                tmp.append(line)
+                if len(tmp)>MAX_LINE:
+                    self.error_log = '\n'.join(tmp[-MAX_LINE:])
+                else:
+                    self.error_log = '\n'.join(tmp)
 
-                self.add_log_line(line)
+                # self.add_log_line(line)
 
 
     def run_script_callback(self):
