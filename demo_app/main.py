@@ -328,9 +328,9 @@ class MobileInsightScreen(GridLayout):
                 self.stop_service() 
 
             # Show logs on screen
-            self.terminal_stop = threading.Event()
-            self.terminal_thread = threading.Thread(target=show_log, args=(self,))
-            self.terminal_thread.start()
+            # self.terminal_stop = threading.Event()
+            # self.terminal_thread = threading.Thread(target=show_log, args=(self,))
+            # self.terminal_thread.start()
 
             
             from android import AndroidService
