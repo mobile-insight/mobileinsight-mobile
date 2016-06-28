@@ -100,7 +100,7 @@ class LoggingAnalyzer(Analyzer):
     def _save_log(self):
         orig_basename  = os.path.basename(self.__original_filename)
         orig_dirname   = os.path.dirname(self.__original_filename)
-        milog_basename = "diag_log_%s_%s_%s.mi2log" % (self.__log_timestamp, self.__phone_info, mi2app_utils.get_opeartor_info())
+        milog_basename = "diag_log_%s_%s_%s.mi2log" % (self.__log_timestamp, self.__phone_info, mi2app_utils.get_operator_info())
         milog_absname  = os.path.join(self.__logdir, milog_basename)
         shutil.copyfile(self.__original_filename, milog_absname)
 
