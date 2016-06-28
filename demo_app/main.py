@@ -44,35 +44,7 @@ current_activity = cast("android.app.Activity", autoclass("org.renpy.android.Pyt
 LOGO_STRING = "MobileInsight "+main_utils.get_cur_version()+"\nUCLA WiNG Group & OSU MSSN Lab"
 
 
-def show_log(self):
 
-    log_name = os.path.join(main_utils.get_mobile_insight_path(),"log.txt")
-    while not self.terminal_stop.is_set() \
-    and not os.path.exists(log_name):
-        continue
-
-    log_file = open(log_name,'r')
-
-    while True:
-        if self.terminal_stop.is_set():
-            log_file.close()
-            return
-        where = log_file.tell()
-        line = log_file.readline()
-        if not line:
-            log_file.seek(where)
-        else:
-            # Show MAX_LINE lines at most
-            # TODO: make the code more efficient
-            MAX_LINE = 8
-            tmp = self.error_log.split('\n')
-            tmp.append(line)
-            if len(tmp)>MAX_LINE:
-                self.error_log = '\n'.join(tmp[-MAX_LINE:])
-            else:
-                self.error_log = '\n'.join(tmp)
-
-            # self.add_log_line(line)
 
 def create_folder():
 
@@ -265,6 +237,39 @@ class MobileInsightScreen(GridLayout):
         self.error_log += "\n"
         self.error_log += s
 
+    def show_log(self):
+
+        # log_name = os.path.join(main_utils.get_mobile_insight_path(),"log.txt")
+
+
+        while not self.terminal_stop.is_set() \
+        and not os.path.exists(self.log_name):
+            continue
+
+        log_file = open(self.log_name,'r')
+
+        while True:
+            if self.terminal_stop.is_set():
+                # log_file.close()
+                # return
+                continue
+            where = log_file.tell()
+            line = log_file.readline()
+            if not line:
+                log_file.seek(where)
+            else:
+                # # Show MAX_LINE lines at most
+                # # TODO: make the code more efficient
+                # MAX_LINE = 8
+                # tmp = self.error_log.split('\n')
+                # tmp.append(line)
+                # if len(tmp)>MAX_LINE:
+                #     self.error_log = '\n'.join(tmp[-MAX_LINE:])
+                # else:
+                #     self.error_log = '\n'.join(tmp)
+
+                self.add_log_line(line)
+
 
     def run_script_callback(self):
         no_error = True
@@ -315,7 +320,6 @@ class MobileInsightScreen(GridLayout):
                     diag_procs.append(int(pid))
             except IOError:     # proc has been terminated
                 continue
-
         if len(diag_procs) > 0:
             cmd2 = "kill " + " ".join([str(pid) for pid in diag_procs])
             main_utils.run_shell_cmd(cmd2)
@@ -328,9 +332,15 @@ class MobileInsightScreen(GridLayout):
                 self.stop_service() 
 
             # Show logs on screen
-            # self.terminal_stop = threading.Event()
-            # self.terminal_thread = threading.Thread(target=show_log, args=(self,))
-            # self.terminal_thread.start()
+
+            # Clean up old logs
+            self.log_name = os.path.join(main_utils.get_mobile_insight_path(),app_name+"_log.txt")
+            if os.path.exists(self.log_name):
+                os.remove(self.log_name)
+
+            self.terminal_stop = threading.Event()
+            self.terminal_thread = threading.Thread(target=self.show_log)
+            self.terminal_thread.start()
 
             
             from android import AndroidService
@@ -340,7 +350,7 @@ class MobileInsightScreen(GridLayout):
             self.default_app_name = app_name
 
         else:
-        	self.error_log = "Error: " + app_name + "cannot be launched!"
+            self.error_log = "Error: " + app_name + "cannot be launched!"
 
     def stop_service(self):
         if self.service:
@@ -349,6 +359,7 @@ class MobileInsightScreen(GridLayout):
             if self.terminal_stop:
                 self.terminal_stop.set()
             self.error_log = LOGO_STRING
+
             self.stop_collection()  # close ongoing collections
             
             # Haotian: save orphan log
@@ -363,14 +374,14 @@ class MobileInsightScreen(GridLayout):
             dated_files.sort()
             dated_files.reverse()
             if len(dated_files)>0:
-    	        self.__original_filename = dated_files[0][1]
-    	        print "The last orphan log file: " + str(self.__original_filename)
-    	        chmodcmd = "chmod 644 " + self.__original_filename
-    	        p = subprocess.Popen("su ", executable = main_utils.ANDROID_SHELL, shell = True, \
-    	                                    stdin = subprocess.PIPE, stdout = subprocess.PIPE)
-    	        p.communicate(chmodcmd + '\n')
-    	        p.wait()
-    	        self._save_log()
+                self.__original_filename = dated_files[0][1]
+                print "The last orphan log file: " + str(self.__original_filename)
+                chmodcmd = "chmod 644 " + self.__original_filename
+                p = subprocess.Popen("su ", executable = main_utils.ANDROID_SHELL, shell = True, \
+                                            stdin = subprocess.PIPE, stdout = subprocess.PIPE)
+                p.communicate(chmodcmd + '\n')
+                p.wait()
+                self._save_log()
 
     def _save_log(self):
         orig_basename  = os.path.basename(self.__original_filename)
