@@ -12,6 +12,9 @@ from kivy.config import ConfigParser
 
 
 def alive_worker(secs):
+    """
+    Keep service alive
+    """
     while True:
         time.sleep(secs)
 
@@ -36,8 +39,8 @@ def setup_logger(app_name,level=logging.INFO):
 
     l = logging.getLogger("mobileinsight_logger")
     if len(l.handlers)<1:
-        # formatter = MyFormatter('%(asctime)s %(message)s',datefmt='%Y-%m-%d,%H:%M:%S.%f')
-        formatter = MyFormatter('%(message)s')
+        formatter = MyFormatter('%(asctime)s %(message)s',datefmt='%Y-%m-%d,%H:%M:%S.%f')
+        # formatter = MyFormatter('%(message)s')
         streamHandler = logging.StreamHandler()
         streamHandler.setFormatter(formatter)
 
@@ -46,7 +49,7 @@ def setup_logger(app_name,level=logging.INFO):
         l.propagate = False
 
 
-        log_file = os.path.join(mi2app_utils.get_mobile_insight_path(),"log.txt")
+        log_file = os.path.join(mi2app_utils.get_mobile_insight_analysis_path(),app_name+"_log.txt")
 
         fileHandler = logging.FileHandler(log_file, mode='w')
         fileHandler.setFormatter(formatter)
@@ -58,15 +61,24 @@ if __name__ == "__main__":
     try:
         arg = os.getenv("PYTHON_SERVICE_ARGUMENT")  # get the argument passed
 
+        tmp = arg.split(":")
+        if len(tmp)<2:
+            raise AssertionError("Error: incorrect service path:"+arg)
+        app_name = tmp[0]
+        app_path = tmp[1]
+
+        print "Service: app_name=",app_name," app_path=",app_path
+
+
         t = threading.Thread(target=alive_worker, args=(30.0,))
         t.start()
 
         app_dir = os.path.join(mi2app_utils.get_files_dir(), "app")
-        sys.path.append(os.path.join(app_dir, arg)) # add this dir to module search path
-        app_file = os.path.join(app_dir, arg, "main.mi2app")
+        sys.path.append(os.path.join(app_dir, app_path)) # add this dir to module search path
+        app_file = os.path.join(app_dir, app_path, "main.mi2app")
         print "Phone model: " + mi2app_utils.get_phone_model()
         print "Running app: " + app_file
-        print arg,app_dir,os.path.join(app_dir, arg)
+        # print arg,app_dir,os.path.join(app_dir, arg)
 
         namespace = {"service_context": mi2app_utils.get_service_context()}
 
@@ -86,7 +98,7 @@ if __name__ == "__main__":
         namespace["plugin_config"] = plugin_config
 
 
-        setup_logger(arg)
+        setup_logger(app_name)
 
         execfile(app_file, namespace)
 

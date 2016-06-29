@@ -103,6 +103,18 @@ def get_mobile_insight_log_path():
 
     return os.path.join(mobile_insight_path, "log")
 
+def get_mobile_insight_analysis_path():
+    """
+    Return the analysis result path of MobileInsight, or None if not accessible
+    """
+
+    mobile_insight_path = get_mobile_insight_path()
+
+    if not mobile_insight_path:
+        return None
+
+    return os.path.join(mobile_insight_path,"analysis")
+
 def get_mobile_insight_log_decoded_path():
     """
     Return the decoded log path of MobileInsight, or None if not accessible
