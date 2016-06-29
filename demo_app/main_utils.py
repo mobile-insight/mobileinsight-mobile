@@ -12,7 +12,6 @@ import os
 import shlex
 import sys
 import subprocess
-import threading
 import time
 import traceback
 import re

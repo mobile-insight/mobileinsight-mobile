@@ -9,7 +9,7 @@ from kivy.properties import *
 from kivy.uix.progressbar import ProgressBar
 from kivy.clock import Clock
 
-
+import jnius
 from jnius import autoclass, cast
 
 import urllib
@@ -97,8 +97,11 @@ def install_apk(apk_path):
     cur_activity.startActivity(intent)
 
 def download_thread(apk_url, apk_path):
-    urllib.urlretrieve (apk_url, apk_path)
-    install_apk(apk_path)    
+    try:
+        urllib.urlretrieve (apk_url, apk_path)
+        install_apk(apk_path)    
+    finally:
+        jnius.detach()
 
 def download_apk(instance, answer):
     global popup
