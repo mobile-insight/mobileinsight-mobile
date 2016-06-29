@@ -9,7 +9,7 @@ Define utility variables and functions for apps.
 import subprocess as sp
 import os
 import re
-
+import jnius
 from jnius import autoclass
 
 ANDROID_SHELL    = "/system/bin/sh"
@@ -187,6 +187,8 @@ def get_mobile_insight_crash_log_path():
 
     return os.path.join(mobile_insight_path, "crash_logs")
 
-
 def get_wifi_status():
     return mWifiManager.isWifiEnabled()
+
+def detach_thread():
+    jnius.detach()

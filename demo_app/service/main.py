@@ -53,7 +53,7 @@ def setup_logger(app_name,level=logging.INFO):
 
         fileHandler = logging.FileHandler(log_file, mode='w')
         fileHandler.setFormatter(formatter)
-        l.addHandler(fileHandler)  
+        l.addHandler(fileHandler)
         l.disabled = False
 
 if __name__ == "__main__":
@@ -88,7 +88,7 @@ if __name__ == "__main__":
 
         ii = arg.rfind('/')
         section_name = arg[ii+1:]
-        
+
         plugin_config={}
         if section_name in config.sections():
             config_options = config.options(section_name)
@@ -96,7 +96,6 @@ if __name__ == "__main__":
                 plugin_config[item] = config.get(section_name, item)
 
         namespace["plugin_config"] = plugin_config
-
 
         setup_logger(app_name)
 

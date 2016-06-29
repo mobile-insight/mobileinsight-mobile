@@ -9,7 +9,6 @@ from kivy.properties import *
 from kivy.uix.progressbar import ProgressBar
 from kivy.clock import Clock
 
-import jnius
 from jnius import autoclass, cast
 
 import urllib
@@ -50,13 +49,13 @@ popup = None
 
 class ConfirmPopup(GridLayout):
     text = StringProperty()
-    
+
     def __init__(self,**kwargs):
         self.register_event_type('on_answer')
         super(ConfirmPopup,self).__init__(**kwargs)
-        
+
     def on_answer(self, *args):
-        pass   
+        pass
 
 def get_cache_dir():
     return str(cur_activity.getCacheDir().getAbsolutePath())
@@ -98,10 +97,10 @@ def install_apk(apk_path):
 
 def download_thread(apk_url, apk_path):
     try:
-        urllib.urlretrieve (apk_url, apk_path)
-        install_apk(apk_path)    
+        urllib.urlretrieve(apk_url, apk_path)
+        install_apk(apk_path)
     finally:
-        jnius.detach()
+        main_utils.detach_thread()
 
 def download_apk(instance, answer):
     global popup
@@ -131,7 +130,7 @@ def download_apk(instance, answer):
         progress_popup.bind(on_open=download_progress)
         progress_popup.open()
 
-    popup.dismiss()    
+    popup.dismiss()
 
 def check_update():
     """
@@ -145,9 +144,7 @@ def check_update():
     if os.path.isfile(update_meta_path):
         os.remove(update_meta_path)
 
-
-
-    #Retrieve latest metadata
+    # retrieve latest metadata
     urllib.urlretrieve (update_meta_url, update_meta_path)
 
     if not os.path.isfile(update_meta_path):
@@ -158,13 +155,11 @@ def check_update():
 
     if "Version" not in update_meta:
         return
-         
 
     cur_version = get_cur_version()
     apk_url = update_meta["URL"]
 
     if cmp_version(cur_version,update_meta['Version'])<0:
-
 
         global popup
 
@@ -178,4 +173,3 @@ def check_update():
                             size=(1000,800),
                             auto_dismiss= False)
         popup.open()
-            

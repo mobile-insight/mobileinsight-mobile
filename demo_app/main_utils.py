@@ -3,7 +3,7 @@ main_utils.py
 
 Define utility variables and functions for apps.
 """
-
+import jnius
 from jnius import autoclass, cast
 
 # FIXME(likayo): subprocess module in Python 2.7 is not thread-safe. Use subprocess32 instead.
@@ -163,6 +163,8 @@ def get_mobile_insight_crash_log_path():
 
     return os.path.join(mobile_insight_path,"crash_logs")
 
+def detach_thread():
+    jnius.detach()
 
 def get_cache_dir():
     return str(current_activity.getCacheDir().getAbsolutePath())
