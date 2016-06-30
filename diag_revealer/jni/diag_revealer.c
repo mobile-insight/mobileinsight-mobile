@@ -24,6 +24,8 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
@@ -56,7 +58,6 @@
 #define CALLBACK_DATA_TYPE		0x00000080
 #define DIAG_IOCTL_SWITCH_LOGGING	7
 #define DIAG_IOCTL_REMOTE_DEV		32
-#define MEMORY_DEVICE_MODE	2
 #define CALLBACK_MODE		6
 
 #define DIAG_IOCTL_VOTE_REAL_TIME	33
@@ -67,7 +68,8 @@
 #define DIAG_BUFFERING_MODE_STREAMING	0
 #define DEFAULT_LOW_WM_VAL	15
 #define DEFAULT_HIGH_WM_VAL	85
-#define NUM_SMD_CONTROL_CHANNELS 4
+#define NUM_SMD_DATA_CHANNELS 4
+#define NUM_SMD_CONTROL_CHANNELS NUM_SMD_DATA_CHANNELS
 
 #define MODEM_DATA		0
 
@@ -97,6 +99,15 @@ struct real_time_query_t {
 } __packed;
 
 char buf_read[BUFFER_SIZE] = {};	// From Haotian: improve reliability
+
+
+// Handle SIGPIPE ERROR
+void sigpipe_handler(int signo)
+{
+  if (signo == SIGPIPE){
+  	  // LOGD("received SIGPIPE. Exit elegantly...\n");
+  }
+}
 
 
 static double
@@ -183,10 +194,11 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 		len++;
 		if (len >= 3) {
 			memcpy(send_buf + 4, p + i, len);
-			printf("Writing %d bytes of data\n", len + 4);
-			print_hex(send_buf, len + 4);
+			// LOGD("Writing %d bytes of data\n", len + 4);
+			// print_hex(send_buf, len + 4);
 			fflush(stdout);
 			int ret = write(fd, (const void *) send_buf, len + 4);
+			// LOGD("write_commands: ret=%d\n",ret);
 			if (ret < 0) {
 				perror("cmd write error");
 				return -1;
@@ -196,7 +208,7 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 				perror("cmd read error");
 				return -1;
 			} else {
-				printf("Reading %d bytes of resp\n", read_len);
+				// LOGD("Reading %d bytes of resp\n", read_len);
 			}
 		}
 		i += len;
@@ -299,6 +311,10 @@ manager_append_log (struct LogManagerState *pstate, int fifo_fd, size_t msg_len)
 int
 main (int argc, char **argv)
 {
+
+	if (signal(SIGPIPE, sigpipe_handler) == SIG_ERR) {
+		LOGW("WARNING: diag_revealer cannot capture SIGPIPE\n");
+	}
 	if (argc < 3 || argc > 5) {
 		printf("Version " DIAG_REVEALER_VERSION "\n");
 		printf("Usage: diag_revealer DIAG_CFG_PATH FIFO_PATH [LOG_OUTPUT_DIR] [LOG_CUT_SIZE (in MB)]\n");
@@ -322,62 +338,50 @@ main (int argc, char **argv)
 
 	// Change device's mode
 	int mode = CALLBACK_MODE;
-	// int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
-	int ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
+	int ret;
+	ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &mode);  
 	if (ret != 1) {
-		fprintf(stderr, "older way of ioctl SWITCH_LOGGING fails, with ret val = %d\n", ret);
+		printf("older way of ioctl SWITCH_LOGGING fails, with ret val = %d\n", ret);
 		perror("ioctl SWITCH_LOGGING");
 		// Try the newer way
-		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &mode);
+		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
 		if (ret != 1) {
-			fprintf(stderr, "ioctl SWITCH_LOGGING returns %d\n", ret);
+			printf("new way of ioctl SWITCH_LOGGING fails, with ret val = %d\n", ret);
 			perror("ioctl SWITCH_LOGGING");
 			return -8003;
 		}
+		else{
+			printf("New way of ioctl succeeds.\n");
+		}
+	}
+	else{
+		printf("Older way of ioctl succeeds.\n");
 	}
 
-	// uint16_t device_mask = 0;
-	// ret = ioctl(fd, DIAG_IOCTL_REMOTE_DEV, (char *) &device_mask);
-	// printf("ioctl REMOTE_DEV ret: %d\n", ret);
-
-	// // Configure realtime streaming mode
-	// int i=0;
-	// for(i=0;i<NUM_SMD_CONTROL_CHANNELS;i++){
-
-	// 	struct diag_buffering_mode_t diag_buffering_mode;
-	// 	diag_buffering_mode.peripheral = i;
-	// 	diag_buffering_mode.mode = DIAG_BUFFERING_MODE_STREAMING;
-	// 	diag_buffering_mode.high_wm_val = DEFAULT_HIGH_WM_VAL;
-	// 	diag_buffering_mode.low_wm_val = DEFAULT_LOW_WM_VAL;
-
-	// 	int ret = ioctl(fd,DIAG_IOCTL_PERIPHERAL_BUF_CONFIG,(char *) &diag_buffering_mode);
-	// 	if(ret != 1)
-	// 		perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG");
-
-	// }
-
+	// // Try DIAG_IOCTL_GET_REAL_TIME
 	// {
-	// 	char ioarg = MODEM_DATA;
-	// 	ret = ioctl(fd, DIAG_IOCTL_PERIPHERAL_BUF_DRAIN, (char *) &ioarg);
-	// 	if(ret != 1)
-	// 		perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_DRAIN");
-	// }
+	// 	struct real_time_query_t ioarg;
+	// 	ioarg.real_time = -666;
+	// 	ioarg.proc = 1000;
+	// 	ret = ioctl(fd, DIAG_IOCTL_GET_REAL_TIME, (char *) &ioarg);
+	// 	if(ret<0){
+	// 		perror("ioctl DIAG_IOCTL_GET_REAL_TIME");
+	// 		ret = ioctl(fd, DIAG_IOCTL_GET_REAL_TIME, &ioarg);
+	// 		if(ret<0){
+	// 			perror("New way of ioctl DIAG_IOCTL_GET_REAL_TIME");
+	// 		}
+	// 		else{
+	// 			printf("New way of ioctl DIAG_IOCTL_GET_REAL_TIME succeeds\n");
+	// 		}
 
-	// Some testing code
-	{
-		struct real_time_query_t ioarg;
-		ioarg.real_time = -666;
-		ioarg.proc = 1000;
-		ret = ioctl(fd, DIAG_IOCTL_GET_REAL_TIME, (char *) &ioarg);
-		perror("ioctl DIAG_IOCTL_GET_REAL_TIME");
-		// LOGD ("ioctl DIAG_IOCTL_GET_REAL_TIME returns %d\n", ret);
-		// LOGD ("real_time = %d\n", ioarg.real_time);
-	}
+	// 	}
+	// 	// LOGD ("ioctl DIAG_IOCTL_GET_REAL_TIME returns %d\n", ret);
+	// 	// LOGD ("real_time = %d\n", ioarg.real_time);
+	// }
 
 	// Write commands to /dev/diag device to enable log collecting.
 	// LOGD("Before write_commands\n");
 	ret = write_commands(fd, &buf_write);
-	// LOGD("After write_commands\n");
 	fflush(stdout);
 	free(buf_write.p);
 	if (ret != 0) {
@@ -427,10 +431,13 @@ main (int argc, char **argv)
 	}
 
 	while (1) {
+		// LOGI("Reading logs...\n");
 		int read_len = read(fd, buf_read, sizeof(buf_read));
+		// LOGI("Received logs. read_len=%d\n", read_len);
 		if (read_len > 0) {
 			if (*((int *)buf_read) == USER_SPACE_DATA_TYPE) {
 				int num_data = *((int *)(buf_read + 4));
+				// LOGI("num_data=%d\n",num_data);
 				int i = 0;
 				long long offset = 8;
 				for (i = 0; i < num_data; i++) {
@@ -469,11 +476,23 @@ main (int argc, char **argv)
 					offset += msg_len + 4;
 				}
 			}
+			else
+			{
+				// LOGI("Not USER_SPACE_DATA_TYPE: %d\n", *((int *)buf_read));
+			}
 		} else {
 			continue;
 		}
 	}
 
 	close(fd);
+
+    /*
+     * TODO: cleanup the diag before exit
+     * 1. Drain the buffer: prevent outdate logs next time
+     * 2. Clean up masks: prevent enable_log bug next time
+     */
+
+
 	return (ret < 0? ret: 0);
 }
