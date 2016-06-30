@@ -18,6 +18,7 @@ from kivy.utils import platform
 from kivy.config import ConfigParser
 
 from jnius import autoclass, cast
+import jnius
 
 import functools
 import os
@@ -543,11 +544,8 @@ class MobileInsightApp(App):
         pass
 
     def on_start(self):
-        # from kivy.base import EventLoop
-        # EventLoop.window.bind(on_keyboard=self.hook_keyboard)
-
-        import android
-        android.map_key(android.KEYCODE_BACK, 1001)
+        from kivy.config import Config
+        Config.set('kivy', 'exit_on_escape', 0)
 
         check_update()
 
