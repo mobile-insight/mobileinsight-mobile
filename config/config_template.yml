@@ -5,8 +5,8 @@
 # file in config.yml        #
 #############################
 
-# replace it with your path of MobileInsight2
-mi_dev_path : /path/to/MobileInsight2
+# replace it with your path of mobileInsight-mobile
+mi_dev_path : /path/to/mobileInsight-mobile
 
 # replace it with python-for-android storage dir
 p4a_path : /path/to/.python-for-android/
@@ -14,7 +14,8 @@ p4a_path : /path/to/.python-for-android/
 app_name : MobileInsight
 
 # 2016-04-01: 2.0.0 released
-# 2016-05-16: currently switched to 2.0.4
+# 2016-05-16: 2.0.4 test
+# 2016-06-27: 2.0.5 test
 app_version : 2.x.y
 
 pkg_name : edu.ucla.cs.wing.mobileinsight
