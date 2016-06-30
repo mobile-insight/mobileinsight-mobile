@@ -272,22 +272,25 @@ class MobileInsightScreen(GridLayout):
                 # log_file.close()
                 # return
                 continue
-            where = log_file.tell()
-            line = log_file.readline()
-            if not line:
-                log_file.seek(where)
-            else:
-                # # Show MAX_LINE lines at most
-                # # TODO: make the code more efficient
-                MAX_LINE = 10
-                tmp = self.error_log.split('\n')
-                tmp.append(line)
-                if len(tmp)>MAX_LINE:
-                    self.error_log = '\n'.join(tmp[-MAX_LINE:])
+            try:
+                where = log_file.tell()
+                line = log_file.readline()
+                if not line:
+                    log_file.seek(where)
                 else:
-                    self.error_log = '\n'.join(tmp)
+                    # # Show MAX_LINE lines at most
+                    # # TODO: make the code more efficient
+                    MAX_LINE = 10
+                    tmp = self.error_log.split('\n')
+                    tmp.append(line)
+                    if len(tmp)>MAX_LINE:
+                        self.error_log = '\n'.join(tmp[-MAX_LINE:])
+                    else:
+                        self.error_log = '\n'.join(tmp)
 
-                # self.add_log_line(line)
+                    # self.add_log_line(line)
+            except Exception, e:
+                continue
 
 
     def run_script_callback(self):

@@ -254,17 +254,31 @@ manager_get_log_name (struct LogManagerState *pstate, char *out_buf, size_t out_
 static int
 manager_start_new_log (struct LogManagerState *pstate, int fifo_fd) {
 	static char filename[1024] = {};
+	int ret;
 	if (pstate->log_fp != NULL) {	// end the last log
 		assert(pstate->log_id >= 0);
 		manager_get_log_name(pstate, filename, sizeof(filename));
 		short fifo_msg_type = FIFO_MSG_TYPE_END_LOG_FILE;
 		short msg_len = strlen(filename);
+
 		// Wirte msg type to pipe
-		write(fifo_fd, &fifo_msg_type, sizeof(short));
+		ret = write(fifo_fd, &fifo_msg_type, sizeof(short));
+		if(ret<0){
+			return -1;
+		}
+
 		// Write len of filename
-		write(fifo_fd, &msg_len, sizeof(short));
+		ret = write(fifo_fd, &msg_len, sizeof(short));
+		if(ret<0){
+			return -1;
+		}
+
 		// Write filename of ended log to pipe
-		write(fifo_fd, filename, msg_len);
+		ret = write(fifo_fd, filename, msg_len);
+		if(ret<0){
+			return -1;
+		}
+
 		fclose(pstate->log_fp);
 		pstate->log_fp = NULL;
 	}
@@ -278,11 +292,22 @@ manager_start_new_log (struct LogManagerState *pstate, int fifo_fd) {
 		short fifo_msg_type = FIFO_MSG_TYPE_START_LOG_FILE;
 		short msg_len = strlen(filename);
 		// Wirte msg type to pipe
-		write(fifo_fd, &fifo_msg_type, sizeof(short));
+		ret = write(fifo_fd, &fifo_msg_type, sizeof(short));
+		if(ret<0){
+			return -1;
+		}
+
 		// Write len of filename
-		write(fifo_fd, &msg_len, sizeof(short));
+		ret = write(fifo_fd, &msg_len, sizeof(short));
+		if(ret<0){
+			return -1;
+		}
+
 		// Write filename of ended log to pipe
-		write(fifo_fd, filename, msg_len);
+		ret = write(fifo_fd, filename, msg_len);
+		if(ret<0){
+			return -1;
+		}
         // char tmp[4096];
         // sprintf(tmp,"su -c chmod 644 %s\n",filename);
         // system(tmp);
@@ -395,13 +420,13 @@ main (int argc, char **argv)
 		perror("open fifo");
 		return -8005;
 	} else {
-		LOGD("FIFO opened\n");
+		// LOGD("FIFO opened\n");
 	}
 	int pipesize = 1024*1024*128;	//128MB
 	fcntl(fifo_fd, F_SETPIPE_SZ, pipesize);
 
 	int res = fcntl(fifo_fd, F_GETPIPE_SZ,pipesize);
-	LOGI("F_GETPIPE_SZ: res=%d pipesize=%d\n",res,pipesize);
+	// LOGI("F_GETPIPE_SZ: res=%d pipesize=%d\n",res,pipesize);
 
 	struct LogManagerState state;
 	// Initialize state
@@ -456,21 +481,44 @@ main (int argc, char **argv)
 					// Write size of (payload + timestamp)
 					fifo_msg_len = (short) msg_len + 8;
 					ret_err = write(fifo_fd, &fifo_msg_len, sizeof(short));
+					if(ret_err<0){
+						LOGI("Pipe closed, diag_revealer will exit");
+						close(fd);
+						return -1;
+					}
 
 					// Write timestamp of sending payload to pipe
 					ret_err = write(fifo_fd, &ts, sizeof(double));
+					if(ret_err<0){
+						LOGI("Pipe closed, diag_revealer will exit");
+						close(fd);
+						return -1;
+					}
 
 					// Write payload to pipe
 					ret_err = write(fifo_fd, buf_read + offset + 4, msg_len);
+					if(ret_err<0){
+						LOGI("Pipe closed, diag_revealer will exit");
+						close(fd);
+						return -1;
+					}
 
 					// Write mi2log output if necessary
 					if (state.log_fp != NULL) {
 						int ret2 = manager_append_log(&state, fifo_fd, msg_len);
 						if (ret2 == 0) {
-							fwrite(buf_read + offset + 4, sizeof(char), msg_len, state.log_fp);
+							size_t log_res = fwrite(buf_read + offset + 4, sizeof(char), msg_len, state.log_fp);
+							if(log_res!=msg_len){
+								LOGI("Fail to save logs. diag_revealer will exit");
+								close(fd);
+								return -1;
+							}
 							fflush(state.log_fp);
 						} else {
 							// TODO: error handling
+							LOGI("Fail to append logs. diag_revealer will exit");
+							close(fd);
+							return -1;
 						}
 					}
 					offset += msg_len + 4;
