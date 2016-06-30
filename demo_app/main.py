@@ -131,6 +131,7 @@ class MobileInsightScreen(GridLayout):
         super(MobileInsightScreen, self).__init__()
 
         self.__init_libs()
+        self.__check_security_policy()
         
         if not create_folder():
             # MobileInsight folders unavailable. Add warnings
@@ -166,6 +167,22 @@ class MobileInsightScreen(GridLayout):
                 self.start_service(default_app_name)
         except Exception, e:
             pass
+
+    def __check_security_policy(self):
+        """
+        Update SELinux policy.
+        For Nexus 6/6P, the SELinux policy may forbids the log collection.
+        """
+        main_utils.run_shell_cmd("setenforce 0")
+        main_utils.run_shell_cmd("supolicy --live \"allow init diag_device chr_file {getattr write ioctl}\"")
+        main_utils.run_shell_cmd("supolicy --live \"allow init init process execmem\"")
+        main_utils.run_shell_cmd("supolicy --live \"allow init properties_device file execute\"")
+        main_utils.run_shell_cmd("supolicy --live \"allow atfwd diag_device chr_file {read write open ioctl}\"")
+        main_utils.run_shell_cmd("supolicy --live \"allow system_server diag_device chr_file {read write}\"")
+        main_utils.run_shell_cmd("supolicy --live \"allow untrusted_app app_data_file file {rename}\"")
+        main_utils.run_shell_cmd("supolicy --live \"allow init app_data_file fifo_file {write, open}\"")
+        main_utils.run_shell_cmd("supolicy --live \"allow init app_data_file fifo_file {write, open}\"")
+
 
     def __check_diag_mode(self):
         """
@@ -487,7 +504,7 @@ class MobileInsightApp(App):
         # Yuanjie: the ordering of the following options MUST be the same as those in settings.json!!!
         config.setdefaults('mi_general', {
             'bcheck_update': 1,
-            'bstartup': 1,
+            'bstartup': 0,
             'bstartup_service': 0,
             'start_service': 'NetLoggerInternal',
         })
