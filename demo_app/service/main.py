@@ -67,7 +67,8 @@ if __name__ == "__main__":
         app_name = tmp[0]
         app_path = tmp[1]
 
-        print "Service: app_name=",app_name," app_path=",app_path
+        # print "Service: app_name=",app_name," app_path=",app_path
+        setup_logger(app_name)
 
 
         t = threading.Thread(target=alive_worker, args=(30.0,))
@@ -97,10 +98,11 @@ if __name__ == "__main__":
 
         namespace["plugin_config"] = plugin_config
 
-        setup_logger(app_name)
-
         execfile(app_file, namespace)
 
     except Exception, e:
+        # Print traceback logs to analysis
         import traceback
+        l = logging.getLogger("mobileinsight_logger")
+        l.error(str(traceback.format_exc()))
         sys.exit(str(traceback.format_exc()))
