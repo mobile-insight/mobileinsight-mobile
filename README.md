@@ -11,8 +11,8 @@ $ sudo python setup.py install
 Then clone this repository
 
 ```shell
-$ git clone https://wing1.cs.ucla.edu/gitlab/root/MobileInsight2.git
-$ cd MobileInsight2
+$ git clone https://wing1.cs.ucla.edu/gitlab/root/mobileInsight-mobile.git
+$ cd mobileInsight-mobile
 $ make config
 $ make dist
 $ make apk
