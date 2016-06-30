@@ -55,6 +55,7 @@ def create_folder():
 
     cmd = "mkdir "+mobile_insight_path+"; "
     cmd = cmd + "mkdir " + main_utils.get_mobile_insight_log_path() +"; "
+    cmd = cmd + "mkdir " + main_utils.get_mobile_insight_analysis_path() +"; "
     cmd = cmd + "mkdir " + main_utils.get_mobile_insight_cfg_path()+"; "
     cmd = cmd + "mkdir " + main_utils.get_mobile_insight_db_path()+"; "
     cmd = cmd + "mkdir " + main_utils.get_mobile_insight_plugin_path()+"; "
@@ -334,7 +335,7 @@ class MobileInsightScreen(GridLayout):
             # Show logs on screen
 
             # Clean up old logs
-            self.log_name = os.path.join(main_utils.get_mobile_insight_path(),"log.txt")
+            self.log_name = os.path.join(main_utils.get_mobile_insight_analysis_path(),app_name+"_log.txt")
             if os.path.exists(self.log_name):
                 os.remove(self.log_name)
 
@@ -346,7 +347,7 @@ class MobileInsightScreen(GridLayout):
             from android import AndroidService
             self.error_log = "Running " + app_name + "..."
             self.service = AndroidService("MobileInsight is running...", app_name)
-            self.service.start(self.app_list[app_name][0])   # app name
+            self.service.start(app_name+":"+self.app_list[app_name][0])   # app name
             self.default_app_name = app_name
 
         else:
