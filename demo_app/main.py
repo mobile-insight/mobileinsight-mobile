@@ -213,7 +213,7 @@ class MobileInsightScreen(GridLayout):
                 "libwiretap.so",
                 "libwsutil.so"]
 
-        cmd = ""
+        cmd = "mount -o remount,rw /system; "
 
         for lib in libs:
             # if not os.path.isfile(os.path.join("/system/lib",lib)):
@@ -248,7 +248,6 @@ class MobileInsightScreen(GridLayout):
 
         if cmd:
             # at least one lib should be copied
-            cmd = "mount -o remount,rw /system; " + cmd
             main_utils.run_shell_cmd(cmd)
 
 

@@ -145,7 +145,11 @@ def check_update():
         os.remove(update_meta_path)
 
     # retrieve latest metadata
-    urllib.urlretrieve (update_meta_url, update_meta_path)
+    try:
+        urllib.urlretrieve (update_meta_url, update_meta_path)
+    except Exception, e:
+        print "Connection failure: stop checking update"
+        return
 
     if not os.path.isfile(update_meta_path):
         return

@@ -58,8 +58,13 @@
 #define CALLBACK_DATA_TYPE		0x00000080
 #define DIAG_IOCTL_SWITCH_LOGGING	7
 #define DIAG_IOCTL_REMOTE_DEV		32
+#define DIAG_IOCTL_DCI_CLEAR_LOGS	28
+#define DIAG_IOCTL_DCI_CLEAR_EVENTS	29
+
+#define MEMORY_DEVICE_MODE		2
 #define CALLBACK_MODE		6
 
+#define DIAG_IOCTL_REMOTE_DEV		32
 #define DIAG_IOCTL_VOTE_REAL_TIME	33
 #define DIAG_IOCTL_GET_REAL_TIME	34
 #define DIAG_IOCTL_PERIPHERAL_BUF_CONFIG	35
@@ -72,6 +77,7 @@
 #define NUM_SMD_CONTROL_CHANNELS NUM_SMD_DATA_CHANNELS
 
 #define MODEM_DATA		0
+#define LAST_PERIPHERAL 3
 
 typedef struct {
 	char *p;
@@ -99,6 +105,8 @@ struct real_time_query_t {
 } __packed;
 
 char buf_read[BUFFER_SIZE] = {};	// From Haotian: improve reliability
+// static int mode = CALLBACK_MODE;	// Logging mode
+static int mode = MEMORY_DEVICE_MODE;
 
 
 // Handle SIGPIPE ERROR
@@ -361,48 +369,53 @@ main (int argc, char **argv)
 		return -8002;
 	}
 
-	// Change device's mode
-	int mode = CALLBACK_MODE;
 	int ret;
+
+	/*
+     * TODO: cleanup the diag before exit
+     * 1. Drain the buffer: prevent outdate logs next time
+     * 2. Clean up masks: prevent enable_log bug next time
+     */
+    int client_id = 0;
+    ret = ioctl(fd, DIAG_IOCTL_DCI_CLEAR_LOGS, (char *) &client_id);  
+    if (ret < 0){
+        printf("ioctl DIAG_IOCTL_DCI_CLEAR_LOGS fails, with ret val = %d\n", ret);
+    	perror("ioctl DIAG_IOCTL_DCI_CLEAR_LOGS");
+    }
+    ret = ioctl(fd, DIAG_IOCTL_DCI_CLEAR_EVENTS, (char *) &client_id);  
+    if (ret < 0){
+        printf("ioctl DIAG_IOCTL_DCI_CLEAR_EVENTS fails, with ret val = %d\n", ret);
+    	perror("ioctl DIAG_IOCTL_DCI_CLEAR_EVENTS");
+    }
+    uint8_t peripheral = 0;
+    for(;peripheral<=LAST_PERIPHERAL; peripheral++)
+    {
+    	ret = ioctl(fd, DIAG_IOCTL_PERIPHERAL_BUF_DRAIN, (char *) &peripheral);  
+	    if (ret < 0){
+	        printf("ioctl DIAG_IOCTL_PERIPHERAL_BUF_DRAIN fails, with ret val = %d\n", ret);
+	    	perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_DRAIN");
+	    }
+    }
+
+	// Enable logging mode
+	/*
+	 * Yuanjie: DON'T USE MEMORY_DEVICE_MODE
+	 */
 	ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &mode);  
-	if (ret != 1) {
-		printf("older way of ioctl SWITCH_LOGGING fails, with ret val = %d\n", ret);
+	if (ret < 0) {
+		LOGD("ioctl SWITCH_LOGGING fails, with ret val = %d\n", ret);
 		perror("ioctl SWITCH_LOGGING");
-		// Try the newer way
 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
-		if (ret != 1) {
-			printf("new way of ioctl SWITCH_LOGGING fails, with ret val = %d\n", ret);
-			perror("ioctl SWITCH_LOGGING");
-			return -8003;
+		if (ret < 0) {
+			LOGD("Alternative ioctl SWITCH_LOGGING fails, with ret val = %d\n", ret);
+			perror("Alternative ioctl SWITCH_LOGGING");
 		}
-		else{
-			printf("New way of ioctl succeeds.\n");
-		}
+
 	}
 	else{
 		printf("Older way of ioctl succeeds.\n");
 	}
 
-	// // Try DIAG_IOCTL_GET_REAL_TIME
-	// {
-	// 	struct real_time_query_t ioarg;
-	// 	ioarg.real_time = -666;
-	// 	ioarg.proc = 1000;
-	// 	ret = ioctl(fd, DIAG_IOCTL_GET_REAL_TIME, (char *) &ioarg);
-	// 	if(ret<0){
-	// 		perror("ioctl DIAG_IOCTL_GET_REAL_TIME");
-	// 		ret = ioctl(fd, DIAG_IOCTL_GET_REAL_TIME, &ioarg);
-	// 		if(ret<0){
-	// 			perror("New way of ioctl DIAG_IOCTL_GET_REAL_TIME");
-	// 		}
-	// 		else{
-	// 			printf("New way of ioctl DIAG_IOCTL_GET_REAL_TIME succeeds\n");
-	// 		}
-
-	// 	}
-	// 	// LOGD ("ioctl DIAG_IOCTL_GET_REAL_TIME returns %d\n", ret);
-	// 	// LOGD ("real_time = %d\n", ioarg.real_time);
-	// }
 
 	// Write commands to /dev/diag device to enable log collecting.
 	// LOGD("Before write_commands\n");
@@ -534,12 +547,6 @@ main (int argc, char **argv)
 	}
 
 	close(fd);
-
-    /*
-     * TODO: cleanup the diag before exit
-     * 1. Drain the buffer: prevent outdate logs next time
-     * 2. Clean up masks: prevent enable_log bug next time
-     */
 
 
 	return (ret < 0? ret: 0);
