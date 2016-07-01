@@ -49,23 +49,58 @@ LOGO_STRING = "MobileInsight "+main_utils.get_cur_version()+"\nUCLA WiNG Group &
 
 def create_folder():
 
-    mobile_insight_path = main_utils.get_mobile_insight_path()
+    cmd = ""
 
+    mobile_insight_path = main_utils.get_mobile_insight_path()
     if not mobile_insight_path:
         return False
+    if not os.path.exists(mobile_insight_path):
+        cmd = cmd + "mkdir "+mobile_insight_path+"; "
+        cmd = cmd + "chmod -R 755 "+mobile_insight_path+"; "
 
-    cmd = "mkdir "+mobile_insight_path+"; "
-    cmd = cmd + "mkdir " + main_utils.get_mobile_insight_log_path() +"; "
-    cmd = cmd + "mkdir " + main_utils.get_mobile_insight_analysis_path() +"; "
-    cmd = cmd + "mkdir " + main_utils.get_mobile_insight_cfg_path()+"; "
-    cmd = cmd + "mkdir " + main_utils.get_mobile_insight_db_path()+"; "
-    cmd = cmd + "mkdir " + main_utils.get_mobile_insight_plugin_path()+"; "
-    cmd = cmd + "mkdir " + main_utils.get_mobile_insight_log_decoded_path()+"; "
-    cmd = cmd + "mkdir " + main_utils.get_mobile_insight_log_uploaded_path()+"; "
-    cmd = cmd + "mkdir " + main_utils.get_mobile_insight_crash_log_path()+"; "
-    cmd = cmd + "chmod -R 755 "+mobile_insight_path+"; "
+    log_path = main_utils.get_mobile_insight_log_path()
+    if not os.path.exists(log_path):
+        cmd = cmd + "mkdir " + log_path +"; "
+        cmd = cmd + "chmod -R 755 "+log_path+"; "
+
+    analysis_path = main_utils.get_mobile_insight_analysis_path()    
+    if not os.path.exists(analysis_path):
+        cmd = cmd + "mkdir " + analysis_path +"; "
+        cmd = cmd + "chmod -R 755 "+analysis_path+"; "
+
+    cfg_path = main_utils.get_mobile_insight_cfg_path()
+    if not os.path.exists(analysis_path):
+        cmd = cmd + "mkdir " + cfg_path +"; "
+        cmd = cmd + "chmod -R 755 "+cfg_path+"; "
+
+    db_path = main_utils.get_mobile_insight_db_path()
+    if not os.path.exists(db_path):
+        cmd = cmd + "mkdir " + db_path +"; "
+        cmd = cmd + "chmod -R 755 "+db_path+"; "
+
+    plugin_path = main_utils.get_mobile_insight_plugin_path()
+    if not os.path.exists(plugin_path):
+        cmd = cmd + "mkdir " + plugin_path +"; "
+        cmd = cmd + "chmod -R 755 "+plugin_path+"; "
+
+    log_decoded_path = main_utils.get_mobile_insight_log_decoded_path()
+    if not os.path.exists(log_decoded_path):
+        cmd = cmd + "mkdir " + log_decoded_path +"; "
+        cmd = cmd + "chmod -R 755 "+log_decoded_path+"; "
+
+    log_uploaded_path = main_utils.get_mobile_insight_log_uploaded_path()
+    if not os.path.exists(log_uploaded_path):
+        cmd = cmd + "mkdir " + log_uploaded_path +"; "
+        cmd = cmd + "chmod -R 755 "+log_uploaded_path+"; "
+
+    crash_log_path = main_utils.get_mobile_insight_crash_log_path()
+    if not os.path.exists(crash_log_path):
+        cmd = cmd + "mkdir " + crash_log_path +"; "
+        cmd = cmd + "chmod -R 755 "+crash_log_path+"; "
+
+    # cmd = cmd + "chmod -R 755 "+mobile_insight_path+"; "
+
     main_utils.run_shell_cmd(cmd)
-
     return True
 
 def get_app_list():
@@ -105,18 +140,6 @@ def get_app_list():
         create_folder()
 
     return ret
-       
-def check_update():
-    try:
-        config = ConfigParser()
-        config.read('/sdcard/.mobileinsight.ini')
-        bcheck_update = config.get("mi_general", "bcheck_update")
-        if bcheck_update=="1":
-            import check_update
-            check_update.check_update()
-    except Exception, e:
-        import traceback,crash_app
-        print str(traceback.format_exc())
 
 class MobileInsightScreen(GridLayout):
     error_log = StringProperty(LOGO_STRING)
@@ -130,21 +153,25 @@ class MobileInsightScreen(GridLayout):
     def __init__(self):
         super(MobileInsightScreen, self).__init__()
 
+        if not main_utils.is_rooted():
+            self.log_error("MobileInsight requires root privelege. Please root your device for correct functioning.")
+
         self.__init_libs()
         self.__check_security_policy()
         
         if not create_folder():
             # MobileInsight folders unavailable. Add warnings
-            self.error_log.add_log_line("WARINING: SDcard is unavailable. Please check.")
+            self.log_error("SDcard is unavailable. Please check.")
 
         self.app_list = get_app_list()
         # self.app_list.sort()
 
         if not self.__check_diag_mode():
-            self.error_log.add_log_line("WARINING: the diagnostic mode is disabled. Please check your phone settings.")
+            self.log_error("The diagnostic mode is disabled. Please check your phone settings.")    
 
         # clean up ongoing log collections
         self.stop_collection()  
+
 
         first = True
         for name in self.app_list:
@@ -155,6 +182,7 @@ class MobileInsightScreen(GridLayout):
                 first = False
             widget.bind(on_active=self.on_checkbox_app_active)
             self.ids.checkbox_app_layout.add_widget(widget)
+
 
 
         # If default service exists, launch it
@@ -168,30 +196,47 @@ class MobileInsightScreen(GridLayout):
         except Exception, e:
             pass
 
+    def log_info(self, msg):
+        self.error_log +="\n[b][color=00ff00][INFO][/color][/b]: "
+        self.error_log += msg
+
+    def log_warning(self, msg):
+        self.error_log +="\n[b][color=00ffff][WARNING][/color][/b]: "
+        self.error_log += msg
+
+    def log_error(self, msg):
+        self.error_log +="\n[b][color=ff0000][ERROR][/color][/b]: "
+        self.error_log += msg
+
+    def append_log(self, s):
+        self.error_log += "\n"
+        self.error_log += s
+
+
     def __check_security_policy(self):
         """
         Update SELinux policy.
         For Nexus 6/6P, the SELinux policy may forbids the log collection.
         """
-        main_utils.run_shell_cmd("setenforce 0")
-        main_utils.run_shell_cmd("supolicy --live \"allow init diag_device chr_file {getattr write ioctl}\"")
-        main_utils.run_shell_cmd("supolicy --live \"allow init init process execmem\"")
-        main_utils.run_shell_cmd("supolicy --live \"allow init properties_device file execute\"")
-        main_utils.run_shell_cmd("supolicy --live \"allow atfwd diag_device chr_file {read write open ioctl}\"")
-        main_utils.run_shell_cmd("supolicy --live \"allow system_server diag_device chr_file {read write}\"")
-        main_utils.run_shell_cmd("supolicy --live \"allow untrusted_app app_data_file file {rename}\"")
-        main_utils.run_shell_cmd("supolicy --live \"allow init app_data_file fifo_file {write, open}\"")
-        main_utils.run_shell_cmd("supolicy --live \"allow init app_data_file fifo_file {write, open}\"")
+
+        cmd = "setenforce 0; "
+        cmd = cmd + "supolicy --live \"allow init diag_device chr_file {getattr write ioctl}\"; "
+        cmd = cmd + "supolicy --live \"allow init init process execmem\";"
+        cmd = cmd + "supolicy --live \"allow init properties_device file execute\";"
+        cmd = cmd + "supolicy --live \"allow atfwd diag_device chr_file {read write open ioctl}\";"
+        cmd = cmd + "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
+        cmd = cmd + "supolicy --live \"allow untrusted_app app_data_file file {rename}\";"
+        cmd = cmd + "supolicy --live \"allow init app_data_file fifo_file {write, open}\";"
+        cmd = cmd + "supolicy --live \"allow init app_data_file fifo_file {write, open}\";"
+        main_utils.run_shell_cmd(cmd)
 
 
     def __check_diag_mode(self):
         """
         Check if diagnostic mode is enabled.
         """
-
-        cmd = " test -e /dev/diag"
-        res = main_utils.run_shell_cmd(cmd, True)
-        if res:
+        diag_port = "/dev/diag"
+        if not os.path.exists(diag_port):
             return False
         else:
             main_utils.run_shell_cmd("chmod 755 /dev/diag")
@@ -250,11 +295,6 @@ class MobileInsightScreen(GridLayout):
             # at least one lib should be copied
             main_utils.run_shell_cmd(cmd)
 
-
-    def add_log_line(self, s):
-        self.error_log += "\n"
-        self.error_log += s
-
     def show_log(self):
 
         # log_name = os.path.join(main_utils.get_mobile_insight_path(),"log.txt")
@@ -287,7 +327,7 @@ class MobileInsightScreen(GridLayout):
                     else:
                         self.error_log = '\n'.join(tmp)
 
-                    # self.add_log_line(line)
+                    # self.append_log(line)
             except Exception, e:
                 continue
 
@@ -298,15 +338,15 @@ class MobileInsightScreen(GridLayout):
         if no_error:
             try:
                 filename = self.ids["filename"].text
-                self.add_log_line("")
-                self.add_log_line("execfile: %s" % filename)
+                self.append_log("")
+                self.append_log("execfile: %s" % filename)
                 namespace = { "app_log": "" }
                 execfile(filename, namespace)
                 # Load the "app_log" variable from namespace and print it out
-                self.add_log_line(namespace["app_log"])
+                self.append_log(namespace["app_log"])
             except:
                 print str(traceback.format_exc())
-                self.add_log_line(str(traceback.format_exc()))
+                self.append_log(str(traceback.format_exc()))
                 no_error = False
 
     def on_checkbox_app_active(self, obj):
@@ -506,6 +546,7 @@ class MobileInsightApp(App):
         # Yuanjie: the ordering of the following options MUST be the same as those in settings.json!!!
         config.setdefaults('mi_general', {
             'bcheck_update': 1,
+            'log_level': 'info',
             'bstartup': 0,
             'bstartup_service': 0,
             'start_service': 'NetLoggerInternal',
@@ -562,11 +603,26 @@ class MobileInsightApp(App):
     def on_resume(self):
         pass
 
+    def check_update(self):
+        """
+        Check if new update is available
+        """
+        try:
+            config = ConfigParser()
+            config.read('/sdcard/.mobileinsight.ini')
+            bcheck_update = config.get("mi_general", "bcheck_update")
+            if bcheck_update=="1":
+                import check_update
+                check_update.check_update()
+        except Exception, e:
+            import traceback
+            print str(traceback.format_exc())
+
     def on_start(self):
         from kivy.config import Config
         Config.set('kivy', 'exit_on_escape', 0)
 
-        check_update()
+        self.check_update()
 
     def on_stop(self):
         pass

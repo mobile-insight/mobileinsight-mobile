@@ -29,13 +29,30 @@ class MyFormatter(logging.Formatter):
             s = "%s,%03d" % (t, record.msecs)
         return s
 
-def setup_logger(app_name,level=logging.INFO):
+def setup_logger(app_name):
     '''Setup the analyzer logger.
 
     NOTE: All analyzers share the same logger.
 
     :param level: the loggoing level. The default value is logging.INFO.
     '''
+    level=logging.INFO
+
+    config = ConfigParser()
+    config.read('/sdcard/.mobileinsight.ini')
+    if config.has_option('mi_general', 'log_level'):
+        level_config = config.get('mi_general', 'log_level')
+        if level_config == "info":
+            level = logging.INFO
+        elif level_config == "debug":
+            level = logging.DEBUG
+        elif level_config == "warning":
+            level = logging.WARNING
+        elif level_config == "error":
+            level = logging.ERROR
+        elif level_config == "critical":
+            level = logging.CRITICAL
+
 
     l = logging.getLogger("mobileinsight_logger")
     if len(l.handlers)<1:

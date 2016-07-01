@@ -30,6 +30,20 @@
 
     {
         "type": "title",
+        "title": "Logging"
+    },
+
+    {
+        "type"   : "options",
+        "title"  : "Logging level",
+        "desc"   : "The logging level of monitor/analyzers on screen",
+        "section": "mi_general",
+        "key"    : "log_level",
+        "options": ["debug", "info", "warning", "error", "critical"]
+    },
+
+    {
+        "type": "title",
         "title": "Update"
     },
 

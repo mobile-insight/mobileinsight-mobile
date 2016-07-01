@@ -33,6 +33,19 @@ def get_cur_version():
     pkg_name = current_activity.getPackageName()
     return str(current_activity.getPackageManager().getPackageInfo(pkg_name, 0).versionName)
 
+def is_rooted():
+    """
+    Check if the phone has been rooted
+    """
+    su_binary_path = ["/sbin/", "/system/bin/", "/system/xbin/", "/data/local/xbin/",
+                "/data/local/bin/", "/system/sd/xbin/", "/system/bin/failsafe/", "/data/local/"]
+
+    for path in su_binary_path:
+        if os.path.exists(path+"su"):
+            return True
+    
+    return False
+
 def run_shell_cmd(cmd, wait = False):
     p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     res,err = p.communicate(cmd+'\n')
