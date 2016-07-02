@@ -117,6 +117,9 @@ if __name__ == "__main__":
 
         execfile(app_file, namespace)
 
+
+        print app_name,"stops normally"
+
     except Exception, e:
         # Print traceback logs to analysis
         import traceback
