@@ -450,7 +450,7 @@ main (int argc, char **argv)
 		size_t log_cut_size = 0;
 		if (argc == 5) {
 			double size_MB = atof(argv[4]);
-			if (size_MB <= 0.0 || size_MB > 10.0) {
+			if (size_MB <= 0.0) {
 				size_MB = 1.0;
 				fprintf(stderr, "log_cut_size inappropriate, reset to %.2f\n", size_MB);
 			}
