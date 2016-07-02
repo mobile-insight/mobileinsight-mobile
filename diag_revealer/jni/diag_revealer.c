@@ -105,8 +105,8 @@ struct real_time_query_t {
 } __packed;
 
 char buf_read[BUFFER_SIZE] = {};	// From Haotian: improve reliability
-// static int mode = CALLBACK_MODE;	// Logging mode
-static int mode = MEMORY_DEVICE_MODE;
+// int mode = CALLBACK_MODE;	// Logging mode
+int mode = MEMORY_DEVICE_MODE;
 
 
 // Handle SIGPIPE ERROR
@@ -348,6 +348,7 @@ main (int argc, char **argv)
 	if (signal(SIGPIPE, sigpipe_handler) == SIG_ERR) {
 		LOGW("WARNING: diag_revealer cannot capture SIGPIPE\n");
 	}
+
 	if (argc < 3 || argc > 5) {
 		printf("Version " DIAG_REVEALER_VERSION "\n");
 		printf("Usage: diag_revealer DIAG_CFG_PATH FIFO_PATH [LOG_OUTPUT_DIR] [LOG_CUT_SIZE (in MB)]\n");

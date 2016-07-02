@@ -289,7 +289,8 @@ class MobileInsightScreen(GridLayout):
             # if not os.path.isfile(os.path.join("/system/bin",exe)):
             if True:
                 cmd = cmd + " cp " + os.path.join(libs_path, exe) + " /system/bin/; "
-                cmd = cmd + " chmod 755 " + os.path.join("/system/bin/", exe) + "; "
+                # 0755, not 755. "0" means "+x" on Android phones
+                cmd = cmd + " chmod 0755 " + os.path.join("/system/bin/", exe) + "; "
 
         if cmd:
             # at least one lib should be copied
