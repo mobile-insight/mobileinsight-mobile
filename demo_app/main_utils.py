@@ -37,7 +37,7 @@ def is_rooted():
     """
     Check if the phone has been rooted
     """
-    su_binary_path = ["/sbin/", "/system/bin/", "/system/xbin/", "/data/local/xbin/",
+    su_binary_path = ["/sbin/", "/system/bin/", "/system/xbin/", "/data/local/xbin/", "/su/bin/",
                 "/data/local/bin/", "/system/sd/xbin/", "/system/bin/failsafe/", "/data/local/"]
 
     for path in su_binary_path:

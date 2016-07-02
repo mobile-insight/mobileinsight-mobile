@@ -172,6 +172,10 @@ class MobileInsightScreen(GridLayout):
         # clean up ongoing log collections
         self.stop_collection()  
 
+        self.terminal_stop = None
+        self.terminal_thread = None
+
+
 
         first = True
         for name in self.app_list:
@@ -301,16 +305,13 @@ class MobileInsightScreen(GridLayout):
         # log_name = os.path.join(main_utils.get_mobile_insight_path(),"log.txt")
 
 
-        while not self.terminal_stop.is_set() \
-        and not os.path.exists(self.log_name):
+        while not os.path.exists(self.log_name):
             continue
 
         log_file = open(self.log_name,'r')
 
         while True:
             if self.terminal_stop.is_set():
-                # log_file.close()
-                # return
                 continue
             try:
                 where = log_file.tell()
@@ -320,14 +321,13 @@ class MobileInsightScreen(GridLayout):
                 else:
                     # # Show MAX_LINE lines at most
                     # # TODO: make the code more efficient
-                    MAX_LINE = 10
+                    MAX_LINE = 30
                     tmp = self.error_log.split('\n')
                     tmp.append(line)
                     if len(tmp)>MAX_LINE:
                         self.error_log = '\n'.join(tmp[-MAX_LINE:])
                     else:
                         self.error_log = '\n'.join(tmp)
-
                     # self.append_log(line)
             except Exception, e:
                 continue
