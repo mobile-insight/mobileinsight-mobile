@@ -232,6 +232,11 @@ class MobileInsightScreen(GridLayout):
         cmd = cmd + "supolicy --live \"allow untrusted_app app_data_file file {rename}\";"
         cmd = cmd + "supolicy --live \"allow init app_data_file fifo_file {write, open}\";"
         cmd = cmd + "supolicy --live \"allow init app_data_file fifo_file {write, open}\";"
+
+        # Test on Nexust 6
+        cmd = cmd + "supolicy --live \"allow rild diag_device chr_file  {read ioctl open write}\";"
+        cmd = cmd + "supolicy --live \"allow untrusted_app diag_device chr_file  {getattr}\";"
+
         main_utils.run_shell_cmd(cmd)
 
 
@@ -420,7 +425,8 @@ class MobileInsightScreen(GridLayout):
             self.service = None
             if self.terminal_stop:
                 self.terminal_stop.set()
-            self.error_log = LOGO_STRING
+            # self.error_log = LOGO_STRING
+            self.log_info("Plugin stopped.")
 
             self.stop_collection()  # close ongoing collections
             
