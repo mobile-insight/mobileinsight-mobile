@@ -149,6 +149,7 @@ class MobileInsightScreen(GridLayout):
     analyzer = None
     terminal_thread = None
     terminal_stop = None
+    MAX_LINE = 30
 
     def __init__(self):
         super(MobileInsightScreen, self).__init__()
@@ -201,20 +202,18 @@ class MobileInsightScreen(GridLayout):
             pass
 
     def log_info(self, msg):
-        self.error_log +="\n[b][color=00ff00][INFO][/color][/b]: "
-        self.error_log += msg
+        self.append_log("[b][color=00ff00][INFO][/color][/b]: "+msg)
 
     def log_warning(self, msg):
-        self.error_log +="\n[b][color=00ffff][WARNING][/color][/b]: "
-        self.error_log += msg
+        self.append_log("[b][color=00ffff][WARNING][/color][/b]: "+msg)
 
     def log_error(self, msg):
-        self.error_log +="\n[b][color=ff0000][ERROR][/color][/b]: "
-        self.error_log += msg
+        self.append_log("[b][color=ff0000][ERROR][/color][/b]: "+msg)
 
     def append_log(self, s):
         self.error_log += "\n"
         self.error_log += s
+
 
 
     def __check_security_policy(self):
@@ -326,11 +325,10 @@ class MobileInsightScreen(GridLayout):
                 else:
                     # # Show MAX_LINE lines at most
                     # # TODO: make the code more efficient
-                    MAX_LINE = 30
                     tmp = self.error_log.split('\n')
                     tmp.append(line)
-                    if len(tmp)>MAX_LINE:
-                        self.error_log = '\n'.join(tmp[-MAX_LINE:])
+                    if len(tmp)>self.MAX_LINE:
+                        self.error_log = '\n'.join(tmp[-self.MAX_LINE:])
                     else:
                         self.error_log = '\n'.join(tmp)
                     # self.append_log(line)
@@ -499,6 +497,7 @@ class LabeledCheckBox(GridLayout):
 
 class MobileInsightApp(App):
     screen = None
+    use_kivy_settings = False
 
     def build_settings(self, settings):
 
@@ -585,9 +584,21 @@ class MobileInsightApp(App):
                     config.setdefaults(APP_NAME,default_val)
 
     def build(self):
+
+        # Force to initialize all configs in .mobileinsight.ini
+        # This prevents missing config due to existence of older-version .mobileinsight.ini
+        # Work-around: force on_config_change, which would update config.ini
+        config = self.load_config()
+        val = int(config.get('mi_general','bcheck_update'))
+        config.set('mi_general','bcheck_update',int(not val))
+        config.write()
+        config.set('mi_general','bcheck_update',val)
+        config.write()
+
         self.screen = MobileInsightScreen()
         self.manager = ScreenManager()
         Window.borderless = False
+
         return self.screen
 
     def on_pause(self):
