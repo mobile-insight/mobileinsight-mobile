@@ -350,7 +350,9 @@ main (int argc, char **argv)
 	}
 
 	if (argc < 3 || argc > 5) {
-		printf("Version " DIAG_REVEALER_VERSION "\n");
+		printf("Diag_revealer " DIAG_REVEALER_VERSION "\n");
+		printf("Author: Yuanjie Li, Jiayao Li\n");
+		printf("UCLA Wing Group\n");
 		printf("Usage: diag_revealer DIAG_CFG_PATH FIFO_PATH [LOG_OUTPUT_DIR] [LOG_CUT_SIZE (in MB)]\n");
         return 0;
 	}
@@ -414,7 +416,7 @@ main (int argc, char **argv)
 
 	}
 	else{
-		printf("Older way of ioctl succeeds.\n");
+		// printf("Older way of ioctl succeeds.\n");
 	}
 
 
