@@ -44,7 +44,7 @@
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 
 // NOTE: the following number should be updated every time.
-#define DIAG_REVEALER_VERSION "1.2.0"
+#define DIAG_REVEALER_VERSION "1.3.0"
 
 #define LOG_CUT_SIZE_DEFAULT (1 * 1024 * 1024)
 // #define BUFFER_SIZE	8192
