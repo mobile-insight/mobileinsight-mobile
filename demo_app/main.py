@@ -441,7 +441,7 @@ class MobileInsightScreen(GridLayout):
             dated_files.reverse()
             if len(dated_files)>0:
                 self.__original_filename = dated_files[0][1]
-                print "The last orphan log file: " + str(self.__original_filename)
+                # print "The last orphan log file: " + str(self.__original_filename)
                 chmodcmd = "chmod 644 " + self.__original_filename
                 p = subprocess.Popen("su ", executable = main_utils.ANDROID_SHELL, shell = True, \
                                             stdin = subprocess.PIPE, stdout = subprocess.PIPE)
