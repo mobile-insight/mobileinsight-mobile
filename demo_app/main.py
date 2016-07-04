@@ -643,7 +643,7 @@ class MobileInsightApp(App):
 
     def on_stop(self):
         pass
-        # self.screen.stop_service()
+        self.screen.stop_service()
 
 if __name__ == "__main__":
     try:
