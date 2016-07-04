@@ -22,7 +22,7 @@ def run_config():
         os.makedirs('./demo_app/data')
     os.system('cp mobileInsight-libs/lib/* ./demo_app/data')
     os.system('cp mobileInsight-libs/bin/* ./demo_app/data')
-    os.system('rm -rf mobile-insight-libs')
+    os.system('rm -rf mobileInsight-libs')
     if os.path.isfile('./config/config.yml') is True:
         os.system('cp ./config/config.yml ./config/config.yml.bak')
     os.system('tail -n+8 ./config/config_template.yml > ./config/config.yml')
