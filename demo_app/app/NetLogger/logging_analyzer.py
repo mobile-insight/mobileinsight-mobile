@@ -52,21 +52,23 @@ def upload_log(filename):
 
     try:
         response = urllib2.urlopen(request, timeout = 3).read()
-        print "debug 52: server's response -- " + response
+        # print "debug 52: server's response -- " + response
         if response.startswith("TW9iaWxlSW5zaWdodA==FILE_SUCC") \
         or response.startswith("TW9iaWxlSW5zaWdodA==FILE_EXST"):
             succeed = True
     except urllib2.URLError, e:
-        print "debug 63: upload failed (url error), file has been staged and will be uploaded again"
+        # print "debug 63: upload failed (url error), file has been staged and will be uploaded again"
+        pass
     except socket.timeout as e:
-        print "debug 70: upload failed (timeout), file has been staged and will be uploaded again"
+        # print "debug 70: upload failed (timeout), file has been staged and will be uploaded again"
+        pass
 
     if succeed is True:
         try:
             file_base_name = os.path.basename(filename)
             uploaded_file  = os.path.join(util.get_mobile_insight_log_uploaded_path(), file_base_name)
             # TODO: print to screen
-            print "debug 58, file uploaded has been renamed to %s" % uploaded_file
+            # print "debug 58, file uploaded has been renamed to %s" % uploaded_file
             shutil.copyfile(filename, uploaded_file)
             os.remove(filename)
         finally:
@@ -76,7 +78,7 @@ def upload_log(filename):
             util.detach_thread()
 
     logging.debug('Exiting')
-    print "debug 75", threading.currentThread().getName(), 'detach and Exiting'
+    # print "debug 75", threading.currentThread().getName(), 'detach and Exiting'
 
 
 class MultiPartForm(object):
@@ -166,8 +168,8 @@ class LoggingAnalyzer(Analyzer):
         # with open(self.__dec_log_path, 'a') as f:
         #     pass
         # print "MobileInsight (NetLogger): decoded cellular log being saved to %s, please check." % self.__dec_log_path
-        print "debug 140: is_use_wifi = %s, log_type = %s, is_dec_log = %s" % (config['is_use_wifi'], config["log_type"], config["is_dec_log"])
-        print "debug 141: is_use_wifi = %s, log_type = %s, is_dec_log = %s" % (self.__is_use_wifi, self.__dec_log_type, self.__is_dec_log)
+        # print "debug 140: is_use_wifi = %s, log_type = %s, is_dec_log = %s" % (config['is_use_wifi'], config["log_type"], config["is_dec_log"])
+        # print "debug 141: is_use_wifi = %s, log_type = %s, is_dec_log = %s" % (self.__is_use_wifi, self.__dec_log_type, self.__is_dec_log)
 
         self.add_source_callback(self._logger_filter)
 
@@ -184,7 +186,7 @@ class LoggingAnalyzer(Analyzer):
 
         # when a new log comes, save it to external storage and upload
         if msg.type_id.find("new_diag_log") != -1:
-            print "debug 169: a new file coming in"
+            # print "debug 169: a new file coming in"
             self.__log_timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
             self.__orig_file     = msg.data.decode().get("filename")
 
@@ -196,34 +198,35 @@ class LoggingAnalyzer(Analyzer):
             # util.detach_thread()
 
             self._save_log()
-            print "debug 180: file saved"
+            # print "debug 180: file saved"
 
             self.__is_wifi_enabled = util.get_wifi_status()
             # print "debug 162, self.__is_use_wifi = %s" % self.__is_use_wifi
             # print "debug 163, self.__is_wifi_enabled = %s" % self.__is_wifi_enabled
 
             if self.__is_use_wifi is True and self.__is_wifi_enabled is True:
-                print "debug 167, now try to upload the new log and orphan logs"
+                # print "debug 167, now try to upload the new log and orphan logs"
                 try:
-                    print "debug 169, I started a new thread for wifi upload"
+                    # print "debug 169, I started a new thread for wifi upload"
 
                     # search for remaining files and try to upload
                     for f in os.listdir(self.__log_dir):
                         if f.endswith(".mi2log"):
-                            print "debug 177, found file = %s, let's upload" % f
+                            # print "debug 177, found file = %s, let's upload" % f
                             orphan_file = os.path.join(self.__log_dir, f)
                             t = threading.Thread(target = upload_log, args = (orphan_file, ))
                             # t.setDaemon(True)
                             t.start()
                             # t.join(1)
                 except Exception as e:
-                    print e
+                    # print e
+                    pass
             else:
                 # use cellular data to upload. Skip for now.
                 pass
 
         if self.__is_dec_log is True:
-            print "debug 192, I am going to decode this msg!"
+            # print "debug 192, I am going to decode this msg!"
             if self.__dec_log_type == "LTE Control Plane":
                 if (msg.type_id.startswith("LTE_RRC") or msg.type_id.startswith("LTE_NAS")):
                     self._decode_msg(msg)
@@ -261,7 +264,7 @@ class LoggingAnalyzer(Analyzer):
             self.__dec_log_path = os.path.join(self.__dec_log_dir, self.__dec_log_name)
             # TODO: use log formatter
             # TODO: print to screen
-            print "MobileInsight (NetLogger): decoded cellular log being saved to %s, please check." % self.__dec_log_path
+            self.log_info("MobileInsight (NetLogger): decoded cellular log being saved to %s, please check." % self.__dec_log_path) 
             self.__raw_msg.clear()  # reset the dict
             self.__msg_cnt = 0
 
@@ -291,6 +294,6 @@ class LoggingAnalyzer(Analyzer):
             #     print "debug, out = %s" % out
             #     proc.wait()
         except:
-            # pass
-            print "debug 260: try to remove the original internal log failed"
+            pass
+            # print "debug 260: try to remove the original internal log failed"
         return milog_abs_name
