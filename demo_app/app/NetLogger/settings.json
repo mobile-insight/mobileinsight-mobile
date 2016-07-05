@@ -1,15 +1,42 @@
 [
     {
-        "type": "title",
-        "title": ""
+        "type"   : "title",
+        "title"  : ""
     },
-
     {
-        "type": "numeric",
-        "title": "MobileInsight log size (KB)",
-        "desc": "The size of each MobileInsight log",
-        "key": "mi_log_size",
+        "type"   : "options",
+        "title"  : "Log Type",
+        "desc"   : "Set the log type to collect",
+        "key"    : "log_type",
+        "default": "LTE Control Plane",
+        "options": ["LTE Control Plane", "LTE PHY", "LTE Control/PHY", "LTE Control/Data Plane", "LTE Control/Data/PHY", "LTE/3G Control Plane", "All", "Read Config"]
+    },
+    {
+        "type"   : "numeric",
+        "title"  : "Log Size (KB)",
+        "desc"   : "The size of each log",
+        "key"    : "mi_log_size",
         "default": "500"
+    },
+    {
+        "type"   : "bool",
+        "title"  : "Single Log",
+        "desc"   : "Merge all logs before uploading to server",
+        "key"    : "is_single_log",
+        "default": "0"
+    },
+    {
+        "type"   : "bool",
+        "title"  : "Decode log",
+        "desc"   : "Decode logs into text files in /sdcard/mobile_insight/log/decoded/. May consume significant amount of power!",
+        "key"    : "is_dec_log",
+        "default": "0"
+    },
+    {
+        "type"   : "bool",
+        "title"  : "Log upload",
+        "desc"   : "Collected logs will only be uploaded when Wi-Fi is connected",
+        "key"    : "is_use_wifi",
+        "default": "1"
     }
-
 ]
