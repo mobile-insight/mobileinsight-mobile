@@ -27,18 +27,15 @@ import subprocess
 from mobile_insight.analyzer import Analyzer
 import mi2app_utils as util
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='[%(levelname)s] (%(threadName)-10s) %(message)s',
-                    )
+# logging.basicConfig(level=logging.DEBUG,
+#                     format='[%(levelname)s] (%(threadName)-10s) %(message)s',
+#                     )
 
 ANDROID_SHELL = "/system/bin/sh"
 
 __all__ = ['LoggingAnalyzer', 'MultiPartForm']
 
 def upload_log(filename):
-    logging.debug('Starting')
-    print "debug 38, ", threading.currentThread().getName(), 'Starting'
-
     succeed = False
     form = MultiPartForm()
     form.add_field('file[]', filename)
@@ -52,15 +49,12 @@ def upload_log(filename):
 
     try:
         response = urllib2.urlopen(request, timeout = 3).read()
-        # print "debug 52: server's response -- " + response
         if response.startswith("TW9iaWxlSW5zaWdodA==FILE_SUCC") \
         or response.startswith("TW9iaWxlSW5zaWdodA==FILE_EXST"):
             succeed = True
     except urllib2.URLError, e:
-        # print "debug 63: upload failed (url error), file has been staged and will be uploaded again"
         pass
     except socket.timeout as e:
-        # print "debug 70: upload failed (timeout), file has been staged and will be uploaded again"
         pass
 
     if succeed is True:
@@ -69,16 +63,11 @@ def upload_log(filename):
             uploaded_file  = os.path.join(util.get_mobile_insight_log_uploaded_path(), file_base_name)
             # TODO: print to screen
             # print "debug 58, file uploaded has been renamed to %s" % uploaded_file
-            shutil.copyfile(filename, uploaded_file)
+            # shutil.copyfile(filename, uploaded_file)
+            util.run_shell_cmd("cp %s %s" % (filename, uploaded_file))
             os.remove(filename)
         finally:
-            # very import since we are using thread.
-            # otherwise JVM will complain that
-            # Native thread exiting without having called DetachCurrentThread
             util.detach_thread()
-
-    logging.debug('Exiting')
-    # print "debug 75", threading.currentThread().getName(), 'detach and Exiting'
 
 
 class MultiPartForm(object):
@@ -96,8 +85,7 @@ class MultiPartForm(object):
         self.form_fields.append((name, value))
         return
 
-    def add_file(self, fieldname, filename, mimetype=None):
-        """Add a file to be uploaded."""
+    def add_file(self, fieldname, filename, mimetype = None):
         fupload = open(filename, 'rb')
         body = fupload.read()
         fupload.close()
@@ -165,12 +153,6 @@ class LoggingAnalyzer(Analyzer):
         if not os.path.exists(self.__dec_log_dir):
             os.makedirs(self.__dec_log_dir)
 
-        # with open(self.__dec_log_path, 'a') as f:
-        #     pass
-        # print "MobileInsight (NetLogger): decoded cellular log being saved to %s, please check." % self.__dec_log_path
-        # print "debug 140: is_use_wifi = %s, log_type = %s, is_dec_log = %s" % (config['is_use_wifi'], config["log_type"], config["is_dec_log"])
-        # print "debug 141: is_use_wifi = %s, log_type = %s, is_dec_log = %s" % (self.__is_use_wifi, self.__dec_log_type, self.__is_dec_log)
-
         self.add_source_callback(self._logger_filter)
 
     def _logger_filter(self, msg):
@@ -181,52 +163,31 @@ class LoggingAnalyzer(Analyzer):
         :type msg: Event
         """
 
-        # p = subprocess.Popen("su", executable = ANDROID_SHELL, shell = True, \
-        #                                 stdin = subprocess.PIPE, stdout = subprocess.PIPE)
-
         # when a new log comes, save it to external storage and upload
         if msg.type_id.find("new_diag_log") != -1:
-            # print "debug 169: a new file coming in"
             self.__log_timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
             self.__orig_file     = msg.data.decode().get("filename")
 
             # FIXME (Zengwen): the change access command is a walkaround solution
-            # chmodcmd = "chmod 0644 " + self.__orig_file
-            # p.communicate(chmodcmd + '\n')
-            # p.wait()
             util.run_shell_cmd("chmod 644 %s" % self.__orig_file)
-            # util.detach_thread()
 
             self._save_log()
-            # print "debug 180: file saved"
-
             self.__is_wifi_enabled = util.get_wifi_status()
-            # print "debug 162, self.__is_use_wifi = %s" % self.__is_use_wifi
-            # print "debug 163, self.__is_wifi_enabled = %s" % self.__is_wifi_enabled
 
             if self.__is_use_wifi is True and self.__is_wifi_enabled is True:
-                # print "debug 167, now try to upload the new log and orphan logs"
                 try:
-                    # print "debug 169, I started a new thread for wifi upload"
-
-                    # search for remaining files and try to upload
                     for f in os.listdir(self.__log_dir):
                         if f.endswith(".mi2log"):
-                            # print "debug 177, found file = %s, let's upload" % f
                             orphan_file = os.path.join(self.__log_dir, f)
                             t = threading.Thread(target = upload_log, args = (orphan_file, ))
-                            # t.setDaemon(True)
                             t.start()
-                            # t.join(1)
                 except Exception as e:
-                    # print e
                     pass
             else:
                 # use cellular data to upload. Skip for now.
                 pass
 
         if self.__is_dec_log is True:
-            # print "debug 192, I am going to decode this msg!"
             if self.__dec_log_type == "LTE Control Plane":
                 if (msg.type_id.startswith("LTE_RRC") or msg.type_id.startswith("LTE_NAS")):
                     self._decode_msg(msg)
@@ -262,9 +223,8 @@ class LoggingAnalyzer(Analyzer):
         if self.__msg_cnt >= 200:  # open a new file
             self.__dec_log_name = "mi2log_" + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + ".txt"
             self.__dec_log_path = os.path.join(self.__dec_log_dir, self.__dec_log_name)
-            # TODO: use log formatter
-            # TODO: print to screen
-            self.log_info("MobileInsight (NetLogger): decoded cellular log being saved to %s, please check." % self.__dec_log_path) 
+            # TODO: use log formatter, print to screen
+            self.log_info("MobileInsight (NetLogger): decoded cellular log being saved to %s, please check." % self.__dec_log_path)
             self.__raw_msg.clear()  # reset the dict
             self.__msg_cnt = 0
 
@@ -273,27 +233,9 @@ class LoggingAnalyzer(Analyzer):
         orig_dir_name   = os.path.dirname(self.__orig_file)
         milog_base_name = "diag_log_%s_%s_%s.mi2log" % (self.__log_timestamp, util.get_phone_info(), util.get_operator_info())
         milog_abs_name  = os.path.join(self.__log_dir, milog_base_name)
-        # Zengwen: try using native copy cmd
-        # shutil.copyfile(self.__orig_file, milog_abs_name)
-
         util.run_shell_cmd("cp %s %s" % (self.__orig_file, milog_abs_name))
-        # util.detach_thread()
-        # cmd  = "cp %s %s" % (self.__orig_file, milog_abs_name)
-        # proc = subprocess.Popen(cmd, executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
-        # out  = proc.communicate()[0]
-        # proc.wait()
         try:
-            # os.remove(self.__orig_file)
             util.run_shell_cmd("rm %s" % self.__orig_file)
-            # util.detach_thread()
-            # if out == "":   # saved file, delete original file
-            #     print "debug 281, should remove file"
-            #     cmd  = "rm %s" % self.__orig_file
-            #     proc = subprocess.Popen("su", executable = ANDROID_SHELL, shell = True, stdout = subprocess.PIPE)
-            #     out  = proc.communicate(cmd + '\n')[0]
-            #     print "debug, out = %s" % out
-            #     proc.wait()
         except:
             pass
-            # print "debug 260: try to remove the original internal log failed"
         return milog_abs_name

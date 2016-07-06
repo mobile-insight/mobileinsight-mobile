@@ -16,7 +16,7 @@ import mi2app_utils
 from mobile_insight.monitor import OnlineMonitor
 from logging_analyzer import LoggingAnalyzer
 
-cfg_file = "netlogger-internal.cfg"
+cfg_file = "netlogger.cfg"
 
 lte_lvl1 = [
             'LTE_RRC_OTA_Packet',
@@ -61,7 +61,7 @@ try:
     files_directory  = mi2app_utils.get_files_dir()
     plugin_directory = mi2app_utils.get_mobile_insight_plugin_path()
     log_directory    = os.path.join(cache_directory, "mi2log")
-    app_directory    = os.path.join(plugin_directory, "NetLoggerInternal")
+    app_directory    = os.path.join(plugin_directory, "NetLogger")
     fifo_path        = os.path.join(cache_directory, "diag_revealer_fifo")
     cfg_path         = os.path.join(app_directory, cfg_file)
 
@@ -97,9 +97,9 @@ try:
             cfg.close()
         except IOError:
             # TODO: Use log formatter
-            src.log_warning("MobileInsight (NetLoggerInternal): config file open failed, use default LTE/3G Control Plane logs") 
+            src.log_warning("MobileInsight (NetLogger): config file open failed, use default LTE/3G Control Plane logs")
             src.enable_log(lte_lvl1 + wcdma + umts)
-            src.log_info("MobileInsight (NetLoggerInternal): config file copied to %s, you can edit it for collection next time" % cfg_path) 
+            src.log_info("MobileInsight (NetLogger): config file copied to %s, you can edit it for collection next time" % cfg_path)
             shutil.copyfile(os.path.join(app_directory, cfg_file), cfg_path)
 
     loggingAnalyzer = LoggingAnalyzer(plugin_config)
