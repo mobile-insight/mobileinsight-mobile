@@ -54,6 +54,9 @@
 #define FIFO_MSG_TYPE_START_LOG_FILE 2
 #define FIFO_MSG_TYPE_END_LOG_FILE 3
 
+/* IOCTL commands for diagnostic port
+ * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/include/linux/diagchar.h
+ */
 #define USER_SPACE_DATA_TYPE	0x00000020
 #define CALLBACK_DATA_TYPE		0x00000080
 #define DIAG_IOCTL_SWITCH_LOGGING	7
@@ -78,6 +81,15 @@
 
 #define MODEM_DATA		0
 #define LAST_PERIPHERAL 3
+
+// size of FIFO pipe between diag_revealer and AndroidDiagMonitor
+#define DIAG_FIFO_PIPE_SIZE 128*1024*1024 // 128MB
+
+
+/* 
+ * Structures for ioctl
+ * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diagchar_core.c
+ */
 
 typedef struct {
 	char *p;
@@ -106,7 +118,7 @@ struct real_time_query_t {
 
 char buf_read[BUFFER_SIZE] = {};	// From Haotian: improve reliability
 // int mode = CALLBACK_MODE;	// Logging mode
-int mode = MEMORY_DEVICE_MODE;
+int mode = MEMORY_DEVICE_MODE;	// logging mode
 
 
 // Handle SIGPIPE ERROR
@@ -400,14 +412,15 @@ main (int argc, char **argv)
 	    }
     }
 
-	// Enable logging mode
 	/*
-	 * Yuanjie: DON'T USE MEMORY_DEVICE_MODE
+	 * Enable logging mode
+	 * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diagchar_core.c
 	 */
 	ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &mode);  
 	if (ret < 0) {
 		LOGD("ioctl SWITCH_LOGGING fails, with ret val = %d\n", ret);
 		perror("ioctl SWITCH_LOGGING");
+		// Yuanjie: the following works for Samsung S5
 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
 		if (ret < 0) {
 			LOGD("Alternative ioctl SWITCH_LOGGING fails, with ret val = %d\n", ret);
@@ -438,7 +451,7 @@ main (int argc, char **argv)
 	} else {
 		// LOGD("FIFO opened\n");
 	}
-	int pipesize = 1024*1024*128;	//128MB
+	int pipesize = DIAG_FIFO_PIPE_SIZE;	//128MB
 	fcntl(fifo_fd, F_SETPIPE_SZ, pipesize);
 
 	int res = fcntl(fifo_fd, F_GETPIPE_SZ,pipesize);
@@ -542,6 +555,7 @@ main (int argc, char **argv)
 			}
 			else
 			{
+				// TODO: Check other raw binary types
 				// LOGI("Not USER_SPACE_DATA_TYPE: %d\n", *((int *)buf_read));
 			}
 		} else {
