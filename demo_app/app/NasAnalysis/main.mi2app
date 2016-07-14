@@ -5,9 +5,14 @@ import sys
 # Import MobileInsight modules
 from mobile_insight.monitor import OnlineMonitor
 from mobile_insight.analyzer import LteNasAnalyzer, UmtsNasAnalyzer
+import mi2app_utils
+
+cache_directory  = mi2app_utils.get_cache_dir()
+log_directory    = os.path.join(cache_directory, "mi2log")
     
 # Initialize a 3G/4G monitor
 src = OnlineMonitor()
+src.set_log_directory(log_directory)
 src.set_skip_decoding(False)
 
 # Enable 3G/4G NAS analysis
