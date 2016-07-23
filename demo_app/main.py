@@ -35,6 +35,8 @@ import stat
 import json
 
 import main_utils
+# from log_viewer_app import LogViewerApp
+import log_viewer_app
 
 #Load main UI
 Window.softinput_mode = "pan"
@@ -461,6 +463,7 @@ class MobileInsightScreen(GridLayout):
         p.communicate(chmodcmd + '\n')
         p.wait()
 
+
     def about(self):
         about_text = ('MobileInsight '+main_utils.get_cur_version()+' \n' 
                    + 'UCLA WiNG Group & OSU MSSN Lab\n\n' 
@@ -497,6 +500,7 @@ class LabeledCheckBox(GridLayout):
 class MobileInsightApp(App):
     screen = None
     use_kivy_settings = False
+    log_viewer = None
 
     def build_settings(self, settings):
 
@@ -635,6 +639,12 @@ class MobileInsightApp(App):
             import traceback
             print str(traceback.format_exc())
 
+    def log_viewer(self):
+        """
+        Launch the in-app log browser
+        """
+        self.log_viewer = log_viewer_app.LogViewerApp()
+        self.log_viewer.run()
     def on_start(self):
         from kivy.config import Config
         Config.set('kivy', 'exit_on_escape', 0)
