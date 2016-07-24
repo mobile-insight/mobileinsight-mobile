@@ -48,46 +48,54 @@
 
 # Main screen
 <MobileInsightScreen>:
-    cols: 1
+    GridLayout:
+        cols: 1
 
-    ScrollableLabel:
-        text: '%s' % root.error_log
-        size_hint_y: 6
+        ScrollableLabel:
+            text: '%s' % root.error_log
+            size_hint_y: 6
 
-    ScrollView:
-        id: checkbox_app
-        size_hint_y: 8
-        font_size: "24sp"
-        selected: ""
+        ScrollView:
+            id: checkbox_app
+            size_hint_y: 8
+            font_size: "24sp"
+            selected: ""
 
-        BoxLayout:
-            id: checkbox_app_layout
-            orientation: 'vertical'
+            BoxLayout:
+                id: checkbox_app_layout
+                orientation: 'vertical'
 
-    Button:
-        text: 'Run selected plugin'
-        disabled: root.ids.checkbox_app.selected == ''
-        size_hint_y: 2.5
-        font_size: "24sp"
-        on_release: root.start_service(root.ids.checkbox_app.selected)
+        Button:
+            text: 'Run selected plugin'
+            disabled: root.ids.checkbox_app.selected == ''
+            size_hint_y: 2.5
+            font_size: "24sp"
+            on_release: root.start_service(root.ids.checkbox_app.selected)
 
-    Button:
-        text: 'Stop %s' % root.default_app_name
-        disabled: root.ids.checkbox_app.selected == ''
-        size_hint_y: 2.5
-        font_size: "24sp"
-        on_release: root.stop_service()
+        Button:
+            text: 'Stop %s' % root.default_app_name
+            disabled: root.ids.checkbox_app.selected == ''
+            size_hint_y: 2.5
+            font_size: "24sp"
+            on_release: root.stop_service()
 
-    Button:
-        text: 'Settings' 
-        disabled: root.ids.checkbox_app.selected == ''
-        size_hint_y: 2.5
-        font_size: "24sp"
-        on_release: app.open_settings()
+        Button:
+            text: 'LogViewer'
+            disabled: root.ids.checkbox_app.selected == ''
+            size_hint_y: 2.5
+            font_size: "24sp"
+            on_release: app.manager.current = 'LogViewerScreen'
 
-    Button:
-        text: 'About' 
-        disabled: root.ids.checkbox_app.selected == ''
-        size_hint_y: 2.5
-        font_size: "24sp"
-        on_release: root.about()
+        Button:
+            text: 'Settings' 
+            disabled: root.ids.checkbox_app.selected == ''
+            size_hint_y: 2.5
+            font_size: "24sp"
+            on_release: app.open_settings()
+
+        Button:
+            text: 'About' 
+            disabled: root.ids.checkbox_app.selected == ''
+            size_hint_y: 2.5
+            font_size: "24sp"
+            on_release: root.about()

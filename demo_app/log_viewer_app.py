@@ -1,6 +1,6 @@
 import kivy
 kivy.require('1.4.0')
-
+from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
@@ -15,7 +15,7 @@ from kivy.uix.widget import Widget
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.clock import Clock
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, StringProperty
 from kivy.core.window import Window
 
 from mobile_insight.analyzer import LogAnalyzer
@@ -28,42 +28,51 @@ import os
 import sys
 import xml.dom.minidom
 
+__all__=["LogViewerScreen"]
+
 #############################
 
-Builder.load_string("""
-<Window>
-	grid: grid
-	Button:
-		id: open
-		text: 'Open'
-		size: root.width*0.2425, root.height*0.05
-		pos: 0, root.height*0.95
-		on_release: root.onOpen()
-	Button:
-		text: 'Filter'
-		size: root.width*0.2425, root.height*0.05
-		pos: root.width*0.2525, root.height*0.95
-		on_release: root.onFilter()
-	Button:
-		text: 'Search'
-		size: root.width*0.2425, root.height*0.05
-		pos: root.width*0.505, root.height*0.95
-		on_release: root.onSearch()
-	Button:
-		text: 'Reset'
-		size: root.width*0.2425, root.height*0.05
-		pos: root.width*0.7575, root.height*0.95
-		on_release: root.onReset()
-	ScrollView:
-		size: root.width, root.height*19/20
-		x: 0
-		y: 0
-		GridLayout:
-			id: grid
-			cols: 2
-			row_force_default: True
-			row_default_height: root.height/20
-			size_hint_y: None
+
+Builder.load_string('''
+<LogViewerScreen>:
+	# grid: grid
+	GridLayout:
+		Button:
+			id: open
+			text: 'Open'
+			size: root.width*0.2425, root.height*0.05
+			pos: 0, root.height*0.95
+			on_release: root.onOpen()
+		Button:
+			text: 'Filter'
+			size: root.width*0.2425, root.height*0.05
+			pos: root.width*0.2525, root.height*0.95
+			on_release: root.onFilter()
+		Button:
+			text: 'Search'
+			size: root.width*0.2425, root.height*0.05
+			pos: root.width*0.505, root.height*0.95
+			on_release: root.onSearch()
+		Button:
+			text: 'Reset'
+			size: root.width*0.2425, root.height*0.05
+			pos: root.width*0.7575, root.height*0.95
+			on_release: root.onReset()
+		Button:
+			text: 'GoBack'
+			size: root.width*0.2425, root.height*0.05
+			pos: root.width*0.7575, root.height*0.95
+			on_release: app.manager.current = 'MobileInsightScreen'
+		ScrollView:
+			size: root.width, root.height*19/20
+			x: 0
+			y: 0
+			GridLayout:
+				id: grid
+				cols: 2
+				row_force_default: True
+				row_default_height: root.height/20
+				size_hint_y: None
 <Open_Popup>:
 	BoxLayout:
 		size: root.size
@@ -75,7 +84,7 @@ Builder.load_string("""
 			path: '/sdcard/mobile_insight/log'
 			on_selection: root.load(filechooser.path, filechooser.selection, *args)
 			minimum_height: filechooser.setter('height')
-""")
+''')
 
 ############################# Used for filechooser
 
@@ -88,17 +97,19 @@ class Open_Popup(FloatLayout):
 #############################
 
 
-class Window(Widget):
+# class LogViewerScreen(Widget):
+class LogViewerScreen(Screen):
 	loaded = ObjectProperty(None)
 	loadfile = ObjectProperty(None)
 	ok = ObjectProperty(None)
 	cancel = ObjectProperty(None)
 
 
-	def __init__(self):
-		super(Window, self).__init__()
+	def __init__(self,name):
+		super(LogViewerScreen, self).__init__()
 		self._log_analyzer = LogAnalyzer(self.OnReadComplete)
 		self.selectedTypes = None
+		self.name = name
 
 
 	def dismiss_open_popup(self):
@@ -255,7 +266,7 @@ class Window(Widget):
 class LogViewerApp(App):
 	screen = ObjectProperty(None)
 	def build(self):
-		self.screen = Window()
+		self.screen = LogViewerScreen()
 		return self.screen
 
 if __name__ == "__main__":

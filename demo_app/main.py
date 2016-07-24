@@ -35,8 +35,7 @@ import stat
 import json
 
 import main_utils
-# from log_viewer_app import LogViewerApp
-import log_viewer_app
+from log_viewer_app import LogViewerScreen
 
 #Load main UI
 Window.softinput_mode = "pan"
@@ -143,7 +142,8 @@ def get_app_list():
 
     return ret
 
-class MobileInsightScreen(GridLayout):
+# class MobileInsightScreen(GridLayout):
+class MobileInsightScreen(Screen):
     error_log = StringProperty(LOGO_STRING)
     default_app_name = StringProperty("")
     collecting = BooleanProperty(False)
@@ -153,8 +153,10 @@ class MobileInsightScreen(GridLayout):
     terminal_stop = None
     MAX_LINE = 30
 
-    def __init__(self):
+    def __init__(self,name):
         super(MobileInsightScreen, self).__init__()
+
+        self.name = name
 
         if not main_utils.is_rooted():
             self.log_error("MobileInsight requires root privelege. Please root your device for correct functioning.")
@@ -598,11 +600,17 @@ class MobileInsightApp(App):
         config.set('mi_general','bcheck_update',val)
         config.write()
 
-        self.screen = MobileInsightScreen()
+        self.screen = MobileInsightScreen(name='MobileInsightScreen')
         self.manager = ScreenManager()
+        # Test
+        self.log_viewer_screen = LogViewerScreen(name='LogViewerScreen')
+        self.manager.add_widget(self.screen)
+        self.manager.add_widget(self.log_viewer_screen)
+        self.manager.current = 'MobileInsightScreen'
         Window.borderless = False
 
-        return self.screen
+        # return self.screen
+        return self.manager
 
     def on_pause(self):
         # Yuanjie: The following code prevents screen freeze when screen off -> screen on
