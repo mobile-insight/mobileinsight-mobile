@@ -1,5 +1,6 @@
 import kivy
 kivy.require('1.4.0')
+
 from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -15,6 +16,7 @@ from kivy.uix.widget import Widget
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.clock import Clock
+from kivy.factory import Factory
 from kivy.properties import ObjectProperty, StringProperty
 from kivy.core.window import Window
 
@@ -32,41 +34,41 @@ __all__=["LogViewerScreen"]
 
 #############################
 
+Window.clearcolor = (0,0,0,0)
+
 
 Builder.load_string('''
 <LogViewerScreen>:
-	# grid: grid
+	grid: grid
 	GridLayout:
 		Button:
 			id: open
 			text: 'Open'
-			size: root.width*0.2425, root.height*0.05
+			size: root.width*0.19, root.height*0.05
 			pos: 0, root.height*0.95
 			on_release: root.onOpen()
 		Button:
 			text: 'Filter'
-			size: root.width*0.2425, root.height*0.05
-			pos: root.width*0.2525, root.height*0.95
+			size: root.width*0.19, root.height*0.05
+			pos: root.width*0.2025, root.height*0.95
 			on_release: root.onFilter()
 		Button:
 			text: 'Search'
-			size: root.width*0.2425, root.height*0.05
-			pos: root.width*0.505, root.height*0.95
+			size: root.width*0.19, root.height*0.05
+			pos: root.width*0.405, root.height*0.95
 			on_release: root.onSearch()
 		Button:
 			text: 'Reset'
-			size: root.width*0.2425, root.height*0.05
-			pos: root.width*0.7575, root.height*0.95
+			size: root.width*0.19, root.height*0.05
+			pos: root.width*0.6075, root.height*0.95
 			on_release: root.onReset()
 		Button:
 			text: 'GoBack'
-			size: root.width*0.2425, root.height*0.05
-			pos: root.width*0.7575, root.height*0.95
+			size: root.width*0.19, root.height*0.05
+			pos: root.width*0.81, root.height*0.95
 			on_release: app.manager.current = 'MobileInsightScreen'
 		ScrollView:
 			size: root.width, root.height*19/20
-			x: 0
-			y: 0
 			GridLayout:
 				id: grid
 				cols: 2
@@ -97,19 +99,26 @@ class Open_Popup(FloatLayout):
 #############################
 
 
-# class LogViewerScreen(Widget):
 class LogViewerScreen(Screen):
+	ReadComplete = ObjectProperty(None)
 	loaded = ObjectProperty(None)
 	loadfile = ObjectProperty(None)
 	ok = ObjectProperty(None)
 	cancel = ObjectProperty(None)
 
 
-	def __init__(self,name):
+	def __init__(self, name):
 		super(LogViewerScreen, self).__init__()
 		self._log_analyzer = LogAnalyzer(self.OnReadComplete)
 		self.selectedTypes = None
 		self.name = name
+		Clock.schedule_interval(self.SetInitialGrid, 0.5)
+
+	def SetInitialGrid(self, *args):
+		if self.ReadComplete == 'Yes':
+			self.ReadComplete = ''
+			self.loaded = 'Yes'
+			self.onReset()
 
 
 	def dismiss_open_popup(self):
@@ -144,7 +153,7 @@ class LogViewerScreen(Screen):
 			name, extension = os.path.splitext(filename[0])
 			if extension == [u'.mi2log'][0]:
 				with open(os.path.join(path, filename[0])) as stream:
-					t = Thread(target = self.openFile, args=(path, self.selectedTypes))
+					t = Thread(target = self.openFile, args = (os.path.join(path, filename[0]), self.selectedTypes))
 					t.start()
 					self.dismiss_open_popup()
 			else:
@@ -159,18 +168,17 @@ class LogViewerScreen(Screen):
 	def OnReadComplete(self):
 		self.data =  self._log_analyzer.msg_logs
 		self.data_view = self.data
-		self.SetUpGrid(self.data_view, len(self.data_view))
-		self.loaded = 'Yes'
+		self.ReadComplete = 'Yes'
 
 
 	def SetUpGrid(self, data, rows):
-		self.ids.grid.bind(minimum_height=self.ids.grid.setter('height'))
-		self.ids.grid.clear_widgets()
-		self.ids.grid.add_widget(Label(text='', size_hint_x = 0.2))
-		self.ids.grid.add_widget(Label(text= 'Timestamp' + '      ' + 'Type ID'))
+		self.grid.bind(minimum_height=self.grid.setter('height'))
+		self.grid.clear_widgets()
+		self.grid.add_widget(Label(text='', size_hint_x = 0.2))
+		self.grid.add_widget(Label(text= 'Timestamp' + '      ' + 'Type ID'))
 		for i in range(0,rows):
-			self.ids.grid.add_widget(Label(text=str(i+1), size_hint_x = 0.2))
-			self.ids.grid.add_widget(Button(text = str(data[i]["Timestamp"]) + '      ' + str(data[i]["TypeID"]), on_release = self.grid_popup, id = str(data[i]["Payload"])))
+			self.grid.add_widget(Label(text=str(i+1), size_hint_x = 0.2))
+			self.grid.add_widget(Button(text = str(data[i]["Timestamp"]) + '      ' + str(data[i]["TypeID"]), on_release = self.grid_popup, id = str(data[i]["Payload"])))
 
 
 	def grid_popup(self,data):
@@ -268,6 +276,9 @@ class LogViewerApp(App):
 	def build(self):
 		self.screen = LogViewerScreen()
 		return self.screen
+
+Factory.register('LogViewerScreen', cls=LogViewerScreen)
+Factory.register('Open_Popup', cls=Open_Popup)
 
 if __name__ == "__main__":
 	LogViewerApp().run()
