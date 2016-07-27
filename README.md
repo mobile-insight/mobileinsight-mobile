@@ -5,6 +5,7 @@ mobileInsight-mobile is built on top of python-for-android. It depends on mobile
 
 The main directories include
 
+```shell
 ├── Makefile: makefile for compiling the app, building python-for-android distribution
 ├── README.md: this file
 ├── config: configurations for the compilation
@@ -14,6 +15,7 @@ The main directories include
 ├── docs: documentation
 ├── internal_app: some experimental MobileInsight plugins
 └── resources: icons, welcome screens, etc.
+```
 
 
 # How to install #

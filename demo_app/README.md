@@ -1,5 +1,6 @@
 This directory incldues source codes of MobileInsight apk. 
 
+```shell
 .
 ├── README.md: this document
 ├── app: built-in plugins. Currently it includes NetLogger, RrcAnalysis and NasAnalysis
@@ -12,3 +13,4 @@ This directory incldues source codes of MobileInsight apk.
 ├── main_utils.py: utilities functions for MobileInsight apk
 ├── service: codes for launching MobileInsight plugins based on Android service. This directory is mandatory for python-for-android.
 └── settings.json: default settings for MobileInsight
+```
