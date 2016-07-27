@@ -84,7 +84,7 @@
             disabled: root.ids.checkbox_app.selected == ''
             size_hint_y: 2.5
             font_size: "24sp"
-            on_release: app.manager.current = 'LogViewerScreen'
+            on_release: app.manager.current = 'LogViewerScreen'; app.log_viewer_screen.onOpen()
 
         Button:
             text: 'Settings' 
