@@ -4,11 +4,11 @@ logging_analyzer.py
 It analyses newly generated cellular event log file,
 log and decode them, then save the log to external storage.
 
-Author: Zengwen Yuan
-Version: 3.1  Attempt upload again when WiFi is available
-         3.0  Add uploading function
-         2.0  Save decoded log to sdcard
-         1.0  Init NetLogger
+Author  : Zengwen Yuan
+Version : 3.1  Attempt upload again when WiFi is available
+          3.0  Add uploading function
+          2.0  Save decoded log to sdcard
+          1.0  Init NetLogger
 '''
 
 import os
@@ -112,7 +112,7 @@ class MultiPartForm(object):
 
 class LoggingAnalyzer(Analyzer):
     """
-    An ananlyzer for cellular events logging and decoding
+    An analyzer for cellular events logging and decoding
     """
 
     def __init__(self, config):
