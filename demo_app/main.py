@@ -159,6 +159,8 @@ class MobileInsightScreen(Screen):
         self.name = name
 
         if not main_utils.is_rooted():
+            self.ids.log_viewer = False
+            self.ids.run_plugin = False
             self.log_error("MobileInsight requires root privelege. Please root your device for correct functioning.")
 
         self.__init_libs()
@@ -167,6 +169,9 @@ class MobileInsightScreen(Screen):
         if not create_folder():
             # MobileInsight folders unavailable. Add warnings
             self.log_error("SDcard is unavailable. Please check.")
+            self.screen.ids.log_viewer.disabled = True
+            self.screen.ids.stop_plugin.disabled = True
+            self.screen.ids.run_plugin.disabled = True
 
         self.app_list = get_app_list()
         # self.app_list.sort()
@@ -602,10 +607,17 @@ class MobileInsightApp(App):
 
         self.screen = MobileInsightScreen(name='MobileInsightScreen')
         self.manager = ScreenManager()
-        # Test
-        self.log_viewer_screen = LogViewerScreen(name='LogViewerScreen')
         self.manager.add_widget(self.screen)
-        self.manager.add_widget(self.log_viewer_screen)
+        try:
+            self.log_viewer_screen = LogViewerScreen(name='LogViewerScreen')
+            self.manager.add_widget(self.log_viewer_screen)
+        except Exception, e:
+            self.screen.ids.log_viewer.disabled = True
+            self.screen.ids.stop_plugin.disabled = True
+            self.screen.ids.run_plugin.disabled = True
+
+
+
         self.manager.current = 'MobileInsightScreen'
         Window.borderless = False
 

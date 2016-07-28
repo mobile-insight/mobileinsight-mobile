@@ -66,6 +66,7 @@
                 orientation: 'vertical'
 
         Button:
+            id: run_plugin
             text: 'Run selected plugin'
             disabled: root.ids.checkbox_app.selected == ''
             size_hint_y: 2.5
@@ -73,6 +74,7 @@
             on_release: root.start_service(root.ids.checkbox_app.selected)
 
         Button:
+            id: stop_plugin
             text: 'Stop %s' % root.default_app_name
             disabled: root.ids.checkbox_app.selected == ''
             size_hint_y: 2.5
@@ -80,6 +82,7 @@
             on_release: root.stop_service()
 
         Button:
+            id: log_viewer
             text: 'LogViewer'
             disabled: root.ids.checkbox_app.selected == ''
             size_hint_y: 2.5

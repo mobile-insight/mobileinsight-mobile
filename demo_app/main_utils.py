@@ -46,6 +46,7 @@ def is_rooted():
     
     return False
 
+
 def run_shell_cmd(cmd, wait = False):
     p = subprocess.Popen("su", executable=ANDROID_SHELL, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     res,err = p.communicate(cmd+'\n')
