@@ -223,6 +223,17 @@ class MobileInsightScreen(Screen):
         self.error_log += "\n"
         self.error_log += s
 
+    # def append_log(self,s):
+    #     self.error_log += "\n"
+    #     self.error_log += s
+    #     if self.line_count > self.MAX_LINE:
+    #         idx = self.error_log.find('\n')
+    #         self.error_log = self.error_log[idx+1:]
+    #     else:
+    #         self.line_count += 1
+
+
+
 
 
     def __check_security_policy(self):
@@ -314,13 +325,12 @@ class MobileInsightScreen(Screen):
 
     def show_log(self):
 
-        # log_name = os.path.join(main_utils.get_mobile_insight_path(),"log.txt")
-
-
         while not os.path.exists(self.log_name):
             continue
 
         log_file = open(self.log_name,'r')
+
+        # line_count = 0
 
         while True:
             if self.terminal_stop.is_set():
@@ -333,13 +343,22 @@ class MobileInsightScreen(Screen):
                 else:
                     # # Show MAX_LINE lines at most
                     # # TODO: make the code more efficient
+
                     tmp = self.error_log.split('\n')
                     tmp.append(line)
                     if len(tmp)>self.MAX_LINE:
                         self.error_log = '\n'.join(tmp[-self.MAX_LINE:])
                     else:
                         self.error_log = '\n'.join(tmp)
-                    # self.append_log(line)
+
+                    # self.error_log += "\n"
+                    # self.error_log += line
+                    # if line_count >self.MAX_LINE:
+                    #     idx = self.error_log.find('\n')
+                    #     self.error_log = self.error_log[idx+1:]
+                    # else:
+                    #     line_count += 1
+                    
             except Exception, e:
                 continue
 

@@ -178,7 +178,10 @@ def get_mobile_insight_crash_log_path():
     return os.path.join(mobile_insight_path,"crash_logs")
 
 def detach_thread():
-    jnius.detach()
+    try:
+        jnius.detach()
+    except:
+        pass
 
 def get_cache_dir():
     return str(current_activity.getCacheDir().getAbsolutePath())

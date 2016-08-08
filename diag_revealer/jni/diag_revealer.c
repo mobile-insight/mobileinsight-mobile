@@ -54,26 +54,57 @@
 #define FIFO_MSG_TYPE_START_LOG_FILE 2
 #define FIFO_MSG_TYPE_END_LOG_FILE 3
 
-/* IOCTL commands for diagnostic port
+/* Raw binary data type
  * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/include/linux/diagchar.h
  */
+#define MSG_MASKS_TYPE		0x00000001
+#define LOG_MASKS_TYPE		0x00000002
+#define EVENT_MASKS_TYPE	0x00000004
+#define PKT_TYPE		0x00000008
+#define DEINIT_TYPE		0x00000010
 #define USER_SPACE_DATA_TYPE	0x00000020
-#define CALLBACK_DATA_TYPE		0x00000080
+#define DCI_DATA_TYPE		0x00000040
+#define CALLBACK_DATA_TYPE	0x00000080
+#define DCI_LOG_MASKS_TYPE	0x00000100
+#define DCI_EVENT_MASKS_TYPE	0x00000200
+#define DCI_PKT_TYPE		0x00000400
+
+/* IOCTL commands for diagnostic port
+ * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/include/linux/diagchar.h
+ */ 
 #define DIAG_IOCTL_SWITCH_LOGGING	7
-#define DIAG_IOCTL_REMOTE_DEV		32
+#define DIAG_IOCTL_LSM_DEINIT		9
+#define DIAG_IOCTL_DCI_REG		23
+#define DIAG_IOCTL_DCI_INIT		20
+#define DIAG_IOCTL_DCI_DEINIT		21
 #define DIAG_IOCTL_DCI_CLEAR_LOGS	28
 #define DIAG_IOCTL_DCI_CLEAR_EVENTS	29
-
-#define MEMORY_DEVICE_MODE		2
-#define CALLBACK_MODE		6
-
 #define DIAG_IOCTL_REMOTE_DEV		32
 #define DIAG_IOCTL_VOTE_REAL_TIME	33
 #define DIAG_IOCTL_GET_REAL_TIME	34
 #define DIAG_IOCTL_PERIPHERAL_BUF_CONFIG	35
 #define DIAG_IOCTL_PERIPHERAL_BUF_DRAIN		36
 
+
+#define MEMORY_DEVICE_MODE		2
+#define CALLBACK_MODE		6
+#define TTY_MODE			8
+
+/* 
+ * NEXUS-6-ONLY IOCTL
+ * Reference: https://github.com/MotorolaMobilityLLC/kernel-msm/blob/kitkat-4.4.4-release-victara/include/linux/diagchar.h
+ */
+#define DIAG_IOCTL_OPTIMIZED_LOGGING	35
+#define DIAG_IOCTL_OPTIMIZED_LOGGING_FLUSH	36
+
+
+/* 
+ * Buffering mode
+ * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/include/linux/diagchar.h
+ */
 #define DIAG_BUFFERING_MODE_STREAMING	0
+#define DIAG_BUFFERING_MODE_THRESHOLD	1
+#define DIAG_BUFFERING_MODE_CIRCULAR	2
 #define DEFAULT_LOW_WM_VAL	15
 #define DEFAULT_HIGH_WM_VAL	85
 #define NUM_SMD_DATA_CHANNELS 4
@@ -85,6 +116,19 @@
 // size of FIFO pipe between diag_revealer and AndroidDiagMonitor
 #define DIAG_FIFO_PIPE_SIZE 128*1024*1024 // 128MB
 
+
+/* 
+ * Structures for DCI client registration
+ * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diag_dci.h
+ */
+#define DCI_LOG_MASK_SIZE		(16*514)
+#define DCI_EVENT_MASK_SIZE		512
+struct diag_dci_reg_tbl_t {
+	int client_id;
+	uint16_t notification_list;
+	int signal_type;
+	int token;
+} __packed;
 
 /* 
  * Structures for ioctl
@@ -106,6 +150,7 @@ struct diag_buffering_mode_t {
 #define DIAG_PROC_DCI			1
 #define DIAG_PROC_MEMORY_DEVICE		2
 
+
 struct real_time_vote_t {
 	uint16_t proc;
 	uint8_t real_time_vote;
@@ -116,9 +161,35 @@ struct real_time_query_t {
 	int proc;
 } __packed;
 
+
+/*
+ * DCI structures
+ */
+struct diag_dci_client_tbl {
+	struct task_struct *client;
+	uint16_t list; /* bit mask */
+	int signal_type;
+	unsigned char dci_log_mask[DCI_LOG_MASK_SIZE];
+	unsigned char dci_event_mask[DCI_EVENT_MASK_SIZE];
+	unsigned char *dci_data;
+	int data_len;
+	int total_capacity;
+	int dropped_logs;
+	int dropped_events;
+	int received_logs;
+	int received_events;
+};
+
+/*
+ * Default logging mode and buffer
+ * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diag_dci.h
+ */
+
 char buf_read[BUFFER_SIZE] = {};	// From Haotian: improve reliability
 // int mode = CALLBACK_MODE;	// Logging mode
-int mode = MEMORY_DEVICE_MODE;	// logging mode
+static int mode = MEMORY_DEVICE_MODE;	// logging mode
+int client_id;	// DCI client ID (allocated by diag driver)
+int fd; //file descriptor to /dev/diag
 
 
 // Handle SIGPIPE ERROR
@@ -126,6 +197,25 @@ void sigpipe_handler(int signo)
 {
   if (signo == SIGPIPE){
   	  // LOGD("received SIGPIPE. Exit elegantly...\n");
+
+    /*
+     * Deregister the DCI client
+     */
+
+    /*
+    int ret;
+    ret = ioctl(fd, DIAG_IOCTL_DCI_DEINIT, (char *) &client_id);
+    if (ret < 0) {
+		LOGD("ioctl DIAG_IOCTL_DCI_DEINIT fails, with ret val = %d\n", ret);
+		perror("ioctl DIAG_IOCTL_DCI_DEINIT");
+	}
+	else
+	{
+		printf("ioctl DIAG_IOCTL_DCI_DEINIT: ret=%d\n", ret);
+	}
+	*/
+
+	close(fd);
   }
 }
 
@@ -378,7 +468,9 @@ main (int argc, char **argv)
 
 	// system("su -c chmod 777 /dev/diag");
 
-	int fd = open("/dev/diag", O_RDWR);
+	// int fd = open("/dev/diag", O_RDWR);
+	// fd = open("/dev/diag", O_RDWR);
+	fd = open("/dev/diag", O_RDWR|O_LARGEFILE);
 	if (fd < 0) {
 		perror("open diag dev");
 		return -8002;
@@ -386,31 +478,136 @@ main (int argc, char **argv)
 
 	int ret;
 
+
 	/*
-     * TODO: cleanup the diag before exit
+     * EXPERIMENTAL (NEXUS 6 ONLY): 
+     * 1. check remote_dev
+     * 2. Register a DCI client
+     * 3. Send DCI control command
+     */
+    uint16_t remote_dev = 0;
+    ret = ioctl(fd, DIAG_IOCTL_REMOTE_DEV, (char *) &remote_dev); 
+    if (ret < 0){
+	        printf("ioctl DIAG_IOCTL_REMOTE_DEV fails, with ret val = %d\n", ret);
+	    	perror("ioctl DIAG_IOCTL_REMOTE_DEV");
+	} 
+	else{
+		// printf("DIAG_IOCTL_REMOTE_DEV remote_dev=%d\n",remote_dev);
+	}
+
+	// Register a DCI client
+	struct diag_dci_reg_tbl_t dci_client;
+	dci_client.client_id = 0;
+	dci_client.notification_list = 0;
+	dci_client.signal_type = SIGPIPE;
+	// dci_client.token = remote_dev;
+	dci_client.token = 0;
+	ret = ioctl(fd, DIAG_IOCTL_DCI_REG, (char *) &dci_client); 
+    if (ret < 0){
+	        printf("ioctl DIAG_IOCTL_DCI_REG fails, with ret val = %d\n", ret);
+	    	perror("ioctl DIAG_IOCTL_DCI_REG");
+	} 
+	else{
+		client_id = ret;
+		printf("DIAG_IOCTL_DCI_REG client_id=%d\n", client_id);
+	}
+
+	// Nexus-6-only logging optimizations
+	unsigned int b_optimize = 1;
+	ret = ioctl(fd, DIAG_IOCTL_OPTIMIZED_LOGGING, (char *) &b_optimize); 
+	if (ret < 0){
+	        printf("ioctl DIAG_IOCTL_OPTIMIZED_LOGGING fails, with ret val = %d\n", ret);
+	    	perror("ioctl DIAG_IOCTL_OPTIMIZED_LOGGING");
+	} 
+	// ret = ioctl(fd, DIAG_IOCTL_OPTIMIZED_LOGGING_FLUSH, NULL); 
+	// if (ret < 0){
+	//         printf("ioctl DIAG_IOCTL_OPTIMIZED_LOGGING_FLUSH fails, with ret val = %d\n", ret);
+	//     	perror("ioctl DIAG_IOCTL_OPTIMIZED_LOGGING_FLUSH");
+	// } 
+
+
+	/*
+     * TODO: cleanup the diag before start
      * 1. Drain the buffer: prevent outdate logs next time
      * 2. Clean up masks: prevent enable_log bug next time
      */
-    int client_id = 0;
-    ret = ioctl(fd, DIAG_IOCTL_DCI_CLEAR_LOGS, (char *) &client_id);  
+
+	/*
+	 * DIAG_IOCTL_LSM_DEINIT, try if it can clear buffer
+	 */
+
+	/*
+	ret = ioctl(fd, DIAG_IOCTL_LSM_DEINIT, NULL);
+	if (ret < 0){
+        printf("ioctl DIAG_IOCTL_LSM_DEINIT fails, with ret val = %d\n", ret);
+    	perror("ioctl DIAG_IOCTL_LSM_DEINIT");
+    }
+    */
+
+    // ret = ioctl(fd, DIAG_IOCTL_DCI_CLEAR_LOGS, (char *) &client_id);  
+    // if (ret < 0){
+    //     printf("ioctl DIAG_IOCTL_DCI_CLEAR_LOGS fails, with ret val = %d\n", ret);
+    // 	perror("ioctl DIAG_IOCTL_DCI_CLEAR_LOGS");
+    // }
+    // ret = ioctl(fd, DIAG_IOCTL_DCI_CLEAR_EVENTS, (char *) &client_id);  
+    // if (ret < 0){
+    //     printf("ioctl DIAG_IOCTL_DCI_CLEAR_EVENTS fails, with ret val = %d\n", ret);
+    // 	perror("ioctl DIAG_IOCTL_DCI_CLEAR_EVENTS");
+    // }
+
+    /*
+     * Drain all peripheral buffers. 
+     * NOTE: on different phone models, the number of avaialble peripheral buffers may differ.
+     * So the following code may not always succeed (e.g., on Nexus 6P, only peripheral 0 and 1 will succeed.)
+     */
+    remote_dev = 0;
+    ret = ioctl(fd, DIAG_IOCTL_PERIPHERAL_BUF_DRAIN, (char *) &remote_dev);  
     if (ret < 0){
-        printf("ioctl DIAG_IOCTL_DCI_CLEAR_LOGS fails, with ret val = %d\n", ret);
-    	perror("ioctl DIAG_IOCTL_DCI_CLEAR_LOGS");
+        printf("ioctl DIAG_IOCTL_PERIPHERAL_BUF_DRAIN fails, with ret val = %d\n", ret);
+    	perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_DRAIN");
     }
-    ret = ioctl(fd, DIAG_IOCTL_DCI_CLEAR_EVENTS, (char *) &client_id);  
+
+    /*
+     * EXPERIMENTAL (NEXUS 6 ONLY): configure the buffering mode to circular
+     */
+    struct diag_buffering_mode_t buffering_mode;
+    // buffering_mode.peripheral = remote_dev;
+    buffering_mode.peripheral = 0;
+    buffering_mode.mode = DIAG_BUFFERING_MODE_STREAMING;
+    buffering_mode.high_wm_val = DEFAULT_HIGH_WM_VAL;
+    buffering_mode.low_wm_val = DEFAULT_LOW_WM_VAL;
+
+    ret = ioctl(fd, DIAG_IOCTL_PERIPHERAL_BUF_CONFIG, (char *) &buffering_mode);  
     if (ret < 0){
-        printf("ioctl DIAG_IOCTL_DCI_CLEAR_EVENTS fails, with ret val = %d\n", ret);
-    	perror("ioctl DIAG_IOCTL_DCI_CLEAR_EVENTS");
+        printf("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG fails, with ret val = %d\n", ret);
+    	perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG");
     }
-    uint8_t peripheral = 0;
-    for(;peripheral<=LAST_PERIPHERAL; peripheral++)
-    {
-    	ret = ioctl(fd, DIAG_IOCTL_PERIPHERAL_BUF_DRAIN, (char *) &peripheral);  
-	    if (ret < 0){
-	        printf("ioctl DIAG_IOCTL_PERIPHERAL_BUF_DRAIN fails, with ret val = %d\n", ret);
-	    	perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_DRAIN");
-	    }
-    }
+    // uint8_t peripheral = 0;
+    // for(;peripheral<=LAST_PERIPHERAL; peripheral++)
+    // {
+    // 	ret = ioctl(fd, DIAG_IOCTL_PERIPHERAL_BUF_DRAIN, (char *) &peripheral);  
+	   //  if (ret < 0){
+	   //      printf("ioctl DIAG_IOCTL_PERIPHERAL_BUF_DRAIN fails, with ret val = %d\n", ret);
+	   //  	perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_DRAIN");
+	   //  }
+
+	   //  /*
+	   //   * EXPERIMENTAL (NEXUS 6 ONLY): configure the buffering mode to circular
+	   //   */
+	   //  struct diag_buffering_mode_t buffering_mode;
+	   //  buffering_mode.peripheral = peripheral;
+	   //  buffering_mode.mode = DIAG_BUFFERING_MODE_STREAMING;
+	   //  buffering_mode.high_wm_val = DEFAULT_HIGH_WM_VAL;
+	   //  buffering_mode.low_wm_val = DEFAULT_LOW_WM_VAL;
+
+	   //  ret = ioctl(fd, DIAG_IOCTL_PERIPHERAL_BUF_CONFIG, (char *) &buffering_mode);  
+	   //  if (ret < 0){
+	   //      printf("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG fails, with ret val = %d\n", ret);
+	   //  	perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG");
+	   //  }
+    // }
+
+	
 
 	/*
 	 * Enable logging mode
@@ -556,7 +753,7 @@ main (int argc, char **argv)
 			else
 			{
 				// TODO: Check other raw binary types
-				// LOGI("Not USER_SPACE_DATA_TYPE: %d\n", *((int *)buf_read));
+				LOGI("Not USER_SPACE_DATA_TYPE: %d\n", *((int *)buf_read));
 			}
 		} else {
 			continue;
@@ -565,6 +762,21 @@ main (int argc, char **argv)
 
 	close(fd);
 
+	/*
+     * Deregister the DCI client
+     */
+
+    /*
+    ret = ioctl(fd, DIAG_IOCTL_DCI_DEINIT, (char *) &client_id);
+    if (ret < 0) {
+		LOGD("ioctl DIAG_IOCTL_DCI_DEINIT fails, with ret val = %d\n", ret);
+		perror("ioctl DIAG_IOCTL_DCI_DEINIT");
+	}
+	else
+	{
+		printf("ioctl DIAG_IOCTL_DCI_DEINIT: ret=%d\n", ret);
+	}
+	*/
 
 	return (ret < 0? ret: 0);
 }
