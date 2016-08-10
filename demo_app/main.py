@@ -584,7 +584,7 @@ class MobileInsightApp(App):
             'log_level': 'info',
             'bstartup': 0,
             'bstartup_service': 0,
-            'start_service': 'NetLoggerInternal',
+            'start_service': 'NetLogger',
         })
         self.create_app_default_config(config)
 
@@ -678,12 +678,6 @@ class MobileInsightApp(App):
             import traceback
             print str(traceback.format_exc())
 
-    def log_viewer(self):
-        """
-        Launch the in-app log browser
-        """
-        self.log_viewer = log_viewer_app.LogViewerApp()
-        self.log_viewer.run()
     def on_start(self):
         from kivy.config import Config
         Config.set('kivy', 'exit_on_escape', 0)

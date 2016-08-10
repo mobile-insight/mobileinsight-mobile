@@ -191,4 +191,8 @@ def get_wifi_status():
     return mWifiManager.isWifiEnabled()
 
 def detach_thread():
-    jnius.detach()
+    try:
+        jnius.detach()
+    except:
+        pass
+
