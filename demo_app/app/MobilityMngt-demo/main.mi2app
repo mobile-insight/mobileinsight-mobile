@@ -8,8 +8,7 @@ import traceback
 
 import mi2app_utils
 from mobile_insight.monitor import OnlineMonitor, OfflineReplayer
-from mobile_insight.analyzer import LtePhyAnalyzer
-from realtime_analyzer import RealtimeAnalyzer
+from mobile_insight.analyzer import MobilityMngt
 
 
 list_logEnabled = [
@@ -36,23 +35,14 @@ try:
     cache_directory  = mi2app_utils.get_cache_dir()
     log_directory    = os.path.join(cache_directory, "mi2log")
 
-    src = OnlineMonitor()
-    src.set_skip_decoding(False)
-    src.set_log_directory(log_directory)
-    src.set_log_cut_size(1000.0)
+   
+    src = OfflineReplayer()
+    # # src.set_input_path("/sdcard/diag_log_20151125_215023.qmdl")
+    src.set_input_path("/sdcard/mobility_test/att/")
+    # src.set_input_path("/sdcard/WCDMA_RRC_state_sample.qmdl")
 
-    # src = OfflineReplayer()
-    # # # src.set_input_path("/sdcard/diag_log_20151125_215023.qmdl")
-    # src.set_input_path("/sdcard/DRX-ATT.qmdl")
-    # # src.set_input_path("/sdcard/WCDMA_RRC_state_sample.qmdl")
-
-    lte_phy_analyzer = LtePhyAnalyzer()
-    lte_phy_analyzer.set_source(src)
-
-    # # Haotian's code
-    # src.enable_log(list_logEnabled)
-    # realtimeAnalyzer = RealtimeAnalyzer()
-    # realtimeAnalyzer.set_source(src)
+    mobility_analyzer = MobilityMngt()
+    mobility_analyzer.set_source(src)
 
 
     src.run()
