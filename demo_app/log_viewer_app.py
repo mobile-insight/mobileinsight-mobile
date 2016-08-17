@@ -35,6 +35,8 @@ import sys
 import xml.dom.minidom
 #import xmltodict
 
+import main_utils
+
 __all__=["LogViewerScreen"]
 
 #############################
