@@ -130,7 +130,8 @@ class LogViewerScreen(Screen):
 
     def __init__(self, name):
         super(LogViewerScreen, self).__init__()
-        self._log_analyzer = LogAnalyzer(self.OnReadComplete)
+        # self._log_analyzer = LogAnalyzer(self.OnReadComplete)
+        self._log_analyzer = None
         self.selectedTypes = None
         self.name = name
 
@@ -194,6 +195,8 @@ class LogViewerScreen(Screen):
 
 
     def openFile(self, Paths,selectedTypes):
+        if not self._log_analyzer:
+            self._log_analyzer = LogAnalyzer(self.OnReadComplete)
         self._log_analyzer.AnalyzeFile(Paths,selectedTypes)
 
 
