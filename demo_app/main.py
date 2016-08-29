@@ -255,18 +255,25 @@ class MobileInsightScreen(Screen):
         """
 
         cmd = "setenforce 0; "
-        cmd = cmd + "supolicy --live \"allow init diag_device chr_file {getattr write ioctl}\"; "
-        cmd = cmd + "supolicy --live \"allow init init process execmem\";"
-        cmd = cmd + "supolicy --live \"allow init properties_device file execute\";"
-        cmd = cmd + "supolicy --live \"allow atfwd diag_device chr_file {read write open ioctl}\";"
-        cmd = cmd + "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
-        cmd = cmd + "supolicy --live \"allow untrusted_app app_data_file file {rename}\";"
-        cmd = cmd + "supolicy --live \"allow init app_data_file fifo_file {write open getattr}\";"
 
-        # Test on Nexust 6
-        cmd = cmd + "supolicy --live \"allow rild diag_device chr_file  {read ioctl open write}\";"
-        cmd = cmd + "supolicy --live \"allow untrusted_app diag_device chr_file  {getattr}\";"
 
+        # # Depreciated supolicies. Still keep them for backup purpose
+        # cmd = cmd + "supolicy --live \"allow init init process execmem\";"
+        # cmd = cmd + "supolicy --live \"allow atfwd diag_device chr_file {read write open ioctl}\";"
+        # cmd = cmd + "supolicy --live \"allow init properties_device file execute\";"
+        # cmd = cmd + "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
+
+        # # Suspicious supolicies: MI works without them, but it seems that they SHOULD be enabled...
+
+        # # mi2log permission denied (logcat | grep denied), but no impact on log collection/analysis
+        # cmd = cmd + "supolicy --live \"allow untrusted_app app_data_file file {rename}\";" 
+
+        # # Suspicious: why still works after disabling this command? Won't FIFO fail?
+        # cmd = cmd + "supolicy --live \"allow init app_data_file fifo_file {write open getattr}\";"
+        # cmd = cmd + "supolicy --live \"allow init diag_device chr_file {getattr write ioctl}\"; "
+
+
+        
         main_utils.run_shell_cmd(cmd)
 
 
