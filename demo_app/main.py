@@ -165,7 +165,7 @@ class MobileInsightScreen(Screen):
             6. Check if the diagnostic mode is enabled
             7. Load configurations from the setting panel (configs stored in /sdcard/.mobileinsight.ini)
         """
-        
+
         super(MobileInsightScreen, self).__init__()
 
         self.name = name
@@ -526,11 +526,12 @@ class MobileInsightScreen(Screen):
         milog_basename = "diag_log_%s_%s_%s.mi2log" % (self.__log_timestamp, self.__phone_info, main_utils.get_operator_info())
         milog_absname  = os.path.join(self.__logdir, milog_basename)
         shutil.copyfile(self.__original_filename, milog_absname)
-        chmodcmd = "rm -f " + self.__original_filename
-        p = subprocess.Popen("su ", executable = main_utils.ANDROID_SHELL, shell = True, \
-                                    stdin = subprocess.PIPE, stdout = subprocess.PIPE)
-        p.communicate(chmodcmd + '\n')
-        p.wait()
+        # chmodcmd = "rm -f " + self.__original_filename
+        # p = subprocess.Popen("su ", executable = main_utils.ANDROID_SHELL, shell = True, \
+        #                             stdin = subprocess.PIPE, stdout = subprocess.PIPE)
+        # p.communicate(chmodcmd + '\n')
+        # p.wait()
+        os.remove(self.__original_filename)
 
 
     def about(self):

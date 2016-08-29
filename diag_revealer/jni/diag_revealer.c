@@ -421,6 +421,9 @@ manager_start_new_log (struct LogManagerState *pstate, int fifo_fd) {
         // char tmp[4096];
         // sprintf(tmp,"su -c chmod 644 %s\n",filename);
         // system(tmp);
+        char tmp[4096];
+        sprintf(tmp,"chmod 777 %s\n",filename);
+        system(tmp);
 
 	} else {
 		return -1;

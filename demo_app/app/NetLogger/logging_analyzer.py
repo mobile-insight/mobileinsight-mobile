@@ -233,9 +233,14 @@ class LoggingAnalyzer(Analyzer):
         orig_dir_name   = os.path.dirname(self.__orig_file)
         milog_base_name = "diag_log_%s_%s_%s.mi2log" % (self.__log_timestamp, util.get_phone_info(), util.get_operator_info())
         milog_abs_name  = os.path.join(self.__log_dir, milog_base_name)
-        util.run_shell_cmd("cp %s %s" % (self.__orig_file, milog_abs_name))
-        try:
-            util.run_shell_cmd("rm %s" % self.__orig_file)
-        except:
-            pass
+        # util.run_shell_cmd("cp %s %s" % (self.__orig_file, milog_abs_name))
+        # try:
+        #     util.run_shell_cmd("rm %s" % self.__orig_file)
+        # except:
+        #     pass
+
+        ## Yuanjie: eliminate root operations
+        shutil.copyfile(self.__orig_file, milog_abs_name)
+        os.remove(self.__orig_file)
+
         return milog_abs_name
