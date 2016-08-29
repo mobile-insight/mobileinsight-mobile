@@ -271,57 +271,88 @@ class MobileInsightScreen(Screen):
 
 
     def __init_libs(self):
+
         """
-        Initialize libs required by MobileInsight
+        Initialize libs required by MobileInsight.
+        It creates sym links to libs, and chmod of critical execs
         """
+
 
         libs_path = os.path.join(main_utils.get_files_dir(), "data")
+        cmd=""
 
-        libs = ["libglib-2.0.so",
-                "libgmodule-2.0.so",
-                "libgobject-2.0.so",
-                "libgthread-2.0.so",
-                "libwireshark.so",
-                "libwiretap.so",
-                "libwsutil.so"]
-
-        cmd = "mount -o remount,rw /system; "
-
-        for lib in libs:
-            # if not os.path.isfile(os.path.join("/system/lib",lib)):
-            if True:
-                cmd = cmd + " cp " + os.path.join(libs_path, lib) + " /system/lib/; "
-                cmd = cmd + " chmod 755 " + os.path.join("/system/lib", lib) + "; "
-
-
-        # sym links for some libs
         libs_mapping = {"libwireshark.so": ["libwireshark.so.6", "libwireshark.so.6.0.1"],
                       "libwiretap.so": ["libwiretap.so.5", "libwiretap.so.5.0.1"],
                       "libwsutil.so": ["libwsutil.so.6", "libwsutil.so.6.0.0"]}
-
         for lib in libs_mapping:
             for sym_lib in libs_mapping[lib]:
-                # if not os.path.isfile("/system/lib/"+sym_lib):
+                # if not os.path.isfile(os.path.join(libs_path,sym_lib)):
                 if True:
-                   cmd = cmd + " ln -s /system/lib/" + lib + " /system/lib/" + sym_lib + "; "
-                   cmd = cmd + " chmod 755 /system/lib/" + sym_lib + "; " 
+                   cmd = cmd + " ln -s " + os.path.join(libs_path,lib) + " " + os.path.join(libs_path,sym_lib) + "; "
 
-        # print cmd  # debug mode
-
-        # bins
         exes = ["diag_revealer",
                 "android_pie_ws_dissector",
                 "android_ws_dissector"]
         for exe in exes:
-            # if not os.path.isfile(os.path.join("/system/bin",exe)):
-            if True:
-                cmd = cmd + " cp " + os.path.join(libs_path, exe) + " /system/bin/; "
-                # 0755, not 755. "0" means "+x" on Android phones
-                cmd = cmd + " chmod 0755 " + os.path.join("/system/bin/", exe) + "; "
+            cmd = cmd + " chmod 0755 " + os.path.join(libs_path,exe) + "; "
 
-        if cmd:
-            # at least one lib should be copied
-            main_utils.run_shell_cmd(cmd)
+
+        cmd = cmd + "chmod -R 755 "+libs_path
+        main_utils.run_shell_cmd(cmd)
+
+
+    # def __init_libs(self):
+    #     """
+    #     Initialize libs required by MobileInsight
+    #     """
+
+    #     libs_path = os.path.join(main_utils.get_files_dir(), "data")
+
+    #     libs = ["libglib-2.0.so",
+    #             "libgmodule-2.0.so",
+    #             "libgobject-2.0.so",
+    #             "libgthread-2.0.so",
+    #             "libwireshark.so",
+    #             "libwiretap.so",
+    #             "libwsutil.so"]
+
+    #     cmd = "mount -o remount,rw /system; "
+
+    #     for lib in libs:
+    #         # if not os.path.isfile(os.path.join("/system/lib",lib)):
+    #         if True:
+    #             cmd = cmd + " cp " + os.path.join(libs_path, lib) + " /system/lib/; "
+    #             cmd = cmd + " chmod 755 " + os.path.join("/system/lib", lib) + "; "
+
+
+    #     # sym links for some libs
+    #     libs_mapping = {"libwireshark.so": ["libwireshark.so.6", "libwireshark.so.6.0.1"],
+    #                   "libwiretap.so": ["libwiretap.so.5", "libwiretap.so.5.0.1"],
+    #                   "libwsutil.so": ["libwsutil.so.6", "libwsutil.so.6.0.0"]}
+
+    #     for lib in libs_mapping:
+    #         for sym_lib in libs_mapping[lib]:
+    #             # if not os.path.isfile("/system/lib/"+sym_lib):
+    #             if True:
+    #                cmd = cmd + " ln -s /system/lib/" + lib + " /system/lib/" + sym_lib + "; "
+    #                cmd = cmd + " chmod 755 /system/lib/" + sym_lib + "; " 
+
+    #     # print cmd  # debug mode
+
+    #     # bins
+    #     exes = ["diag_revealer",
+    #             "android_pie_ws_dissector",
+    #             "android_ws_dissector"]
+    #     for exe in exes:
+    #         # if not os.path.isfile(os.path.join("/system/bin",exe)):
+    #         if True:
+    #             cmd = cmd + " cp " + os.path.join(libs_path, exe) + " /system/bin/; "
+    #             # 0755, not 755. "0" means "+x" on Android phones
+    #             cmd = cmd + " chmod 0755 " + os.path.join("/system/bin/", exe) + "; "
+
+    #     if cmd:
+    #         # at least one lib should be copied
+    #         main_utils.run_shell_cmd(cmd)
 
     def show_log(self):
 
@@ -631,6 +662,8 @@ class MobileInsightApp(App):
             self.log_viewer_screen = LogViewerScreen(name='LogViewerScreen')
             self.manager.add_widget(self.log_viewer_screen)
         except Exception, e:
+            import traceback,crash_app
+            print str(traceback.format_exc())
             self.screen.ids.log_viewer.disabled = True
             self.screen.ids.stop_plugin.disabled = True
             self.screen.ids.run_plugin.disabled = True
