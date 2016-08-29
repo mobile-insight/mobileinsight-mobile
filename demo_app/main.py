@@ -154,6 +154,18 @@ class MobileInsightScreen(Screen):
     MAX_LINE = 30
 
     def __init__(self,name):
+        """
+        Initialization function. We will do the following task (in order):
+            1. Check if the device is rooted
+            2. Initialize necessary libs required by MobileInsight (e.g., libwireshark)
+            3. Check if Android's security policy allows MobileInsight to access diagnostic mode.
+            This is mainly caused by SELinux
+            4. Create necessary folders on SDcard (e.g., /sdcard/mobile_insight/, /sdcard/mobile_insight/log/)
+            5. Load built-in and 3rd-party plugins (located in /sdcard/mobile_insight/apps/)
+            6. Check if the diagnostic mode is enabled
+            7. Load configurations from the setting panel (configs stored in /sdcard/.mobileinsight.ini)
+        """
+        
         super(MobileInsightScreen, self).__init__()
 
         self.name = name
