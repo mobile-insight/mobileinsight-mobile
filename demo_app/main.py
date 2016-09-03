@@ -679,7 +679,7 @@ class MobileInsightApp(App):
         self.manager = ScreenManager()
         self.manager.add_widget(self.screen)
         try:
-            self.log_viewer_screen = LogViewerScreen(name='LogViewerScreen')
+            self.log_viewer_screen = LogViewerScreen(name='LogViewerScreen', screen_manager=self.manager)
             self.manager.add_widget(self.log_viewer_screen)
         except Exception, e:
             import traceback,crash_app

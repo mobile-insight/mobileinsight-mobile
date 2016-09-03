@@ -7,8 +7,12 @@ import time
 import traceback
 import logging
 import datetime as dt
+import signal
 
 from kivy.config import ConfigParser
+
+def receive_signal(signum, stack):
+    print 'Received:', signum
 
 
 def alive_worker(secs):
@@ -76,6 +80,14 @@ def setup_logger(app_name):
 if __name__ == "__main__":
 
     try:
+        # for i in [x for x in dir(signal) if x.startswith("SIG")]:
+        #     try:
+        #         signum = getattr(signal,i)
+        #         signal.signal(signum,receive_signal)
+        #     except RuntimeError,m:
+        #         print "Skipping %s"%i
+        signal.signal(signal.SIGINT,receive_signal)
+
         arg = os.getenv("PYTHON_SERVICE_ARGUMENT")  # get the argument passed
 
         tmp = arg.split(":")
@@ -121,6 +133,8 @@ if __name__ == "__main__":
         print app_name,"stops normally"
 
     except Exception, e:
+        print "Exceptions!!!"
+
         # Print traceback logs to analysis
         import traceback
         l = logging.getLogger("mobileinsight_logger")

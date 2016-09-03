@@ -155,6 +155,9 @@ class LoggingAnalyzer(Analyzer):
 
         self.add_source_callback(self._logger_filter)
 
+    def __del__(self):
+        self.log_info("__del__ is called")
+
     def _logger_filter(self, msg):
         """
         Callback to process new generated logs.
