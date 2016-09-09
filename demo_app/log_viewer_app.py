@@ -144,11 +144,16 @@ class LogViewerScreen(Screen):
             self.onReset()
 
 
-    def dismiss_open_popup(self,instance):
-    	
-        # self.open_popup.dismiss()
+    def exit_open_popup(self,instance):
         self.screen_manager.current = 'MobileInsightScreen'
         return False
+
+    def dismiss_open_popup(self):
+        
+        self.open_popup.dismiss()
+        # self.screen_manager.current = 'MobileInsightScreen'
+        return False
+
 
 
     def dismiss_filter_popup(self, *args):
@@ -170,8 +175,8 @@ class LogViewerScreen(Screen):
 
 
     def onOpen(self, *args):
-        self.open_popup = Popup(title = 'Load file', content = Open_Popup(load=self.load, cancel = self.dismiss_open_popup), auto_dismiss = True)
-        self.open_popup.bind(on_dismiss=self.dismiss_open_popup)
+        self.open_popup = Popup(title = 'Load file', content = Open_Popup(load=self.load), auto_dismiss = True)
+        # self.open_popup.bind(on_dismiss=self.exit_open_popup)
         self.open_popup.open()
 
 
