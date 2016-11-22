@@ -130,6 +130,26 @@ struct diag_dci_reg_tbl_t {
 	int token;
 } __packed;
 
+
+/* 
+ * Android 7.0: switch_logging_mode structure
+ * Reference: https://android.googlesource.com/kernel/msm.git/+/android-7.1.0_r0.3/drivers/char/diag/diagchar.h
+ */
+struct diag_logging_mode_param_t {
+	uint32_t req_mode;
+	uint32_t peripheral_mask;
+	uint8_t mode_param;
+} __packed;
+#define DIAG_CON_APSS		(0x0001)	/* Bit mask for APSS */
+#define DIAG_CON_MPSS		(0x0002)	/* Bit mask for MPSS */
+#define DIAG_CON_LPASS		(0x0004)	/* Bit mask for LPASS */
+#define DIAG_CON_WCNSS		(0x0008)	/* Bit mask for WCNSS */
+#define DIAG_CON_SENSORS	(0x0010)	/* Bit mask for Sensors */
+#define DIAG_CON_NONE		(0x0000)	/* Bit mask for No SS*/
+#define DIAG_CON_ALL		(DIAG_CON_APSS | DIAG_CON_MPSS \
+				| DIAG_CON_LPASS | DIAG_CON_WCNSS \
+				| DIAG_CON_SENSORS)
+
 /* 
  * Structures for ioctl
  * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diagchar_core.c
@@ -625,6 +645,22 @@ main (int argc, char **argv)
 		if (ret < 0) {
 			LOGD("Alternative ioctl SWITCH_LOGGING fails, with ret val = %d\n", ret);
 			perror("Alternative ioctl SWITCH_LOGGING");
+
+			/* Android 7.0 mode
+			 * Reference: https://android.googlesource.com/kernel/msm.git/+/android-7.1.0_r0.3/drivers/char/diag/diagchar_core.c
+			 */
+
+			struct diag_logging_mode_param_t new_mode;
+			new_mode.req_mode = mode;
+			new_mode.peripheral_mask = DIAG_CON_ALL;
+			new_mode.mode_param = 0;
+
+			ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *)& new_mode);
+			if (ret < 0) {
+				LOGD("Android-7.0 ioctl SWITCH_LOGGING fails, with ret val = %d\n", ret);
+				perror("Alternative ioctl SWITCH_LOGGING");
+			}	
+
 		}
 
 	}
