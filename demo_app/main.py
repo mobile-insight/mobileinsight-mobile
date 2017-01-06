@@ -285,7 +285,7 @@ class MobileInsightScreen(Screen):
         if not os.path.exists(diag_port):
             return False
         else:
-            main_utils.run_shell_cmd("chmod 755 /dev/diag")
+            main_utils.run_shell_cmd("chmod 777 /dev/diag")
             return True
 
 
@@ -458,7 +458,7 @@ class MobileInsightScreen(Screen):
         for pid in pids:
             try:
                 cmdline = open(os.path.join("/proc", pid, "cmdline"), "rb").read()
-                if cmdline.startswith("diag_mdlog") or cmdline.startswith("/system/bin/diag_revealer"):
+                if cmdline.startswith("diag_mdlog") or cmdline.startswith("diag_revealer"):
                     diag_procs.append(int(pid))
             except IOError:     # proc has been terminated
                 continue
