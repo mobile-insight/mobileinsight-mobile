@@ -362,12 +362,20 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 				LOGE("write_commands error (len=%d, offset=%d): %s\n", len, offset, strerror(errno));
 				return -1;
 			}
+			/*
+			 * Read responses after writting each command.
+			 * NOTE: This process is necessary for two reasons:
+			 *  (1) Ensure every config commands succeeds (otherwise read() will be blocked)
+			 *  (2) Clean up the buffer, thus avoiding pollution of later real cellular logs
+			 */
 			int read_len = read(fd, buf_read, sizeof(buf_read));
 			if (read_len < 0) {
 				LOGE("write_commands read error: %s\n", strerror(errno));
 				return -1;
 			} else {
-				// LOGD("Reading %d bytes of resp\n", read_len);
+				LOGD("Reading %d bytes of resp\n", read_len);
+				// LOGD("write_commands responses\n");
+				// print_hex(buf_read, read_len);
 			}
 		}
 		i += len;
@@ -763,7 +771,8 @@ main (int argc, char **argv)
 					fifo_msg_len = (short) msg_len + 8;
 					ret_err = write(fifo_fd, &fifo_msg_len, sizeof(short));
 					if(ret_err<0){
-						LOGI("Pipe closed, diag_revealer will exit");
+						// LOGI("Pipe closed, diag_revealer will exit");
+						LOGI("Pipe error (msg_len): %s", strerror(errno));
 						close(fd);
 						return -1;
 					}
@@ -771,7 +780,8 @@ main (int argc, char **argv)
 					// Write timestamp of sending payload to pipe
 					ret_err = write(fifo_fd, &ts, sizeof(double));
 					if(ret_err<0){
-						LOGI("Pipe closed, diag_revealer will exit");
+						// LOGI("Pipe closed, diag_revealer will exit");
+						LOGI("Pipe error (timestamp): %s", strerror(errno));
 						close(fd);
 						return -1;
 					}
@@ -779,7 +789,8 @@ main (int argc, char **argv)
 					// Write payload to pipe
 					ret_err = write(fifo_fd, buf_read + offset + 4, msg_len);
 					if(ret_err<0){
-						LOGI("Pipe closed, diag_revealer will exit");
+						LOGI("Pipe error (payload): %s", strerror(errno));
+						// LOGI("Pipe closed, diag_revealer will exit");
 						close(fd);
 						return -1;
 					}
