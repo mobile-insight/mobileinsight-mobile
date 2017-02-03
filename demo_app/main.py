@@ -256,21 +256,26 @@ class MobileInsightScreen(Screen):
 
         cmd = "setenforce 0; "
 
+        cmd = cmd + "supolicy --live \"allow init logd dir getattr\";"
+
 
         # # Depreciated supolicies. Still keep them for backup purpose
-        # cmd = cmd + "supolicy --live \"allow init init process execmem\";"
-        # cmd = cmd + "supolicy --live \"allow atfwd diag_device chr_file {read write open ioctl}\";"
-        # cmd = cmd + "supolicy --live \"allow init properties_device file execute\";"
-        # cmd = cmd + "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
+        cmd = cmd + "supolicy --live \"allow init init process execmem\";"
+        cmd = cmd + "supolicy --live \"allow atfwd diag_device chr_file {read write open ioctl}\";"
+        cmd = cmd + "supolicy --live \"allow init properties_device file execute\";"
+        cmd = cmd + "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
 
         # # Suspicious supolicies: MI works without them, but it seems that they SHOULD be enabled...
 
         # # mi2log permission denied (logcat | grep denied), but no impact on log collection/analysis
-        # cmd = cmd + "supolicy --live \"allow untrusted_app app_data_file file {rename}\";" 
+        cmd = cmd + "supolicy --live \"allow untrusted_app app_data_file file {rename}\";" 
 
         # # Suspicious: why still works after disabling this command? Won't FIFO fail?
-        # cmd = cmd + "supolicy --live \"allow init app_data_file fifo_file {write open getattr}\";"
-        # cmd = cmd + "supolicy --live \"allow init diag_device chr_file {getattr write ioctl}\"; "
+        cmd = cmd + "supolicy --live \"allow init app_data_file fifo_file {write open getattr}\";"
+        cmd = cmd + "supolicy --live \"allow init diag_device chr_file {getattr write ioctl}\"; "
+
+        # Nexus 6 only
+        cmd = cmd + "supolicy --live \"allow untrusted_app diag_device chr_file {write open getattr}\";"
 
 
         
@@ -285,7 +290,7 @@ class MobileInsightScreen(Screen):
         if not os.path.exists(diag_port):
             return False
         else:
-            main_utils.run_shell_cmd("chmod 755 /dev/diag")
+            main_utils.run_shell_cmd("chmod 777 /dev/diag")
             return True
 
 
@@ -452,13 +457,15 @@ class MobileInsightScreen(Screen):
     def stop_collection(self):
         self.collecting = False
 
-        # Find diag_mdlog process
+        # Find diag_revealer process
+        # FIXME: No longer work for 7.0: os.listdir() only returns current process
         diag_procs = []
         pids = [pid for pid in os.listdir("/proc") if pid.isdigit()]
         for pid in pids:
             try:
                 cmdline = open(os.path.join("/proc", pid, "cmdline"), "rb").read()
-                if cmdline.startswith("diag_mdlog") or cmdline.startswith("/system/bin/diag_revealer"):
+                # if cmdline.startswith("diag_mdlog") or cmdline.startswith("diag_revealer"):
+                if cmdline.find("diag_revealer")!=-1 or cmdline.find("diag_mdlog")!=-1:
                     diag_procs.append(int(pid))
             except IOError:     # proc has been terminated
                 continue

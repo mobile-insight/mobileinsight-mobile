@@ -27,6 +27,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
 // #include <linux/diagchar.h>
@@ -53,6 +54,17 @@
 #define FIFO_MSG_TYPE_LOG 1
 #define FIFO_MSG_TYPE_START_LOG_FILE 2
 #define FIFO_MSG_TYPE_END_LOG_FILE 3
+
+/*
+ * MDM VS. MSM
+ * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/include/linux/diagchar.h
+ */
+enum remote_procs {
+	MSM = 0,
+	MDM = 1,
+	MDM2 = 2,
+	QSC = 5,
+};
 
 /* Raw binary data type
  * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/include/linux/diagchar.h
@@ -208,6 +220,7 @@ struct diag_dci_client_tbl {
 char buf_read[BUFFER_SIZE] = {};	// From Haotian: improve reliability
 // int mode = CALLBACK_MODE;	// Logging mode
 static int mode = MEMORY_DEVICE_MODE;	// logging mode
+static uint16_t remote_dev = 0; // MSM (0) or not
 int client_id;	// DCI client ID (allocated by diag driver)
 int fd; //file descriptor to /dev/diag
 
@@ -309,12 +322,26 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 {
 	size_t i = 0;
 	char *p = pbuf_write->p;
+
+	//Buffer to mask command
 	char *send_buf = (char *) malloc(pbuf_write->len + 10);
 	if (send_buf == NULL) {
 		perror("Error");
 		return -1;
 	}
+
+    // Metadata for each mask command
+	size_t offset = remote_dev ? 8 : 4; //offset of the metadata (4 bytes for MSM, 8 bytes for MDM)
+	LOGD("write_commands: offset=%d remote_dev=%d\n",offset,remote_dev);
 	*((int *)send_buf) = htole32(USER_SPACE_DATA_TYPE);
+	if(remote_dev){
+		/*
+	 	 * MDM device: should let diag driver know it
+	 	 * Reference: diag_get_remote and diagchar_write
+	 	 * in https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diagchar_core.c
+	 	 */
+		*((int *)send_buf+1) =  - MDM;
+	}
 
 	while (i < pbuf_write->len) {
 		size_t len = 0;
@@ -323,22 +350,32 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 			break;
 		len++;
 		if (len >= 3) {
-			memcpy(send_buf + 4, p + i, len);
+			// memcpy(send_buf + 4, p + i, len);
+			memcpy(send_buf + offset, p + i, len);
 			// LOGD("Writing %d bytes of data\n", len + 4);
 			// print_hex(send_buf, len + 4);
 			fflush(stdout);
-			int ret = write(fd, (const void *) send_buf, len + 4);
+			// int ret = write(fd, (const void *) send_buf, len + 4);
+			int ret = write(fd, (const void *) send_buf, len + offset);
 			// LOGD("write_commands: ret=%d\n",ret);
 			if (ret < 0) {
-				perror("cmd write error");
+				LOGE("write_commands error (len=%d, offset=%d): %s\n", len, offset, strerror(errno));
 				return -1;
 			}
+			/*
+			 * Read responses after writting each command.
+			 * NOTE: This process is necessary for two reasons:
+			 *  (1) Ensure every config commands succeeds (otherwise read() will be blocked)
+			 *  (2) Clean up the buffer, thus avoiding pollution of later real cellular logs
+			 */
 			int read_len = read(fd, buf_read, sizeof(buf_read));
 			if (read_len < 0) {
-				perror("cmd read error");
+				LOGE("write_commands read error: %s\n", strerror(errno));
 				return -1;
 			} else {
-				// LOGD("Reading %d bytes of resp\n", read_len);
+				LOGD("Reading %d bytes of resp\n", read_len);
+				// LOGD("write_commands responses\n");
+				// print_hex(buf_read, read_len);
 			}
 		}
 		i += len;
@@ -508,14 +545,13 @@ main (int argc, char **argv)
      * 2. Register a DCI client
      * 3. Send DCI control command
      */
-    uint16_t remote_dev = 0;
     ret = ioctl(fd, DIAG_IOCTL_REMOTE_DEV, (char *) &remote_dev); 
     if (ret < 0){
 	        printf("ioctl DIAG_IOCTL_REMOTE_DEV fails, with ret val = %d\n", ret);
 	    	perror("ioctl DIAG_IOCTL_REMOTE_DEV");
 	} 
 	else{
-		// printf("DIAG_IOCTL_REMOTE_DEV remote_dev=%d\n",remote_dev);
+		LOGD("DIAG_IOCTL_REMOTE_DEV remote_dev=%d\n",remote_dev);
 	}
 
 	// Register a DCI client
@@ -577,18 +613,6 @@ main (int argc, char **argv)
     //     printf("ioctl DIAG_IOCTL_DCI_CLEAR_EVENTS fails, with ret val = %d\n", ret);
     // 	perror("ioctl DIAG_IOCTL_DCI_CLEAR_EVENTS");
     // }
-
-    /*
-     * Drain all peripheral buffers. 
-     * NOTE: on different phone models, the number of avaialble peripheral buffers may differ.
-     * So the following code may not always succeed (e.g., on Nexus 6P, only peripheral 0 and 1 will succeed.)
-     */
-    remote_dev = 0;
-    ret = ioctl(fd, DIAG_IOCTL_PERIPHERAL_BUF_DRAIN, (char *) &remote_dev);  
-    if (ret < 0){
-        printf("ioctl DIAG_IOCTL_PERIPHERAL_BUF_DRAIN fails, with ret val = %d\n", ret);
-    	perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_DRAIN");
-    }
 
     /*
      * EXPERIMENTAL (NEXUS 6 ONLY): configure the buffering mode to circular
@@ -747,7 +771,8 @@ main (int argc, char **argv)
 					fifo_msg_len = (short) msg_len + 8;
 					ret_err = write(fifo_fd, &fifo_msg_len, sizeof(short));
 					if(ret_err<0){
-						LOGI("Pipe closed, diag_revealer will exit");
+						// LOGI("Pipe closed, diag_revealer will exit");
+						LOGI("Pipe error (msg_len): %s", strerror(errno));
 						close(fd);
 						return -1;
 					}
@@ -755,7 +780,8 @@ main (int argc, char **argv)
 					// Write timestamp of sending payload to pipe
 					ret_err = write(fifo_fd, &ts, sizeof(double));
 					if(ret_err<0){
-						LOGI("Pipe closed, diag_revealer will exit");
+						// LOGI("Pipe closed, diag_revealer will exit");
+						LOGI("Pipe error (timestamp): %s", strerror(errno));
 						close(fd);
 						return -1;
 					}
@@ -763,7 +789,8 @@ main (int argc, char **argv)
 					// Write payload to pipe
 					ret_err = write(fifo_fd, buf_read + offset + 4, msg_len);
 					if(ret_err<0){
-						LOGI("Pipe closed, diag_revealer will exit");
+						LOGI("Pipe error (payload): %s", strerror(errno));
+						// LOGI("Pipe closed, diag_revealer will exit");
 						close(fd);
 						return -1;
 					}

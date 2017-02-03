@@ -57,17 +57,10 @@ umts     = [
             ]
 
 try:
-    cache_directory  = mi2app_utils.get_cache_dir()
-    files_directory  = mi2app_utils.get_files_dir()
-    plugin_directory = mi2app_utils.get_mobile_insight_plugin_path()
-    log_directory    = os.path.join(cache_directory, "mi2log")
-    app_directory    = os.path.join(plugin_directory, "NetLogger")
-    fifo_path        = os.path.join(cache_directory, "diag_revealer_fifo")
-    cfg_path         = os.path.join(app_directory, cfg_file)
-
     src = OnlineMonitor()
     src.set_skip_decoding(False)
-    src.set_log_directory(log_directory)
+    log_dir = os.path.join(mi2app_utils.get_cache_dir(), "mi2log")
+    src.set_log_directory(log_dir)
     src.set_log_cut_size(float(plugin_config['mi_log_size']) / 1000.0)
 
     if plugin_config["log_type"] == "LTE Control Plane":
@@ -85,6 +78,7 @@ try:
     elif plugin_config["log_type"] == "All":
         src.enable_log(lte_lvl1 + lte_lvl2 + lte_lvl3 + wcdma + umts)
     elif plugin_config["log_type"] == "Read Config":
+        cfg_path = os.path.join(mi2app_utils.get_mobile_insight_cfg_path(), cfg_file)
         try:
             cfg = open(cfg_path, 'r')
             lines = cfg.read().splitlines()
@@ -96,11 +90,10 @@ try:
                         src.enable_log(line)
             cfg.close()
         except IOError:
-            # TODO: Use log formatter
-            src.log_warning("MobileInsight (NetLogger): config file open failed, use default LTE/3G Control Plane logs")
             src.enable_log(lte_lvl1 + wcdma + umts)
+            src.log_warning("MobileInsight (NetLogger): config file open failed, use default LTE/3G Control Plane logs")
+            shutil.copyfile(os.path.join(mi2app_utils.get_files_dir(), "app/NetLogger/%s" % cfg_file), cfg_path)
             src.log_info("MobileInsight (NetLogger): config file copied to %s, you can edit it for collection next time" % cfg_path)
-            shutil.copyfile(os.path.join(app_directory, cfg_file), cfg_path)
 
     loggingAnalyzer = LoggingAnalyzer(plugin_config)
     loggingAnalyzer.set_source(src)
