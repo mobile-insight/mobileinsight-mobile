@@ -315,6 +315,7 @@ class MobileInsightScreen(Screen):
                    cmd = cmd + " ln -s " + os.path.join(libs_path,lib) + " " + os.path.join(libs_path,sym_lib) + "; "
 
         exes = ["diag_revealer",
+                "diag_revealer_mtk",
                 "android_pie_ws_dissector",
                 "android_ws_dissector"]
         for exe in exes:
