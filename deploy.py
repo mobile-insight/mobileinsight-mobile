@@ -13,7 +13,7 @@ Version : 2.1 -- 2015/05/16 reformat building commands
 '''
 
 import os, sys, commands, yaml
-
+import subprocess
 
 def run_config():
     # commands.getstatusoutput('wget --no-check-certificate https://wing1.cs.ucla.edu/gitlab/zyuan/mobileInsight-libs/repository/archive.zip\?ref\=master master.zip')
@@ -180,8 +180,10 @@ if __name__ == '__main__':
             pass
     elif arg == 'install':
         try:
-            os.system('adb install -r {app}-{ver}.apk'.format(app=cfg['app_name'], ver=cfg['app_version']))
+            # os.system('adb install -r {app}-{ver}.apk'.format(app=cfg['app_name'], ver=cfg['app_version']))
+            subprocess.call(['adb install -r {app}-{ver}.apk'.format(app=cfg['app_name'], ver=cfg['app_version'])])
         except:
+            print '2'
             os.system('adb install -r {app}-{ver}-debug.apk'.format(app=cfg['app_name'], ver=cfg['app_version']))
     elif arg == 'update':
         try:
