@@ -35,6 +35,7 @@ import stat
 import json
 
 import main_utils
+import mi2app_utils
 from log_viewer_app import LogViewerScreen
 
 #Load main UI
@@ -540,7 +541,8 @@ class MobileInsightScreen(Screen):
         self.__log_timestamp     = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
         milog_basename = "diag_log_%s_%s_%s.mi2log" % (self.__log_timestamp, self.__phone_info, main_utils.get_operator_info())
         milog_absname  = os.path.join(self.__logdir, milog_basename)
-        shutil.copyfile(self.__original_filename, milog_absname)
+        mi2app_utils.run_shell_cmd("cp %s %s" % (self.__original_filename, milog_absname))
+        # shutil.copyfile(self.__original_filename, milog_absname)
         # chmodcmd = "rm -f " + self.__original_filename
         # p = subprocess.Popen("su ", executable = main_utils.ANDROID_SHELL, shell = True, \
         #                             stdin = subprocess.PIPE, stdout = subprocess.PIPE)
