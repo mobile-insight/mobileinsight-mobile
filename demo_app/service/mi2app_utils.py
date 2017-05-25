@@ -12,26 +12,31 @@ import re
 import jnius
 from jnius import autoclass
 
-ANDROID_SHELL    = "/system/bin/sh"
+ANDROID_SHELL = "/system/bin/sh"
 
 # This one works with Pygame, current bootstrap
-PythonService    = autoclass('org.renpy.android.PythonService')
+PythonService = autoclass('org.renpy.android.PythonService')
 
 # This one works with SDL2
 # PythonActivity = autoclass('org.kivy.android.PythonActivity')
 # PythonService  = autoclass('org.kivy.android.PythonService')
 
-pyService        = PythonService.mService
-androidOsBuild   = autoclass("android.os.Build")
-Context          = autoclass('android.content.Context')
-File             = autoclass("java.io.File")
+pyService = PythonService.mService
+androidOsBuild = autoclass("android.os.Build")
+Context = autoclass('android.content.Context')
+File = autoclass("java.io.File")
 FileOutputStream = autoclass('java.io.FileOutputStream')
-ConnManager      = autoclass('android.net.ConnectivityManager')
-mWifiManager     = pyService.getSystemService(Context.WIFI_SERVICE);
+ConnManager = autoclass('android.net.ConnectivityManager')
+mWifiManager = pyService.getSystemService(Context.WIFI_SERVICE)
 
 
-def run_shell_cmd(cmd, wait = False):
-    p = sp.Popen("su", executable = ANDROID_SHELL, shell = True, stdin = sp.PIPE, stdout = sp.PIPE)
+def run_shell_cmd(cmd, wait=False):
+    p = sp.Popen(
+        "su",
+        executable=ANDROID_SHELL,
+        shell=True,
+        stdin=sp.PIPE,
+        stdout=sp.PIPE)
     res, err = p.communicate(cmd + '\n')
     if wait:
         p.wait()
@@ -39,43 +44,52 @@ def run_shell_cmd(cmd, wait = False):
     else:
         return res
 
+
 def get_service_context():
     return pyService
+
 
 def get_cache_dir():
     return str(pyService.getCacheDir().getAbsolutePath())
 
+
 def get_files_dir():
     return str(pyService.getFilesDir().getAbsolutePath())
+
 
 def get_phone_manufacturer():
     return androidOsBuild.MANUFACTURER
 
+
 def get_phone_model():
     return androidOsBuild.MODEL
 
+
 def get_phone_info():
-    cmd          = "getprop ro.product.model; getprop ro.product.manufacturer;"
-    res          = run_shell_cmd(cmd).split('\n')
-    model        = res[0].replace(" ", "")
+    cmd = "getprop ro.product.model; getprop ro.product.manufacturer;"
+    res = run_shell_cmd(cmd).split('\n')
+    model = res[0].replace(" ", "")
     manufacturer = res[1].replace(" ", "")
-    phone_info   = get_device_id() + '_' + manufacturer + '-' + model
+    phone_info = get_device_id() + '_' + manufacturer + '-' + model
     return phone_info
 
+
 def get_operator_info():
-    cmd          = "getprop gsm.operator.alpha"
-    operator     = run_shell_cmd(cmd).split('\n')[0].replace(" ", "")
+    cmd = "getprop gsm.operator.alpha"
+    operator = run_shell_cmd(cmd).split('\n')[0].replace(" ", "")
     if operator == '' or operator is None:
         operator = 'null'
     return operator
 
+
 def get_device_id():
-    cmd          = "service call iphonesubinfo 1"
-    out          = run_shell_cmd(cmd)
-    tup          = re.findall("\'.+\'", out)
-    tupnum       = re.findall("\d+", "".join(tup))
-    deviceId     = "".join(tupnum)
+    cmd = "service call iphonesubinfo 1"
+    out = run_shell_cmd(cmd)
+    tup = re.findall("\'.+\'", out)
+    tupnum = re.findall("\d+", "".join(tup))
+    deviceId = "".join(tupnum)
     return deviceId
+
 
 def get_mobile_insight_path():
     """
@@ -91,6 +105,7 @@ def get_mobile_insight_path():
     mobile_insight_path = os.path.join(sdcard_path, "mobile_insight")
     return mobile_insight_path
 
+
 def get_mobile_insight_log_path():
     """
     Return the log path of MobileInsight, or None if not accessible
@@ -103,6 +118,7 @@ def get_mobile_insight_log_path():
 
     return os.path.join(mobile_insight_path, "log")
 
+
 def get_mobile_insight_analysis_path():
     """
     Return the analysis result path of MobileInsight, or None if not accessible
@@ -113,7 +129,8 @@ def get_mobile_insight_analysis_path():
     if not mobile_insight_path:
         return None
 
-    return os.path.join(mobile_insight_path,"analysis")
+    return os.path.join(mobile_insight_path, "analysis")
+
 
 def get_mobile_insight_log_decoded_path():
     """
@@ -127,6 +144,7 @@ def get_mobile_insight_log_decoded_path():
 
     return os.path.join(log_path, "decoded")
 
+
 def get_mobile_insight_log_uploaded_path():
     """
     Return the uploaded log path of MobileInsight, or None if not accessible
@@ -138,6 +156,7 @@ def get_mobile_insight_log_uploaded_path():
         return None
 
     return os.path.join(log_path, "uploaded")
+
 
 def get_mobile_insight_cfg_path():
     """
@@ -151,6 +170,7 @@ def get_mobile_insight_cfg_path():
 
     return os.path.join(mobile_insight_path, "cfg")
 
+
 def get_mobile_insight_db_path():
     """
     Return the database path of MobileInsight, or None if not accessible
@@ -162,6 +182,7 @@ def get_mobile_insight_db_path():
         return None
 
     return os.path.join(mobile_insight_path, "cfg")
+
 
 def get_mobile_insight_plugin_path():
     """
@@ -175,6 +196,7 @@ def get_mobile_insight_plugin_path():
 
     return os.path.join(mobile_insight_path, "apps")
 
+
 def get_mobile_insight_crash_log_path():
     """
     Return the plugin path of MobileInsight, or None if not accessible
@@ -187,12 +209,13 @@ def get_mobile_insight_crash_log_path():
 
     return os.path.join(mobile_insight_path, "crash_logs")
 
+
 def get_wifi_status():
     return mWifiManager.isWifiEnabled()
+
 
 def detach_thread():
     try:
         jnius.detach()
-    except:
+    except BaseException:
         pass
-

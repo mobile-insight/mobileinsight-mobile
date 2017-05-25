@@ -18,10 +18,9 @@ import os
 import threading
 import re
 import datetime
-
 import main_utils
 
-__all__=["check_update"]
+__all__ = ["check_update"]
 
 Builder.load_string('''
 <ConfirmPopup>:
@@ -42,7 +41,8 @@ Builder.load_string('''
 ''')
 
 
-cur_activity = cast("android.app.Activity", autoclass("org.renpy.android.PythonActivity").mActivity)
+cur_activity = cast("android.app.Activity", autoclass(
+    "org.renpy.android.PythonActivity").mActivity)
 apk_url = ""
 popup = None
 
@@ -50,22 +50,27 @@ popup = None
 class ConfirmPopup(GridLayout):
     text = StringProperty()
 
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         self.register_event_type('on_answer')
-        super(ConfirmPopup,self).__init__(**kwargs)
+        super(ConfirmPopup, self).__init__(**kwargs)
 
     def on_answer(self, *args):
         pass
 
+
 def get_cache_dir():
     return str(cur_activity.getCacheDir().getAbsolutePath())
+
 
 def get_cur_version():
     """
     Get current apk version string
     """
     pkg_name = cur_activity.getPackageName()
-    return str(cur_activity.getPackageManager().getPackageInfo(pkg_name, 0).versionName)
+    return str(
+        cur_activity.getPackageManager().getPackageInfo(
+            pkg_name, 0).versionName)
+
 
 def cmp_version(version1, version2):
     '''
@@ -78,7 +83,7 @@ def cmp_version(version1, version2):
     :returns: 0 if version1==version2, 1 if version1>version2, -1 if version1<version2
     '''
     def normalize(v):
-        return [int(x) for x in re.sub(r'(\.0+)*$','', v).split(".")]
+        return [int(x) for x in re.sub(r'(\.0+)*$', '', v).split(".")]
     return cmp(normalize(version1), normalize(version2))
 
 
@@ -92,8 +97,13 @@ def install_apk(apk_path):
     intent = IntentClass()
     intent.setAction(IntentClass.ACTION_VIEW)
     # intent.setDataAndType(Uri.fromFile(f), "application/vnd.android.package-archive")
-    intent.setDataAndType(Uri.parse("file://" + f.toString()), "application/vnd.android.package-archive")
+    intent.setDataAndType(
+        Uri.parse(
+            "file://" +
+            f.toString()),
+        "application/vnd.android.package-archive")
     cur_activity.startActivity(intent)
+
 
 def download_thread(apk_url, apk_path):
     try:
@@ -102,11 +112,14 @@ def download_thread(apk_url, apk_path):
     finally:
         main_utils.detach_thread()
 
+
 def download_apk(instance, answer):
     global popup
-    if answer=="yes":
+    if answer == "yes":
         global apk_url
-        apk_path = os.path.join(main_utils.get_mobile_insight_path(),"update.apk")
+        apk_path = os.path.join(
+            main_utils.get_mobile_insight_path(),
+            "update.apk")
         if os.path.isfile(apk_path):
             os.remove(apk_path)
 
@@ -115,12 +128,13 @@ def download_apk(instance, answer):
 
         progress_bar = ProgressBar()
         progress_bar.value = 1
+
         def download_progress(instance):
             def next_update(dt):
-                if progress_bar.value>=100:
+                if progress_bar.value >= 100:
                     return False
                 progress_bar.value += 1
-            Clock.schedule_interval(next_update, 1/25)
+            Clock.schedule_interval(next_update, 1 / 25)
 
         progress_popup = Popup(
             title='Downloading MobileInsight...',
@@ -131,6 +145,7 @@ def download_apk(instance, answer):
         progress_popup.open()
 
     popup.dismiss()
+
 
 def check_update():
     """
@@ -146,8 +161,8 @@ def check_update():
 
     # retrieve latest metadata
     try:
-        urllib.urlretrieve (update_meta_url, update_meta_path)
-    except Exception, e:
+        urllib.urlretrieve(update_meta_url, update_meta_path)
+    except Exception as e:
         print "Connection failure: stop checking update"
         return
 
@@ -163,17 +178,17 @@ def check_update():
     cur_version = get_cur_version()
     apk_url = update_meta["URL"]
 
-    if cmp_version(cur_version,update_meta['Version'])<0:
+    if cmp_version(cur_version, update_meta['Version']) < 0:
 
         global popup
 
-        content = ConfirmPopup(text='New updates in v'+update_meta["Version"]
-                                   +':\n '+update_meta["Description"]
-                                   +'Would you like to update?')
+        content = ConfirmPopup(text='New updates in v' + update_meta["Version"]
+                               + ':\n ' + update_meta["Description"]
+                               + 'Would you like to update?')
         content.bind(on_answer=download_apk)
         popup = Popup(title='New update is available',
                             content=content,
                             size_hint=(None, None),
-                            size=(1000,800),
-                            auto_dismiss= False)
+                            size=(1000, 800),
+                            auto_dismiss=False)
         popup.open()

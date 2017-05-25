@@ -19,42 +19,42 @@ from logging_analyzer import LoggingAnalyzer
 cfg_file = "netlogger.cfg"
 
 lte_lvl1 = [
-            'LTE_RRC_OTA_Packet',
-            'LTE_RRC_Serv_Cell_Info',
-            'LTE_RRC_MIB_Packet',
-            'LTE_RRC_MIB_Message_Log_Packet',
-            'LTE_NAS_ESM_State',
-            'LTE_NAS_ESM_OTA_Incoming_Packet',
-            'LTE_NAS_ESM_OTA_Outgoing_Packet',
-            'LTE_NAS_EMM_State',
-            'LTE_NAS_EMM_OTA_Incoming_Packet',
-            'LTE_NAS_EMM_OTA_Outgoing_Packet',
-            ]
+    'LTE_RRC_OTA_Packet',
+    'LTE_RRC_Serv_Cell_Info',
+    'LTE_RRC_MIB_Packet',
+    'LTE_RRC_MIB_Message_Log_Packet',
+    'LTE_NAS_ESM_State',
+    'LTE_NAS_ESM_OTA_Incoming_Packet',
+    'LTE_NAS_ESM_OTA_Outgoing_Packet',
+    'LTE_NAS_EMM_State',
+    'LTE_NAS_EMM_OTA_Incoming_Packet',
+    'LTE_NAS_EMM_OTA_Outgoing_Packet',
+]
 lte_lvl2 = [
-            'LTE_RLC_UL_Config_Log_Packet',
-            'LTE_RLC_DL_Config_Log_Packet',
-            'LTE_RLC_UL_AM_All_PDU',
-            'LTE_RLC_DL_AM_All_PDU',
-            'LTE_MAC_UL_Transport_Block',
-            'LTE_MAC_DL_Transport_Block',
-            ]
+    'LTE_RLC_UL_Config_Log_Packet',
+    'LTE_RLC_DL_Config_Log_Packet',
+    'LTE_RLC_UL_AM_All_PDU',
+    'LTE_RLC_DL_AM_All_PDU',
+    'LTE_MAC_UL_Transport_Block',
+    'LTE_MAC_DL_Transport_Block',
+]
 lte_lvl3 = [
-            'LTE_PHY_PDSCH_Packet',
-            # 'LTE_PHY_Serv_Cell_Measurement',
-            'LTE_PHY_Connected_Mode_Intra_Freq_Meas',
-            'LTE_PHY_Connected_Mode_Neighbor_Measurement',
-            'LTE_PHY_Inter_RAT_Measurement'
-            ]
-wcdma    = [
-            'WCDMA_RRC_OTA_Packet',
-            'WCDMA_RRC_Serv_Cell_Info',
-            ]
-umts     = [
-            'UMTS_NAS_OTA_Packet',
-            'UMTS_NAS_GMM_State',
-            'UMTS_NAS_MM_State',
-            'UMTS_NAS_MM_REG_State',
-            ]
+    'LTE_PHY_PDSCH_Packet',
+    # 'LTE_PHY_Serv_Cell_Measurement',
+    'LTE_PHY_Connected_Mode_Intra_Freq_Meas',
+    'LTE_PHY_Connected_Mode_Neighbor_Measurement',
+    'LTE_PHY_Inter_RAT_Measurement'
+]
+wcdma = [
+    'WCDMA_RRC_OTA_Packet',
+    'WCDMA_RRC_Serv_Cell_Info',
+]
+umts = [
+    'UMTS_NAS_OTA_Packet',
+    'UMTS_NAS_GMM_State',
+    'UMTS_NAS_MM_State',
+    'UMTS_NAS_MM_REG_State',
+]
 
 try:
     src = OnlineMonitor()
@@ -78,7 +78,8 @@ try:
     elif plugin_config["log_type"] == "All":
         src.enable_log(lte_lvl1 + lte_lvl2 + lte_lvl3 + wcdma + umts)
     elif plugin_config["log_type"] == "Read Config":
-        cfg_path = os.path.join(mi2app_utils.get_mobile_insight_cfg_path(), cfg_file)
+        cfg_path = os.path.join(
+            mi2app_utils.get_mobile_insight_cfg_path(), cfg_file)
         try:
             cfg = open(cfg_path, 'r')
             lines = cfg.read().splitlines()
@@ -91,16 +92,24 @@ try:
             cfg.close()
         except IOError:
             src.enable_log(lte_lvl1 + wcdma + umts)
-            src.log_warning("MobileInsight (NetLogger): config file open failed, use default LTE/3G Control Plane logs")
-            shutil.copyfile(os.path.join(mi2app_utils.get_files_dir(), "app/NetLogger/%s" % cfg_file), cfg_path)
-            src.log_info("MobileInsight (NetLogger): config file copied to %s, you can edit it for collection next time" % cfg_path)
+            src.log_warning(
+                "MobileInsight (NetLogger): config file open failed, use default LTE/3G Control Plane logs")
+            shutil.copyfile(
+                os.path.join(
+                    mi2app_utils.get_files_dir(),
+                    "app/NetLogger/%s" %
+                    cfg_file),
+                cfg_path)
+            src.log_info(
+                "MobileInsight (NetLogger): config file copied to %s, you can edit it for collection next time" %
+                cfg_path)
 
     loggingAnalyzer = LoggingAnalyzer(plugin_config)
     loggingAnalyzer.set_source(src)
 
     src.run()
 
-except:
+except BaseException:
     src.log_error(traceback.format_exc())
 
 finally:

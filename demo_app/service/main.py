@@ -11,6 +11,7 @@ import signal
 
 from kivy.config import ConfigParser
 
+
 def receive_signal(signum, stack):
     print 'Received:', signum
 
@@ -22,8 +23,10 @@ def alive_worker(secs):
     while True:
         time.sleep(secs)
 
+
 class MyFormatter(logging.Formatter):
-    converter=dt.datetime.fromtimestamp
+    converter = dt.datetime.fromtimestamp
+
     def formatTime(self, record, datefmt=None):
         ct = self.converter(record.created)
         if datefmt:
@@ -33,6 +36,7 @@ class MyFormatter(logging.Formatter):
             s = "%s,%03d" % (t, record.msecs)
         return s
 
+
 def setup_logger(app_name):
     '''Setup the analyzer logger.
 
@@ -40,7 +44,7 @@ def setup_logger(app_name):
 
     :param level: the loggoing level. The default value is logging.INFO.
     '''
-    level=logging.INFO
+    level = logging.INFO
 
     config = ConfigParser()
     config.read('/sdcard/.mobileinsight.ini')
@@ -57,10 +61,11 @@ def setup_logger(app_name):
         elif level_config == "critical":
             level = logging.CRITICAL
 
-
     l = logging.getLogger("mobileinsight_logger")
-    if len(l.handlers)<1:
-        formatter = MyFormatter('%(asctime)s %(message)s',datefmt='%Y-%m-%d,%H:%M:%S.%f')
+    if len(l.handlers) < 1:
+        formatter = MyFormatter(
+            '%(asctime)s %(message)s',
+            datefmt='%Y-%m-%d,%H:%M:%S.%f')
         # formatter = MyFormatter('%(message)s')
         streamHandler = logging.StreamHandler()
         streamHandler.setFormatter(formatter)
@@ -69,13 +74,15 @@ def setup_logger(app_name):
         l.addHandler(streamHandler)
         l.propagate = False
 
-
-        log_file = os.path.join(mi2app_utils.get_mobile_insight_analysis_path(),app_name+"_log.txt")
+        log_file = os.path.join(
+            mi2app_utils.get_mobile_insight_analysis_path(),
+            app_name + "_log.txt")
 
         fileHandler = logging.FileHandler(log_file, mode='w')
         fileHandler.setFormatter(formatter)
         l.addHandler(fileHandler)
         l.disabled = False
+
 
 if __name__ == "__main__":
 
@@ -86,25 +93,25 @@ if __name__ == "__main__":
         #         signal.signal(signum,receive_signal)
         #     except RuntimeError,m:
         #         print "Skipping %s"%i
-        signal.signal(signal.SIGINT,receive_signal)
+        signal.signal(signal.SIGINT, receive_signal)
 
         arg = os.getenv("PYTHON_SERVICE_ARGUMENT")  # get the argument passed
 
         tmp = arg.split(":")
-        if len(tmp)<2:
-            raise AssertionError("Error: incorrect service path:"+arg)
+        if len(tmp) < 2:
+            raise AssertionError("Error: incorrect service path:" + arg)
         app_name = tmp[0]
         app_path = tmp[1]
 
         # print "Service: app_name=",app_name," app_path=",app_path
         setup_logger(app_name)
 
-
         t = threading.Thread(target=alive_worker, args=(30.0,))
         t.start()
 
         app_dir = os.path.join(mi2app_utils.get_files_dir(), "app")
-        sys.path.append(os.path.join(app_dir, app_path)) # add this dir to module search path
+        # add this dir to module search path
+        sys.path.append(os.path.join(app_dir, app_path))
         app_file = os.path.join(app_dir, app_path, "main.mi2app")
         print "Phone model: " + mi2app_utils.get_phone_model()
         print "Running app: " + app_file
@@ -112,14 +119,14 @@ if __name__ == "__main__":
 
         namespace = {"service_context": mi2app_utils.get_service_context()}
 
-        #Load configurations as global variables
+        # Load configurations as global variables
         config = ConfigParser()
         config.read('/sdcard/.mobileinsight.ini')
 
         ii = arg.rfind('/')
-        section_name = arg[ii+1:]
+        section_name = arg[ii + 1:]
 
-        plugin_config={}
+        plugin_config = {}
         if section_name in config.sections():
             config_options = config.options(section_name)
             for item in config_options:
@@ -129,10 +136,9 @@ if __name__ == "__main__":
 
         execfile(app_file, namespace)
 
+        print app_name, "stops normally"
 
-        print app_name,"stops normally"
-
-    except Exception, e:
+    except Exception as e:
         print "Exceptions!!!"
 
         # Print traceback logs to analysis
