@@ -19,6 +19,8 @@
 #define UNUSED __attribute__((unused))
 #define FILESYSTEM_SOCKET_PREFIX "/tmp/"
 #define ANDROID_RESERVED_SOCKET_PREFIX "/dev/socket/"
+#define SOCKET_NAME_1 "com.mediatek.mdlogger.socket"
+#define SOCKET_NAME_2 "com.mediatek.mdlogger.socket1"
 
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 #define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG,__VA_ARGS__)
@@ -33,9 +35,15 @@ void error_msg(const char* str);
 
 int main (int argc, char **argv) {
 
-	printf("Trying to connect emdlogger with socketName 'com.mediatek.mdlogger.socket1'\n");
-	char *socketName = "com.mediatek.mdlogger.socket1";
+	char *socketName;
+	printf("Trying to connect emdlogger with socketName '%s'\n", SOCKET_NAME_1);
+	socketName = SOCKET_NAME_1;
 	int socketFd = socket_local_client(socketName, ANDROID_SOCKET_NAMESPACE_ABSTRACT, SOCK_STREAM);
+	if (socketFd < 0) {
+		printf("Trying to connect emdlogger with socketName '%s'\n", SOCKET_NAME_2);
+		socketName = SOCKET_NAME_2;
+		socketFd = socket_local_client(socketName, ANDROID_SOCKET_NAMESPACE_ABSTRACT, SOCK_STREAM);
+	}
 	if (socketFd < 0) error_msg((char*)"ERROR Socket Openning");
 	printf("Open socket successfully\n");
 
@@ -44,13 +52,13 @@ int main (int argc, char **argv) {
 			char *start_cmd = "deep_start,2";
 			write(socketFd, start_cmd, strlen(start_cmd) + 1);
 	}
-	if (argc == 1) sleep(30);
+	if (argc == 1) sleep(10);
 	if (argc == 1 || strcmp(argv[1],"-stop") == 0){
 			printf("Pause the emdlogger\n");
 			char *pause_cmd = "deep_pause";
 			write(socketFd, pause_cmd, strlen(pause_cmd) + 1);
 	}
-	
+
 	printf("Close the socket\n");
 	close(socketFd);
 	return 0;
@@ -65,11 +73,16 @@ void error_msg(const char *str) {
 /**
  * connect to peer named "name"
  * returns fd or -1 on error
+ * https://android.googlesource.com/platform/system/core/+/android-4.4_r1/libcutils/socket_local_client.c
  */
 int socket_local_client(const char *name, int namespaceId, int type){
     int s = socket(AF_LOCAL, type, 0);
-    if(s < 0) return -1;
-    if ( 0 > socket_local_client_connect(s, name, namespaceId, type)) {
+    if(s < 0) {
+			printf("Socket Created Fails, Msg: %s\n", strerror(errno));
+			return -1;
+		}
+		if ( 0 > socket_local_client_connect(s, name, namespaceId, type)) {
+				printf("Socket Connected Fails, Msg: %s\n", strerror(errno));
         close(s);
         return -1;
     }
@@ -87,8 +100,14 @@ int socket_local_client_connect(int fd, const char *name, int namespaceId, int t
     struct sockaddr_un addr;
     socklen_t alen;
     int err = socket_make_sockaddr_un(name, namespaceId, &addr, &alen);
-    if (err < 0) return -1;
-    if(connect(fd, (struct sockaddr *) &addr, alen) < 0) return -1;
+    if (err < 0) {
+			printf("socket_make_sockaddr_un Fails, Msg: %s\n", strerror(errno));
+			return -1;
+		}
+    if(connect(fd, (struct sockaddr *) &addr, alen) < 0) {
+			printf("connect Fails, Msg: %s\n", strerror(errno));
+			return -1;
+		}
     return fd;
 }
 
@@ -102,7 +121,10 @@ int socket_make_sockaddr_un(const char *name, int namespaceId, struct sockaddr_u
         case ANDROID_SOCKET_NAMESPACE_ABSTRACT:
             namelen  = strlen(name);
             // Test with length +1 for the *initial* '\0'.
-            if ((namelen + 1) > sizeof(p_addr->sun_path)) return -1;
+            if ((namelen + 1) > sizeof(p_addr->sun_path)) {
+							printf("(namelen + 1) > sizeof(p_addr->sun_path)\n");
+							return -1;
+						}
             /*
              * Note: The path in this case is *not* supposed to be
              * '\0'-terminated. ("man 7 unix" for the gory details.)
