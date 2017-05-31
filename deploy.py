@@ -219,7 +219,6 @@ if __name__ == '__main__':
             subprocess.call(
                 ['adb install -r {app}-{ver}.apk'.format(app=cfg['app_name'], ver=cfg['app_version'])])
         except BaseException:
-            print '2'
             os.system(
                 'adb install -r {app}-{ver}-debug.apk'.format(
                     app=cfg['app_name'],
