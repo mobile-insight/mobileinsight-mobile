@@ -282,13 +282,23 @@ class MobileInsightScreen(Screen):
     def __check_diag_mode(self):
         """
         Check if diagnostic mode is enabled.
+        Note that this function is chipset-specific: Qualcomm and MTK have different detection approaches
         """
-        diag_port = "/dev/diag"
-        if not os.path.exists(diag_port):
-            return False
-        else:
-            main_utils.run_shell_cmd("chmod 777 /dev/diag")
-            return True
+        chipset_type = main_utils.get_chipset_type()
+        if chipset_type == main_utils.ChipsetType.QUALCOMM:
+            diag_port = "/dev/diag"
+            if not os.path.exists(diag_port):
+                return False
+            else:
+                main_utils.run_shell_cmd("chmod 777 /dev/diag")
+                return True
+        elif chipset_type == main_utils.ChipsetType.MTK:
+            cmd = "ps | grep emdlogger1"
+            res = main_utils.run_shell_cmd(cmd)
+            if not res:
+                return False
+            else:
+                return True
 
     def __init_libs(self):
         """

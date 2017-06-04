@@ -28,6 +28,13 @@ ANDROID_SHELL = "/system/bin/sh"
 File = autoclass("java.io.File")
 FileOutputStream = autoclass('java.io.FileOutputStream')
 
+class ChipsetType:
+    """
+    Cellular modem type
+    """
+    QUALCOMM = 0
+    MTK = 1
+
 
 def get_cur_version():
     """
@@ -75,6 +82,27 @@ def run_shell_cmd(cmd, wait=False):
         return res
     else:
         return res
+
+def get_chipset_type():
+    """
+    Determine the type of the chipset
+
+    :returns: an enum of ChipsetType
+    """
+
+
+    """
+    MediaTek: [ro.board.platform]: [mt6735m]
+    Qualcomm: [ro.board.platform]: [msm8084]
+    """
+    cmd = "getprop ro.board.platform;"
+    res = run_shell_cmd(cmd)
+    if res.startswith("mt"):
+        return ChipsetType.MTK
+    elif res.startswith("msm") or res.startswith("mdm"):
+        return ChipsetType.QUALCOMM
+    else:
+        return None
 
 
 def get_sdcard_path():
