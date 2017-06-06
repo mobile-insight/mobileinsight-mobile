@@ -41,6 +41,8 @@ dist/
 
 # Data directory
 demo_app/data/*
+# Not filter files
+!demo_app/data/MTK-filter
 
 # Personalized config file
 config.yml*
