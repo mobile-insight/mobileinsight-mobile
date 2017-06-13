@@ -778,7 +778,8 @@ class MobileInsightApp(App):
 
     def on_stop(self):
         pass
-        self.screen.stop_service()
+        print "MI-app: on_stop"
+        # self.screen.stop_service()
 
 
 if __name__ == "__main__":
