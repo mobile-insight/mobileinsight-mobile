@@ -15,6 +15,7 @@ from kivy.lang import Builder
 from kivy.utils import platform
 from kivy.config import ConfigParser
 
+from android import AndroidService
 from jnius import autoclass, cast
 import jnius
 
@@ -195,7 +196,7 @@ class MobileInsightScreen(Screen):
                 "The diagnostic mode is disabled. Please check your phone settings.")
 
         # clean up ongoing log collections
-        self.stop_collection()
+        # self.stop_collection()
 
         self.terminal_stop = None
         self.terminal_thread = None
@@ -220,6 +221,7 @@ class MobileInsightScreen(Screen):
                 self.start_service(default_app_name)
         except Exception as e:
             pass
+
 
     def log_info(self, msg):
         self.append_log("[b][color=00ff00][INFO][/color][/b]: " + msg)
@@ -276,6 +278,12 @@ class MobileInsightScreen(Screen):
         # Nexus 6 only
         cmd = cmd + \
             "supolicy --live \"allow untrusted_app diag_device chr_file {write open getattr}\";"
+        cmd = cmd + \
+            "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
+        cmd = cmd + \
+            "supolicy --live \"allow netmgrd diag_device chr_file {read write}\";"
+        cmd = cmd + \
+            "supolicy --live \"allow rild diag_device chr_file {read write}\";"
 
         main_utils.run_shell_cmd(cmd)
 
@@ -458,13 +466,24 @@ class MobileInsightScreen(Screen):
         return True
 
     def stop_collection(self):
+        res = main_utils.run_shell_cmd("ps").split('\n')
+        for item in res:
+            if item.find('diag_revealer') != -1:
+                pid = item.split()[1]
+                cmd = "kill "+pid
+                main_utils.run_shell_cmd(cmd)
+
+
+    """
+    def stop_collection(self):
         self.collecting = False
 
         # Find diag_revealer process
         # FIXME: No longer work for 7.0: os.listdir() only returns current
-        # process
+        # processstop_collection
         diag_procs = []
         pids = [pid for pid in os.listdir("/proc") if pid.isdigit()]
+        print "stop_collection", str(pids)
         for pid in pids:
             try:
                 cmdline = open(
@@ -483,6 +502,7 @@ class MobileInsightScreen(Screen):
         if len(diag_procs) > 0:
             cmd2 = "kill " + " ".join([str(pid) for pid in diag_procs])
             main_utils.run_shell_cmd(cmd2)
+    """
 
     def start_service(self, app_name):
         if platform == "android" and app_name in self.app_list:
@@ -503,7 +523,6 @@ class MobileInsightScreen(Screen):
             self.terminal_thread = threading.Thread(target=self.show_log)
             self.terminal_thread.start()
 
-            from android import AndroidService
             self.error_log = "Running " + app_name + "..."
             self.service = AndroidService(
                 "MobileInsight is running...", app_name)
@@ -778,7 +797,7 @@ class MobileInsightApp(App):
 
     def on_stop(self):
         pass
-        print "MI-app: on_stop"
+        # print "MI-app: on_stop"
         # self.screen.stop_service()
 
 
