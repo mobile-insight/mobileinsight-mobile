@@ -323,6 +323,10 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 	size_t i = 0;
 	char *p = pbuf_write->p;
 
+	//Set fd to non-blocking mode
+	int flags = fcntl(fd, F_GETFL, 0);
+	fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+
 	//Buffer to mask command
 	char *send_buf = (char *) malloc(pbuf_write->len + 10);
 	if (send_buf == NULL) {
@@ -364,10 +368,11 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 			}
 			/*
 			 * Read responses after writting each command.
-			 * NOTE: This process is necessary for two reasons:
+			 * NOTE: This step MUST EXIST. Without it, some phones cannot collect logs for two reasons:
 			 *  (1) Ensure every config commands succeeds (otherwise read() will be blocked)
 			 *  (2) Clean up the buffer, thus avoiding pollution of later real cellular logs
 			 */
+			LOGD("Before read\n");
 			int read_len = read(fd, buf_read, sizeof(buf_read));
 			if (read_len < 0) {
 				LOGE("write_commands read error: %s\n", strerror(errno));
@@ -377,6 +382,7 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 				// LOGD("write_commands responses\n");
 				// print_hex(buf_read, read_len);
 			}
+			LOGD("After read\n");
 		}
 		i += len;
 	}
@@ -530,7 +536,7 @@ main (int argc, char **argv)
 
 	// int fd = open("/dev/diag", O_RDWR);
 	// fd = open("/dev/diag", O_RDWR);
-	fd = open("/dev/diag", O_RDWR|O_LARGEFILE);
+	fd = open("/dev/diag", O_RDWR|O_LARGEFILE|O_NONBLOCK);
 	if (fd < 0) {
 		perror("open diag dev");
 		return -8002;
