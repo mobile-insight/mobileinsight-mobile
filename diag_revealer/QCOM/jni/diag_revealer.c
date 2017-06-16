@@ -372,7 +372,7 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 			 *  (1) Ensure every config commands succeeds (otherwise read() will be blocked)
 			 *  (2) Clean up the buffer, thus avoiding pollution of later real cellular logs
 			 */
-			LOGD("Before read\n");
+			// LOGD("Before read\n");
 			int read_len = read(fd, buf_read, sizeof(buf_read));
 			if (read_len < 0) {
 				LOGE("write_commands read error: %s\n", strerror(errno));
@@ -382,7 +382,7 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 				// LOGD("write_commands responses\n");
 				// print_hex(buf_read, read_len);
 			}
-			LOGD("After read\n");
+			// LOGD("After read\n");
 		}
 		i += len;
 	}
@@ -759,17 +759,24 @@ main (int argc, char **argv)
 				int num_data = *((int *)(buf_read + 4));
 				// LOGI("num_data=%d\n",num_data);
 				int i = 0;
-				long long offset = 8;
+				// long long offset = 8;
+				long long offset = remote_dev ? 12 : 8;
 				for (i = 0; i < num_data; i++) {
+					int ret_err;
 					short fifo_msg_type = FIFO_MSG_TYPE_LOG;
-					int msg_len;
 					short fifo_msg_len;
 					double ts = get_posix_timestamp();
-					memcpy(&msg_len, buf_read + offset, 4);
-					// printf("%d %.5f\n", msg_len, ts);
+					
+					//Copy msg_len
+					int msg_len = 0;
+					memcpy(&msg_len, buf_read + offset, sizeof(int));
+					// memcpy(&msg_len, buf_read + offset + 4, sizeof(int));
+					// LOGI("memcpy: msg_len=%d\n",msg_len);
+					if (msg_len < 0)
+						continue;
 					// print_hex(buf_read + offset + 4, msg_len);
 					// Wirte msg type to pipe
-					int ret_err;
+					
 					// LOGD("ret_err0");
 					ret_err = write(fifo_fd, &fifo_msg_type, sizeof(short));
 
@@ -796,6 +803,7 @@ main (int argc, char **argv)
 					ret_err = write(fifo_fd, buf_read + offset + 4, msg_len);
 					if(ret_err<0){
 						LOGI("Pipe error (payload): %s", strerror(errno));
+						LOGD("Debug: msg_len=%d buf_read+offset+4=%s\n", msg_len, buf_read + offset + 4);
 						// LOGI("Pipe closed, diag_revealer will exit");
 						close(fd);
 						return -1;
