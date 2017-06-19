@@ -36,6 +36,8 @@ import json
 import main_utils
 from log_viewer_app import LogViewerScreen
 
+from collections import deque
+
 # Load main UI
 Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
@@ -154,6 +156,7 @@ class MobileInsightScreen(Screen):
     terminal_thread = None
     terminal_stop = None
     MAX_LINE = 30
+    logs = deque([],MAX_LINE)
 
     def __init__(self, name):
         """
@@ -405,29 +408,15 @@ class MobileInsightScreen(Screen):
                 continue
             try:
                 where = log_file.tell()
-                line = log_file.readline()
-                if not line:
+                lines = log_file.readlines()
+                if not lines:
                     log_file.seek(where)
-                else:
-                    # # Show MAX_LINE lines at most
-                    # # TODO: make the code more efficient
-
-                    tmp = self.error_log.split('\n')
-                    tmp.append(line)
-                    if len(tmp) > self.MAX_LINE:
-                        self.error_log = '\n'.join(tmp[-self.MAX_LINE:])
-                    else:
-                        self.error_log = '\n'.join(tmp)
-
-                    # self.error_log += "\n"
-                    # self.error_log += line
-                    # if line_count >self.MAX_LINE:
-                    #     idx = self.error_log.find('\n')
-                    #     self.error_log = self.error_log[idx+1:]
-                    # else:
-                    #     line_count += 1
-
+                else:    
+                    self.logs += lines
+                    self.error_log = ''.join(self.logs)
             except Exception as e:
+                import traceback
+                print str(traceback.format_exc())
                 continue
 
     def run_script_callback(self):
