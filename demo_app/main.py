@@ -415,8 +415,6 @@ class MobileInsightScreen(Screen):
                     self.logs += lines
                     self.error_log = ''.join(self.logs)
             except Exception as e:
-                import traceback
-                print str(traceback.format_exc())
                 continue
 
     def run_script_callback(self):
