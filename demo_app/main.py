@@ -407,6 +407,7 @@ class MobileInsightScreen(Screen):
             if self.terminal_stop.is_set():
                 continue
             try:
+                time.sleep(1)
                 where = log_file.tell()
                 lines = log_file.readlines()
                 if not lines:
@@ -415,6 +416,8 @@ class MobileInsightScreen(Screen):
                     self.logs += lines
                     self.error_log = ''.join(self.logs)
             except Exception as e:
+                import traceback
+                print str(traceback.format_exc())
                 continue
 
     def run_script_callback(self):
