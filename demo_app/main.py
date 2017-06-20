@@ -674,7 +674,7 @@ class MobileInsightApp(App):
         # Yuanjie: the ordering of the following options MUST be the same as
         # those in settings.json!!!
         config.setdefaults('mi_general', {
-            'bcheck_update': 1,
+            'bcheck_update': 0,
             'log_level': 'info',
             'bstartup': 0,
             'bstartup_service': 0,
