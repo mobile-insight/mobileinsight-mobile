@@ -18,11 +18,12 @@ import commands
 import yaml
 import subprocess
 
+LIBS_GIT = 'https://github.com/mobile-insight/mobileInsight-libs.git'
 
 def run_config():
     # commands.getstatusoutput('wget --no-check-certificate https://wing1.cs.ucla.edu/gitlab/zyuan/mobileInsight-libs/repository/archive.zip\?ref\=master master.zip')
     os.system(
-        'git clone https://wing1.cs.ucla.edu/gitlab/zyuan/mobileInsight-libs.git')
+        'git clone {}'.format(LIBS_GIT))
     if os.path.isdir('./demo_app/data') is False:
         os.makedirs('./demo_app/data')
     os.system('cp mobileInsight-libs/lib/* ./demo_app/data')
@@ -31,8 +32,7 @@ def run_config():
     if os.path.isfile('./config/config.yml') is True:
         os.system('cp ./config/config.yml ./config/config.yml.bak')
     os.system('tail -n+8 ./config/config_template.yml > ./config/config.yml')
-    print 'Edit ./config/config.yml to set up the configuration'
-
+    print 'Edit ./config/config.yml to customize your configuration!'
 
 def run_dist():
     build_dist_cmd = 'python-for-android create' \
