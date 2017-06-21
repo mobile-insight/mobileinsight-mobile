@@ -6,10 +6,10 @@
 #############################
 
 # replace it with your path of mobileInsight-mobile
-mi_dev_path : ~/mi-dev/mobileInsight-mobile
+mi_dev_path : /home/vagrant/mi-dev/mobileInsight-mobile
 
 # replace it with python-for-android storage dir
-p4a_path : ~/.python-for-android/
+p4a_path : /home/vagrant/.python-for-android/
 
 app_name : MobileInsight
 
@@ -37,13 +37,13 @@ presplash_path : resources/presplash.jpg
 app_path : demo_app
 
 # replace it with your path of Android SDK
-sdk_path : $ANDROID_SDK_HOME
+sdk_path : /home/vagrant/android-sdk
 
 # replace it with your Android SDK version (compiling Android API level)
 api_level : 19
 
 # replace it with your Android NDK path
-ndk_path : $ANDROID_NDK_HOME
+ndk_path : /home/vagrant/android-ndk-r10e
 
 # replace it with your Android NDK version
 ndk_version : r10e
