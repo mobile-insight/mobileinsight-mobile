@@ -230,7 +230,7 @@ def get_mobileinsight_plugin_path():
     if not mobileinsight_path:
         return None
 
-    return os.path.join(mobileinsight_path, "plugins")
+    return os.path.join(mobileinsight_path, "apps")
 
 
 def get_mobileinsight_crash_log_path():
@@ -263,7 +263,10 @@ def get_files_dir():
 
 def get_phone_info():
     cmd = "getprop ro.product.model; getprop ro.product.manufacturer;"
-    res = run_shell_cmd(cmd).split('\n')
+    res = run_shell_cmd(cmd)
+    if not res:
+        return get_device_id() + '_null-null'
+    res = res.split('\n')
     model = res[0].replace(" ", "")
     manufacturer = res[1].replace(" ", "")
     phone_info = get_device_id() + '_' + manufacturer + '-' + model
