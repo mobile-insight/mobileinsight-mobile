@@ -115,7 +115,7 @@ def create_folder():
     return True
 
 
-def get_plugin_list():
+def get_plugins_list():
     '''
     Load plugin lists, including both built-in and 3rd-party plugins
     '''
@@ -188,7 +188,7 @@ class MobileInsightScreen(Screen):
             self.ids.log_viewer = False
             self.ids.run_plugin = False
             self.log_error(
-                "MobileInsight requires root privelege. Please root your device for correct functioning.")
+                "MobileInsight requires root privilege. Please root your device for correct functioning.")
 
         self.__init_libs()
         self.__check_security_policy()
@@ -200,8 +200,8 @@ class MobileInsightScreen(Screen):
             self.screen.ids.stop_plugin.disabled = True
             self.screen.ids.run_plugin.disabled = True
 
-        self.app_list = get_app_list()
-        # self.app_list.sort()
+        self.plugins_list = get_plugins_list()
+        # self.plugins_list.sort()
 
         if not self.__check_diag_mode():
             self.log_error(
@@ -214,7 +214,7 @@ class MobileInsightScreen(Screen):
         self.terminal_thread = None
 
         first = True
-        for name in self.app_list:
+        for name in self.plugins_list:
             widget = LabeledCheckBox(text=name, group="app")
             if first:
                 widget.active = True
@@ -455,7 +455,7 @@ class MobileInsightScreen(Screen):
         if self.service:
             return True
 
-        app_path = self.app_list[self.ids.checkbox_app.selected][0]
+        app_path = self.plugins_list[self.ids.checkbox_app.selected][0]
         if os.path.exists(os.path.join(app_path, "readme.txt")):
             with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
                 self.error_log = self.ids.checkbox_app.selected + ": " + ff.read()
@@ -504,7 +504,7 @@ class MobileInsightScreen(Screen):
     """
 
     def start_service(self, app_name):
-        if platform == "android" and app_name in self.app_list:
+        if platform == "android" and app_name in self.plugins_list:
             if self.service:
                 # stop the running service
                 self.stop_service()
@@ -526,7 +526,7 @@ class MobileInsightScreen(Screen):
             self.service = AndroidService(
                 "MobileInsight is running...", app_name)
             self.service.start(
-                app_name + ":" + self.app_list[app_name][0])   # app name
+                app_name + ":" + self.plugins_list[app_name][0])   # app name
             self.default_app_name = app_name
 
         else:
@@ -637,7 +637,7 @@ class MobileInsightApp(App):
         self.create_app_settings(self.config, settings)
 
     def create_app_settings(self, config, settings):
-        app_list = get_app_list()
+        app_list = get_plugins_list()
         for app in app_list:
             APP_NAME = app
             APP_DIR = app_list[app][0]
@@ -692,7 +692,7 @@ class MobileInsightApp(App):
         self.create_app_default_config(config)
 
     def create_app_default_config(self, config):
-        app_list = get_app_list()
+        app_list = get_plugins_list()
         for app in app_list:
             APP_NAME = app
             APP_DIR = app_list[app][0]
