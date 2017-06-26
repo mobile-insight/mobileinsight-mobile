@@ -118,7 +118,7 @@ def get_sdcard_path():
     return sdcard_path
 
 
-def get_mobile_insight_path():
+def get_legacy_mobileinsight_path():
     """
     Return the root path of MobileInsight, or None if not accessible
     """
@@ -126,42 +126,54 @@ def get_mobile_insight_path():
     if not sdcard_path:
         return None
 
-    mobile_insight_path = os.path.join(sdcard_path, "mobile_insight")
-    return mobile_insight_path
+    legacy_mobileinsight_path = os.path.join(sdcard_path, "mobile_insight")
+    return legacy_mobileinsight_path
 
 
-def get_mobile_insight_log_path():
+def get_mobileinsight_path():
+    """
+    Return the root path of MobileInsight, or None if not accessible
+    """
+    sdcard_path = get_sdcard_path()
+    if not sdcard_path:
+        return None
+
+    mobileinsight_path = os.path.join(sdcard_path, "mobileinsight")
+    return mobileinsight_path
+
+
+def get_mobileinsight_log_path():
     """
     Return the log path of MobileInsight, or None if not accessible
     """
 
-    mobile_insight_path = get_mobile_insight_path()
+    mobileinsight_path = get_mobileinsight_path()
 
-    if not mobile_insight_path:
+    if not mobileinsight_path:
         return None
 
-    return os.path.join(mobile_insight_path, "log")
+    return os.path.join(mobileinsight_path, "log")
 
 
-def get_mobile_insight_analysis_path():
+def get_mobileinsight_analysis_path():
     """
     Return the analysis result path of MobileInsight, or None if not accessible
     """
 
-    mobile_insight_path = get_mobile_insight_path()
+    mobileinsight_path = get_mobileinsight_path()
 
-    if not mobile_insight_path:
+    if not mobileinsight_path:
         return None
 
-    return os.path.join(mobile_insight_path, "analysis")
+    return os.path.join(mobileinsight_path, "analysis")
 
 
-def get_mobile_insight_log_decoded_path():
+def get_mobileinsight_log_decoded_path():
     """
     Return the decoded log path of MobileInsight, or None if not accessible
     """
 
-    log_path = get_mobile_insight_log_path()
+    log_path = get_mobileinsight_log_path()
 
     if not log_path:
         return None
@@ -169,12 +181,12 @@ def get_mobile_insight_log_decoded_path():
     return os.path.join(log_path, "decoded")
 
 
-def get_mobile_insight_log_uploaded_path():
+def get_mobileinsight_log_uploaded_path():
     """
     Return the uploaded log path of MobileInsight, or None if not accessible
     """
 
-    log_path = get_mobile_insight_log_path()
+    log_path = get_mobileinsight_log_path()
 
     if not log_path:
         return None
@@ -182,56 +194,56 @@ def get_mobile_insight_log_uploaded_path():
     return os.path.join(log_path, "uploaded")
 
 
-def get_mobile_insight_cfg_path():
+def get_mobileinsight_cfg_path():
     """
     Return the configuration path of MobileInsight, or None if not accessible
     """
 
-    mobile_insight_path = get_mobile_insight_path()
+    mobileinsight_path = get_mobileinsight_path()
 
-    if not mobile_insight_path:
+    if not mobileinsight_path:
         return None
 
-    return os.path.join(mobile_insight_path, "cfg")
+    return os.path.join(mobileinsight_path, "cfg")
 
 
-def get_mobile_insight_db_path():
+def get_mobileinsight_db_path():
     """
     Return the database path of MobileInsight, or None if not accessible
     """
 
-    mobile_insight_path = get_mobile_insight_path()
+    mobileinsight_path = get_mobileinsight_path()
 
-    if not mobile_insight_path:
+    if not mobileinsight_path:
         return None
 
-    return os.path.join(mobile_insight_path, "cfg")
+    return os.path.join(mobileinsight_path, "cfg")
 
 
-def get_mobile_insight_plugin_path():
+def get_mobileinsight_plugin_path():
     """
     Return the plugin path of MobileInsight, or None if not accessible
     """
 
-    mobile_insight_path = get_mobile_insight_path()
+    mobileinsight_path = get_mobileinsight_path()
 
-    if not mobile_insight_path:
+    if not mobileinsight_path:
         return None
 
-    return os.path.join(mobile_insight_path, "apps")
+    return os.path.join(mobileinsight_path, "apps")
 
 
-def get_mobile_insight_crash_log_path():
+def get_mobileinsight_crash_log_path():
     """
     Return the plugin path of MobileInsight, or None if not accessible
     """
 
-    mobile_insight_path = get_mobile_insight_path()
+    mobileinsight_path = get_mobileinsight_path()
 
-    if not mobile_insight_path:
+    if not mobileinsight_path:
         return None
 
-    return os.path.join(mobile_insight_path, "crash_logs")
+    return os.path.join(mobileinsight_path, "crash_logs")
 
 
 def detach_thread():

@@ -63,7 +63,7 @@ def upload_log(filename):
         try:
             file_base_name = os.path.basename(filename)
             uploaded_file = os.path.join(
-                util.get_mobile_insight_log_uploaded_path(), file_base_name)
+                util.get_mobileinsight_log_uploaded_path(), file_base_name)
             # TODO: print to screen
             # print "debug 58, file uploaded has been renamed to %s" % uploaded_file
             # shutil.copyfile(filename, uploaded_file)
@@ -135,8 +135,8 @@ class LoggingAnalyzer(Analyzer):
     def __init__(self, config):
         Analyzer.__init__(self)
 
-        self.__log_dir = util.get_mobile_insight_log_path()
-        self.__dec_log_dir = util.get_mobile_insight_log_decoded_path()
+        self.__log_dir = util.get_mobileinsight_log_path()
+        self.__dec_log_dir = util.get_mobileinsight_log_decoded_path()
         self.__orig_file = ""
         self.__raw_msg = {}
         self.__raw_msg_key = ""

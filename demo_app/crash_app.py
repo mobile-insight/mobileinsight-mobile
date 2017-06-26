@@ -131,7 +131,7 @@ class CrashApp(App):
                 + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') \
                 + '.txt'
             log_name = os.path.join(
-                main_utils.get_mobile_insight_crash_log_path(), log_name)
+                main_utils.get_mobileinsight_crash_log_path(), log_name)
             main_utils.run_shell_cmd(
                 'logcat -d | grep -E "python|diag" >' + log_name, True)
             self.__upload_crash_log(log_name)

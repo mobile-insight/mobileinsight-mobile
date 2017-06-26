@@ -99,7 +99,7 @@ Builder.load_string('''
         FileChooserListView:
             id: filechooser
             filters: ['/*.mi2log']
-            rootpath: '/sdcard/mobile_insight/log'
+            rootpath: '/sdcard/mobileinsight/log'
             on_selection: root.load(filechooser.path, filechooser.selection, *args)
             minimum_height: filechooser.setter('height')
 ''')

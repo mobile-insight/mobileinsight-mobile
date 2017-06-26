@@ -79,7 +79,7 @@ try:
         src.enable_log(lte_lvl1 + lte_lvl2 + lte_lvl3 + wcdma + umts)
     elif plugin_config["log_type"] == "Read Config":
         cfg_path = os.path.join(
-            mi2app_utils.get_mobile_insight_cfg_path(), cfg_file)
+            mi2app_utils.get_mobileinsight_cfg_path(), cfg_file)
         try:
             cfg = open(cfg_path, 'r')
             lines = cfg.read().splitlines()

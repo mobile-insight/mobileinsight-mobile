@@ -28,7 +28,7 @@
     {
         "type"   : "bool",
         "title"  : "Decode log",
-        "desc"   : "Decode logs into text files in /sdcard/mobile_insight/log/decoded/. May consume significant amount of power!",
+        "desc"   : "Decode logs into text files in /sdcard/mobileinsight/log/decoded/. May consume significant amount of power!",
         "key"    : "is_dec_log",
         "default": "0"
     },

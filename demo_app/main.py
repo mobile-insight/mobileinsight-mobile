@@ -46,61 +46,69 @@ current_activity = cast("android.app.Activity", autoclass(
     "org.renpy.android.PythonActivity").mActivity)
 
 LOGO_STRING = "MobileInsight " + main_utils.get_cur_version() + \
-    "\nUCLA WiNG Group & OSU MSSN Lab"
+    "\nCopyright (c) 2015-2017 MobileInsight Team"
 
 
 def create_folder():
 
     cmd = ""
 
-    mobile_insight_path = main_utils.get_mobile_insight_path()
-    if not mobile_insight_path:
+    mobileinsight_path = main_utils.get_mobileinsight_path()
+    if not mobileinsight_path:
         return False
-    if not os.path.exists(mobile_insight_path):
-        cmd = cmd + "mkdir " + mobile_insight_path + "; "
-        cmd = cmd + "chmod -R 755 " + mobile_insight_path + "; "
 
-    log_path = main_utils.get_mobile_insight_log_path()
+    try:
+        legacy_mobileinsight_path = main_utils.get_legacy_mobileinsight_path
+        cmd = cmd + "mv " + legacy_mobileinsight_path + " " + mobileinsight_path + "; "
+    except:
+        pass
+
+    if not os.path.exists(mobileinsight_path):
+        cmd = cmd + "mkdir " + mobileinsight_path + "; "
+        cmd = cmd + "chmod -R 755 " + mobileinsight_path + "; "
+
+
+    log_path = main_utils.get_mobileinsight_log_path()
     if not os.path.exists(log_path):
         cmd = cmd + "mkdir " + log_path + "; "
         cmd = cmd + "chmod -R 755 " + log_path + "; "
 
-    analysis_path = main_utils.get_mobile_insight_analysis_path()
+    analysis_path = main_utils.get_mobileinsight_analysis_path()
     if not os.path.exists(analysis_path):
         cmd = cmd + "mkdir " + analysis_path + "; "
         cmd = cmd + "chmod -R 755 " + analysis_path + "; "
 
-    cfg_path = main_utils.get_mobile_insight_cfg_path()
+    cfg_path = main_utils.get_mobileinsight_cfg_path()
     if not os.path.exists(analysis_path):
         cmd = cmd + "mkdir " + cfg_path + "; "
         cmd = cmd + "chmod -R 755 " + cfg_path + "; "
 
-    db_path = main_utils.get_mobile_insight_db_path()
+    db_path = main_utils.get_mobileinsight_db_path()
     if not os.path.exists(db_path):
         cmd = cmd + "mkdir " + db_path + "; "
         cmd = cmd + "chmod -R 755 " + db_path + "; "
 
-    plugin_path = main_utils.get_mobile_insight_plugin_path()
+    plugin_path = main_utils.get_mobileinsight_plugin_path()
     if not os.path.exists(plugin_path):
         cmd = cmd + "mkdir " + plugin_path + "; "
         cmd = cmd + "chmod -R 755 " + plugin_path + "; "
 
-    log_decoded_path = main_utils.get_mobile_insight_log_decoded_path()
+    log_decoded_path = main_utils.get_mobileinsight_log_decoded_path()
     if not os.path.exists(log_decoded_path):
         cmd = cmd + "mkdir " + log_decoded_path + "; "
         cmd = cmd + "chmod -R 755 " + log_decoded_path + "; "
 
-    log_uploaded_path = main_utils.get_mobile_insight_log_uploaded_path()
+    log_uploaded_path = main_utils.get_mobileinsight_log_uploaded_path()
     if not os.path.exists(log_uploaded_path):
         cmd = cmd + "mkdir " + log_uploaded_path + "; "
         cmd = cmd + "chmod -R 755 " + log_uploaded_path + "; "
 
-    crash_log_path = main_utils.get_mobile_insight_crash_log_path()
+    crash_log_path = main_utils.get_mobileinsight_crash_log_path()
     if not os.path.exists(crash_log_path):
         cmd = cmd + "mkdir " + crash_log_path + "; "
         cmd = cmd + "chmod -R 755 " + crash_log_path + "; "
 
-    # cmd = cmd + "chmod -R 755 "+mobile_insight_path+"; "
+    # cmd = cmd + "chmod -R 755 "+mobileinsight_path+"; "
 
     main_utils.run_shell_cmd(cmd)
     return True
@@ -122,7 +130,7 @@ def get_app_list():
             ret[f] = (os.path.join(APP_DIR, f), False)
 
     # Yuanjie: support alternative path for users to customize their own app
-    APP_DIR = main_utils.get_mobile_insight_plugin_path()
+    APP_DIR = main_utils.get_mobileinsight_plugin_path()
 
     if os.path.exists(APP_DIR):
         l = os.listdir(APP_DIR)
@@ -165,8 +173,8 @@ class MobileInsightScreen(Screen):
             2. Initialize necessary libs required by MobileInsight (e.g., libwireshark)
             3. Check if Android's security policy allows MobileInsight to access diagnostic mode.
             This is mainly caused by SELinux
-            4. Create necessary folders on SDcard (e.g., /sdcard/mobile_insight/, /sdcard/mobile_insight/log/)
-            5. Load built-in and 3rd-party plugins (located in /sdcard/mobile_insight/apps/)
+            4. Create necessary folders on SDcard (e.g., /sdcard/mobileinsight/, /sdcard/mobileinsight/log/)
+            5. Load built-in and 3rd-party plugins (located in /sdcard/mobileinsight/apps/)
             6. Check if the diagnostic mode is enabled
             7. Load configurations from the setting panel (configs stored in /sdcard/.mobileinsight.ini)
         """
@@ -504,7 +512,7 @@ class MobileInsightScreen(Screen):
 
             # Clean up old logs
             self.log_name = os.path.join(
-                main_utils.get_mobile_insight_analysis_path(),
+                main_utils.get_mobileinsight_analysis_path(),
                 app_name + "_log.txt")
             if os.path.exists(self.log_name):
                 os.remove(self.log_name)
@@ -538,7 +546,7 @@ class MobileInsightScreen(Screen):
 
             # Haotian: save orphan log
             dated_files = []
-            self.__logdir = main_utils.get_mobile_insight_log_path()
+            self.__logdir = main_utils.get_mobileinsight_log_path()
             self.__phone_info = main_utils.get_phone_info()
             mi2log_folder = os.path.join(main_utils.get_cache_dir(), "mi2log")
             for subdir, dirs, files in os.walk(mi2log_folder):

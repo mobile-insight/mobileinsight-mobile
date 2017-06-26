@@ -75,7 +75,7 @@ def setup_logger(app_name):
         l.propagate = False
 
         log_file = os.path.join(
-            mi2app_utils.get_mobile_insight_analysis_path(),
+            mi2app_utils.get_mobileinsight_analysis_path(),
             app_name + "_log.txt")
 
         fileHandler = logging.FileHandler(log_file, mode='w')

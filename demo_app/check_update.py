@@ -118,7 +118,7 @@ def download_apk(instance, answer):
     if answer == "yes":
         global apk_url
         apk_path = os.path.join(
-            main_utils.get_mobile_insight_path(),
+            main_utils.get_mobileinsight_path(),
             "update.apk")
         if os.path.isfile(apk_path):
             os.remove(apk_path)

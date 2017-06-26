@@ -5,8 +5,8 @@
 # file in config.yml        #
 #############################
 
-# replace it with your path of mobileInsight-mobile
-mi_dev_path : /home/vagrant/mi-dev/mobileInsight-mobile
+# replace it with your path of mobileinsight-mobile
+mi_dev_path : /home/vagrant/mi-dev/mobileinsight-mobile
 
 # replace it with python-for-android storage dir
 p4a_path : /home/vagrant/.python-for-android/
@@ -15,7 +15,7 @@ app_name : MobileInsight
 
 app_version : 3.0.0
 
-pkg_name : edu.ucla.cs.wing.mobileinsight
+pkg_name : net.mobileinsight.app
 
 dist_name : mi3
 
@@ -46,7 +46,7 @@ api_level : 19
 ndk_path : /home/vagrant/android-ndk-r10e
 
 # replace it with your Android NDK version
-ndk_version : r10e
+ndk_version : r10e-rc4
 
 # replace it with your desired target arch
 arch : armeabi

@@ -61,8 +61,8 @@ Currently MobileInsight relies on exactly Android NDK r10e to compile the app. W
 2. Clone this repository.
 
 ```shell
-$ git clone https://github.com/mobile-insight/mobileInsight-mobile.git
-$ cd mobileInsight-mobile
+$ git clone https://github.com/mobile-insight/mobileinsight-mobile.git
+$ cd mobileinsight-mobile
 ```
 
 3. Generate and customize configurations.
@@ -70,7 +70,7 @@ $ cd mobileInsight-mobile
 ```shell
 $ make config
 ```
-It automatically populate the config file at `mobileInsight-mobile/config/config.yml` from the template.
+It automatically populate the config file at `mobileinsight-mobile/config/config.yml` from the template.
 Please modify the configs as necessary. Usually, you need to specify your Android SDK/NDK and python-for-android storage path. 
 
 4. Compile the MobileInsight distribution for python-for-android.

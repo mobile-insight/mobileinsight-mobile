@@ -1,1 +1,1 @@
-A simple analyzer for 3G/4G NAS protocols, including mobility management and session management. The protocol information is profiled in /sdcard/mobile_insight/dbs/
+A simple analyzer for 3G/4G NAS protocols, including mobility management and session management. The protocol information is profiled in /sdcard/mobileinsight/dbs/

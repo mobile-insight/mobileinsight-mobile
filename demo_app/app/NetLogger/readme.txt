@@ -1,1 +1,1 @@
-A basic cellular event logger which saves cellular messages to /sdcard/mobile_insight/log/. You can configure msg type using /sdcard/mobile_insight/cfg/netlogger.cfg
+A basic cellular event logger which saves cellular messages to /sdcard/mobileinsight/log/. You can configure msg type using /sdcard/mobileinsight/cfg/netlogger.cfg

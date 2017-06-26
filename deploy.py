@@ -4,7 +4,7 @@
 '''
 deploy.py
 
-It deploys compiling environment and parameters for mobileInsight.
+It deploys compiling environment and parameters for mobileinsight.
 
 Authors : Zengwen Yuan
           Kainan Wang
@@ -18,17 +18,16 @@ import commands
 import yaml
 import subprocess
 
-LIBS_GIT = 'https://github.com/mobile-insight/mobileInsight-libs.git'
+LIBS_GIT = 'https://github.com/mobile-insight/mobileinsight-libs.git'
 
 def run_config():
-    # commands.getstatusoutput('wget --no-check-certificate https://wing1.cs.ucla.edu/gitlab/zyuan/mobileInsight-libs/repository/archive.zip\?ref\=master master.zip')
     os.system(
         'git clone {}'.format(LIBS_GIT))
     if os.path.isdir('./demo_app/data') is False:
         os.makedirs('./demo_app/data')
-    os.system('cp mobileInsight-libs/lib/* ./demo_app/data')
-    os.system('cp mobileInsight-libs/bin/* ./demo_app/data')
-    os.system('rm -rf mobileInsight-libs')
+    os.system('cp mobileinsight-libs/lib/* ./demo_app/data')
+    os.system('cp mobileinsight-libs/bin/* ./demo_app/data')
+    os.system('rm -rf mobileinsight-libs')
     if os.path.isfile('./config/config.yml') is True:
         os.system('cp ./config/config.yml ./config/config.yml.bak')
     os.system('tail -n+8 ./config/config_template.yml > ./config/config.yml')
@@ -226,13 +225,13 @@ if __name__ == '__main__':
     elif arg == 'update':
         try:
             plg = sys.argv[2]
-            phone_path = "/sdcard/mobile_insight/apps/" + plg
+            phone_path = "/sdcard/mobileinsight/apps/" + plg
             desktop_path = "./internal_app/" + plg
             if os.path.isdir(desktop_path):
                 os.system(
-                    'adb shell "rm -r /sdcard/mobile_insight/apps/{plugin}"'.format(plugin=plg))
+                    'adb shell "rm -r /sdcard/mobileinsight/apps/{plugin}"'.format(plugin=plg))
                 os.system(
-                    'adb push ./internal_app/{plugin} /sdcard/mobile_insight/apps/{plugin}'.format(plugin=plg))
+                    'adb push ./internal_app/{plugin} /sdcard/mobileinsight/apps/{plugin}'.format(plugin=plg))
             else:
                 print "Sorry, the plugin {plugin} does not exist".format(plugin=plg)
         except BaseException:
