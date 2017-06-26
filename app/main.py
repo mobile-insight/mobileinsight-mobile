@@ -60,6 +60,7 @@ def create_folder():
     try:
         legacy_mobileinsight_path = main_utils.get_legacy_mobileinsight_path
         cmd = cmd + "mv " + legacy_mobileinsight_path + " " + mobileinsight_path + "; "
+        cmd = cmd + "mv " + legacy_mobileinsight_path + "/apps/ " + mobileinsight_path + "/plugins/; "
     except:
         pass
 
@@ -114,22 +115,22 @@ def create_folder():
     return True
 
 
-def get_app_list():
+def get_plugin_list():
     '''
-    Load plugin lists, including both buil-in and 3rd-party plugins
+    Load plugin lists, including both built-in and 3rd-party plugins
     '''
 
     ret = {}  # app_name->(path,with_UI)
 
     APP_DIR = os.path.join(
-        str(current_activity.getFilesDir().getAbsolutePath()), "app")
+        str(current_activity.getFilesDir().getAbsolutePath()), "plugins")
     l = os.listdir(APP_DIR)
     for f in l:
         if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
             # ret.append(f)
             ret[f] = (os.path.join(APP_DIR, f), False)
 
-    # Yuanjie: support alternative path for users to customize their own app
+    # Yuanjie: support alternative path for users to customize their own plugin
     APP_DIR = main_utils.get_mobileinsight_plugin_path()
 
     if os.path.exists(APP_DIR):
@@ -174,7 +175,7 @@ class MobileInsightScreen(Screen):
             3. Check if Android's security policy allows MobileInsight to access diagnostic mode.
             This is mainly caused by SELinux
             4. Create necessary folders on SDcard (e.g., /sdcard/mobileinsight/, /sdcard/mobileinsight/log/)
-            5. Load built-in and 3rd-party plugins (located in /sdcard/mobileinsight/apps/)
+            5. Load built-in and 3rd-party plugins (located in /sdcard/mobileinsight/plugins/)
             6. Check if the diagnostic mode is enabled
             7. Load configurations from the setting panel (configs stored in /sdcard/.mobileinsight.ini)
         """
@@ -589,13 +590,13 @@ class MobileInsightScreen(Screen):
 
     def about(self):
         about_text = ('MobileInsight ' + main_utils.get_cur_version() + ' \n'
-                      + 'UCLA WiNG Group & OSU MSSN Lab\n\n'
+                      + 'MobileInsight Team\n\n'
                       + 'Developers:\n'
-                      + '     Yuanjie Li,\n'
-                      + '     Zengwen Yuan,\n'
-                      + '     Jiayao Li,\n'
-                      + '     Haotian Deng\n\n'
-                      + 'Copyright © 2014 – 2016')
+                      + '    Yuanjie Li,\n'
+                      + '    Zengwen Yuan,\n'
+                      + '    Jiayao Li,\n'
+                      + '    Haotian Deng\n\n'
+                      + 'Copyright (c) 2014 – 2017')
         popup = Popup(title='About MobileInsight',
                       content=Label(text=about_text),
                       size_hint=(.8, .4))

@@ -10,7 +10,7 @@ The main directories include
 ├── Makefile: Makefile which supports multiple compilation options
 ├── deploy.py: configs environments and parameters for compilation
 ├── config: application configurations
-├── demo_app: the main directory for MobileInsight apk
+├── app: the main directory for MobileInsight apk
 ├── diag_revealer: in-device raw cellular message extracter
 └── resources: application icon and welcome screen
 ```
@@ -18,7 +18,7 @@ The main directories include
 
 # Installation #
 
-The recommend way to install the `MobileInsight-mobile` repo and configure the application compilation environment is installing a Ubuntu 16.04 development image through our provided Vagrantfile.
+The recommend way to install the `mobileinsight-mobile` repo and configure the application compilation environment is installing a Ubuntu 16.04 development image through our provided Vagrantfile.
 
 However, if you feel that it is necessary for you to install on your host machine, please follow the exact instructions below. We have tested these steps on macOS 10.12 and Ubuntu 14.04/16.04.
 
@@ -26,7 +26,7 @@ However, if you feel that it is necessary for you to install on your host machin
 
 (a) Install our special version of `python-for-android`.
 
-`MobileInsight-mobile` uses `python-for-android` as the building tool. We added our core functionality in to a "recipe" in the `python-for-android` repo and fixed some bugs. Our current version is based on `python-for-android` v0.4.
+`mobileinsight-mobile` uses `python-for-android` as the building tool. We added our core functionality in to a "recipe" in the `python-for-android` repo and fixed some bugs. Our current version is based on `python-for-android` v0.4.
 
 ```shell
 $ git clone https://github.com/mobile-insight/python-for-android.git

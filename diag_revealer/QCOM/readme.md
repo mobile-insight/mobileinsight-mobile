@@ -1,4 +1,4 @@
-`diag_revealer_mtk` for Qualcomm
+`diag_revealer` for Qualcomm
 ------------------------------------
 
 This is `diag_revealer` for Qualcomm chipsets

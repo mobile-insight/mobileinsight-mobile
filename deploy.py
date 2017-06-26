@@ -23,10 +23,10 @@ LIBS_GIT = 'https://github.com/mobile-insight/mobileinsight-libs.git'
 def run_config():
     os.system(
         'git clone {}'.format(LIBS_GIT))
-    if os.path.isdir('./demo_app/data') is False:
-        os.makedirs('./demo_app/data')
-    os.system('cp mobileinsight-libs/lib/* ./demo_app/data')
-    os.system('cp mobileinsight-libs/bin/* ./demo_app/data')
+    if os.path.isdir('./app/data') is False:
+        os.makedirs('./app/data')
+    os.system('cp mobileinsight-libs/lib/* ./app/data')
+    os.system('cp mobileinsight-libs/bin/* ./app/data')
     os.system('rm -rf mobileinsight-libs')
     if os.path.isfile('./config/config.yml') is True:
         os.system('cp ./config/config.yml ./config/config.yml.bak')

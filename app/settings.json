@@ -3,7 +3,6 @@
         "type": "title",
         "title": "Startup"
     },
-
     {
         "type": "bool",
         "title": "Start MobileInsight on system startup",
@@ -11,7 +10,6 @@
         "section": "mi_general",
         "key": "bstartup"
     },
-
     {
         "type": "bool",
         "title": "Start plugin on startup",
@@ -19,20 +17,17 @@
         "section": "mi_general",
         "key": "bstartup_service"
     },
-
     {
         "type": "string",
         "title": "Default plugin on startup",
-        "desc": "The default plugin to run on MobileInsight startup. If empty, no service is to be started",
+        "desc": "The default plugin to run on MobileInsight startup. If empty, no service will be started",
         "section": "mi_general",
         "key": "start_service"
     },
-
     {
         "type": "title",
         "title": "Logging"
     },
-
     {
         "type"   : "options",
         "title"  : "Logging level",
@@ -41,12 +36,10 @@
         "key"    : "log_level",
         "options": ["debug", "info", "warning", "error", "critical"]
     },
-
     {
         "type": "title",
         "title": "Update"
     },
-
     {
         "type": "bool",
         "title": "Automatically check for update",
@@ -54,6 +47,4 @@
         "section": "mi_general",
         "key": "bcheck_update"
     }
-
-
 ]

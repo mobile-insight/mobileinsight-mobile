@@ -1,7 +1,7 @@
 `diag_revealer_mtk` for MediaTek
 ------------------------------------
 
-This is `diag_revealer` for mediaTek chipsets
+This is `diag_revealer` for MediaTek chipsets
 
 # Compilation guide:
 

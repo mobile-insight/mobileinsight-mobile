@@ -34,7 +34,7 @@ icon_path : resources/icon.png
 presplash_path : resources/presplash.jpg
 
 # replace it with your application path
-app_path : demo_app
+app_path : app
 
 # replace it with your path of Android SDK
 sdk_path : /home/vagrant/android-sdk
