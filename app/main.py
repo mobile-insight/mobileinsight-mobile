@@ -58,7 +58,7 @@ def create_folder():
         return False
 
     try:
-        legacy_mobileinsight_path = main_utils.get_legacy_mobileinsight_path
+        legacy_mobileinsight_path = main_utils.get_legacy_mobileinsight_path()
         cmd = cmd + "mv " + legacy_mobileinsight_path + " " + mobileinsight_path + "; "
         cmd = cmd + "mv " + legacy_mobileinsight_path + "/apps/ " + mobileinsight_path + "/plugins/; "
     except:
