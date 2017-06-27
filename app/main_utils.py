@@ -217,7 +217,7 @@ def get_mobileinsight_db_path():
     if not mobileinsight_path:
         return None
 
-    return os.path.join(mobileinsight_path, "cfg")
+    return os.path.join(mobileinsight_path, "dbs")
 
 
 def get_mobileinsight_plugin_path():
@@ -230,7 +230,7 @@ def get_mobileinsight_plugin_path():
     if not mobileinsight_path:
         return None
 
-    return os.path.join(mobileinsight_path, "apps")
+    return os.path.join(mobileinsight_path, "plugins")
 
 
 def get_mobileinsight_crash_log_path():

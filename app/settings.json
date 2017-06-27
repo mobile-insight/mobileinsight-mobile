@@ -45,6 +45,7 @@
         "title": "Automatically check for update",
         "desc": "Check available MobileInsight updates automatically",
         "section": "mi_general",
-        "key": "bcheck_update"
+        "key": "bcheck_update",
+        "default": "1"
     }
 ]
