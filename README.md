@@ -159,6 +159,13 @@ Then, you can follow the usage guide and compile the application. Basically, you
 	make dist
 	make app_debug
 
-For advanced topics, please refer to the wiki and our website.
 
 ## How to Contribute
+
+We love pull requests and discussing novel ideas. You can open issues here to report bugs. Feel free to improve MobileInsight and become a collaborator if you are interested.
+
+The following Slack group is used exclusively for discussions about developing the MobileInsight and its sister projects:
+
++ Dev Slack Group: https://mobileinsight-dev.slack.com
+
+For other advanced topics, please refer to the wiki and the [MobileInsight website](http://mobileinsight.net).
