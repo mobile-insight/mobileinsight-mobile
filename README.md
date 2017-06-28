@@ -25,18 +25,22 @@ First, install `virtualbox` and `vagrant`. You can follow the instructions at [V
 
 Second, obtain the newest `Vagrantfile` for MobileInsight development from the [release page](https://github.com/mobile-insight/mobileinsight-dev/releases). You should put it under your development path, say `/path/to/dev`. Run the `Vagrantfile` and install the virtual image using `vagrant up`. 
 
-	cd /path/to/dev
-	wget https://github.com/mobile-insight/mobileinsight-dev/archive/v1.0.tar.gz
-	tar -xf v1.0.tar.gz mobileinsight-dev-1.0/Vagrantfile
-	mv mobileinsight-dev-1.0/Vagrantfile .
-	rm -r mobileinsight-dev-1.0
-	vagrant up
+```
+cd /path/to/dev
+wget https://github.com/mobile-insight/mobileinsight-dev/archive/v1.0.tar.gz
+tar -xf v1.0.tar.gz mobileinsight-dev-1.0/Vagrantfile
+mv mobileinsight-dev-1.0/Vagrantfile .
+rm -r mobileinsight-dev-1.0
+vagrant up
+```
 
 Depending on the network and CPU speed, the installation may take half hour or longer.
 
 Then, when the process finish install and returns the shell, a MobileInsight app is already compiled and copied to your path (`/path/to/dev`). You can install it on supported Android phone and try it out immediately using `adb`.
 
-	adb install MobileInsight-3.0.0-debug.apk
+```
+adb install MobileInsight-3.0.0-debug.apk
+```
 
 For more details on using the provided `Vagrantfile` to configure the MobileInsight, please refer to the [`mobileinsight-dev` repo](https://github.com/mobile-insight/mobileinsight-dev).
 
@@ -47,35 +51,47 @@ Once the development virtual machine is installed, you can login and recompile t
 
 First, run `vagrant ssh` to login to the virtual machine. By default, everything is installed under the `/home/vagrant/mi-dev` folder.
 
-	(host shell) $ cd /path/to/dev
-	(vm shell)   $ vagrant ssh
-	(vm shell)   $ cd mi-dev
+```
+(host shell) $ cd /path/to/dev
+(vm shell)   $ vagrant ssh
+(vm shell)   $ cd mi-dev
+```
 
 The version and icon etc. of the MobileInsight app are configured by `config/config.yml` file.
 
 Next, you can compile the new apk using `make`:
 
-	make apk_debug
+```
+make apk_debug
+```
 
 If you want to sign your application, you need to specify the correct keystore path in `config/config.yml` file, and use
 
-	make apk_release
+```
+make apk_release
+```
 
 We have provided an example keystore at `config/example.jks`. The passwords are:
 
-	Passphrase for keystore: mobileinsight
-	Key password for mi3: mobileinsight
+```
+Passphrase for keystore: mobileinsight
+Key password for mi3: mobileinsight
+```
 
 The compiled APK can be copied out of the virtual machine and installed by copying to the `/vagrant` folder.
 
-	(vm shell)   $ cp MobileInsight-3.0.0-debug.apk /vagrant
-	(vm shell)   $ exit
-	(host shell) $ adb install -r MobileInsight-3.0.0-debug.apk
+```
+(vm shell)   $ cp MobileInsight-3.0.0-debug.apk /vagrant
+(vm shell)   $ exit
+(host shell) $ adb install -r MobileInsight-3.0.0-debug.apk
+```
 
 __NOTE__: If upstream core functionalities of MobileInsight ([`mobileinsight-core`](https://github.com/mobile-insight/mobileinsight-core)) changed, you need to clean the existing MobileInsight *distribution* and re-compile it:
 
-	make clean_dist
-	make dist
+```
+make clean_dist
+make dist
+```
 
 The newly compiled distribution will be called `<dist_name>` (in `config/config.yml`) and be stored in `<p4a_path>/dists/<dist_name>`.
 These steps are only required to be performed once if the core functionalities changes. More details on distribution can be found in [`python-for-android`'s documentation](https://python-for-android.readthedocs.io/en/latest/quickstart/#distribution-management).
@@ -89,23 +105,29 @@ The recommend way to install the `mobileinsight-mobile` repo and set up the envi
 
 `mobileinsight-mobile` uses `python-for-android` as the backend building tool. We added a `mobileinsight` **recipe** into the `python-for-android` repo and fixed some bugs to support the core functionality of `mobileinsight-core`.
 
-	git clone https://github.com/mobile-insight/python-for-android.git
-	cd python-for-android
-	python setup.py install
+```
+git clone https://github.com/mobile-insight/python-for-android.git
+cd python-for-android
+python setup.py install
+```
 
 2. Install Android SDK.
 
 Please follow [Google's official instructions](https://developer.android.com/studio/index.html). Please install following packages using the SDK manager:
 
-	platform-19 (API-19)
-	platform-tools (ver. 26.0.0)
-	build-tools (ver. 25.0.3)
+```
+platform-19 (API-19)
+platform-tools (ver. 26.0.0)
+build-tools (ver. 25.0.3)
+```
 
 If the installed SDK tool version is higher than `v25.2.5`, replace the latest SDK tools `$ANDROID_SDK_HOME/tools` with SDK tools version 25.2.5 to use `ant`. You may download it from:
 
-	Windows: https://dl.google.com/android/repository/tools_r25.2.5-windows.zip
-	macOS:   https://dl.google.com/android/repository/tools_r25.2.5-macosx.zip
-	Linux:   https://dl.google.com/android/repository/tools_r25.2.5-linux.zip
+```
+Windows: https://dl.google.com/android/repository/tools_r25.2.5-windows.zip
+macOS:   https://dl.google.com/android/repository/tools_r25.2.5-macosx.zip
+Linux:   https://dl.google.com/android/repository/tools_r25.2.5-linux.zip
+```
 
 Currently MobileInsight relies on __exactly__ Android SDK API level 19 and `ant` to compile the app. We are testing the latest API level 25 and new `gradle` compilation toolchain.
 
@@ -133,32 +155,39 @@ MobileInsight mobile version compilation dependends `python-for-android`, which 
 
 On Ubuntu, you can install them with
 
-	apt-get -y install build-essential git unzip ant ccache
-	apt-get -y install zlib1g-dev libtool ccache
-	apt-get -y install openjdk-8-jdk openjdk-8-jre
-	apt-get -y install python2.7-dev python-setuptools
-	apt-get -y install libc6:i386 libncurses5:i386 libstdc++6:i386 libbz2-1.0:i386 lib32z1 zlib1g:i386
-	pip install pyyaml xmltodict
+```
+apt-get -y install build-essential git unzip ant ccache
+apt-get -y install zlib1g-dev libtool ccache
+apt-get -y install openjdk-8-jdk openjdk-8-jre
+apt-get -y install python2.7-dev python-setuptools
+apt-get -y install libc6:i386 libncurses5:i386 libstdc++6:i386 libbz2-1.0:i386 lib32z1 zlib1g:i386
+pip install pyyaml xmltodict
+```
 
 On macOS, you can install them with [Homebrew](https://brew.sh), such as:
 
-	brew install git python zlib libtool ant ccache
-	brew cask install java
-	python -m pip install pyyaml xmltodict
+```
+brew install git python zlib libtool ant ccache
+brew cask install java
+python -m pip install pyyaml xmltodict
+```
 
 5. Clone this repository and create config file.
 
-	git clone https://github.com/mobile-insight/mobileinsight-mobile.git
-	cd mobileinsight-mobile
-	make config
-	nano config/config.yml
+```
+git clone https://github.com/mobile-insight/mobileinsight-mobile.git
+cd mobileinsight-mobile
+make config
+nano config/config.yml
+```
 
 You need to cutomize the configurations, especially specifying the path of your Android SDK/NDK and `python-for-android` storage path. 
 Then, you can follow the usage guide and compile the application. Basically, you can invoke
 
-	make dist
-	make app_debug
-
+```
+make dist
+make app_debug
+```
 
 ## How to Contribute
 
