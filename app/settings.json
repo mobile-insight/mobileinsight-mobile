@@ -1,0 +1,51 @@
+[
+    {
+        "type": "title",
+        "title": "Startup"
+    },
+    {
+        "type": "bool",
+        "title": "Start MobileInsight on system startup",
+        "desc": "Run MobileInsight services on startup",
+        "section": "mi_general",
+        "key": "bstartup"
+    },
+    {
+        "type": "bool",
+        "title": "Start plugin on startup",
+        "desc": "Run plugin services on MobileInsight startup",
+        "section": "mi_general",
+        "key": "bstartup_service"
+    },
+    {
+        "type": "string",
+        "title": "Default plugin on startup",
+        "desc": "The default plugin to run on MobileInsight startup. If empty, no service will be started",
+        "section": "mi_general",
+        "key": "start_service"
+    },
+    {
+        "type": "title",
+        "title": "Logging"
+    },
+    {
+        "type"   : "options",
+        "title"  : "Logging level",
+        "desc"   : "The logging level of monitor/analyzers on screen",
+        "section": "mi_general",
+        "key"    : "log_level",
+        "options": ["debug", "info", "warning", "error", "critical"]
+    },
+    {
+        "type": "title",
+        "title": "Update"
+    },
+    {
+        "type": "bool",
+        "title": "Automatically check for update",
+        "desc": "Check available MobileInsight updates automatically",
+        "section": "mi_general",
+        "key": "bcheck_update",
+        "default": "1"
+    }
+]

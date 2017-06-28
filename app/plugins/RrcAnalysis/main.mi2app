@@ -1,0 +1,26 @@
+#!/usr/bin/python
+import os
+import sys
+
+# Import MobileInsight modules
+from mobile_insight.monitor import OnlineMonitor
+from mobile_insight.analyzer import LteRrcAnalyzer, WcdmaRrcAnalyzer
+import mi2app_utils
+
+cache_directory = mi2app_utils.get_cache_dir()
+log_directory = os.path.join(cache_directory, "mi2log")
+
+# Initialize a 3G/4G monitor
+src = OnlineMonitor()
+src.set_log_directory(log_directory)
+src.set_skip_decoding(False)
+
+# Enable 3G/4G RRC (radio resource control) monitoring
+lte_rrc_analyzer = LteRrcAnalyzer()
+lte_rrc_analyzer.set_source(src)
+
+wcdma_rrc_analyzer = WcdmaRrcAnalyzer()
+wcdma_rrc_analyzer.set_source(src)
+
+# Start the monitoring
+src.run()

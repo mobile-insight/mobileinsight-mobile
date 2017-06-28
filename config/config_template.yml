@@ -5,28 +5,26 @@
 # file in config.yml        #
 #############################
 
-# replace it with your path of mobileInsight-mobile
-mi_dev_path : /path/to/mobileInsight-mobile
+# replace it with your path of mobileinsight-mobile
+mi_dev_path : /home/vagrant/mi-dev/mobileinsight-mobile
 
 # replace it with python-for-android storage dir
-p4a_path : /path/to/.python-for-android/
+p4a_path : /home/vagrant/.python-for-android/
 
 app_name : MobileInsight
 
-# 2016-04-01: 2.0.0 released
-# 2016-05-16: 2.0.4 test
-# 2016-06-27: 2.0.5 test
-app_version : 2.x.y
+app_version : 3.0.0
 
-pkg_name : edu.ucla.cs.wing.mobileinsight
+pkg_name : net.mobileinsight.app
 
-dist_name : mi2
+dist_name : mi3
 
 bootstrap : pygame
 
 # replace it with your minimal Android API level
 minsdk : 14
 
+# package requirements
 requirements : pyserial,kivy,mobileinsight
 
 # replace it with your application icon path
@@ -36,19 +34,19 @@ icon_path : resources/icon.png
 presplash_path : resources/presplash.jpg
 
 # replace it with your application path
-app_path : demo_app
+app_path : app
 
 # replace it with your path of Android SDK
-sdk_path : /path/to/sdk
+sdk_path : /home/vagrant/android-sdk
 
 # replace it with your Android SDK version (compiling Android API level)
 api_level : 19
 
 # replace it with your Android NDK path
-ndk_path : /path/to/ndk
+ndk_path : /home/vagrant/android-ndk-r10e
 
 # replace it with your Android NDK version
-ndk_version : r10e
+ndk_version : r10e-rc4
 
 # replace it with your desired target arch
 arch : armeabi
@@ -57,10 +55,10 @@ orientation : portrait
 
 whitelist : config/whitelist.txt
 
-keystore : config/mi2-release-key.keystore
+keystore : config/example.jks
 
-signkey : mi2-key
+signkey : mi-key
 
 # This should work but currently has bug
-# keystorepw : keystore-password
-# signkeypw : key-password
+keystorepw : mobileinsight
+signkeypw : mobileinsight
