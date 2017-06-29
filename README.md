@@ -140,9 +140,10 @@ Please download the __exact__ version of Android NDK r10e from [Google's archive
 MobileInsight mobile version compilation dependends `python-for-android`, which requires:
 
 + git
++ build-essential
 + ant
 + python2
-+ cython
++ cython (version 0.25.2)
 + a Java JDK
 + zlib (including 32 bit)
 + libncurses (including 32 bit)
@@ -157,19 +158,20 @@ On Ubuntu, you can install them with
 
 ```
 apt-get -y install build-essential git unzip ant ccache
+apt-get -y install autoconf automake
 apt-get -y install zlib1g-dev libtool ccache
 apt-get -y install openjdk-8-jdk openjdk-8-jre
 apt-get -y install python2.7-dev python-setuptools
 apt-get -y install libc6:i386 libncurses5:i386 libstdc++6:i386 libbz2-1.0:i386 lib32z1 zlib1g:i386
-pip install pyyaml xmltodict
+pip install cython pyyaml xmltodict
 ```
 
 On macOS, you can install them with [Homebrew](https://brew.sh), such as:
 
 ```
-brew install git python zlib libtool ant ccache
 brew cask install java
-python -m pip install pyyaml xmltodict
+brew install git python zlib libtool ant ccache autoconf automake
+python -m pip install cython pyyaml xmltodict
 ```
 
 5. Clone this repository and create config file.
@@ -196,5 +198,6 @@ We love pull requests and discussing novel ideas. You can open issues here to re
 The following Slack group is used exclusively for discussions about developing the MobileInsight and its sister projects:
 
 + Dev Slack Group: https://mobileinsight-dev.slack.com
++ Email: mobileinsight.team@gmail.com
 
 For other advanced topics, please refer to the wiki and the [MobileInsight website](http://mobileinsight.net).
