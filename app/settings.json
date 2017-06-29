@@ -22,7 +22,8 @@
         "title": "Default plugin on startup",
         "desc": "The default plugin to run on MobileInsight startup. If empty, no service will be started",
         "section": "mi_general",
-        "key": "start_service"
+        "key": "start_service",
+        "default": "NetLogger"
     },
     {
         "type": "title",
