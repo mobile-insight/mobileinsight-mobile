@@ -233,13 +233,12 @@ if __name__ == '__main__':
     elif arg == 'update':
         try:
             plg = sys.argv[2]
-            phone_path = "/sdcard/mobileinsight/apps/" + plg
             desktop_path = "./internal_app/" + plg
             if os.path.isdir(desktop_path):
                 os.system(
-                    'adb shell "rm -r /sdcard/mobileinsight/apps/{plugin}"'.format(plugin=plg))
+                    'adb shell "rm -r /sdcard/mobileinsight/plugins/{plugin}"'.format(plugin=plg))
                 os.system(
-                    'adb push ./internal_app/{plugin} /sdcard/mobileinsight/apps/{plugin}'.format(plugin=plg))
+                    'adb push ./internal_app/{plugin} /sdcard/mobileinsight/plugins/{plugin}'.format(plugin=plg))
             else:
                 print "Sorry, the plugin {plugin} does not exist".format(plugin=plg)
         except BaseException:
