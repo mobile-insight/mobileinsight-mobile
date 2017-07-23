@@ -94,6 +94,19 @@ def get_device_id():
     return deviceId
 
 
+def get_sdcard_path():
+    """
+    Return the sdcard path of MobileInsight, or None if not accessible
+    """
+    Environment = autoclass("android.os.Environment")
+    state = Environment.getExternalStorageState()
+    if not Environment.MEDIA_MOUNTED == state:
+        return None
+
+    sdcard_path = Environment.getExternalStorageDirectory().toString()
+    return sdcard_path
+
+
 def get_mobileinsight_path():
     """
     Return the root path of MobileInsight, or None if not accessible
