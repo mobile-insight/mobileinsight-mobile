@@ -1,44 +1,39 @@
 import kivy
 kivy.require('1.0.9')
 
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.scrollview import ScrollView
-from kivy.uix.popup import Popup
-from kivy.uix.label import Label
-from kivy.uix.button import Button
-from kivy.properties import *
+from android import AndroidService
+from android.broadcast import BroadcastReceiver
+from collections import deque
+from jnius import autoclass, cast
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.config import ConfigParser
 from kivy.core.window import Window
 from kivy.lang import Builder
+from kivy.properties import *
+from kivy.uix.button import Button
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.label import Label
+from kivy.uix.popup import Popup
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.scrollview import ScrollView
 from kivy.utils import platform
-from kivy.config import ConfigParser
-
-from android import AndroidService
-from jnius import autoclass, cast
-import jnius
-
+from log_viewer_app import LogViewerScreen
+import datetime
 import functools
+import jnius
+import json
+import main_utils
 import os
+import re
 import shlex
-import sys
+import shutil
+import stat
 import subprocess
+import sys
 import threading
 import time
 import traceback
-import re
-import datetime
-import shutil
-import stat
-import json
-import datetime
-
-import main_utils
-from log_viewer_app import LogViewerScreen
-
-from collections import deque
-from android.broadcast import BroadcastReceiver
 
 # Load main UI
 Window.softinput_mode = "pan"
@@ -566,7 +561,10 @@ class MobileInsightScreen(Screen):
             self.log_error(str(traceback.format_exc()))
 
         if self.service:
-            while (not self.pluginAck):
+            start_time = datetime.datetime.utcnow()
+            current_time = datetime.datetime.utcnow()
+            while (not self.pluginAck and (current_time - start_time).total_seconds() < 5):
+                current_time = datetime.datetime.utcnow()
                 pass
             self.service.stop()
             self.service = None
