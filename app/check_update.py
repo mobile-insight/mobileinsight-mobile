@@ -153,7 +153,8 @@ def check_update():
     """
     global apk_url
 
-    update_meta_url = "http://metro.cs.ucla.edu/mobile_insight/update_meta.json"
+    # update_meta_url = "http://metro.cs.ucla.edu/mobile_insight/update_meta.json"
+    update_meta_url = "http://mobileinsight.net/update_meta.json"
     update_meta_path = os.path.join(get_cache_dir(), "update_meta.json")
 
     if os.path.isfile(update_meta_path):
