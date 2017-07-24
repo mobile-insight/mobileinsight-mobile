@@ -19,8 +19,8 @@
     active: False
     text: ''
     group: None
-
     CheckBox:
+        id: cbox
         canvas.before:
             Color:
                 rgba: 0,0,0,1
@@ -32,8 +32,9 @@
         size_hint_x: None
         font_size: "24sp"
         on_active: root.callback(*args)
+            
 
-    Label:
+    Button:
         canvas.before:
             Color:
                 rgba: 0,0,0,1
@@ -45,25 +46,32 @@
         color: 1,1,1,1
         bcolor: 0,0,0,1
         text_width: self.width
+        on_press: 
+            root.callback(cbox, True)
+            root.callback(cbox, True)
+        
+
 
 # Main screen
 <MobileInsightScreen>:
     GridLayout:
         cols: 1
-
+        size_hint_y: 1
         ScrollableLabel:
             text: '%s' % root.error_log
-            size_hint_y: 6
+            size_hint_y: 4
 
         ScrollView:
             id: checkbox_app
-            size_hint_y: 8
+            height: run_plugin.height*2
+            width: run_plugin.width
+            size_hint_y: None 
             font_size: "24sp"
             selected: ""
-
             BoxLayout:
                 id: checkbox_app_layout
                 orientation: 'vertical'
+                size_hint_y: None
 
         Button:
             id: run_plugin

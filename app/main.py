@@ -217,13 +217,14 @@ class MobileInsightScreen(Screen):
 
         first = True
         for name in self.plugins_list:
-            widget = LabeledCheckBox(text=name, group="app")
+            widget = LabeledCheckBox(text = name, group = "app")
             if first:
                 widget.active = True
                 self.ids.checkbox_app.selected = name
                 first = False
-            widget.bind(on_active=self.on_checkbox_app_active)
+            widget.bind(on_active = self.on_checkbox_app_active)
             self.ids.checkbox_app_layout.add_widget(widget)
+        self.ids.checkbox_app_layout.height = len(self.plugins_list)*230
 
         # If default service exists, launch it
         try:
@@ -450,6 +451,11 @@ class MobileInsightScreen(Screen):
 
     def on_checkbox_app_active(self, obj):
         for cb in self.ids.checkbox_app_layout.children:
+            if cb is not obj:    
+                cb.active = False
+
+
+        for cb in self.ids.checkbox_app_layout.children:
             if cb.active:
                 self.ids.checkbox_app.selected = cb.text
 
@@ -648,8 +654,7 @@ class LabeledCheckBox(GridLayout):
     def callback(self, cb, value):
         self.active = value
         self.dispatch("on_active")
-
-
+  
 class MobileInsightApp(App):
     screen = None
     use_kivy_settings = False
