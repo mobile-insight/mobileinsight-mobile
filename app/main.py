@@ -32,11 +32,13 @@ import datetime
 import shutil
 import stat
 import json
+import datetime
 
 import main_utils
 from log_viewer_app import LogViewerScreen
 
 from collections import deque
+from android.broadcast import BroadcastReceiver
 
 # Load main UI
 Window.softinput_mode = "pan"
@@ -532,8 +534,34 @@ class MobileInsightScreen(Screen):
         else:
             self.error_log = "Error: " + app_name + "cannot be launched!"
 
+    def on_broadcastStopServiceAck(self, context, intent):
+        self.log_info("Received MobileInsight.Plugin.StopServiceAck from plugin")
+        self.pluginAck = True
+
     def stop_service(self):
+        # Registe listener for 'MobileInsight.Plugin.StopServiceAck' intent
+        # from plugin
+        self.log_info("Ready to stop current plugin ...")
+        self.pluginAck = False
+        self.br = BroadcastReceiver(self.on_broadcastStopServiceAck,
+                actions=['MobileInsight.Plugin.StopServiceAck'])
+        self.br.start()
+
+        # Using broadcast to send 'MobileInsight.Main.StopService' intent to
+        # plugin
+        IntentClass = autoclass("android.content.Intent")
+        intent = IntentClass()
+        action = 'MobileInsight.Main.StopService'
+        intent.setAction(action)
+        try:
+            current_activity.sendBroadcast(intent)
+        except Exception as e:
+            import traceback
+            self.log_error(str(traceback.format_exc()))
+
         if self.service:
+            while (not self.pluginAck):
+                pass
             self.service.stop()
             self.service = None
             if self.terminal_stop:
@@ -543,7 +571,7 @@ class MobileInsightScreen(Screen):
                 "Plugin stopped. Detailed analytic results are saved in " +
                 self.log_name)
 
-            self.stop_collection()  # close ongoing collections
+            self.stop_collection()  # close ongoing collections (diag_revealer)
 
             # Haotian: save orphan log
             dated_files = []
@@ -558,8 +586,7 @@ class MobileInsightScreen(Screen):
             dated_files.reverse()
             if len(dated_files) > 0:
                 self.__original_filename = dated_files[0][1]
-                # print "The last orphan log file: " +
-                # str(self.__original_filename)
+                print "Find orphan log file at Main: " + str(self.__original_filename)
                 chmodcmd = "chmod 644 " + self.__original_filename
                 p = subprocess.Popen(
                     "su ",

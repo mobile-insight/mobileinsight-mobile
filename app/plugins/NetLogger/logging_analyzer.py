@@ -11,21 +11,23 @@ Version : 3.1  Attempt upload again when WiFi is available
           1.0  Init NetLogger
 '''
 
-import os
-import time
-import shutil
-import urllib
-import urllib2
-import logging
+
+from android.broadcast import BroadcastReceiver
+from jnius import autoclass
+from mobile_insight.analyzer import Analyzer
 import datetime
 import itertools
+import logging
+import mi2app_utils as util
 import mimetools
 import mimetypes
-import threading
+import os
+import shutil
 import subprocess
-
-from mobile_insight.analyzer import Analyzer
-import mi2app_utils as util
+import threading
+import time
+import urllib
+import urllib2
 
 # logging.basicConfig(level=logging.DEBUG,
 #                     format='[%(levelname)s] (%(threadName)-10s) %(message)s',
@@ -173,6 +175,25 @@ class LoggingAnalyzer(Analyzer):
             os.makedirs(self.__dec_log_dir)
 
         self.add_source_callback(self._logger_filter)
+
+        self.br = BroadcastReceiver(self.on_broadcast,
+                actions=['MobileInsight.Main.StopService'])
+        self.br.start()
+
+    def on_broadcast(self, context, intent):
+        '''
+        This plugin is going to be stopped, finish closure work
+        '''
+        IntentClass = autoclass("android.content.Intent")
+        intent = IntentClass()
+        action = 'MobileInsight.Plugin.StopServiceAck'
+        intent.setAction(action)
+        try:
+            util.pyService.sendBroadcast(intent)
+        except Exception as e:
+            import traceback
+            self.log_error(str(traceback.format_exc()))
+
 
     def __del__(self):
         self.log_info("__del__ is called")
