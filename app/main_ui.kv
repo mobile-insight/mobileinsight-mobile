@@ -12,100 +12,55 @@
         line_height: 1
         valign: 'bottom'
         max_lines: 4
-        markup: True
-
-<LabeledCheckBox@GridLayout>:
-    cols: 2
-    active: False
-    text: ''
-    group: None
-    CheckBox:
-        id: cbox
-        canvas.before:
-            Color:
-                rgba: 0,0,0,1
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        active: root.active
-        group: root.group
-        size_hint_x: None
-        font_size: "24sp"
-        on_active: root.callback(*args)
-            
-
-    Button:
-        canvas.before:
-            Color:
-                rgba: 0,0,0,1
-            Rectangle:
-                pos: self.pos
-                size: self.size
-        text: root.text
-        font_size: "24sp"
-        color: 1,1,1,1
-        bcolor: 0,0,0,1
-        text_width: self.width
-        on_press: 
-            root.callback(cbox, True)
-            root.callback(cbox, True)
-        
+        markup: True 
 
 
 # Main screen
 <MobileInsightScreen>:
     GridLayout:
         cols: 1
-        size_hint_y: 1
         ScrollableLabel:
             text: '%s' % root.error_log
-            size_hint_y: 4
+            size_hint_y: 6
 
-        ScrollView:
-            id: checkbox_app
-            height: run_plugin.height*2
-            width: run_plugin.width
-            size_hint_y: None 
-            font_size: "24sp"
-            selected: ""
-            BoxLayout:
-                id: checkbox_app_layout
-                orientation: 'vertical'
-                size_hint_y: None
+        Button:
+            id: selectButton
+            on_release: root.popUpMenu()
+            height: run_plugin.height
+            size: run_plugin.size
 
         Button:
             id: run_plugin
-            text: 'Run selected plugin'
-            disabled: root.ids.checkbox_app.selected == ''
             size_hint_y: 2.5
+            text: "Run Plugin"
             font_size: "24sp"
-            on_release: root.start_service(root.ids.checkbox_app.selected)
+            on_release: root.start_service(root.selectedPlugin)
 
         Button:
             id: stop_plugin
-            text: 'Stop %s' % root.default_app_name
-            disabled: root.ids.checkbox_app.selected == ''
+            text: 'Stop %s' % str(root.selectedPlugin)
+            #disabled: root.ids.checkbox_app.selected == ''
             size_hint_y: 2.5
             font_size: "24sp"
             on_release: root.stop_service()
 
         Button:
             text: 'LogViewer' 
-            disabled: root.ids.checkbox_app.selected == ''
+            #disabled: root.ids.checkbox_app.selected == ''
             size_hint_y: 2.5
             font_size: "24sp"
             on_release: app.manager.current = 'LogViewerScreen'; app.log_viewer_screen.onOpen()
 
         Button:
             text: 'Settings' 
-            disabled: root.ids.checkbox_app.selected == ''
+            #disabled: root.ids.checkbox_app.selected == ''
             size_hint_y: 2.5
             font_size: "24sp"
             on_release: app.open_settings()
 
         Button:
             text: 'About' 
-            disabled: root.ids.checkbox_app.selected == ''
+            #disabled: root.ids.checkbox_app.selected == ''
             size_hint_y: 2.5
             font_size: "24sp"
             on_release: root.about()
