@@ -1,8 +1,7 @@
-import kivy
-kivy.require('1.0.9')
 
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
@@ -150,7 +149,7 @@ def get_plugins_list():
                 ret[tmp_name] = (os.path.join(APP_DIR, f), False)
     else:  # create directory for user-customized apps
         create_folder()
-
+    
     return ret
 
 # class MobileInsightScreen(GridLayout):
@@ -166,7 +165,12 @@ class MobileInsightScreen(Screen):
     terminal_stop = None
     MAX_LINE = 30
     logs = deque([],MAX_LINE)
-
+    plugins = []
+    selectedPlugin = ""
+    myLayout = GridLayout(cols = 2,orientation = "vertical", size_hint_y = None, height = len(get_plugins_list())*300)
+    popupScroll = ScrollView(size_hint_y = None, size = (Window.width, Window.height*.9))
+    popupScroll.add_widget(myLayout)
+    popup = Popup(content = popupScroll, title = "Choose a plugin")
     def __init__(self, name):
         """
         Initialization function. We will do the following task (in order):
@@ -215,14 +219,23 @@ class MobileInsightScreen(Screen):
 
         first = True
         for name in self.plugins_list:
-            widget = LabeledCheckBox(text = name, group = "app")
+            widget = Button(halign = "left", valign = "top", on_release = self.callback)
+            widget.text_size = (Window.width/2.5, Window.height/4)
+            widget.texture_size = widget.size
+            self.myLayout.add_widget(widget)
+
             if first:
-                widget.active = True
-                self.ids.checkbox_app.selected = name
+                self.selectedPlugin = name
                 first = False
-            widget.bind(on_active = self.on_checkbox_app_active)
-            self.ids.checkbox_app_layout.add_widget(widget)
-        self.ids.checkbox_app_layout.height = len(self.plugins_list)*230
+                #self.ids.run_plugin.text = "Run Plugin: " + self.selectedPlugin
+                self.ids.selectButton.text = "Select Plugin: " + self.selectedPlugin
+            app_path = self.plugins_list[name][0]
+            if os.path.exists(os.path.join(app_path, "readme.txt")):
+                with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
+                    my_description = ": " + ff.read()
+            else: 
+                my_description = "no description."
+            widget.text = name + ": " + my_description
 
         # If default service exists, launch it
         try:
@@ -234,7 +247,12 @@ class MobileInsightScreen(Screen):
                 self.start_service(default_app_name)
         except Exception as e:
             pass
-
+    def callback(self, obj):
+        self.selectedPlugin = obj.text[0:obj.text.find(":")]
+        self.ids.selectButton.text = "Select Plugin: " + self.selectedPlugin
+        #self.ids.run_plugin.text = "Run Plugin: " + self.selectedPlugin
+        self.popup.dismiss()
+        
 
     def log_info(self, msg):
         self.append_log("[b][color=00ff00][INFO][/color][/b]: " + msg)
@@ -304,7 +322,7 @@ class MobileInsightScreen(Screen):
         """
         Check if diagnostic mode is enabled.
         Note that this function is chipset-specific: Qualcomm and MTK have different detection approaches
-        """
+"""
         chipset_type = main_utils.get_chipset_type()
         if chipset_type == main_utils.ChipsetType.QUALCOMM:
             diag_port = "/dev/diag"
@@ -447,28 +465,6 @@ class MobileInsightScreen(Screen):
                 self.append_log(str(traceback.format_exc()))
                 no_error = False
 
-    def on_checkbox_app_active(self, obj):
-        for cb in self.ids.checkbox_app_layout.children:
-            if cb is not obj:    
-                cb.active = False
-
-
-        for cb in self.ids.checkbox_app_layout.children:
-            if cb.active:
-                self.ids.checkbox_app.selected = cb.text
-
-        # Yuanjie: try to load readme.txt
-        if self.service:
-            return True
-
-        app_path = self.plugins_list[self.ids.checkbox_app.selected][0]
-        if os.path.exists(os.path.join(app_path, "readme.txt")):
-            with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
-                self.error_log = self.ids.checkbox_app.selected + ": " + ff.read()
-        else:
-            self.error_log = self.ids.checkbox_app.selected + ": no descriptions."
-
-        return True
 
     def stop_collection(self):
         res = main_utils.run_shell_cmd("ps").split('\n')
@@ -477,7 +473,6 @@ class MobileInsightScreen(Screen):
                 pid = item.split()[1]
                 cmd = "kill "+pid
                 main_utils.run_shell_cmd(cmd)
-
 
     """
     def stop_collection(self):
@@ -508,6 +503,10 @@ class MobileInsightScreen(Screen):
             cmd2 = "kill " + " ".join([str(pid) for pid in diag_procs])
             main_utils.run_shell_cmd(cmd2)
     """
+
+    def popUpMenu(self):
+        self.popup.open()
+
 
     def start_service(self, app_name):
         if platform == "android" and app_name in self.plugins_list:
