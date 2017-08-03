@@ -34,7 +34,7 @@ import stat
 import json
 
 import main_utils
-# from log_viewer_app import LogViewerScreen
+from log_viewer_app import LogViewerScreen
 
 from collections import deque
 
@@ -598,7 +598,7 @@ class MobileInsightApp(App):
     def build_config(self, config):
         # the ordering of the following options MUST be the same as settings.json!
 
-        print "[debug 600] HELLO! create mi_general"
+        # print "[debug 600] HELLO! create mi_general"
         config.setdefaults('mi_general', {
             'bcheck_update': 0,
             'log_level': 'info',
@@ -645,17 +645,17 @@ class MobileInsightApp(App):
         self.screen = MobileInsightScreen(name='MobileInsightScreen')
         self.manager = ScreenManager()
         self.manager.add_widget(self.screen)
-        # try:
-        #     self.log_viewer_screen = LogViewerScreen(
-        #         name='LogViewerScreen', screen_manager=self.manager)
-        #     self.manager.add_widget(self.log_viewer_screen)
-        # except Exception as e:
-        #     import traceback
-        #     import crash_app
-        #     print str(traceback.format_exc())
-        #     self.screen.ids.log_viewer.disabled = True
-        #     self.screen.ids.stop_plugin.disabled = True
-        #     self.screen.ids.run_plugin.disabled = True
+        try:
+            self.log_viewer_screen = LogViewerScreen(
+                name='LogViewerScreen', screen_manager=self.manager)
+            self.manager.add_widget(self.log_viewer_screen)
+        except Exception as e:
+            import traceback
+            import crash_app
+            print str(traceback.format_exc())
+            self.screen.ids.log_viewer.disabled = True
+            self.screen.ids.stop_plugin.disabled = True
+            self.screen.ids.run_plugin.disabled = True
 
         self.manager.current = 'MobileInsightScreen'
         Window.borderless = False

@@ -1,5 +1,5 @@
 import kivy
-kivy.require('1.4.0')
+# kivy.require('1.4.0')
 
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -22,8 +22,8 @@ from kivy.factory import Factory
 from kivy.graphics import *
 from kivy.properties import ObjectProperty, StringProperty
 
-from mobile_insight.analyzer import LogAnalyzer
-from mobile_insight.monitor.dm_collector.dm_endec.dm_log_packet import DMLogPacket
+# from mobile_insight.analyzer import LogAnalyzer
+# from mobile_insight.monitor.dm_collector.dm_endec.dm_log_packet import DMLogPacket
 
 from datetime import datetime, timedelta
 from threading import Thread
