@@ -61,7 +61,6 @@ class CrashApp(App):
 
     def __upload_crash_log(self, file_path):
 
-        # http_url = 'http://metro.cs.ucla.edu/mobile_insight/upload_crash_log.php'
         http_url = 'http://mobileinsight.net/upload_crash_log.php'
 
         # Find log path

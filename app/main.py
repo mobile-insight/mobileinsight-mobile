@@ -1,3 +1,6 @@
+# Main.py for MobileInsight iOS version
+# Author: Zengwen Yuan
+#         Yuanjie Li
 
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.gridlayout import GridLayout
@@ -13,10 +16,6 @@ from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.utils import platform
 from kivy.config import ConfigParser
-
-from android import AndroidService
-from jnius import autoclass, cast
-import jnius
 
 import functools
 import os
@@ -41,8 +40,8 @@ from collections import deque
 Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
 Builder.load_file('main_ui.kv')
-current_activity = cast("android.app.Activity", autoclass(
-    "org.renpy.android.PythonActivity").mActivity)
+# current_activity = cast("android.app.Activity", autoclass(
+#     "org.renpy.android.PythonActivity").mActivity)
 
 LOGO_STRING = "MobileInsight " + main_utils.get_cur_version() + \
     "\nCopyright (c) 2015-2017 MobileInsight Team"
@@ -276,53 +275,12 @@ class MobileInsightScreen(Screen):
     #     else:
     #         self.line_count += 1
 
-    def __check_security_policy(self):
-        """
-        Update SELinux policy.
-        For Nexus 6/6P, the SELinux policy may forbids the log collection.
-        """
-
-        cmd = "setenforce 0; "
-
-        cmd = cmd + "supolicy --live \"allow init logd dir getattr\";"
-
-        # # Depreciated supolicies. Still keep them for backup purpose
-        cmd = cmd + "supolicy --live \"allow init init process execmem\";"
-        cmd = cmd + \
-            "supolicy --live \"allow atfwd diag_device chr_file {read write open ioctl}\";"
-        cmd = cmd + "supolicy --live \"allow init properties_device file execute\";"
-        cmd = cmd + \
-            "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
-
-        # # Suspicious supolicies: MI works without them, but it seems that they SHOULD be enabled...
-
-        # # mi2log permission denied (logcat | grep denied), but no impact on log collection/analysis
-        cmd = cmd + \
-            "supolicy --live \"allow untrusted_app app_data_file file {rename}\";"
-
-        # # Suspicious: why still works after disabling this command? Won't FIFO fail?
-        cmd = cmd + \
-            "supolicy --live \"allow init app_data_file fifo_file {write open getattr}\";"
-        cmd = cmd + \
-            "supolicy --live \"allow init diag_device chr_file {getattr write ioctl}\"; "
-
-        # Nexus 6 only
-        cmd = cmd + \
-            "supolicy --live \"allow untrusted_app diag_device chr_file {write open getattr}\";"
-        cmd = cmd + \
-            "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
-        cmd = cmd + \
-            "supolicy --live \"allow netmgrd diag_device chr_file {read write}\";"
-        cmd = cmd + \
-            "supolicy --live \"allow rild diag_device chr_file {read write}\";"
-
-        main_utils.run_shell_cmd(cmd)
 
     def __check_diag_mode(self):
         """
         Check if diagnostic mode is enabled.
         Note that this function is chipset-specific: Qualcomm and MTK have different detection approaches
-"""
+        """
         chipset_type = main_utils.get_chipset_type()
         if chipset_type == main_utils.ChipsetType.QUALCOMM:
             diag_port = "/dev/diag"
@@ -361,7 +319,6 @@ class MobileInsightScreen(Screen):
                         os.path.join(libs_path, lib) + " " + os.path.join(libs_path, sym_lib) + "; "
 
         exes = ["diag_revealer",
-                "diag_revealer_mtk",
                 "android_pie_ws_dissector",
                 "android_ws_dissector"]
         for exe in exes:
@@ -369,58 +326,6 @@ class MobileInsightScreen(Screen):
 
         cmd = cmd + "chmod -R 755 " + libs_path
         main_utils.run_shell_cmd(cmd)
-
-    # def __init_libs(self):
-    #     """
-    #     Initialize libs required by MobileInsight
-    #     """
-
-    #     libs_path = os.path.join(main_utils.get_files_dir(), "data")
-
-    #     libs = ["libglib-2.0.so",
-    #             "libgmodule-2.0.so",
-    #             "libgobject-2.0.so",
-    #             "libgthread-2.0.so",
-    #             "libwireshark.so",
-    #             "libwiretap.so",
-    #             "libwsutil.so"]
-
-    #     cmd = "mount -o remount,rw /system; "
-
-    #     for lib in libs:
-    #         # if not os.path.isfile(os.path.join("/system/lib",lib)):
-    #         if True:
-    #             cmd = cmd + " cp " + os.path.join(libs_path, lib) + " /system/lib/; "
-    #             cmd = cmd + " chmod 755 " + os.path.join("/system/lib", lib) + "; "
-
-    #     # sym links for some libs
-    #     libs_mapping = {"libwireshark.so": ["libwireshark.so.6", "libwireshark.so.6.0.1"],
-    #                   "libwiretap.so": ["libwiretap.so.5", "libwiretap.so.5.0.1"],
-    #                   "libwsutil.so": ["libwsutil.so.6", "libwsutil.so.6.0.0"]}
-
-    #     for lib in libs_mapping:
-    #         for sym_lib in libs_mapping[lib]:
-    #             # if not os.path.isfile("/system/lib/"+sym_lib):
-    #             if True:
-    #                cmd = cmd + " ln -s /system/lib/" + lib + " /system/lib/" + sym_lib + "; "
-    #                cmd = cmd + " chmod 755 /system/lib/" + sym_lib + "; "
-
-    #     # print cmd  # debug mode
-
-    #     # bins
-    #     exes = ["diag_revealer",
-    #             "android_pie_ws_dissector",
-    #             "android_ws_dissector"]
-    #     for exe in exes:
-    #         # if not os.path.isfile(os.path.join("/system/bin",exe)):
-    #         if True:
-    #             cmd = cmd + " cp " + os.path.join(libs_path, exe) + " /system/bin/; "
-    #             # 0755, not 755. "0" means "+x" on Android phones
-    #             cmd = cmd + " chmod 0755 " + os.path.join("/system/bin/", exe) + "; "
-
-    #     if cmd:
-    #         # at least one lib should be copied
-    #         main_utils.run_shell_cmd(cmd)
 
     def show_log(self):
 
@@ -626,8 +531,11 @@ class LabeledCheckBox(GridLayout):
     def callback(self, cb, value):
         self.active = value
         self.dispatch("on_active")
-  
+
+
 class MobileInsightApp(App):
+    title = 'MobileInsight'
+    icon = 'icon.png'
     screen = None
     use_kivy_settings = False
     log_viewer = None
@@ -684,8 +592,7 @@ class MobileInsightApp(App):
                     settings.add_json_panel(APP_NAME, config, data=result)
 
     def build_config(self, config):
-        # Yuanjie: the ordering of the following options MUST be the same as
-        # those in settings.json!!!
+        # the ordering of the following options MUST be the same as settings.json!
         config.setdefaults('mi_general', {
             'bcheck_update': 0,
             'log_level': 'info',

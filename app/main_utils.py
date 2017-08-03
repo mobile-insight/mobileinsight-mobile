@@ -3,8 +3,6 @@ main_utils.py
 
 Define utility variables and functions for apps.
 """
-import jnius
-from jnius import autoclass, cast
 
 # FIXME(likayo): subprocess module in Python 2.7 is not thread-safe. Use
 # subprocess32 instead.
