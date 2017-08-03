@@ -238,23 +238,24 @@ class MobileInsightScreen(Screen):
             if os.path.exists(os.path.join(app_path, "readme.txt")):
                 with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
                     my_description = ": " + ff.read()
-
-                print "[debug 242]" + my_description
+                # print "[debug 242]" + my_description
             else:
-                print "[debug 244]" + my_description
+                # print "[debug 244]" + my_description
                 my_description = "no description."
                 widget.text = name + ": " + my_description
 
         # If default service exists, launch it
-        # try:
-        #     config = ConfigParser()
-        #     config.read('/sdcard/.mobileinsight.ini')
-        #     default_app_name = config.get("mi_general", "start_service")
-        #     launch_service = config.get("mi_general", "bstartup_service")
-        #     if default_app_name and launch_service == "1":
-        #         self.start_service(default_app_name)
-        # except Exception as e:
-        #     pass
+        try:
+            config = ConfigParser()
+            config.read('.mobileinsight.ini')
+
+            # config.read('settings.json')
+            default_app_name = config.get("mi_general", "start_service")
+            launch_service = config.get("mi_general", "bstartup_service")
+            if default_app_name and launch_service == "1":
+                self.start_service(default_app_name)
+        except Exception as e:
+            pass
 
     def callback(self, obj):
         self.selectedPlugin = obj.text[0:obj.text.find(":")]
@@ -298,13 +299,6 @@ class MobileInsightScreen(Screen):
                 return False
             else:
                 main_utils.run_shell_cmd("chmod 777 /dev/diag")
-                return True
-        elif chipset_type == main_utils.ChipsetType.MTK:
-            cmd = "ps | grep emdlogger1"
-            res = main_utils.run_shell_cmd(cmd)
-            if not res:
-                return False
-            else:
                 return True
 
     def __init_libs(self):
@@ -603,6 +597,8 @@ class MobileInsightApp(App):
 
     def build_config(self, config):
         # the ordering of the following options MUST be the same as settings.json!
+
+        print "[debug 600] HELLO! create mi_general"
         config.setdefaults('mi_general', {
             'bcheck_update': 0,
             'log_level': 'info',
@@ -610,7 +606,7 @@ class MobileInsightApp(App):
             'bstartup_service': 0,
             'start_service': 'NetLogger',
         })
-        # self.create_app_default_config(config)
+        self.create_app_default_config(config)
 
     def create_app_default_config(self, config):
         app_list = get_plugins_list()
@@ -639,12 +635,12 @@ class MobileInsightApp(App):
 
     def build(self):
 
-        # config = self.load_config()
-        # val = int(config.get('mi_general', 'bcheck_update'))
-        # config.set('mi_general', 'bcheck_update', int(not val))
-        # config.write()
-        # config.set('mi_general', 'bcheck_update', val)
-        # config.write()
+        config = self.load_config()
+        val = int(config.get('mi_general', 'bcheck_update'))
+        config.set('mi_general', 'bcheck_update', int(not val))
+        config.write()
+        config.set('mi_general', 'bcheck_update', val)
+        config.write()
 
         self.screen = MobileInsightScreen(name='MobileInsightScreen')
         self.manager = ScreenManager()
@@ -697,7 +693,8 @@ class MobileInsightApp(App):
         """
         try:
             config = ConfigParser()
-            config.read('/sdcard/.mobileinsight.ini')
+            config.read('settings.json')
+            # config.read('.mobileinsight.ini')
             bcheck_update = config.get("mi_general", "bcheck_update")
             if bcheck_update == "1":
                 import check_update
