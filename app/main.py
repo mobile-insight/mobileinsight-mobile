@@ -17,6 +17,8 @@ from kivy.lang import Builder
 from kivy.utils import platform
 from kivy.config import ConfigParser
 
+
+from os.path import dirname, join
 import functools
 import os
 import shlex
@@ -118,15 +120,17 @@ def get_plugins_list():
     Load plugin lists, including both built-in and 3rd-party plugins
     '''
 
-    # ret = {}  # app_name->(path,with_UI)
+    ret = {}  # app_name->(path,with_UI)
+    # curdir = dirname(__file__)
+    # curdir = /var/containers/Bundle/Application/676F798D-1CE6-47AC-AC4F-078DFEF1B1E2/mi3.app/YourApp
 
-    # APP_DIR = os.path.join(
-    #     str(current_activity.getFilesDir().getAbsolutePath()), "plugins")
-    # l = os.listdir(APP_DIR)
-    # for f in l:
-    #     if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
-    #         # ret.append(f)
-    #         ret[f] = (os.path.join(APP_DIR, f), False)
+    # all folders are under the current relative path
+    APP_DIR = "./plugins"
+    l = os.listdir(APP_DIR)
+    for f in l:
+        if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+            # ret.append(f)
+            ret[f] = (os.path.join(APP_DIR, f), False)
 
     # # Yuanjie: support alternative path for users to customize their own plugin
     # APP_DIR = main_utils.get_mobileinsight_plugin_path()
@@ -149,8 +153,7 @@ def get_plugins_list():
     # else:  # create directory for user-customized apps
     #     create_folder()
     
-    # return ret
-    return ["a", "b"]
+    return ret
 
 # class MobileInsightScreen(GridLayout):
 
@@ -205,7 +208,7 @@ class MobileInsightScreen(Screen):
         #     self.screen.ids.run_plugin.disabled = True
 
         self.plugins_list = get_plugins_list()
-        self.plugins_list.sort()
+        # self.plugins_list.sort()
 
         # if not self.__check_diag_mode():
         #     self.log_error(
@@ -229,13 +232,18 @@ class MobileInsightScreen(Screen):
                 first = False
                 #self.ids.run_plugin.text = "Run Plugin: " + self.selectedPlugin
                 self.ids.selectButton.text = "Select Plugin: " + self.selectedPlugin
-            # app_path = self.plugins_list[name][0]
-            # if os.path.exists(os.path.join(app_path, "readme.txt")):
-            #     with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
-            #         my_description = ": " + ff.read()
-            # else: 
-            my_description = "no description."
-            widget.text = name + ": " + my_description
+
+            app_path = self.plugins_list[name][0]
+            print "[debug 237]" + app_path
+            if os.path.exists(os.path.join(app_path, "readme.txt")):
+                with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
+                    my_description = ": " + ff.read()
+
+                print "[debug 242]" + my_description
+            else:
+                print "[debug 244]" + my_description
+                my_description = "no description."
+                widget.text = name + ": " + my_description
 
         # If default service exists, launch it
         # try:
