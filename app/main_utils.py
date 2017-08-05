@@ -19,12 +19,12 @@ import shutil
 import stat
 import json
 
-current_activity = cast("android.app.Activity", autoclass(
-    "org.renpy.android.PythonActivity").mActivity)
-ANDROID_SHELL = "/system/bin/sh"
+# current_activity = cast("android.app.Activity", autoclass(
+#     "org.renpy.android.PythonActivity").mActivity)
+# ANDROID_SHELL = "/system/bin/sh"
 
-File = autoclass("java.io.File")
-FileOutputStream = autoclass('java.io.FileOutputStream')
+# File = autoclass("java.io.File")
+# FileOutputStream = autoclass('java.io.FileOutputStream')
 
 class ChipsetType:
     """
@@ -38,10 +38,11 @@ def get_cur_version():
     """
     Get current apk version string
     """
-    pkg_name = current_activity.getPackageName()
-    return str(
-        current_activity.getPackageManager().getPackageInfo(
-            pkg_name, 0).versionName)
+    # pkg_name = current_activity.getPackageName()
+    # return str(
+    #     current_activity.getPackageManager().getPackageInfo(
+    #         pkg_name, 0).versionName)
+    return 4
 
 
 def is_rooted():

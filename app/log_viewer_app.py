@@ -13,7 +13,6 @@ from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
 from kivy.uix.widget import Widget
 
-
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.clock import Clock

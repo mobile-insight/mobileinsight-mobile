@@ -1,7 +1,6 @@
 # Main.py for MobileInsight iOS version
 # Author: Zengwen Yuan
 #         Yuanjie Li
-#         Xumiao Zhang
 
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.gridlayout import GridLayout
@@ -19,6 +18,7 @@ from kivy.utils import platform
 from kivy.config import ConfigParser
 
 
+from os.path import dirname, join
 import functools
 import os
 import shlex
@@ -45,7 +45,7 @@ Builder.load_file('main_ui.kv')
 # current_activity = cast("android.app.Activity", autoclass(
 #     "org.renpy.android.PythonActivity").mActivity)
 
-LOGO_STRING = "MobileInsight " + main_utils.get_cur_version() + \
+LOGO_STRING = "MobileInsight " + str(main_utils.get_cur_version()) + \
     "\nCopyright (c) 2015-2017 MobileInsight Team"
 
 
@@ -121,35 +121,37 @@ def get_plugins_list():
     '''
 
     ret = {}  # app_name->(path,with_UI)
+    # curdir = dirname(__file__)
+    # curdir = /var/containers/Bundle/Application/676F798D-1CE6-47AC-AC4F-078DFEF1B1E2/mi3.app/YourApp
 
-    APP_DIR = os.path.join(
-        str(current_activity.getFilesDir().getAbsolutePath()), "plugins")
+    # all folders are under the current relative path
+    APP_DIR = "./plugins"
     l = os.listdir(APP_DIR)
     for f in l:
         if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
             # ret.append(f)
             ret[f] = (os.path.join(APP_DIR, f), False)
 
-    # Yuanjie: support alternative path for users to customize their own plugin
-    APP_DIR = main_utils.get_mobileinsight_plugin_path()
+    # # Yuanjie: support alternative path for users to customize their own plugin
+    # APP_DIR = main_utils.get_mobileinsight_plugin_path()
 
-    if os.path.exists(APP_DIR):
-        l = os.listdir(APP_DIR)
-        for f in l:
-            if os.path.exists(os.path.join(APP_DIR, f, "main_ui.mi2app")):
-                if f in ret:
-                    tmp_name = f + " (plugin)"
-                else:
-                    tmp_name = f
-                ret[tmp_name] = (os.path.join(APP_DIR, f), True)
-            elif os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
-                if f in ret:
-                    tmp_name = f + " (plugin)"
-                else:
-                    tmp_name = f
-                ret[tmp_name] = (os.path.join(APP_DIR, f), False)
-    else:  # create directory for user-customized apps
-        create_folder()
+    # if os.path.exists(APP_DIR):
+    #     l = os.listdir(APP_DIR)
+    #     for f in l:
+    #         if os.path.exists(os.path.join(APP_DIR, f, "main_ui.mi2app")):
+    #             if f in ret:
+    #                 tmp_name = f + " (plugin)"
+    #             else:
+    #                 tmp_name = f
+    #             ret[tmp_name] = (os.path.join(APP_DIR, f), True)
+    #         elif os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+    #             if f in ret:
+    #                 tmp_name = f + " (plugin)"
+    #             else:
+    #                 tmp_name = f
+    #             ret[tmp_name] = (os.path.join(APP_DIR, f), False)
+    # else:  # create directory for user-customized apps
+    #     create_folder()
     
     return ret
 
@@ -189,28 +191,28 @@ class MobileInsightScreen(Screen):
 
         self.name = name
 
-        if not main_utils.is_rooted():
-            self.ids.log_viewer = False
-            self.ids.run_plugin = False
-            self.log_error(
-                "MobileInsight requires root privilege. Please root your device for correct functioning.")
+        # if not main_utils.is_rooted():
+        #     self.ids.log_viewer = False
+        #     self.ids.run_plugin = False
+        #     self.log_error(
+        #         "MobileInsight requires root privilege. Please root your device for correct functioning.")
 
-        self.__init_libs()
-        self.__check_security_policy()
+        # self.__init_libs()
+        # self.__check_security_policy()
 
-        if not create_folder():
-            # MobileInsight folders unavailable. Add warnings
-            self.log_error("SDcard is unavailable. Please check.")
-            self.screen.ids.log_viewer.disabled = True
-            self.screen.ids.stop_plugin.disabled = True
-            self.screen.ids.run_plugin.disabled = True
+        # if not create_folder():
+        #     # MobileInsight folders unavailable. Add warnings
+        #     self.log_error("SDcard is unavailable. Please check.")
+        #     self.screen.ids.log_viewer.disabled = True
+        #     self.screen.ids.stop_plugin.disabled = True
+        #     self.screen.ids.run_plugin.disabled = True
 
         self.plugins_list = get_plugins_list()
         # self.plugins_list.sort()
 
-        if not self.__check_diag_mode():
-            self.log_error(
-                "The diagnostic mode is disabled. Please check your phone settings.")
+        # if not self.__check_diag_mode():
+        #     self.log_error(
+        #         "The diagnostic mode is disabled. Please check your phone settings.")
 
         # clean up ongoing log collections
         # self.stop_collection()
@@ -230,24 +232,31 @@ class MobileInsightScreen(Screen):
                 first = False
                 #self.ids.run_plugin.text = "Run Plugin: " + self.selectedPlugin
                 self.ids.selectButton.text = "Select Plugin: " + self.selectedPlugin
+
             app_path = self.plugins_list[name][0]
+            print "[debug 237]" + app_path
             if os.path.exists(os.path.join(app_path, "readme.txt")):
                 with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
                     my_description = ": " + ff.read()
-            else: 
+                # print "[debug 242]" + my_description
+            else:
+                # print "[debug 244]" + my_description
                 my_description = "no description."
-            widget.text = name + ": " + my_description
+                widget.text = name + ": " + my_description
 
         # If default service exists, launch it
         try:
             config = ConfigParser()
-            config.read('/sdcard/.mobileinsight.ini')
+            config.read('.mobileinsight.ini')
+
+            # config.read('settings.json')
             default_app_name = config.get("mi_general", "start_service")
             launch_service = config.get("mi_general", "bstartup_service")
             if default_app_name and launch_service == "1":
                 self.start_service(default_app_name)
         except Exception as e:
             pass
+
     def callback(self, obj):
         self.selectedPlugin = obj.text[0:obj.text.find(":")]
         self.ids.selectButton.text = "Select Plugin: " + self.selectedPlugin
@@ -290,13 +299,6 @@ class MobileInsightScreen(Screen):
                 return False
             else:
                 main_utils.run_shell_cmd("chmod 777 /dev/diag")
-                return True
-        elif chipset_type == main_utils.ChipsetType.MTK:
-            cmd = "ps | grep emdlogger1"
-            res = main_utils.run_shell_cmd(cmd)
-            if not res:
-                return False
-            else:
                 return True
 
     def __init_libs(self):
@@ -595,6 +597,8 @@ class MobileInsightApp(App):
 
     def build_config(self, config):
         # the ordering of the following options MUST be the same as settings.json!
+
+        # print "[debug 600] HELLO! create mi_general"
         config.setdefaults('mi_general', {
             'bcheck_update': 0,
             'log_level': 'info',
@@ -631,9 +635,6 @@ class MobileInsightApp(App):
 
     def build(self):
 
-        # Force to initialize all configs in .mobileinsight.ini
-        # This prevents missing config due to existence of older-version .mobileinsight.ini
-        # Work-around: force on_config_change, which would update config.ini
         config = self.load_config()
         val = int(config.get('mi_general', 'bcheck_update'))
         config.set('mi_general', 'bcheck_update', int(not val))
@@ -692,7 +693,8 @@ class MobileInsightApp(App):
         """
         try:
             config = ConfigParser()
-            config.read('/sdcard/.mobileinsight.ini')
+            config.read('settings.json')
+            # config.read('.mobileinsight.ini')
             bcheck_update = config.get("mi_general", "bcheck_update")
             if bcheck_update == "1":
                 import check_update
