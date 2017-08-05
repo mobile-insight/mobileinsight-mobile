@@ -36,7 +36,7 @@ import main_utils
 
 __all__ = ["LogViewerScreen"]
 
-#############################
+##############################
 
 
 Builder.load_string('''
