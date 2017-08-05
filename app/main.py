@@ -17,6 +17,8 @@ from kivy.lang import Builder
 from kivy.utils import platform
 from kivy.config import ConfigParser
 
+
+from os.path import dirname, join
 import functools
 import os
 import shlex
@@ -32,7 +34,7 @@ import stat
 import json
 
 import main_utils
-# from log_viewer_app import LogViewerScreen
+from log_viewer_app import LogViewerScreen
 
 from collections import deque
 
@@ -118,15 +120,17 @@ def get_plugins_list():
     Load plugin lists, including both built-in and 3rd-party plugins
     '''
 
-    # ret = {}  # app_name->(path,with_UI)
+    ret = {}  # app_name->(path,with_UI)
+    # curdir = dirname(__file__)
+    # curdir = /var/containers/Bundle/Application/676F798D-1CE6-47AC-AC4F-078DFEF1B1E2/mi3.app/YourApp
 
-    # APP_DIR = os.path.join(
-    #     str(current_activity.getFilesDir().getAbsolutePath()), "plugins")
-    # l = os.listdir(APP_DIR)
-    # for f in l:
-    #     if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
-    #         # ret.append(f)
-    #         ret[f] = (os.path.join(APP_DIR, f), False)
+    # all folders are under the current relative path
+    APP_DIR = "./plugins"
+    l = os.listdir(APP_DIR)
+    for f in l:
+        if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+            # ret.append(f)
+            ret[f] = (os.path.join(APP_DIR, f), False)
 
     # # Yuanjie: support alternative path for users to customize their own plugin
     # APP_DIR = main_utils.get_mobileinsight_plugin_path()
@@ -149,8 +153,7 @@ def get_plugins_list():
     # else:  # create directory for user-customized apps
     #     create_folder()
     
-    # return ret
-    return ["a", "b"]
+    return ret
 
 # class MobileInsightScreen(GridLayout):
 
@@ -205,7 +208,7 @@ class MobileInsightScreen(Screen):
         #     self.screen.ids.run_plugin.disabled = True
 
         self.plugins_list = get_plugins_list()
-        self.plugins_list.sort()
+        # self.plugins_list.sort()
 
         # if not self.__check_diag_mode():
         #     self.log_error(
@@ -229,24 +232,30 @@ class MobileInsightScreen(Screen):
                 first = False
                 #self.ids.run_plugin.text = "Run Plugin: " + self.selectedPlugin
                 self.ids.selectButton.text = "Select Plugin: " + self.selectedPlugin
-            # app_path = self.plugins_list[name][0]
-            # if os.path.exists(os.path.join(app_path, "readme.txt")):
-            #     with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
-            #         my_description = ": " + ff.read()
-            # else: 
-            my_description = "no description."
-            widget.text = name + ": " + my_description
+
+            app_path = self.plugins_list[name][0]
+            print "[debug 237]" + app_path
+            if os.path.exists(os.path.join(app_path, "readme.txt")):
+                with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
+                    my_description = ": " + ff.read()
+                # print "[debug 242]" + my_description
+            else:
+                # print "[debug 244]" + my_description
+                my_description = "no description."
+                widget.text = name + ": " + my_description
 
         # If default service exists, launch it
-        # try:
-        #     config = ConfigParser()
-        #     config.read('/sdcard/.mobileinsight.ini')
-        #     default_app_name = config.get("mi_general", "start_service")
-        #     launch_service = config.get("mi_general", "bstartup_service")
-        #     if default_app_name and launch_service == "1":
-        #         self.start_service(default_app_name)
-        # except Exception as e:
-        #     pass
+        try:
+            config = ConfigParser()
+            config.read('.mobileinsight.ini')
+
+            # config.read('settings.json')
+            default_app_name = config.get("mi_general", "start_service")
+            launch_service = config.get("mi_general", "bstartup_service")
+            if default_app_name and launch_service == "1":
+                self.start_service(default_app_name)
+        except Exception as e:
+            pass
 
     def callback(self, obj):
         self.selectedPlugin = obj.text[0:obj.text.find(":")]
@@ -290,13 +299,6 @@ class MobileInsightScreen(Screen):
                 return False
             else:
                 main_utils.run_shell_cmd("chmod 777 /dev/diag")
-                return True
-        elif chipset_type == main_utils.ChipsetType.MTK:
-            cmd = "ps | grep emdlogger1"
-            res = main_utils.run_shell_cmd(cmd)
-            if not res:
-                return False
-            else:
                 return True
 
     def __init_libs(self):
@@ -595,6 +597,8 @@ class MobileInsightApp(App):
 
     def build_config(self, config):
         # the ordering of the following options MUST be the same as settings.json!
+
+        # print "[debug 600] HELLO! create mi_general"
         config.setdefaults('mi_general', {
             'bcheck_update': 0,
             'log_level': 'info',
@@ -602,7 +606,7 @@ class MobileInsightApp(App):
             'bstartup_service': 0,
             'start_service': 'NetLogger',
         })
-        # self.create_app_default_config(config)
+        self.create_app_default_config(config)
 
     def create_app_default_config(self, config):
         app_list = get_plugins_list()
@@ -631,27 +635,27 @@ class MobileInsightApp(App):
 
     def build(self):
 
-        # config = self.load_config()
-        # val = int(config.get('mi_general', 'bcheck_update'))
-        # config.set('mi_general', 'bcheck_update', int(not val))
-        # config.write()
-        # config.set('mi_general', 'bcheck_update', val)
-        # config.write()
+        config = self.load_config()
+        val = int(config.get('mi_general', 'bcheck_update'))
+        config.set('mi_general', 'bcheck_update', int(not val))
+        config.write()
+        config.set('mi_general', 'bcheck_update', val)
+        config.write()
 
         self.screen = MobileInsightScreen(name='MobileInsightScreen')
         self.manager = ScreenManager()
         self.manager.add_widget(self.screen)
-        # try:
-        #     self.log_viewer_screen = LogViewerScreen(
-        #         name='LogViewerScreen', screen_manager=self.manager)
-        #     self.manager.add_widget(self.log_viewer_screen)
-        # except Exception as e:
-        #     import traceback
-        #     import crash_app
-        #     print str(traceback.format_exc())
-        #     self.screen.ids.log_viewer.disabled = True
-        #     self.screen.ids.stop_plugin.disabled = True
-        #     self.screen.ids.run_plugin.disabled = True
+        try:
+            self.log_viewer_screen = LogViewerScreen(
+                name='LogViewerScreen', screen_manager=self.manager)
+            self.manager.add_widget(self.log_viewer_screen)
+        except Exception as e:
+            import traceback
+            import crash_app
+            print str(traceback.format_exc())
+            self.screen.ids.log_viewer.disabled = True
+            self.screen.ids.stop_plugin.disabled = True
+            self.screen.ids.run_plugin.disabled = True
 
         self.manager.current = 'MobileInsightScreen'
         Window.borderless = False
@@ -689,7 +693,8 @@ class MobileInsightApp(App):
         """
         try:
             config = ConfigParser()
-            config.read('/sdcard/.mobileinsight.ini')
+            config.read('settings.json')
+            # config.read('.mobileinsight.ini')
             bcheck_update = config.get("mi_general", "bcheck_update")
             if bcheck_update == "1":
                 import check_update
