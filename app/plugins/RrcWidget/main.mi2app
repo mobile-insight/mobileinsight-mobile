@@ -1,0 +1,37 @@
+#!/usr/bin/python
+# Filename: main.mi2app
+
+import os
+import sys
+import shutil
+import traceback
+
+import mi2app_utils
+from mobile_insight.monitor import OnlineMonitor, OfflineReplayer
+from mobile_insight.analyzer import LteRrcAnalyzer
+
+try:
+    cache_directory  = mi2app_utils.get_cache_dir()
+    log_directory    = os.path.join(cache_directory, "mi2log")
+    mi_directory = mi2app_utils.get_mobile_insight_path()
+
+    # src = OnlineMonitor()
+    # src.set_skip_decoding(False)
+    # src.set_log_directory(log_directory)
+    # src.set_log_cut_size(1000.0)
+
+    src = OfflineReplayer()
+    src.set_input_path(os.path.join(mi_directory,"demo/RRCStateMachine/LTE_RRC_state_sample.mi2log"))
+
+    lte_rrc_analyzer = LteRrcAnalyzer()
+    lte_rrc_analyzer.set_source(src)
+
+    src.run()
+
+except:
+    # src.log_error(traceback.format_exc())
+    print traceback.format_exc()
+
+# finally:
+    # mi2app_utils.detach_thread()
+    pass

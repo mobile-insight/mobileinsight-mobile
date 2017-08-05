@@ -443,7 +443,7 @@ class MobileInsightScreen(Screen):
             self.default_app_name = app_name
 
         else:
-            self.error_log = "Error: " + app_name + "cannot be launched!"
+            self.error_log = "Error: " + app_name + " cannot be launched!"
 
     def stop_service(self):
         if self.service:
