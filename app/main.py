@@ -1,6 +1,7 @@
 # Main.py for MobileInsight iOS version
 # Author: Zengwen Yuan
 #         Yuanjie Li
+#         Xumiao Zhang
 
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.gridlayout import GridLayout
