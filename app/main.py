@@ -18,6 +18,7 @@ from kivy.lang import Builder
 from kivy.utils import platform
 from kivy.config import ConfigParser
 
+
 import functools
 import os
 import shlex
