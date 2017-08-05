@@ -1,10 +1,10 @@
-
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
+from kivy.core.text import Label as CoreLabel
 from kivy.uix.button import Button
 from kivy.properties import *
 from kivy.app import App
@@ -154,7 +154,6 @@ def get_plugins_list():
 
 # class MobileInsightScreen(GridLayout):
 
-
 class MobileInsightScreen(Screen):
     error_log = StringProperty(LOGO_STRING)
     default_app_name = StringProperty("")
@@ -167,7 +166,7 @@ class MobileInsightScreen(Screen):
     logs = deque([],MAX_LINE)
     plugins = []
     selectedPlugin = ""
-    myLayout = GridLayout(cols = 2,orientation = "vertical", size_hint_y = None, height = len(get_plugins_list())*300)
+    myLayout = GridLayout(cols = 2, spacing = 5, orientation = "vertical", size_hint_y = None, height = (len(get_plugins_list())/2+len(get_plugins_list())%2)*Window.height/4)
     popupScroll = ScrollView(size_hint_y = None, size = (Window.width, Window.height*.9))
     popupScroll.add_widget(myLayout)
     popup = Popup(content = popupScroll, title = "Choose a plugin")
@@ -216,27 +215,36 @@ class MobileInsightScreen(Screen):
 
         self.terminal_stop = None
         self.terminal_thread = None
-
         first = True
+        #used to shorten long widget names in popup menu
+        shortenLabel = CoreLabel(markup = True, text_size = (Window.width/2.5, None), shorten_from = "right", font_size = 70)
+        #Making and adding widgets to popup menu
         for name in self.plugins_list:
-            widget = Button(halign = "left", valign = "top", on_release = self.callback)
-            widget.text_size = (Window.width/2.5, Window.height/4)
-            widget.texture_size = widget.size
+            widget = Button(id = name, markup = True, halign = "left", valign = "top", on_release = self.callback, background_normal = "", background_color = self.ids.run_plugin.background_color)
+            widget.text_size = (Window.width/2.25, Window.height/4)
             self.myLayout.add_widget(widget)
 
-            if first:
-                self.selectedPlugin = name
-                first = False
-                #self.ids.run_plugin.text = "Run Plugin: " + self.selectedPlugin
-                self.ids.selectButton.text = "Select Plugin: " + self.selectedPlugin
+#            if first:
+#                self.selectedPlugin = name
+#                first = False
+#                self.ids.selectButton.text = "Select Plugin: " + self.selectedPlugin
             app_path = self.plugins_list[name][0]
             if os.path.exists(os.path.join(app_path, "readme.txt")):
                 with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
-                    my_description = ": " + ff.read()
+                    my_description = ff.read()
             else: 
                 my_description = "no description."
-            widget.text = name + ": " + my_description
+            #shortening long widget names and making font size
+            shortenedName = shortenLabel.shorten(name)
+            font_size = "60"
+            if Window.width < 1450:
+                font_size = "45"
+            widget.text = "[color=fffafa][size=70]"+ shortenedName + "[/size][size="+ font_size + "]\n"+ my_description+"[/size][/color]"
 
+            if first:
+                self.selectedPlugin = name
+                self.ids.selectButton.text = "Select Plugin"
+                first = False
         # If default service exists, launch it
         try:
             config = ConfigParser()
@@ -245,12 +253,17 @@ class MobileInsightScreen(Screen):
             launch_service = config.get("mi_general", "bstartup_service")
             if default_app_name and launch_service == "1":
                 self.start_service(default_app_name)
+                self.ids.run_plugin.text = "Stop Plugin: "+default_app_name
         except Exception as e:
             pass
+
+    #Setting the text for the Select Plugin Menu button
     def callback(self, obj):
-        self.selectedPlugin = obj.text[0:obj.text.find(":")]
-        self.ids.selectButton.text = "Select Plugin: " + self.selectedPlugin
-        #self.ids.run_plugin.text = "Run Plugin: " + self.selectedPlugin
+        self.selectedPlugin = obj.id
+        # self.ids.selectButton.text = "Select Button: " + obj.text[(obj.text.find("]", obj.text.find("]")+1)+1):obj.text.find("[", obj.text.find("[", obj.text.find("[")+1)+1)]
+        self.ids.selectButton.text = "Select Plugin"
+        if not self.service:
+            self.ids.run_plugin.text  = "Run Plugin: "+self.selectedPlugin
         self.popup.dismiss()
         
 
@@ -507,7 +520,6 @@ class MobileInsightScreen(Screen):
     def popUpMenu(self):
         self.popup.open()
 
-
     def start_service(self, app_name):
         if platform == "android" and app_name in self.plugins_list:
             if self.service:
@@ -576,6 +588,14 @@ class MobileInsightScreen(Screen):
                 p.wait()
                 self._save_log()
 
+    def on_click_plugin(self, app_name):
+        if self.service:
+            self.stop_service()
+            self.ids.run_plugin.text = "Run Plugin: "+app_name
+        else:
+            self.start_service(app_name)
+            self.ids.run_plugin.text = "Stop Plugin: "+app_name
+
     def _save_log(self):
         orig_basename = os.path.basename(self.__original_filename)
         orig_dirname = os.path.dirname(self.__original_filename)
@@ -603,29 +623,32 @@ class MobileInsightScreen(Screen):
                       + '    Haotian Deng\n\n'
                       + 'Copyright (c) 2014 – 2017')
         popup = Popup(title='About MobileInsight',
-                      content=Label(text=about_text),
-                      size_hint=(.8, .4))
+                      size_hint=(1,1),
+                      background = "gradient.png"
+                     )
+        popup_button = Button(text = about_text, background_color = [0,0,0,0], on_press = popup.dismiss)
+        popup.content = popup_button
         popup.open()
 
 
-class LabeledCheckBox(GridLayout):
-    active = BooleanProperty(False)
-    text = StringProperty("")
-    group = ObjectProperty(None, allownone=True)
+#class LabeledCheckBox(GridLayout):
+#    active = BooleanProperty(False)
+#    text = StringProperty("")
+#    group = ObjectProperty(None, allownone=True)
 
-    def __init__(self, **kwargs):
-        self.register_event_type("on_active")
-        super(LabeledCheckBox, self).__init__(**kwargs)
-        self.active = kwargs.get("active", False)
-        self.text = kwargs.get("text", False)
-        self.group = kwargs.get("group", None)
+#    def __init__(self, **kwargs):
+#        self.register_event_type("on_active")
+#        super(LabeledCheckBox, self).__init__(**kwargs)
+#        self.active = kwargs.get("active", False)
+#        self.text = kwargs.get("text", False)
+#        self.group = kwargs.get("group", None)
 
-    def on_active(self, *args):
-        pass
+#    def on_active(self, *args):
+#        pass
 
-    def callback(self, cb, value):
-        self.active = value
-        self.dispatch("on_active")
+#    def callback(self, cb, value):
+#        self.active = value
+#        self.dispatch("on_active")
   
 class MobileInsightApp(App):
     screen = None

@@ -1,3 +1,4 @@
+
 <ScrollableLabel@ScrollView>:
     text: ''
     scroll_y: 0
@@ -12,55 +13,75 @@
         line_height: 1
         valign: 'bottom'
         max_lines: 4
-        markup: True 
-
+        markup: True
 
 # Main screen
 <MobileInsightScreen>:
+    id: mainscreen
+    sColor: [30/255.0, 100/255.0, 180/255.0, .85] # rgb colors must be percentages
+    eColor: [.54, .87, .92, .85]
     GridLayout:
         cols: 1
+        spacing: 5
         ScrollableLabel:
             text: '%s' % root.error_log
             size_hint_y: 6
-
         Button:
+            size_hint_y: 2.5
             id: selectButton
             on_release: root.popUpMenu()
             height: run_plugin.height
-            size: run_plugin.size
+            background_normal: ""
+            background_color: mainscreen.sColor
+            font_size: "24sp"
+            shorten_from: "right"
+            color: 1,1,1,1
 
         Button:
             id: run_plugin
             size_hint_y: 2.5
             text: "Run Plugin"
             font_size: "24sp"
-            on_release: root.start_service(root.selectedPlugin)
-
+#            on_release: root.start_service(root.selectedPlugin)
+            on_release: root.on_click_plugin(root.selectedPlugin)
+#            markup = True
+            background_normal: ""
+            background_color: [mainscreen.sColor[0]*4/5 + mainscreen.eColor[0]*1/5, mainscreen.sColor[1]*4/5+mainscreen.eColor[1]*1/5, mainscreen.sColor[2]*4/5 + mainscreen.eColor[2]*1/5, .85] 
+            color: 1,1,1,1
+#        Button:
+#            id: stop_plugin
+#            text: 'Stop'
+#            size_hint_y: 2.5
+#            font_size: "24sp"
+#            on_release: root.stop_service()
+#            markup = True
+#            background_normal: ""
+#            background_color: [mainscreen.sColor[0]*3/5+mainscreen.eColor[0]*2/5, mainscreen.sColor[1]*3/5+mainscreen.eColor[1]*2/5, mainscreen.sColor[2]*3/5+mainscreen.eColor[2]*2/5, .85]
+#            color: 1,1,1,1
         Button:
-            id: stop_plugin
-            text: 'Stop %s' % str(root.selectedPlugin)
-            #disabled: root.ids.checkbox_app.selected == ''
-            size_hint_y: 2.5
-            font_size: "24sp"
-            on_release: root.stop_service()
-
-        Button:
-            text: 'LogViewer' 
-            #disabled: root.ids.checkbox_app.selected == ''
+            text: 'Log Browser' 
             size_hint_y: 2.5
             font_size: "24sp"
             on_release: app.manager.current = 'LogViewerScreen'; app.log_viewer_screen.onOpen()
-
+#            markup = True
+            background_normal: ""
+            background_color: [mainscreen.sColor[0]*2/5+mainscreen.eColor[0]*3/5, mainscreen.sColor[1]*2/5+mainscreen.eColor[1]*3/5, mainscreen.sColor[2]*2/5+mainscreen.eColor[2]*3/5, .85]
+            color: 1,1,1,1
         Button:
             text: 'Settings' 
-            #disabled: root.ids.checkbox_app.selected == ''
             size_hint_y: 2.5
             font_size: "24sp"
             on_release: app.open_settings()
-
+#            markup = True
+            background_normal: ""
+            background_color: [mainscreen.sColor[0]*1/5+mainscreen.eColor[0]*4/5, mainscreen.sColor[1]*1/5 + mainscreen.eColor[1]*4/5, mainscreen.sColor[2]*1/5+mainscreen.eColor[2]*4/5, .85]
+            color: 1,1,1,1
         Button:
+            id: aboutButton
             text: 'About' 
-            #disabled: root.ids.checkbox_app.selected == ''
             size_hint_y: 2.5
             font_size: "24sp"
             on_release: root.about()
+            background_normal: ""
+            background_color: mainscreen.eColor
+            color: 1,1,1,1
