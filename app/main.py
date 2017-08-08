@@ -233,6 +233,8 @@ class MobileInsightScreen(Screen):
                 my_description = "no description."
             widget.text = name + ": " + my_description
 
+        self.registerBroadcastReceivers()
+
         # If default service exists, launch it
         try:
             config = ConfigParser()
@@ -243,12 +245,17 @@ class MobileInsightScreen(Screen):
                 self.start_service(default_app_name)
         except Exception as e:
             pass
+
+    def registerBroadcastReceivers(self):
+        self.brStopAck = BroadcastReceiver(self.on_broadcastStopServiceAck,
+                actions=['MobileInsight.Plugin.StopServiceAck'])
+        self.brStopAck.start()
+
     def callback(self, obj):
         self.selectedPlugin = obj.text[0:obj.text.find(":")]
         self.ids.selectButton.text = "Select Plugin: " + self.selectedPlugin
         #self.ids.run_plugin.text = "Run Plugin: " + self.selectedPlugin
         self.popup.dismiss()
-        
 
     def log_info(self, msg):
         self.append_log("[b][color=00ff00][INFO][/color][/b]: " + msg)
@@ -530,6 +537,13 @@ class MobileInsightScreen(Screen):
                 app_name + ":" + self.plugins_list[app_name][0])   # app name
             self.default_app_name = app_name
 
+            # Run TCPDUMP binary
+            currentTime = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            tcpdumpcmd = "su -c tcpdump -i rmnet_data0 -w " \
+                    + main_utils.get_mobileinsight_log_path() \
+                    + "/tcpdump_" + str(currentTime) + ".pcap\n"
+            main_utils.run_shell_cmd()
+
         else:
             self.error_log = "Error: " + app_name + "cannot be launched!"
 
@@ -542,9 +556,6 @@ class MobileInsightScreen(Screen):
         # from plugin
         self.log_info("Ready to stop current plugin ...")
         self.pluginAck = False
-        self.br = BroadcastReceiver(self.on_broadcastStopServiceAck,
-                actions=['MobileInsight.Plugin.StopServiceAck'])
-        self.br.start()
 
         # Using broadcast to send 'MobileInsight.Main.StopService' intent to
         # plugin
@@ -575,7 +586,11 @@ class MobileInsightScreen(Screen):
 
             self.stop_collection()  # close ongoing collections (diag_revealer)
 
-            # Haotian: save orphan log
+            # killall tcpdump
+            tcpdumpcmd = "su -c killall tcpdump\n"
+            main_utils.run_shell_cmd(tcpdumpcmd)
+
+            # Save orphan log
             dated_files = []
             self.__logdir = main_utils.get_mobileinsight_log_path()
             self.__phone_info = main_utils.get_phone_info()
