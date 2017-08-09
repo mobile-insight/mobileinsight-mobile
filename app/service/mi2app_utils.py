@@ -25,6 +25,7 @@ pyService = PythonService.mService
 androidOsBuild = autoclass("android.os.Build")
 Context = autoclass('android.content.Context')
 File = autoclass("java.io.File")
+LocationManager = autoclass('android.location.LocationManager')
 FileOutputStream = autoclass('java.io.FileOutputStream')
 ConnManager = autoclass('android.net.ConnectivityManager')
 mWifiManager = pyService.getSystemService(Context.WIFI_SERVICE)
@@ -229,6 +230,15 @@ def get_mobileinsight_crash_log_path():
 def get_wifi_status():
     return mWifiManager.isWifiEnabled()
 
+def get_last_known_location():
+    locMan = pyService.getSystemService(Context.LOCATION_SERVICE)
+    location = locMan.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+    if not location:
+        location = locMan.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+    if location:
+        return (location.getLatitude(),location.getLongitude())
+    else:
+        return None
 
 def detach_thread():
     try:

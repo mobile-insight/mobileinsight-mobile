@@ -83,7 +83,8 @@ def run_apk(build_release):
         + ' --permission INTERNET' \
         + ' --permission RECEIVE_BOOT_COMPLETED' \
         + ' --permission ACCESS_WIFI_STATE' \
-        + ' --permission INSTALL_PACKAGES'
+        + ' --permission INSTALL_PACKAGES' \
+        + ' --permission ACCESS_FINE_LOCATION'
     # + ' --intent-filters BOOT_COMPLETED'
 
     if build_release is True:
