@@ -10,7 +10,7 @@ import subprocess as sp
 import os
 import re
 import jnius
-from jnius import autoclass
+from jnius import autoclass, cast, PythonJavaClass, java_method
 
 ANDROID_SHELL = "/system/bin/sh"
 
@@ -25,11 +25,9 @@ pyService = PythonService.mService
 androidOsBuild = autoclass("android.os.Build")
 Context = autoclass('android.content.Context')
 File = autoclass("java.io.File")
-LocationManager = autoclass('android.location.LocationManager')
 FileOutputStream = autoclass('java.io.FileOutputStream')
 ConnManager = autoclass('android.net.ConnectivityManager')
 mWifiManager = pyService.getSystemService(Context.WIFI_SERVICE)
-
 
 def run_shell_cmd(cmd, wait=False):
     p = sp.Popen(
@@ -230,6 +228,65 @@ def get_mobileinsight_crash_log_path():
 def get_wifi_status():
     return mWifiManager.isWifiEnabled()
 
+def detach_thread():
+    try:
+        jnius.detach()
+    except BaseException:
+        pass
+
+
+
+# Get GPS Location
+LocationManager = autoclass('android.location.LocationManager')
+cur_latitude = None
+cur_longitude = None
+class MiLocationListener(PythonJavaClass):
+    """
+    An Python-version android.location.LocationListener (https://developer.android.com/reference/android/location/LocationListener.html).
+    To implement it, we use Pyjnius's reflection class
+    Reference: http://pyjnius.readthedocs.io/en/latest/api.html#java-class-implementation-in-python
+    """
+    __javainterfaces__ = ['android/location/LocationListener']
+
+    def __init__(self):
+        super(MiLocationListener, self).__init__()
+
+    @java_method('(Landroid/location/Location;)V')
+    def onLocationChanged(self, location):
+
+        """
+        javap -s -bootclasspath ./android.jar android.location.LocationListener
+        Compiled from "LocationListener.java"
+        public interface android.location.LocationListener {
+          public abstract void onLocationChanged(android.location.Location);
+            descriptor: (Landroid/location/Location;)V
+
+          public abstract void onStatusChanged(java.lang.String, int, android.os.Bundle);
+            descriptor: (Ljava/lang/String;ILandroid/os/Bundle;)V
+
+          public abstract void onProviderEnabled(java.lang.String);
+            descriptor: (Ljava/lang/String;)V
+
+          public abstract void onProviderDisabled(java.lang.String);
+            descriptor: (Ljava/lang/String;)V
+        }
+        """
+        # print location.getLatitude(), location.getLongitude()
+        print "Get New Location!",location.getLatitude(), location.getLongitude()
+        cur_latitude = location.getLatitude()
+        cur_longitude = location.getLongitude()
+
+    @java_method('(Ljava/lang/String;ILandroid/os/Bundle;)V')
+    def onStatusChanged(self, provider, status, extras):
+        pass
+    @java_method('(Ljava/lang/String;)V')
+    def onProviderEnabled(self, provider):
+        pass
+    @java_method('(Ljava/lang/String;)V')
+    def onProviderDisabled(self, provider):
+        pass
+
+
 def get_last_known_location():
     locMan = pyService.getSystemService(Context.LOCATION_SERVICE)
     location = locMan.getLastKnownLocation(LocationManager.GPS_PROVIDER)
@@ -240,8 +297,22 @@ def get_last_known_location():
     else:
         return None
 
-def detach_thread():
-    try:
-        jnius.detach()
-    except BaseException:
-        pass
+location_listener_registered = False
+def register_location_listener():
+    global location_listener_registered
+    if not location_listener_registered:
+    	HandlerThread = autoclass('android.os.HandlerThread')
+    	handler_t = HandlerThread('Location Requester')
+    	handler_t.start()
+        locManager = pyService.getSystemService(Context.LOCATION_SERVICE)
+        locationListener = MiLocationListener()
+        locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener, handler_t.getLooper())
+        location_listener_registered = True
+
+def get_current_location():
+    if not cur_longitude or not cur_latitude:
+        return get_last_known_location()
+    else:
+        return (cur_latitude, cur_longitude)
+
+    

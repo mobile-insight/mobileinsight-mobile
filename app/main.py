@@ -328,6 +328,8 @@ class MobileInsightScreen(Screen):
             "supolicy --live \"allow netmgrd diag_device chr_file {read write}\";"
         cmd = cmd + \
             "supolicy --live \"allow rild diag_device chr_file {read write}\";"
+        cmd = cmd + \
+            "supolicy --live \"allow rild debuggerd app_data_file {read open getattr}\";"
 
         main_utils.run_shell_cmd(cmd)
 
