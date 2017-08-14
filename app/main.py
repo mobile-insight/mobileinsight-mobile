@@ -34,6 +34,7 @@ import json
 
 import main_utils
 from log_viewer_app import LogViewerScreen
+from gps import GpsListener
 
 from collections import deque
 
@@ -657,6 +658,17 @@ class MobileInsightApp(App):
     use_kivy_settings = False
     log_viewer = None
 
+    def on_gps(self, provider, eventname, *args):
+        if provider is not self.provider:
+            return
+        
+        if eventname == 'provider-disabled':
+            pass
+
+        elif eventname == 'location':
+            location = args[0]
+            # print 'on_gps()', location.getLatitude(), location.getLongitude()
+
     def build_settings(self, settings):
 
         with open("settings.json", "r") as settings_json:
@@ -774,6 +786,10 @@ class MobileInsightApp(App):
 
         self.manager.current = 'MobileInsightScreen'
         Window.borderless = False
+
+
+        self.provider = GpsListener(self.on_gps)
+        self.provider.start()
 
         # return self.screen
         return self.manager
