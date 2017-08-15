@@ -15,7 +15,6 @@ class GpsListener(PythonJavaClass):
                 Context.LOCATION_SERVICE)
 
     def start(self):
-        print str(LocationManager.GPS_PROVIDER),str(self),str(Looper.getMainLooper())
         self.locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
                 0, 100, self, Looper.getMainLooper())
@@ -32,7 +31,7 @@ class GpsListener(PythonJavaClass):
         self.callback(self, 'location', location)
 
     @java_method('(Ljava/lang/String;ILandroid/os/Bundle;)V')
-    def onStatusChanged(self, status):
+    def onStatusChanged(self, provider, status, extras):
         pass
 
     @java_method('(Ljava/lang/String;)V')
