@@ -194,6 +194,7 @@ class MobileInsightScreen(Screen):
             self.log_error(
                 "MobileInsight requires root privilege. Please root your device for correct functioning.")
 
+        
         self.__init_libs()
         self.__check_security_policy()
 
@@ -728,6 +729,7 @@ class MobileInsightApp(App):
             'log_level': 'info',
             'bstartup': 0,
             'bstartup_service': 0,
+            'bgps': 1,
             'start_service': 'NetLogger',
         })
         self.create_app_default_config(config)
@@ -759,6 +761,7 @@ class MobileInsightApp(App):
 
     def build(self):
 
+        
         # Force to initialize all configs in .mobileinsight.ini
         # This prevents missing config due to existence of older-version .mobileinsight.ini
         # Work-around: force on_config_change, which would update config.ini
@@ -772,6 +775,7 @@ class MobileInsightApp(App):
         self.screen = MobileInsightScreen(name='MobileInsightScreen')
         self.manager = ScreenManager()
         self.manager.add_widget(self.screen)
+
         try:
             self.log_viewer_screen = LogViewerScreen(
                 name='LogViewerScreen', screen_manager=self.manager)
@@ -787,9 +791,9 @@ class MobileInsightApp(App):
         self.manager.current = 'MobileInsightScreen'
         Window.borderless = False
 
-
-        self.provider = GpsListener(self.on_gps)
-        self.provider.start()
+        if config.get('mi_general', 'bgps')=="1":
+            self.provider = GpsListener(self.on_gps)
+            self.provider.start()
 
         # return self.screen
         return self.manager
@@ -813,9 +817,12 @@ class MobileInsightApp(App):
                 import traceback
                 import crash_app
                 print str(traceback.format_exc())
+
+        print "on_pause"
         return True  # go into Pause mode
 
     def on_resume(self):
+        print "on_resume"
         pass
 
     def check_update(self):
@@ -840,10 +847,8 @@ class MobileInsightApp(App):
         self.check_update()
 
     def on_stop(self):
-        pass
-        # print "MI-app: on_stop"
+        print "MI-app: on_stop"
         # self.screen.stop_service()
-
 
 if __name__ == "__main__":
     try:
