@@ -189,8 +189,8 @@ class MobileInsightScreen(Screen):
         self.name = name
 
         if not main_utils.is_rooted():
-            self.ids.log_viewer = False
-            self.ids.run_plugin = False
+            # self.ids.log_viewer.disabled = False
+            # self.ids.run_plugin.disabled = False
             self.log_error(
                 "MobileInsight requires root privilege. Please root your device for correct functioning.")
 
