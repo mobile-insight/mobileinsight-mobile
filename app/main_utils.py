@@ -272,14 +272,15 @@ def get_phone_model():
     return androidOsBuild.MODEL
 
 def get_phone_info():
-    cmd = "getprop ro.product.model; getprop ro.product.manufacturer;"
-    res = run_shell_cmd(cmd)
-    if not res:
-        return get_device_id() + '_null-null'
-    res = res.split('\n')
-    model = res[0].replace(" ", "")
-    manufacturer = res[1].replace(" ", "")
-    phone_info = get_device_id() + '_' + manufacturer + '-' + model
+    # cmd = "getprop ro.product.model; getprop ro.product.manufacturer;"
+    # res = run_shell_cmd(cmd)
+    # if not res:
+    #     return get_device_id() + '_null-null'
+    # res = res.split('\n')
+    # model = res[0].replace(" ", "")
+    # manufacturer = res[1].replace(" ", "")
+    # phone_info = get_device_id() + '_' + manufacturer + '-' + model
+    phone_info = get_device_id() + '-' + get_phone_manufacturer() + '-' + get_phone_model()
     return phone_info
 
 def get_operator_info():

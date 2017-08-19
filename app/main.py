@@ -34,7 +34,6 @@ import json
 
 import main_utils
 from log_viewer_app import LogViewerScreen
-from gps import GpsListener
 
 from collections import deque
 
@@ -217,7 +216,8 @@ class MobileInsightScreen(Screen):
 
         self.terminal_stop = None
         self.terminal_thread = None
-        first = True
+        bootup = True
+
         #used to shorten long widget names in popup menu
         shortenLabel = CoreLabel(markup = True, text_size = (Window.width/2.5, None), shorten_from = "right", font_size = 70)
         #Making and adding widgets to popup menu
@@ -226,10 +226,6 @@ class MobileInsightScreen(Screen):
             widget.text_size = (Window.width/2.25, Window.height/4)
             self.myLayout.add_widget(widget)
 
-#            if first:
-#                self.selectedPlugin = name
-#                first = False
-#                self.ids.selectButton.text = "Select Plugin: " + self.selectedPlugin
             app_path = self.plugins_list[name][0]
             if os.path.exists(os.path.join(app_path, "readme.txt")):
                 with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
@@ -243,10 +239,11 @@ class MobileInsightScreen(Screen):
                 font_size = "45"
             widget.text = "[color=fffafa][size=70]"+ shortenedName + "[/size][size="+ font_size + "]\n"+ my_description+"[/size][/color]"
 
-            if first:
+            if bootup:
                 self.selectedPlugin = name
                 self.ids.selectButton.text = "Select Plugin"
-                first = False
+                self.ids.run_plugin.text  = "Run Plugin: "+self.selectedPlugin
+                bootup = False
         # If default service exists, launch it
         try:
             config = ConfigParser()
@@ -657,17 +654,6 @@ class MobileInsightApp(App):
     use_kivy_settings = False
     log_viewer = None
 
-    def on_gps(self, provider, eventname, *args):
-        if provider is not self.provider:
-            return
-        
-        if eventname == 'provider-disabled':
-            pass
-
-        elif eventname == 'location':
-            location = args[0]
-            # print 'on_gps()', location.getLatitude(), location.getLongitude()
-
     def build_settings(self, settings):
 
         with open("settings.json", "r") as settings_json:
@@ -789,10 +775,6 @@ class MobileInsightApp(App):
         self.manager.current = 'MobileInsightScreen'
         Window.borderless = False
 
-        if config.get('mi_general', 'bgps')=="1":
-            self.provider = GpsListener(self.on_gps)
-            self.provider.start()
-
         # return self.screen
         return self.manager
 
@@ -816,11 +798,11 @@ class MobileInsightApp(App):
                 import crash_app
                 print str(traceback.format_exc())
 
-        print "on_pause"
+        # print "on_pause"
         return True  # go into Pause mode
 
     def on_resume(self):
-        print "on_resume"
+        # print "on_resume"
         pass
 
     def check_update(self):
@@ -845,8 +827,7 @@ class MobileInsightApp(App):
         self.check_update()
 
     def on_stop(self):
-        print "MI-app: on_stop"
-        # self.screen.stop_service()
+        self.screen.stop_service()
 
 if __name__ == "__main__":
     try:

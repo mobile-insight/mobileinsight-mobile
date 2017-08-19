@@ -2,7 +2,7 @@ from jnius import PythonJavaClass, java_method, autoclass
 
 Looper = autoclass('android.os.Looper')
 LocationManager = autoclass('android.location.LocationManager')
-PythonActivity = autoclass('org.renpy.android.PythonActivity')
+PythonService = autoclass('org.renpy.android.PythonService')
 Context = autoclass('android.content.Context')
 
 class GpsListener(PythonJavaClass):
@@ -11,13 +11,13 @@ class GpsListener(PythonJavaClass):
     def __init__(self, callback):
         super(GpsListener, self).__init__()
         self.callback = callback
-        self.locationManager = PythonActivity.mActivity.getSystemService(
+        self.locationManager = PythonService.mService.getSystemService(
                 Context.LOCATION_SERVICE)
 
     def start(self):
         self.locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
-                0, 100, self, Looper.getMainLooper())
+                0, 10, self, Looper.getMainLooper())
 
     def stop(self):
         self.locationManager.removeUpdates(self)

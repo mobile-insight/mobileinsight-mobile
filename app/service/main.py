@@ -11,6 +11,8 @@ import signal
 
 from kivy.config import ConfigParser
 
+from gps import GpsListener
+
 
 def receive_signal(signum, stack):
     print 'Received:', signum
@@ -84,15 +86,18 @@ def setup_logger(app_name):
         l.disabled = False
 
 
+def on_gps(provider, eventname, *args):
+    if eventname == 'provider-disabled':
+        pass
+
+    elif eventname == 'location':
+        location = args[0]
+        print 'on_gps()', location.getLatitude(), location.getLongitude()
+
+
 if __name__ == "__main__":
 
     try:
-        # for i in [x for x in dir(signal) if x.startswith("SIG")]:
-        #     try:
-        #         signum = getattr(signal,i)
-        #         signal.signal(signum,receive_signal)
-        #     except RuntimeError,m:
-        #         print "Skipping %s"%i
         signal.signal(signal.SIGINT, receive_signal)
 
         arg = os.getenv("PYTHON_SERVICE_ARGUMENT")  # get the argument passed
@@ -133,6 +138,9 @@ if __name__ == "__main__":
                 plugin_config[item] = config.get(section_name, item)
 
         namespace["plugin_config"] = plugin_config
+# 
+        gps_provider = GpsListener(on_gps)
+        gps_provider.start()
 
         execfile(app_file, namespace)
 
