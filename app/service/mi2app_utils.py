@@ -28,6 +28,8 @@ File = autoclass("java.io.File")
 FileOutputStream = autoclass('java.io.FileOutputStream')
 ConnManager = autoclass('android.net.ConnectivityManager')
 mWifiManager = pyService.getSystemService(Context.WIFI_SERVICE)
+telephonyManager = pyService.getSystemService(Context.TELEPHONY_SERVICE)
+locationManager = pyService.getSystemService(Context.LOCATION_SERVICE)
 
 def run_shell_cmd(cmd, wait=False):
     p = sp.Popen(
@@ -77,11 +79,7 @@ def get_phone_info():
 
 
 def get_operator_info():
-    cmd = "getprop gsm.operator.alpha"
-    operator = run_shell_cmd(cmd).split('\n')[0].replace(" ", "")
-    if operator == '' or operator is None:
-        operator = 'null'
-    return operator
+    return telephonyManager.getNetworkOperatorName()+"-"+telephonyManager.getNetworkOperator()
 
 
 def get_device_id():
@@ -239,10 +237,11 @@ def detach_thread():
 # Get GPS Location
 LocationManager = autoclass('android.location.LocationManager')
 def get_last_known_location():
-    locMan = pyService.getSystemService(Context.LOCATION_SERVICE)
-    location = locMan.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+    print "get_last_known_location"
+    # locationManager = pyService.getSystemService(Context.LOCATION_SERVICE)
+    location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
     if not location:
-        location = locMan.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
     if location:
         return (location.getLatitude(),location.getLongitude())
     else:

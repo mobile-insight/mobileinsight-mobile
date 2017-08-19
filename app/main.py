@@ -526,12 +526,6 @@ class MobileInsightScreen(Screen):
 
     def start_service(self, app_name):
         if platform == "android" and app_name in self.plugins_list:
-            if self.service:
-                # stop the running service
-                self.stop_service()
-
-            # Show logs on screen
-
             # Clean up old logs
             self.log_name = os.path.join(
                 main_utils.get_mobileinsight_analysis_path(),
@@ -546,6 +540,10 @@ class MobileInsightScreen(Screen):
             self.error_log = "Running " + app_name + "..."
             self.service = AndroidService(
                 "MobileInsight is running...", app_name)
+            
+            # stop the running service
+            self.service.stop()
+
             self.service.start(
                 app_name + ":" + self.plugins_list[app_name][0])   # app name
             self.default_app_name = app_name
