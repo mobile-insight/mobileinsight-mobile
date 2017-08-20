@@ -237,7 +237,7 @@ def detach_thread():
 # Get GPS Location
 LocationManager = autoclass('android.location.LocationManager')
 def get_last_known_location():
-    print "get_last_known_location"
+    # print "get_last_known_location"
     # locationManager = pyService.getSystemService(Context.LOCATION_SERVICE)
     location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
     if not location:

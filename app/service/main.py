@@ -92,7 +92,7 @@ def on_gps(provider, eventname, *args):
 
     elif eventname == 'location':
         location = args[0]
-        print 'on_gps()', location.getLatitude(), location.getLongitude()
+        # print 'on_gps()', location.getLatitude(), location.getLongitude()
 
 
 if __name__ == "__main__":
