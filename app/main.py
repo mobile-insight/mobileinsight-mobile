@@ -554,7 +554,7 @@ class MobileInsightScreen(Screen):
             tcpdumpcmd = "su -c tcpdump -i rmnet_data0 -w " \
                     + main_utils.get_mobileinsight_log_path() \
                     + "/tcpdump_" + str(currentTime) + ".pcap\n"
-            main_utils.run_shell_cmd()
+            main_utils.run_shell_cmd(tcpdumpcmd)
 
         else:
             self.error_log = "Error: " + app_name + "cannot be launched!"
