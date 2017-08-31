@@ -541,7 +541,7 @@ class MobileInsightScreen(Screen):
             self.error_log = "Running " + app_name + "..."
             self.service = AndroidService(
                 "MobileInsight is running...", app_name)
-            
+
             # stop the running service
             self.service.stop()
 
@@ -549,12 +549,12 @@ class MobileInsightScreen(Screen):
                 app_name + ":" + self.plugins_list[app_name][0])   # app name
             self.default_app_name = app_name
 
-            # Run TCPDUMP binary
-            currentTime = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-            tcpdumpcmd = "su -c tcpdump -i rmnet_data0 -w " \
-                    + main_utils.get_mobileinsight_log_path() \
-                    + "/tcpdump_" + str(currentTime) + ".pcap\n"
-            main_utils.run_shell_cmd(tcpdumpcmd)
+            # TODO: support collecting TCPDUMP trace
+            # currentTime = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            # tcpdumpcmd = "su -c tcpdump -i rmnet_data0 -w " \
+            #         + main_utils.get_mobileinsight_log_path() \
+            #         + "/tcpdump_" + str(currentTime) + ".pcap\n"
+            # main_utils.run_shell_cmd(tcpdumpcmd)
 
         else:
             self.error_log = "Error: " + app_name + "cannot be launched!"
@@ -599,8 +599,8 @@ class MobileInsightScreen(Screen):
             self.stop_collection()  # close ongoing collections (diag_revealer)
 
             # killall tcpdump
-            tcpdumpcmd = "su -c killall tcpdump\n"
-            main_utils.run_shell_cmd(tcpdumpcmd)
+            # tcpdumpcmd = "su -c killall tcpdump\n"
+            # main_utils.run_shell_cmd(tcpdumpcmd)
 
     def on_click_plugin(self, app_name):
         if self.service:
