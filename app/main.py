@@ -603,31 +603,6 @@ class MobileInsightScreen(Screen):
             tcpdumpcmd = "su -c killall tcpdump\n"
             main_utils.run_shell_cmd(tcpdumpcmd)
 
-            # Save orphan log
-            dated_files = []
-            self.__logdir = main_utils.get_mobileinsight_log_path()
-            self.__phone_info = main_utils.get_phone_info()
-            mi2log_folder = os.path.join(main_utils.get_cache_dir(), "mi2log")
-            for subdir, dirs, files in os.walk(mi2log_folder):
-                for f in files:
-                    fn = os.path.join(subdir, f)
-                    dated_files.append((os.path.getmtime(fn), fn))
-            dated_files.sort()
-            dated_files.reverse()
-            if len(dated_files) > 0:
-                self.__original_filename = dated_files[0][1]
-                print "Find orphan log file at Main: " + str(self.__original_filename)
-                chmodcmd = "chmod 644 " + self.__original_filename
-                p = subprocess.Popen(
-                    "su ",
-                    executable=main_utils.ANDROID_SHELL,
-                    shell=True,
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE)
-                p.communicate(chmodcmd + '\n')
-                p.wait()
-                self._save_log()
-
     def on_click_plugin(self, app_name):
         if self.service:
             self.stop_service()

@@ -184,6 +184,9 @@ class LoggingAnalyzer(Analyzer):
         '''
         This plugin is going to be stopped, finish closure work
         '''
+        self.log_info("MobileInsight.Main.StopService is received")
+        self._check_orphan_log()
+
         IntentClass = autoclass("android.content.Intent")
         intent = IntentClass()
         action = 'MobileInsight.Plugin.StopServiceAck'
@@ -194,6 +197,24 @@ class LoggingAnalyzer(Analyzer):
             import traceback
             self.log_error(str(traceback.format_exc()))
 
+    def _check_orphan_log(self):
+        '''
+        Check if there is any orphan log left in cache folder
+        '''
+        dated_files = []
+        mi2log_folder = os.path.join(util.get_cache_dir(), "mi2log")
+        for subdir, dirs, files in os.walk(mi2log_folder):
+            for f in files:
+                fn = os.path.join(subdir, f)
+                dated_files.append((os.path.getmtime(fn), fn))
+        dated_files.sort()
+        dated_files.reverse()
+        for dated_file in dated_files:
+            self.__orig_file = dated_file[1]
+            self.log_info("LoggingAnalyzer: find orphan log: %s" % self.__orig_file)
+            util.run_shell_cmd("chmod 644 %s" % self.__orig_file)
+            self._save_log()
+            self.log_info("mi2log file saved")
 
     def __del__(self):
         self.log_info("__del__ is called")
