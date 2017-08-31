@@ -10,7 +10,7 @@ import subprocess as sp
 import os
 import re
 import jnius
-from jnius import autoclass
+from jnius import autoclass, cast, PythonJavaClass, java_method
 
 ANDROID_SHELL = "/system/bin/sh"
 
@@ -28,7 +28,8 @@ File = autoclass("java.io.File")
 FileOutputStream = autoclass('java.io.FileOutputStream')
 ConnManager = autoclass('android.net.ConnectivityManager')
 mWifiManager = pyService.getSystemService(Context.WIFI_SERVICE)
-
+telephonyManager = pyService.getSystemService(Context.TELEPHONY_SERVICE)
+locationManager = pyService.getSystemService(Context.LOCATION_SERVICE)
 
 def run_shell_cmd(cmd, wait=False):
     p = sp.Popen(
@@ -78,11 +79,7 @@ def get_phone_info():
 
 
 def get_operator_info():
-    cmd = "getprop gsm.operator.alpha"
-    operator = run_shell_cmd(cmd).split('\n')[0].replace(" ", "")
-    if operator == '' or operator is None:
-        operator = 'null'
-    return operator
+    return telephonyManager.getNetworkOperatorName()+"-"+telephonyManager.getNetworkOperator()
 
 
 def get_device_id():
@@ -229,9 +226,27 @@ def get_mobileinsight_crash_log_path():
 def get_wifi_status():
     return mWifiManager.isWifiEnabled()
 
-
 def detach_thread():
     try:
         jnius.detach()
     except BaseException:
         pass
+
+
+
+# Get GPS Location
+LocationManager = autoclass('android.location.LocationManager')
+def get_last_known_location():
+    # print "get_last_known_location"
+    # locationManager = pyService.getSystemService(Context.LOCATION_SERVICE)
+    location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+    if not location:
+        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+    if location:
+        return (location.getLatitude(),location.getLongitude())
+    else:
+        return None
+
+def get_current_location():
+    return get_last_known_location()
+    

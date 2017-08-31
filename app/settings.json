@@ -26,6 +26,13 @@
         "default": "NetLogger"
     },
     {
+        "type": "bool",
+        "title": "Enable location tracking",
+        "desc": "Enable the GPS location in mobile network analysis",
+        "section": "mi_general",
+        "key": "bgps"
+    },
+    {
         "type": "title",
         "title": "Logging"
     },

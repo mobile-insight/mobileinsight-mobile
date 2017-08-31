@@ -185,8 +185,8 @@ class MobileInsightScreen(Screen):
         self.name = name
 
         if not main_utils.is_rooted():
-            self.ids.log_viewer = False
-            self.ids.run_plugin = False
+            # self.ids.log_viewer.disabled = False
+            # self.ids.run_plugin.disabled = False
             self.log_error(
                 "MobileInsight requires root privilege. Please root your device for correct functioning.")
 
@@ -212,7 +212,8 @@ class MobileInsightScreen(Screen):
 
         self.terminal_stop = None
         self.terminal_thread = None
-        first = True
+        bootup = True
+
         #used to shorten long widget names in popup menu
         shortenLabel = CoreLabel(markup = True, text_size = (Window.width/2.5, None), shorten_from = "right", font_size = 70)
         #Making and adding widgets to popup menu
@@ -221,10 +222,6 @@ class MobileInsightScreen(Screen):
             widget.text_size = (Window.width/2.25, Window.height/4)
             self.myLayout.add_widget(widget)
 
-#            if first:
-#                self.selectedPlugin = name
-#                first = False
-#                self.ids.selectButton.text = "Select Plugin: " + self.selectedPlugin
             app_path = self.plugins_list[name][0]
             if os.path.exists(os.path.join(app_path, "readme.txt")):
                 with open(os.path.join(app_path, "readme.txt"), 'r') as ff:
@@ -238,11 +235,13 @@ class MobileInsightScreen(Screen):
                 font_size = "45"
             widget.text = "[color=fffafa][size=70]"+ shortenedName + "[/size][size="+ font_size + "]\n"+ my_description+"[/size][/color]"
 
-            if first:
+            if bootup:
                 self.selectedPlugin = name
                 self.ids.selectButton.text = "Select Plugin"
-                first = False
+                self.ids.run_plugin.text  = "Run Plugin: "+self.selectedPlugin
+                bootup = False
 
+        # register Broadcast Receivers.
         self.registerBroadcastReceivers()
 
         # If default service exists, launch it
@@ -332,6 +331,8 @@ class MobileInsightScreen(Screen):
             "supolicy --live \"allow netmgrd diag_device chr_file {read write}\";"
         cmd = cmd + \
             "supolicy --live \"allow rild diag_device chr_file {read write}\";"
+        cmd = cmd + \
+            "supolicy --live \"allow rild debuggerd app_data_file {read open getattr}\";"
 
         main_utils.run_shell_cmd(cmd)
 
@@ -526,12 +527,6 @@ class MobileInsightScreen(Screen):
 
     def start_service(self, app_name):
         if platform == "android" and app_name in self.plugins_list:
-            if self.service:
-                # stop the running service
-                self.stop_service()
-
-            # Show logs on screen
-
             # Clean up old logs
             self.log_name = os.path.join(
                 main_utils.get_mobileinsight_analysis_path(),
@@ -546,6 +541,10 @@ class MobileInsightScreen(Screen):
             self.error_log = "Running " + app_name + "..."
             self.service = AndroidService(
                 "MobileInsight is running...", app_name)
+            
+            # stop the running service
+            self.service.stop()
+
             self.service.start(
                 app_name + ":" + self.plugins_list[app_name][0])   # app name
             self.default_app_name = app_name
@@ -729,6 +728,7 @@ class MobileInsightApp(App):
             'log_level': 'info',
             'bstartup': 0,
             'bstartup_service': 0,
+            'bgps': 1,
             'start_service': 'NetLogger',
         })
         self.create_app_default_config(config)
@@ -760,6 +760,7 @@ class MobileInsightApp(App):
 
     def build(self):
 
+        
         # Force to initialize all configs in .mobileinsight.ini
         # This prevents missing config due to existence of older-version .mobileinsight.ini
         # Work-around: force on_config_change, which would update config.ini
@@ -773,6 +774,7 @@ class MobileInsightApp(App):
         self.screen = MobileInsightScreen(name='MobileInsightScreen')
         self.manager = ScreenManager()
         self.manager.add_widget(self.screen)
+
         try:
             self.log_viewer_screen = LogViewerScreen(
                 name='LogViewerScreen', screen_manager=self.manager)
@@ -810,9 +812,12 @@ class MobileInsightApp(App):
                 import traceback
                 import crash_app
                 print str(traceback.format_exc())
+
+        # print "on_pause"
         return True  # go into Pause mode
 
     def on_resume(self):
+        # print "on_resume"
         pass
 
     def check_update(self):
@@ -837,10 +842,7 @@ class MobileInsightApp(App):
         self.check_update()
 
     def on_stop(self):
-        pass
-        # print "MI-app: on_stop"
-        # self.screen.stop_service()
-
+        self.screen.stop_service()
 
 if __name__ == "__main__":
     try:
