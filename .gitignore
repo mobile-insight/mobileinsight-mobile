@@ -40,9 +40,9 @@ dist/
 *diag_revealer
 
 # Data directory
-demo_app/data/*
+app/data/*
 # Not filter files
-!demo_app/data/MTK-filter
+!app/data/MTK-filter
 
 # Personalized config file
 config.yml*
