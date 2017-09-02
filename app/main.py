@@ -1,41 +1,38 @@
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.scrollview import ScrollView
-from kivy.uix.popup import Popup
-from kivy.uix.label import Label
-from kivy.core.text import Label as CoreLabel
-from kivy.uix.button import Button
-from kivy.properties import *
+from android import AndroidService
+from android.broadcast import BroadcastReceiver
+from collections import deque
+from jnius import autoclass, cast
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.config import ConfigParser
+from kivy.core.text import Label as CoreLabel
 from kivy.core.window import Window
 from kivy.lang import Builder
+from kivy.properties import *
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.label import Label
+from kivy.uix.popup import Popup
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.scrollview import ScrollView
 from kivy.utils import platform
-from kivy.config import ConfigParser
-
-from android import AndroidService
-from jnius import autoclass, cast
-import jnius
-
+from log_viewer_app import LogViewerScreen
+import datetime
 import functools
+import jnius
+import json
+import main_utils
 import os
+import re
 import shlex
-import sys
+import shutil
+import stat
 import subprocess
+import sys
 import threading
 import time
 import traceback
-import re
-import datetime
-import shutil
-import stat
-import json
-
-import main_utils
-from log_viewer_app import LogViewerScreen
-
-from collections import deque
 
 # Load main UI
 Window.softinput_mode = "pan"
@@ -193,7 +190,6 @@ class MobileInsightScreen(Screen):
             self.log_error(
                 "MobileInsight requires root privilege. Please root your device for correct functioning.")
 
-        
         self.__init_libs()
         self.__check_security_policy()
 
@@ -244,6 +240,10 @@ class MobileInsightScreen(Screen):
                 self.ids.selectButton.text = "Select Plugin"
                 self.ids.run_plugin.text  = "Run Plugin: "+self.selectedPlugin
                 bootup = False
+
+        # register Broadcast Receivers.
+        self.registerBroadcastReceivers()
+
         # If default service exists, launch it
         try:
             config = ConfigParser()
@@ -256,6 +256,11 @@ class MobileInsightScreen(Screen):
         except Exception as e:
             pass
 
+    def registerBroadcastReceivers(self):
+        self.brStopAck = BroadcastReceiver(self.on_broadcastStopServiceAck,
+                actions=['MobileInsight.Plugin.StopServiceAck'])
+        self.brStopAck.start()
+
     #Setting the text for the Select Plugin Menu button
     def callback(self, obj):
         self.selectedPlugin = obj.id
@@ -264,7 +269,6 @@ class MobileInsightScreen(Screen):
         if not self.service:
             self.ids.run_plugin.text  = "Run Plugin: "+self.selectedPlugin
         self.popup.dismiss()
-        
 
     def log_info(self, msg):
         self.append_log("[b][color=00ff00][INFO][/color][/b]: " + msg)
@@ -537,7 +541,7 @@ class MobileInsightScreen(Screen):
             self.error_log = "Running " + app_name + "..."
             self.service = AndroidService(
                 "MobileInsight is running...", app_name)
-            
+
             # stop the running service
             self.service.stop()
 
@@ -545,11 +549,44 @@ class MobileInsightScreen(Screen):
                 app_name + ":" + self.plugins_list[app_name][0])   # app name
             self.default_app_name = app_name
 
+            # TODO: support collecting TCPDUMP trace
+            # currentTime = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            # tcpdumpcmd = "su -c tcpdump -i rmnet_data0 -w " \
+            #         + main_utils.get_mobileinsight_log_path() \
+            #         + "/tcpdump_" + str(currentTime) + ".pcap\n"
+            # main_utils.run_shell_cmd(tcpdumpcmd)
+
         else:
             self.error_log = "Error: " + app_name + "cannot be launched!"
 
+    def on_broadcastStopServiceAck(self, context, intent):
+        self.log_info("Received MobileInsight.Plugin.StopServiceAck from plugin")
+        self.pluginAck = True
+
     def stop_service(self):
+        # Registe listener for 'MobileInsight.Plugin.StopServiceAck' intent
+        # from plugin
+        self.log_info("Ready to stop current plugin ...")
+        self.pluginAck = False
+
+        # Using broadcast to send 'MobileInsight.Main.StopService' intent to
+        # plugin
+        IntentClass = autoclass("android.content.Intent")
+        intent = IntentClass()
+        action = 'MobileInsight.Main.StopService'
+        intent.setAction(action)
+        try:
+            current_activity.sendBroadcast(intent)
+        except Exception as e:
+            import traceback
+            self.log_error(str(traceback.format_exc()))
+
         if self.service:
+            start_time = datetime.datetime.utcnow()
+            current_time = datetime.datetime.utcnow()
+            while (not self.pluginAck and (current_time - start_time).total_seconds() < 5):
+                current_time = datetime.datetime.utcnow()
+                pass
             self.service.stop()
             self.service = None
             if self.terminal_stop:
@@ -559,33 +596,11 @@ class MobileInsightScreen(Screen):
                 "Plugin stopped. Detailed analytic results are saved in " +
                 self.log_name)
 
-            self.stop_collection()  # close ongoing collections
+            self.stop_collection()  # close ongoing collections (diag_revealer)
 
-            # Haotian: save orphan log
-            dated_files = []
-            self.__logdir = main_utils.get_mobileinsight_log_path()
-            self.__phone_info = main_utils.get_phone_info()
-            mi2log_folder = os.path.join(main_utils.get_cache_dir(), "mi2log")
-            for subdir, dirs, files in os.walk(mi2log_folder):
-                for f in files:
-                    fn = os.path.join(subdir, f)
-                    dated_files.append((os.path.getmtime(fn), fn))
-            dated_files.sort()
-            dated_files.reverse()
-            if len(dated_files) > 0:
-                self.__original_filename = dated_files[0][1]
-                # print "The last orphan log file: " +
-                # str(self.__original_filename)
-                chmodcmd = "chmod 644 " + self.__original_filename
-                p = subprocess.Popen(
-                    "su ",
-                    executable=main_utils.ANDROID_SHELL,
-                    shell=True,
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE)
-                p.communicate(chmodcmd + '\n')
-                p.wait()
-                self._save_log()
+            # killall tcpdump
+            # tcpdumpcmd = "su -c killall tcpdump\n"
+            # main_utils.run_shell_cmd(tcpdumpcmd)
 
     def on_click_plugin(self, app_name):
         if self.service:
