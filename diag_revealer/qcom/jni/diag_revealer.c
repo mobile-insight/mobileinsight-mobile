@@ -49,7 +49,9 @@
 
 #define LOG_CUT_SIZE_DEFAULT (1 * 1024 * 1024)
 // #define BUFFER_SIZE	8192
-#define BUFFER_SIZE	32768
+// #define BUFFER_SIZE	32768
+#define BUFFER_SIZE	65536
+
 
 #define FIFO_MSG_TYPE_LOG 1
 #define FIFO_MSG_TYPE_START_LOG_FILE 2
@@ -668,12 +670,12 @@ main (int argc, char **argv)
 	 */
 	ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &mode);  
 	if (ret < 0) {
-		LOGD("ioctl SWITCH_LOGGING fails, with ret val = %d\n", ret);
+		LOGD("ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
 		perror("ioctl SWITCH_LOGGING");
 		// Yuanjie: the following works for Samsung S5
 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
 		if (ret < 0) {
-			LOGD("Alternative ioctl SWITCH_LOGGING fails, with ret val = %d\n", ret);
+			LOGD("Alternative ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
 			perror("Alternative ioctl SWITCH_LOGGING");
 
 			/* Android 7.0 mode
@@ -687,8 +689,14 @@ main (int argc, char **argv)
 
 			ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *)& new_mode);
 			if (ret < 0) {
-				LOGD("Android-7.0 ioctl SWITCH_LOGGING fails, with ret val = %d\n", ret);
+				LOGD("Android-7.0 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
 				perror("Alternative ioctl SWITCH_LOGGING");
+
+
+				ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &mode, 12, 0, 0, 0, 0);
+				if (ret < 0) {
+					LOGD("S7 Edge fails: %s \n", strerror(errno));
+			    }
 			}	
 
 		}
