@@ -7,7 +7,7 @@ from android.broadcast import BroadcastReceiver
 from jnius import autoclass
 from mobile_insight.analyzer import LteRrcAnalyzer, WcdmaRrcAnalyzer
 from mobile_insight.monitor import OnlineMonitor
-import mi2app_utils
+from service import mi2app_utils
 
 def on_broadcast(context, intent):
     '''

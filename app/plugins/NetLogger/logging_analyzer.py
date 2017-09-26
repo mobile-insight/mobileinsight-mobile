@@ -18,7 +18,7 @@ from mobile_insight.analyzer import Analyzer
 import datetime
 import itertools
 import logging
-import mi2app_utils as util
+from service import mi2app_utils as util
 import mimetools
 import mimetypes
 import os

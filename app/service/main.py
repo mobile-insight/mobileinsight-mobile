@@ -1,4 +1,4 @@
-import mi2app_utils
+from service import mi2app_utils
 
 import os
 import sys

@@ -12,7 +12,7 @@ import sys
 import shutil
 import traceback
 
-import mi2app_utils
+from service import mi2app_utils
 from mobile_insight.monitor import OnlineMonitor
 from logging_analyzer import LoggingAnalyzer
 
