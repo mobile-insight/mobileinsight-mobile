@@ -483,7 +483,6 @@ class MobileInsightScreen(Screen):
                 self.append_log(str(traceback.format_exc()))
                 no_error = False
 
-
     def stop_collection(self):
         res = main_utils.run_shell_cmd("ps").split('\n')
         for item in res:
@@ -663,6 +662,7 @@ class MobileInsightScreen(Screen):
 #    def callback(self, cb, value):
 #        self.active = value
 #        self.dispatch("on_active")
+
   
 class MobileInsightApp(App):
     screen = None
