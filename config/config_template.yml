@@ -13,19 +13,19 @@ p4a_path : /home/vagrant/.python-for-android/
 
 app_name : MobileInsight
 
-app_version : 3.0.0
+app_version : 3.1.0
 
 pkg_name : net.mobileinsight.app
 
 dist_name : mi3
 
-bootstrap : pygame
+bootstrap : sdl2
 
 # replace it with your minimal Android API level
 minsdk : 14
 
 # package requirements
-requirements : pyserial,kivy,mobileinsight
+requirements : pyserial,android,kivy,mobileinsight
 
 # replace it with your application icon path
 icon_path : resources/icon.png
@@ -49,7 +49,7 @@ ndk_path : /home/vagrant/android-ndk-r10e
 ndk_version : r10e-rc4
 
 # replace it with your desired target arch
-arch : armeabi
+arch : armeabi-v7a
 
 orientation : portrait
 
