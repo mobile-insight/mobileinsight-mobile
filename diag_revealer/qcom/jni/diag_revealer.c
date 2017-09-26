@@ -30,6 +30,8 @@
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
+#include <sys/resource.h>
+
 // #include <linux/diagchar.h>
 #define _GNU_SOURCE 
 #define F_SETPIPE_SZ (F_LINUX_SPECIFIC_BASE + 7) 
@@ -51,6 +53,11 @@
 // #define BUFFER_SIZE	8192
 // #define BUFFER_SIZE	32768
 #define BUFFER_SIZE	65536
+/* 
+ * size of FIFO pipe between diag_revealer and AndroidDiagMonitor
+ */
+// #define DIAG_FIFO_PIPE_SIZE 128*1024*1024 // 128MB
+#define DIAG_FIFO_PIPE_SIZE 10*1024*1024 // 10MB
 
 
 #define FIFO_MSG_TYPE_LOG 1
@@ -126,9 +133,6 @@ enum remote_procs {
 
 #define MODEM_DATA		0
 #define LAST_PERIPHERAL 3
-
-// size of FIFO pipe between diag_revealer and AndroidDiagMonitor
-#define DIAG_FIFO_PIPE_SIZE 128*1024*1024 // 128MB
 
 
 /* 
@@ -380,7 +384,7 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 				LOGE("write_commands read error: %s\n", strerror(errno));
 				return -1;
 			} else {
-				LOGD("Reading %d bytes of resp\n", read_len);
+				// LOGD("Reading %d bytes of resp\n", read_len);
 				// LOGD("write_commands responses\n");
 				// print_hex(buf_read, read_len);
 			}
@@ -717,6 +721,20 @@ main (int argc, char **argv)
 	}
 
 	// Messages are output to this FIFO pipe
+	int pipesize = DIAG_FIFO_PIPE_SIZE;
+
+    // Set max frame pipe size: Prevent packet loss
+	char tmp[4096];
+	sprintf(tmp, "su -c \"echo -e %d > /proc/sys/fs/pipe-max-size\"", pipesize);
+	system(tmp);
+	// system("su -c \"ulimit -l unlimited\"");
+
+	struct rlimit rl; 
+	rl.rlim_max = pipesize;
+	rl.rlim_cur = pipesize;
+	setrlimit (RLIMIT_MEMLOCK, &rl); 
+	getrlimit (RLIMIT_CPU, &rl); 
+
 	// int fifo_fd = open(argv[2], O_WRONLY | O_NONBLOCK);	// block until the other end also calls open()
 	int fifo_fd = open(argv[2], O_WRONLY);	// block until the other end also calls open()
 	if (fifo_fd < 0) {
@@ -725,11 +743,13 @@ main (int argc, char **argv)
 	} else {
 		// LOGD("FIFO opened\n");
 	}
-	int pipesize = DIAG_FIFO_PIPE_SIZE;	//128MB
-	fcntl(fifo_fd, F_SETPIPE_SZ, pipesize);
+	
+	int res = fcntl(fifo_fd, F_SETPIPE_SZ, pipesize);
+	if (res < 0)
+		LOGI("Failed to set FIFO: %s\n", strerror(errno));
 
-	int res = fcntl(fifo_fd, F_GETPIPE_SZ,pipesize);
-	// LOGI("F_GETPIPE_SZ: res=%d pipesize=%d\n",res,pipesize);
+	res = fcntl(fifo_fd, F_GETPIPE_SZ,pipesize);
+	LOGI("FIFO capacity: %d\n", res);
 
 	struct LogManagerState state;
 	// Initialize state
@@ -841,7 +861,7 @@ main (int argc, char **argv)
 			else
 			{
 				// TODO: Check other raw binary types
-				LOGI("Not USER_SPACE_DATA_TYPE: %d\n", *((int *)buf_read));
+				// LOGI("Not USER_SPACE_DATA_TYPE: %d\n", *((int *)buf_read));
 			}
 		} else {
 			continue;
