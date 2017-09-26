@@ -262,7 +262,7 @@ def get_cache_dir():
 
 
 def get_files_dir():
-    return str(current_activity.getFilesDir().getAbsolutePath())
+    return str(current_activity.getFilesDir().getAbsolutePath() + '/app')
 
 def get_phone_manufacturer():
     return androidOsBuild.MANUFACTURER
