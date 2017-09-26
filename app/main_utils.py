@@ -22,7 +22,7 @@ import stat
 import json
 
 current_activity = cast("android.app.Activity", autoclass(
-    "org.renpy.android.PythonActivity").mActivity)
+    "org.kivy.android.PythonActivity").mActivity)
 ANDROID_SHELL = "/system/bin/sh"
 
 File = autoclass("java.io.File")

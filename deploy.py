@@ -8,8 +8,9 @@ It deploys compiling environment and parameters for mobileinsight.
 
 Authors : Zengwen Yuan
           Kainan Wang
-Version : 2.1 -- 2015/05/16 reformat building commands
-          2.2 -- 2015/05/17 add config commands to copy libs
+Version : 2.3 -- 2017/09/25 remove obselete 'compile-pyo' option
+          2.2 -- 2016/05/17 add config commands to copy libs
+          2.1 -- 2016/05/16 reformat building commands
 '''
 
 import os
@@ -52,15 +53,14 @@ def run_dist():
 
 def run_apk(build_release):
 
-    diag_revealer_cmd = 'cd diag_revealer/qcom/jni;' \
+    diag_revealer_cmd = 'cd diag_revealer/qcom/jni; ' \
                       + 'rm diag_revealer;' \
-                      + 'make;' \
-                      + 'cd ../../mtk/jni;' \
-                      + 'rm diag_revealer_mtk;' \
-                      + 'make;' \
-                      + 'cd ../../..;'
+                      + 'make; ' \
+                      + 'cd ../../mtk/jni; ' \
+                      + 'rm diag_revealer_mtk; ' \
+                      + 'make; ' \
+                      + 'cd ../../..; '
     build_cmd = diag_revealer_cmd + 'python-for-android apk' \
-        + ' --compile-pyo' \
         + ' --copy-libs' \
         + ' --name={}'.format(cfg['app_name']) \
         + ' --dist-name={}'.format(cfg['dist_name']) \
@@ -236,12 +236,12 @@ if __name__ == '__main__':
     elif arg == 'update':
         try:
             plg = sys.argv[2]
-            desktop_path = "./internal_app/" + plg
+            desktop_path = "./app/" + plg
             if os.path.isdir(desktop_path):
                 os.system(
                     'adb shell "rm -r /sdcard/mobileinsight/plugins/{plugin}"'.format(plugin=plg))
                 os.system(
-                    'adb push ./internal_app/{plugin} /sdcard/mobileinsight/plugins/{plugin}'.format(plugin=plg))
+                    'adb push ./app/{plugin} /sdcard/mobileinsight/plugins/{plugin}'.format(plugin=plg))
             else:
                 print "Sorry, the plugin {plugin} does not exist".format(plugin=plg)
         except BaseException:

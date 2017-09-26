@@ -39,7 +39,7 @@ Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
 Builder.load_file('main_ui.kv')
 current_activity = cast("android.app.Activity", autoclass(
-    "org.renpy.android.PythonActivity").mActivity)
+    "org.kivy.android.PythonActivity").mActivity)
 
 LOGO_STRING = "MobileInsight " + main_utils.get_cur_version() + \
     "\nCopyright (c) 2015-2017 MobileInsight Team"
@@ -119,7 +119,7 @@ def get_plugins_list():
     ret = {}  # app_name->(path,with_UI)
 
     APP_DIR = os.path.join(
-        str(current_activity.getFilesDir().getAbsolutePath()), "plugins")
+        str(current_activity.getFilesDir().getAbsolutePath()), "app/plugins")
     l = os.listdir(APP_DIR)
     for f in l:
         if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):

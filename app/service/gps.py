@@ -2,7 +2,7 @@ from jnius import PythonJavaClass, java_method, autoclass
 
 Looper = autoclass('android.os.Looper')
 LocationManager = autoclass('android.location.LocationManager')
-PythonService = autoclass('org.renpy.android.PythonService')
+PythonService = autoclass('org.kivy.android.PythonService')
 Context = autoclass('android.content.Context')
 
 class GpsListener(PythonJavaClass):

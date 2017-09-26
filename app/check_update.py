@@ -42,7 +42,7 @@ Builder.load_string('''
 
 
 cur_activity = cast("android.app.Activity", autoclass(
-    "org.renpy.android.PythonActivity").mActivity)
+    "org.kivy.android.PythonActivity").mActivity)
 apk_url = ""
 popup = None
 
