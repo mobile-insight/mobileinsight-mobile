@@ -633,7 +633,9 @@ class MobileInsightScreen(Screen):
                       + '    Yuanjie Li,\n'
                       + '    Zengwen Yuan,\n'
                       + '    Jiayao Li,\n'
-                      + '    Haotian Deng\n\n'
+                      + '    Haotian Deng,\n'
+                      + '    Qianru Li,\n'
+                      + '    Zhehui Zhang\n\n'
                       + 'Copyright (c) 2014 – 2017')
         popup = Popup(title='About MobileInsight',
                       size_hint=(1,1),
