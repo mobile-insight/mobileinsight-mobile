@@ -112,5 +112,5 @@ try:
 except BaseException:
     src.log_error(traceback.format_exc())
 
-finally:
-    mi2app_utils.detach_thread()
+#finally:
+#    mi2app_utils.detach_thread()
