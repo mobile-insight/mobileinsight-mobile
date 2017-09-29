@@ -385,7 +385,10 @@ class MobileInsightScreen(Screen):
         for exe in exes:
             cmd = cmd + " chmod 0755 " + os.path.join(libs_path, exe) + "; "
 
-        cmd = cmd + "chmod -R 755 " + libs_path
+        cmd = cmd + "chmod -R 755 " + libs_path + "; "
+        cmd = cmd + "chmod -R 777 %s" % main_utils.get_files_dir()
+        # cmd = cmd + "find %s -type f -exec chmod 666 {} \; " % main_utils.get_files_dir()
+        # cmd = cmd + "find %s -type f -exec chmod 777 {} \; " % main_utils.get_files_dir()
         main_utils.run_shell_cmd(cmd)
 
     # def __init_libs(self):
