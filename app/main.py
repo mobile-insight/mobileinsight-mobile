@@ -375,6 +375,7 @@ class MobileInsightScreen(Screen):
             for sym_lib in libs_mapping[lib]:
                 # if not os.path.isfile(os.path.join(libs_path,sym_lib)):
                 if True:
+                    # TODO: chown to restore ownership for the symlinks
                     cmd = cmd + " ln -s " + \
                         os.path.join(libs_path, lib) + " " + os.path.join(libs_path, sym_lib) + "; "
 
@@ -383,12 +384,9 @@ class MobileInsightScreen(Screen):
                 "android_pie_ws_dissector",
                 "android_ws_dissector"]
         for exe in exes:
-            cmd = cmd + " chmod 0755 " + os.path.join(libs_path, exe) + "; "
+            cmd = cmd + " chmod 755 " + os.path.join(libs_path, exe) + "; "
 
-        cmd = cmd + "chmod -R 755 " + libs_path + "; "
-        cmd = cmd + "chmod -R 777 %s" % main_utils.get_files_dir()
-        # cmd = cmd + "find %s -type f -exec chmod 666 {} \; " % main_utils.get_files_dir()
-        # cmd = cmd + "find %s -type f -exec chmod 777 {} \; " % main_utils.get_files_dir()
+        cmd = cmd + "chmod -R 755 " + libs_path
         main_utils.run_shell_cmd(cmd)
 
     # def __init_libs(self):
@@ -638,7 +636,7 @@ class MobileInsightScreen(Screen):
                       + '    Zengwen Yuan,\n'
                       + '    Jiayao Li,\n'
                       + '    Haotian Deng\n\n'
-                      + 'Copyright (c) 2014 – 2017')
+                      + 'Copyright (c) 2015 – 2017')
         popup = Popup(title='About MobileInsight',
                       size_hint=(1,1),
                       background = "gradient.png"
