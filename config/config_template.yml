@@ -9,23 +9,26 @@
 mi_dev_path : /home/vagrant/mi-dev/mobileinsight-mobile
 
 # replace it with python-for-android storage dir
-p4a_path : /home/vagrant/.python-for-android/
+p4a_path : /home/vagrant/.python-for-android
 
 app_name : MobileInsight
 
-app_version : 3.1.0
+app_version : 3.2.0
 
 pkg_name : net.mobileinsight.app
 
 dist_name : mi3
 
-bootstrap : pygame
+# the old pygame bootstrap is depreciated
+bootstrap : sdl2
+
+orientation : portrait
 
 # replace it with your minimal Android API level
 minsdk : 14
 
 # package requirements
-requirements : pyserial,kivy,mobileinsight
+requirements : pyserial,android,kivy,mobileinsight
 
 # replace it with your application icon path
 icon_path : resources/icon.png
@@ -49,16 +52,18 @@ ndk_path : /home/vagrant/android-ndk-r10e
 ndk_version : r10e-rc4
 
 # replace it with your desired target arch
-arch : armeabi
-
-orientation : portrait
+arch : armeabi-v7a
 
 whitelist : config/whitelist.txt
 
+# Your keystore location
 keystore : config/example.jks
 
+# Your keystore password
+keystorepw : mobileinsight
+
+# Your private signkey name in the keystore
 signkey : mi-key
 
-# This should work but currently has bug
-keystorepw : mobileinsight
+# Your private signkey password
 signkeypw : mobileinsight

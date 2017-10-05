@@ -1,4 +1,4 @@
-import mi2app_utils
+from service import mi2app_utils
 
 import os
 import sys
@@ -11,7 +11,7 @@ import signal
 
 from kivy.config import ConfigParser
 
-from gps import GpsListener
+from service import GpsListener
 
 
 def receive_signal(signum, stack):

@@ -22,7 +22,7 @@ import stat
 import json
 
 current_activity = cast("android.app.Activity", autoclass(
-    "org.renpy.android.PythonActivity").mActivity)
+    "org.kivy.android.PythonActivity").mActivity)
 ANDROID_SHELL = "/system/bin/sh"
 
 File = autoclass("java.io.File")
@@ -262,7 +262,7 @@ def get_cache_dir():
 
 
 def get_files_dir():
-    return str(current_activity.getFilesDir().getAbsolutePath())
+    return str(current_activity.getFilesDir().getAbsolutePath() + '/app')
 
 def get_phone_manufacturer():
     return androidOsBuild.MANUFACTURER
