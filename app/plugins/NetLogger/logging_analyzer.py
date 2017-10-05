@@ -11,14 +11,14 @@ Version : 3.1  Attempt upload again when WiFi is available
           1.0  Init NetLogger
 '''
 
-
 from android.broadcast import BroadcastReceiver
 from jnius import autoclass
 from mobile_insight.analyzer import Analyzer
+from service import mi2app_utils as util
+
 import datetime
 import itertools
 import logging
-from service import mi2app_utils as util
 import mimetools
 import mimetypes
 import os
@@ -145,6 +145,7 @@ class LoggingAnalyzer(Analyzer):
         self.__msg_cnt = 0
         self.__dec_msg = []
         self.__is_wifi_enabled = False
+        self.__log_timestamp = ""
 
         try:
             if config['is_use_wifi'] == '1':
@@ -203,6 +204,7 @@ class LoggingAnalyzer(Analyzer):
         '''
         dated_files = []
         mi2log_folder = os.path.join(util.get_cache_dir(), "mi2log")
+        orphan_filename = ""
         for subdir, dirs, files in os.walk(mi2log_folder):
             for f in files:
                 fn = os.path.join(subdir, f)
@@ -211,10 +213,9 @@ class LoggingAnalyzer(Analyzer):
         dated_files.reverse()
         for dated_file in dated_files:
             self.__orig_file = dated_file[1]
-            self.log_info("LoggingAnalyzer: find orphan log: %s" % self.__orig_file)
             util.run_shell_cmd("chmod 644 %s" % self.__orig_file)
-            self._save_log()
-            self.log_info("mi2log file saved")
+            orphan_filename = self._save_log()
+            self.log_info("Found undersized orphan log, file saved to %s" % orphan_filename)
 
     def __del__(self):
         self.log_info("__del__ is called")
@@ -294,9 +295,8 @@ class LoggingAnalyzer(Analyzer):
                 datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + ".txt"
             self.__dec_log_path = os.path.join(
                 self.__dec_log_dir, self.__dec_log_name)
-            # TODO: use log formatter, print to screen
             self.log_info(
-                "MobileInsight (NetLogger): decoded cellular log being saved to %s, please check." %
+                "NetLogger: decoded cellular log being saved to %s, please check." %
                 self.__dec_log_path)
             self.__raw_msg.clear()  # reset the dict
             self.__msg_cnt = 0
@@ -304,6 +304,8 @@ class LoggingAnalyzer(Analyzer):
     def _save_log(self):
         orig_base_name = os.path.basename(self.__orig_file)
         orig_dir_name = os.path.dirname(self.__orig_file)
+        if self.__log_timestamp == "":
+            self.__log_timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
         milog_base_name = "diag_log_%s_%s_%s.mi2log" % (
             self.__log_timestamp, util.get_phone_info(), util.get_operator_info())
         milog_abs_name = os.path.join(self.__log_dir, milog_base_name)
@@ -313,7 +315,6 @@ class LoggingAnalyzer(Analyzer):
         # except:
         #     pass
 
-        # Yuanjie: eliminate root operations
         shutil.copyfile(self.__orig_file, milog_abs_name)
         os.remove(self.__orig_file)
 
