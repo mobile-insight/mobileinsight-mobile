@@ -55,12 +55,11 @@ def run_dist():
 def run_apk(build_release):
 
     make_diag_cmd = 'cd diag_revealer/qcom/jni; ' \
-                      + 'rm diag_revealer;' \
+                      + 'rm diag_revealer; ' \
                       + 'make; ' \
                       + 'cd ../../mtk/jni; ' \
                       + 'rm diag_revealer_mtk; ' \
-                      + 'make; ' \
-                      + 'cd ../../..;'
+                      + 'make;'
 
     build_cmd = 'python-for-android apk' \
         + ' --copy-libs' \
