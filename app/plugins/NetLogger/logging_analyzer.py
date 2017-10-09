@@ -66,11 +66,10 @@ def upload_log(filename):
             file_base_name = os.path.basename(filename)
             uploaded_file = os.path.join(
                 util.get_mobileinsight_log_uploaded_path(), file_base_name)
-            # TODO: print to screen
-            # print "debug 58, file uploaded has been renamed to %s" % uploaded_file
             # shutil.copyfile(filename, uploaded_file)
             util.run_shell_cmd("cp %s %s" % (filename, uploaded_file))
             os.remove(filename)
+            self.log_info("File %s has been uploaded successfully" % uploaded_file)
         finally:
             util.detach_thread()
 
@@ -213,6 +212,8 @@ class LoggingAnalyzer(Analyzer):
         dated_files.reverse()
         for dated_file in dated_files:
             self.__orig_file = dated_file[1]
+            # print "self.__orig_file = %s" % str(self.__orig_file)
+            # print "self.__orig_file modified time = %s" % str(time.strftime('%Y%m%d_%H%M%S', time.localtime(os.path.getmtime(self.__orig_file))))
             util.run_shell_cmd("chmod 644 %s" % self.__orig_file)
             orphan_filename = self._save_log()
             self.log_info("Found undersized orphan log, file saved to %s" % orphan_filename)
@@ -302,19 +303,11 @@ class LoggingAnalyzer(Analyzer):
             self.__msg_cnt = 0
 
     def _save_log(self):
-        orig_base_name = os.path.basename(self.__orig_file)
-        orig_dir_name = os.path.dirname(self.__orig_file)
-        if self.__log_timestamp == "":
-            self.__log_timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        self.__log_timestamp = str(time.strftime('%Y%m%d_%H%M%S',
+            time.localtime(os.path.getmtime(self.__orig_file))))
         milog_base_name = "diag_log_%s_%s_%s.mi2log" % (
             self.__log_timestamp, util.get_phone_info(), util.get_operator_info())
         milog_abs_name = os.path.join(self.__log_dir, milog_base_name)
-        # util.run_shell_cmd("cp %s %s" % (self.__orig_file, milog_abs_name))
-        # try:
-        #     util.run_shell_cmd("rm %s" % self.__orig_file)
-        # except:
-        #     pass
-
         shutil.copyfile(self.__orig_file, milog_abs_name)
         os.remove(self.__orig_file)
 
