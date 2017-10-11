@@ -12,7 +12,7 @@ import sys
 import shutil
 import traceback
 
-import mi2app_utils
+from service import mi2app_utils
 from mobile_insight.monitor import OnlineMonitor
 from logging_analyzer import LoggingAnalyzer
 
@@ -94,7 +94,7 @@ try:
         except IOError:
             src.enable_log(lte_lvl1 + wcdma + umts)
             src.log_warning(
-                "MobileInsight (NetLogger): config file open failed, use default LTE/3G Control Plane logs")
+                "NetLogger: config file open failed, use default LTE/3G Control Plane logs")
             shutil.copyfile(
                 os.path.join(
                     mi2app_utils.get_files_dir(),
@@ -102,7 +102,7 @@ try:
                     cfg_file),
                 cfg_path)
             src.log_info(
-                "MobileInsight (NetLogger): config file copied to %s, you can edit it for collection next time" %
+                "NetLogger: config file copied to %s, you can edit it for collection next time" %
                 cfg_path)
 
     loggingAnalyzer = LoggingAnalyzer(plugin_config)
@@ -113,5 +113,5 @@ try:
 except BaseException:
     src.log_error(traceback.format_exc())
 
-finally:
-    mi2app_utils.detach_thread()
+#finally:
+#    mi2app_utils.detach_thread()

@@ -39,7 +39,7 @@ Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
 Builder.load_file('main_ui.kv')
 current_activity = cast("android.app.Activity", autoclass(
-    "org.renpy.android.PythonActivity").mActivity)
+    "org.kivy.android.PythonActivity").mActivity)
 
 LOGO_STRING = "MobileInsight " + main_utils.get_cur_version() + \
     "\nCopyright (c) 2015-2017 MobileInsight Team"
@@ -119,7 +119,7 @@ def get_plugins_list():
     ret = {}  # app_name->(path,with_UI)
 
     APP_DIR = os.path.join(
-        str(current_activity.getFilesDir().getAbsolutePath()), "plugins")
+        str(current_activity.getFilesDir().getAbsolutePath()), "app/plugins")
     l = os.listdir(APP_DIR)
     for f in l:
         if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
@@ -387,6 +387,7 @@ class MobileInsightScreen(Screen):
             for sym_lib in libs_mapping[lib]:
                 # if not os.path.isfile(os.path.join(libs_path,sym_lib)):
                 if True:
+                    # TODO: chown to restore ownership for the symlinks
                     cmd = cmd + " ln -s " + \
                         os.path.join(libs_path, lib) + " " + os.path.join(libs_path, sym_lib) + "; "
 
@@ -395,7 +396,7 @@ class MobileInsightScreen(Screen):
                 "android_pie_ws_dissector",
                 "android_ws_dissector"]
         for exe in exes:
-            cmd = cmd + " chmod 0755 " + os.path.join(libs_path, exe) + "; "
+            cmd = cmd + " chmod 755 " + os.path.join(libs_path, exe) + "; "
 
         cmd = cmd + "chmod -R 755 " + libs_path
         main_utils.run_shell_cmd(cmd)
@@ -645,7 +646,9 @@ class MobileInsightScreen(Screen):
                       + '    Yuanjie Li,\n'
                       + '    Zengwen Yuan,\n'
                       + '    Jiayao Li,\n'
-                      + '    Haotian Deng\n\n'
+                      + '    Haotian Deng,\n'
+                      + '    Qianru Li,\n'
+                      + '    Zhehui Zhang\n\n'
                       + 'Copyright (c) 2014 – 2017')
         popup = Popup(title='About MobileInsight',
                       size_hint=(1,1),

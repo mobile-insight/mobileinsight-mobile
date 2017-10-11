@@ -15,11 +15,11 @@ from jnius import autoclass, cast, PythonJavaClass, java_method
 ANDROID_SHELL = "/system/bin/sh"
 
 # This one works with Pygame, current bootstrap
-PythonService = autoclass('org.renpy.android.PythonService')
+#PythonService = autoclass('org.renpy.android.PythonService')
 
 # This one works with SDL2
-# PythonActivity = autoclass('org.kivy.android.PythonActivity')
-# PythonService  = autoclass('org.kivy.android.PythonService')
+PythonActivity = autoclass('org.kivy.android.PythonActivity')
+PythonService  = autoclass('org.kivy.android.PythonService')
 
 pyService = PythonService.mService
 androidOsBuild = autoclass("android.os.Build")

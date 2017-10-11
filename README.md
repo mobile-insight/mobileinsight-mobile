@@ -8,7 +8,7 @@ The structure of this repo is organized as follows:
 ```
 .
 ├── README.md: this file
-├── Makefile: Makefile which supports multiple compilation options
+├── Makefile: supports multiple compilation options, see usage
 ├── deploy.py: configures compilation environments
 ├── config: codes for application specific configurations
 ├── app: main directory for the MobileInsight app
@@ -27,19 +27,19 @@ Second, obtain the newest `Vagrantfile` for MobileInsight development from the [
 
 ```
 cd /path/to/dev
-wget https://github.com/mobile-insight/mobileinsight-dev/archive/v1.0.tar.gz
-tar -xf v1.0.tar.gz mobileinsight-dev-1.0/Vagrantfile
-mv mobileinsight-dev-1.0/Vagrantfile .
-rm -r mobileinsight-dev-1.0
+curl -s https://api.github.com/repos/mobile-insight/mobileinsight-dev/releases/latest | grep tarball_url | cut -d '"' -f 4 | xargs wget
+mv v* mi.tgz
+tar xf mi.tgz -C . --strip-components=1
+rm mi.tgz
 vagrant up
 ```
 
 Depending on the network and CPU speed, the installation may take half hour or longer.
 
-Then, when the process finish install and returns the shell, a MobileInsight app is already compiled and copied to your path (`/path/to/dev`). You can install it on supported Android phone and try it out immediately using `adb`.
+Then, when the process finish install and returns the shell, a MobileInsight app is already compiled and copied to your path (`/path/to/dev`). You can install it on supported Android phone and try it out immediately using `adb` (for example, the compiled APK version is 3.2.0).
 
 ```
-adb install MobileInsight-3.0.0-debug.apk
+adb install MobileInsight-3.2.0-debug.apk
 ```
 
 For more details on using the provided `Vagrantfile` to configure the MobileInsight, please refer to the [`mobileinsight-dev` repo](https://github.com/mobile-insight/mobileinsight-dev).
@@ -49,7 +49,7 @@ For more details on using the provided `Vagrantfile` to configure the MobileInsi
 
 Once the development virtual machine is installed, you can login and recompile the app with your customized changes.
 
-First, run `vagrant ssh` to login to the virtual machine. By default, everything is installed under the `/home/vagrant/mi-dev` folder.
+First, run `vagrant ssh` to login to the virtual machine.
 
 ```
 (host shell) $ cd /path/to/dev
@@ -57,15 +57,16 @@ First, run `vagrant ssh` to login to the virtual machine. By default, everything
 (vm shell)   $ cd mi-dev
 ```
 
-The version and icon etc. of the MobileInsight app are configured by `config/config.yml` file.
-
-Next, you can compile the new apk using `make`:
+By default, MobileInsight repos are installed under the `/home/vagrant/mi-dev` folder.
+The version and icon of the MobileInsight app are configured by the `config/config.yml` file.
+Edit this file to specify the version, API level and NDK used for your own need.
+Next, you can compile the new APK (debug version) using `make`:
 
 ```
 make apk_debug
 ```
 
-If you want to sign your application, you need to specify the correct keystore path in `config/config.yml` file, and use
+If you want to sign your application, you need to specify the correct keystore, private key and their passwords in `config/config.yml` file, and use
 
 ```
 make apk_release
@@ -78,32 +79,34 @@ Passphrase for keystore: mobileinsight
 Key password for mi3: mobileinsight
 ```
 
-The compiled APK can be copied out of the virtual machine and installed by copying to the `/vagrant` folder.
+The compiled APK can be copied out of the virtual machine by copying to the `/vagrant` folder.
+You may install the APK to phone after that.
 
 ```
-(vm shell)   $ cp MobileInsight-3.0.0-debug.apk /vagrant
+(vm shell)   $ cp MobileInsight-3.2.0-debug.apk /vagrant
 (vm shell)   $ exit
-(host shell) $ adb install -r MobileInsight-3.0.0-debug.apk
+(host shell) $ adb install -r MobileInsight-3.2.0-debug.apk
 ```
 
-__NOTE__: If upstream core functionalities of MobileInsight ([`mobileinsight-core`](https://github.com/mobile-insight/mobileinsight-core)) changed, you need to clean the existing MobileInsight *distribution* and re-compile it:
+__NOTE__: If upstream core functionalities of MobileInsight ([`mobileinsight-core`](https://github.com/mobile-insight/mobileinsight-core)) changes, you need to clean the existing MobileInsight *distribution* and re-compile it:
 
 ```
 make clean_dist
 make dist
 ```
 
-The newly compiled distribution will be called `<dist_name>` (in `config/config.yml`) and be stored in `<p4a_path>/dists/<dist_name>`.
+The newly compiled distribution will be called `<dist_name>` (in `config/config.yml`) and stored under `<p4a_path>/dists/<dist_name>`.
 These steps are only required to be performed once if the core functionalities changes. More details on distribution can be found in [`python-for-android`'s documentation](https://python-for-android.readthedocs.io/en/latest/quickstart/#distribution-management).
 
 
 ## Manual Installation
 
-The recommend way to install the `mobileinsight-mobile` repo and set up the environment is through our provided Vagrantfile. However, if you need to install and configure it on your host machine for performance or whatever reason, please follow the __exact__ instructions below. We have tested these steps on macOS 10.12 and Ubuntu 14.04/16.04.
+The recommended way to install the `mobileinsight-mobile` repo and set up the environment is through our provided `Vagrantfile`. However, if you need to install and configure it on your host machine for performance or whatever reason, please follow the __exact__ instructions below. We have tested these steps on macOS 10.12 and Ubuntu 14.04/16.04.
 
 1. Install the special version of `python-for-android`.
 
 `mobileinsight-mobile` uses `python-for-android` as the backend building tool. We added a `mobileinsight` **recipe** into the `python-for-android` repo and fixed some bugs to support the core functionality of `mobileinsight-core`.
+
 
 ```
 git clone https://github.com/mobile-insight/python-for-android.git
@@ -133,7 +136,7 @@ Currently MobileInsight relies on __exactly__ Android SDK API level 19 and `ant`
 
 3. Install Android NDK r10e.
 
-Please download the __exact__ version of Android NDK r10e from [Google's archive page](https://developer.android.com/ndk/downloads/older_releases.html). Currently MobileInsight relies on  __exactly__ Android NDK r10e to compile the app. We are testing the latest NDK r15 to switch to `clang` toolchain.
+Please download the __exact__ version of Android NDK r10e from [Google's archive page](https://developer.android.com/ndk/downloads/older_releases.html). Currently MobileInsight relies on  __exactly__ Android NDK r10e to compile the app. We are testing the latest NDK r15 and also the `clang` instead of `gcc`.
 
 4. Install other dependencies.
 
@@ -163,7 +166,8 @@ apt-get -y install zlib1g-dev libtool ccache
 apt-get -y install openjdk-8-jdk openjdk-8-jre
 apt-get -y install python2.7-dev python-setuptools
 apt-get -y install libc6:i386 libncurses5:i386 libstdc++6:i386 libbz2-1.0:i386 lib32z1 zlib1g:i386
-pip install cython pyyaml xmltodict
+pip install cython==0.25.2
+pip install pyyaml xmltodict
 ```
 
 On macOS, you can install them with [Homebrew](https://brew.sh), such as:
@@ -171,7 +175,8 @@ On macOS, you can install them with [Homebrew](https://brew.sh), such as:
 ```
 brew cask install java
 brew install git python zlib libtool ant ccache autoconf automake
-python -m pip install cython pyyaml xmltodict
+pip2 install cython==0.25.2
+pip2 install pyyaml xmltodict
 ```
 
 5. Clone this repository and create config file.
@@ -193,7 +198,7 @@ make app_debug
 
 ## How to Contribute
 
-We love pull requests and discussing novel ideas. You can open issues here to report bugs. Feel free to improve MobileInsight and become a collaborator if you are interested.
+We love pull requests and novel ideas. You can open issues here to report bugs. Feel free to improve MobileInsight and become a collaborator if you are interested.
 
 The following Slack group is used exclusively for discussions about developing the MobileInsight and its sister projects:
 
