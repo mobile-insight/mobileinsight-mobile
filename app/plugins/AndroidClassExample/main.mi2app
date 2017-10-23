@@ -1,0 +1,26 @@
+#!/usr/bin/python
+
+import os
+import sys
+from jnius import autoclass, cast
+
+'''
+Don't use the following block in plugin:
+
+    PythonActivity = autoclass('org.kivy.android.PythonActivity')
+    pyActivity = PythonActivity.mActivity
+
+The plugin is run as PythonService, therefore the type of pyActivity
+will be <type 'NoneType'>
+'''
+
+PythonService  = autoclass('org.kivy.android.PythonService')
+pyService = PythonService.mService
+
+Context = autoclass('android.content.Context')
+
+mWifiManager = pyService.getSystemService(Context.WIFI_SERVICE)
+mWifiInfo = mWifiManager.getConnectionInfo()
+
+print mWifiInfo.getBSSID()
+print mWifiInfo.getFrequency()
