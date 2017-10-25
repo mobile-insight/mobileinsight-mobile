@@ -79,7 +79,8 @@ def get_phone_info():
 
 
 def get_operator_info():
-    return telephonyManager.getNetworkOperatorName()+"-"+telephonyManager.getNetworkOperator()
+    # return telephonyManager.getNetworkOperatorName()+"-"+telephonyManager.getNetworkOperator()
+    return telephonyManager.getNetworkOperator()
 
 
 def get_device_id():

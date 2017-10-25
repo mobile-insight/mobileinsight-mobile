@@ -34,8 +34,9 @@ class MyFormatter(logging.Formatter):
         if datefmt:
             s = ct.strftime(datefmt)
         else:
-            t = ct.strftime("%Y-%m-%d %H:%M:%S")
-            s = "%s,%03d" % (t, record.msecs)
+            # t = ct.strftime("%Y-%m-%d %H:%M:%S")
+            # s = "%s,%03d" % (t, record.msecs)
+            s = ct.strftime(" ")
         return s
 
 
@@ -65,10 +66,10 @@ def setup_logger(app_name):
 
     l = logging.getLogger("mobileinsight_logger")
     if len(l.handlers) < 1:
-        formatter = MyFormatter(
-            '%(asctime)s %(message)s',
-            datefmt='%Y-%m-%d,%H:%M:%S.%f')
-        # formatter = MyFormatter('%(message)s')
+        # formatter = MyFormatter(
+        #     '%(asctime)s %(message)s',
+        #     datefmt='%Y-%m-%d,%H:%M:%S.%f')
+        formatter = MyFormatter('%(message)s')
         streamHandler = logging.StreamHandler()
         streamHandler.setFormatter(formatter)
 
@@ -144,10 +145,10 @@ if __name__ == "__main__":
 
         execfile(app_file, namespace)
 
-        print app_name, "stops normally"
+        # print app_name, "stops normally"
 
     except Exception as e:
-        print "Exceptions!!!"
+        # print "Exceptions!!!"
 
         # Print traceback logs to analysis
         import traceback

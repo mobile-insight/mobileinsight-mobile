@@ -334,6 +334,18 @@ class MobileInsightScreen(Screen):
         cmd = cmd + \
             "supolicy --live \"allow rild debuggerd app_data_file {read open getattr}\";"
 
+        cmd = cmd + \
+            "supolicy --live \"allow wcnss_service mnt_user_file dir {search}\";"
+
+        cmd = cmd + \
+            "supolicy --live \"allow wcnss_service fuse dir {read open search}\";"
+
+        cmd = cmd + \
+            "supolicy --live \"allow wcnss_service mnt_user_file lnk_file {read}\";"
+
+        cmd = cmd + \
+            "supolicy --live \"allow wcnss_service fuse file {read append getattr}\";"
+
         main_utils.run_shell_cmd(cmd)
 
     def __check_diag_mode(self):

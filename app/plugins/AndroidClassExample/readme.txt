@@ -1,0 +1,1 @@
+An example plugin to show how to get Android classes and use Java APIs.
