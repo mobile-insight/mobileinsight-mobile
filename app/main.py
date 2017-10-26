@@ -393,6 +393,7 @@ class MobileInsightScreen(Screen):
 
         exes = ["diag_revealer",
                 "diag_revealer_mtk",
+                "tcpdump",
                 "android_pie_ws_dissector",
                 "android_ws_dissector"]
         for exe in exes:

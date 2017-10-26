@@ -38,5 +38,41 @@
         "desc"   : "Collected logs will only be uploaded when Wi-Fi is connected",
         "key"    : "is_use_wifi",
         "default": "1"
+    },
+    {
+        "type"   : "bool",
+        "title"  : "Use TCPDUMP",
+        "desc"   : "Enable TCPDUMP to collect data packets",
+        "key"    : "use_tcpdump",
+        "default": "0"
+    },
+    {
+        "type"   : "options",
+        "title"  : "Interface",
+        "desc"   : "Interface for TCPDUMP to collect traces",
+        "key"    : "iface",
+        "default": "wlan0",
+        "options": ["wlan0", "rmnet_data0", "any"]
+    },
+    {
+        "type"   : "bool",
+        "title"  : "Ping network",
+        "desc"   : "Use ping to generate traffic",
+        "key"    : "ping_on",
+        "default": "0"
+    },
+    {
+        "type"   : "numeric",
+        "title"  : "Ping interval",
+        "desc"   : "Ping interval in milliseconds (200 is the minimal)",
+        "key"    : "ping_int",
+        "default": "500"
+    },
+    {
+        "type"   : "string",
+        "title"  : "Ping address",
+        "desc"   : "Domain address to ping",
+        "key"    : "ping_addr",
+        "default": "www.google.com"
     }
 ]

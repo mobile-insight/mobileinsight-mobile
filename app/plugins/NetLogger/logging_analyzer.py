@@ -145,29 +145,13 @@ class LoggingAnalyzer(Analyzer):
         self.__dec_msg = []
         self.__is_wifi_enabled = False
         self.__log_timestamp = ""
+        self.__use_tcpdump = False
+        self.__iface = "wlan0"
+        self.__ping_on = False
+        self.__ping_int = 1
+        self.__ping_addr = "www.google.com"
 
-        try:
-            if config['is_use_wifi'] == '1':
-                self.__is_use_wifi = True
-            else:
-                self.__is_use_wifi = False
-        except BaseException:
-            self.__is_use_wifi = False
-        try:
-            if config['is_dec_log'] == '1':
-                self.__is_dec_log = True
-                self.__dec_log_name = "diag_log_" + \
-                    datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + ".txt"
-                self.__dec_log_path = os.path.join(
-                    self.__dec_log_dir, self.__dec_log_name)
-            else:
-                self.__is_dec_log = False
-        except BaseException:
-            self.__is_dec_log = False
-        try:
-            self.__dec_log_type = config['log_type']
-        except BaseException:
-            self.__dec_log_type = ""
+        self._read_config(config)
 
         if not os.path.exists(self.__log_dir):
             os.makedirs(self.__log_dir)
@@ -179,6 +163,123 @@ class LoggingAnalyzer(Analyzer):
         self.br = BroadcastReceiver(self.on_broadcast,
                 actions=['MobileInsight.Main.StopService'])
         self.br.start()
+
+        self._kill_grep_thread("tcpdump")
+        self._kill_grep_thread("ping")
+        self._run_tcpdump()
+        self._run_ping()
+
+
+    def _run_tcpdump(self):
+        if self.__use_tcpdump is True:
+            self.__pcap_file = os.path.join(
+                self.__log_dir,
+                ("mi_" + self.get_cur_timestamp() + ".pcap"))
+            self.log_info("Generating pcap log file: %s" % self.__pcap_file)
+            util.run_root_shell_cmd(
+                "tcpdump -i %s -w %s &" % (self.__iface, self.__pcap_file))
+
+
+    def _run_ping(self):
+        if self.__ping_on is True:
+            self.log_warning(
+                "Generating periodic traffic by pinging %s" %
+                self.__ping_addr)
+            util.run_shell_cmd(
+                "ping -c 20 -i %d %s &" %
+                (self.__ping_int, self.__ping_addr))
+            self.log_warning("I pinged 20 packets!")
+
+
+    def _read_config(self, config):
+        try:
+            if config['is_use_wifi'] == '1':
+                self.__is_use_wifi = True
+            else:
+                self.__is_use_wifi = False
+        except BaseException:
+            self.__is_use_wifi = False
+        try:
+            if config['is_dec_log'] == '1':
+                self.__is_dec_log = True
+                self.__dec_log_name = "diag_log_" + self.get_cur_timestamp() + ".txt"
+                self.__dec_log_path = os.path.join(
+                    self.__dec_log_dir, self.__dec_log_name)
+            else:
+                self.__is_dec_log = False
+        except BaseException:
+            self.__is_dec_log = False
+        try:
+            self.__dec_log_type = config['log_type']
+        except BaseException:
+            self.__dec_log_type = ""
+
+        try:
+            if config['use_tcpdump'] == '1':
+                self.__use_tcpdump = True
+        except BaseException:
+            pass
+        try:
+            self.__iface = config['iface']
+        except BaseException:
+            pass
+        try:
+            if config['ping_on'] == '1':
+                self.__ping_on = True
+        except BaseException:
+            pass
+        try:
+            self.__ping_int = int(config['ping_int']) / 1000
+        except BaseException:
+            pass
+        try:
+            self.__ping_addr = config['ping_addr']
+        except BaseException:
+            pass
+
+    def __del__(self):
+        self.log_info("__del__ is called")
+
+    def _kill_grep_thread(self, proc_name):
+        # sample ps output
+        # root      10108 1     5116   2748  poll_sched 00001226bc S tcpdump
+        proc = subprocess.Popen(
+            "su -c ps | grep -i %s" %
+            proc_name,
+            executable=ANDROID_SHELL,
+            shell=True,
+            stdout=subprocess.PIPE)
+        try:
+            match_lines = proc.communicate()[0].split('\n')[:-1]
+            for match in match_lines:
+                self.log_debug("Thread match = %s" % match)
+                ps_num = match.split()[1]
+                try:
+                    self.log_info(
+                        "Killing previous %s thread, pid = %s" %
+                        (proc_name, ps_num))
+                    util.run_shell_cmd("su -c kill -9 %s" % ps_num)
+                except BaseException:
+                    self.log_warning(
+                        "Some exception happens for killing %s" %
+                        proc_name)
+                    pass
+        except BaseException:
+            self.log_warning(
+                "Some exception happens for getting %s threads" %
+                proc_name)
+            pass
+
+
+    # TODO (Zengwen): move to the util function
+    def get_cur_timestamp(self):
+        return str(datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
+
+    # TODO (Zengwen): move to the util function
+    def get_last_mod_timestamp(self, file):
+        return str(time.strftime('%Y%m%d_%H%M%S',
+                time.localtime(os.path.getmtime(file))))
+
 
     def on_broadcast(self, context, intent):
         '''
@@ -221,6 +322,7 @@ class LoggingAnalyzer(Analyzer):
     def __del__(self):
         self.log_info("__del__ is called")
 
+
     def _logger_filter(self, msg):
         """
         Callback to process new generated logs.
@@ -231,7 +333,7 @@ class LoggingAnalyzer(Analyzer):
 
         # when a new log comes, save it to external storage and upload
         if msg.type_id.find("new_diag_log") != -1:
-            self.__log_timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            self.__log_timestamp = self.get_cur_timestamp()
             self.__orig_file = msg.data.decode().get("filename")
 
             # FIXME (Zengwen): the change access command is a walkaround
@@ -292,8 +394,7 @@ class LoggingAnalyzer(Analyzer):
                 pass
             self.__raw_msg.clear()  # reset the dict
         if self.__msg_cnt >= 200:  # open a new file
-            self.__dec_log_name = "mi2log_" + \
-                datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + ".txt"
+            self.__dec_log_name = "mi2log_" + self.get_cur_timestamp() + ".txt"
             self.__dec_log_path = os.path.join(
                 self.__dec_log_dir, self.__dec_log_name)
             self.log_info(
@@ -302,13 +403,18 @@ class LoggingAnalyzer(Analyzer):
             self.__raw_msg.clear()  # reset the dict
             self.__msg_cnt = 0
 
+
     def _save_log(self):
-        self.__log_timestamp = str(time.strftime('%Y%m%d_%H%M%S',
-            time.localtime(os.path.getmtime(self.__orig_file))))
+        self.__log_timestamp = self.get_last_mod_timestamp(self.__orig_file)
         milog_base_name = "diag_log_%s_%s_%s.mi2log" % (
             self.__log_timestamp, util.get_phone_info(), util.get_operator_info())
         milog_abs_name = os.path.join(self.__log_dir, milog_base_name)
         shutil.copyfile(self.__orig_file, milog_abs_name)
         os.remove(self.__orig_file)
+
+        self._kill_grep_thread("tcpdump")
+        self._kill_grep_thread("ping")
+        self._run_tcpdump()
+        self._run_ping()
 
         return milog_abs_name
