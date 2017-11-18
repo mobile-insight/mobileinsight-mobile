@@ -35,7 +35,7 @@ import urllib2
 
 ANDROID_SHELL = "/system/bin/sh"
 
-__all__ = ['LoggingAnalyzer', 'MultiPartForm']
+__all__ = ['LoggingAnalyzer']
 
 
 def upload_log(filename):
@@ -72,60 +72,6 @@ def upload_log(filename):
             self.log_info("File %s has been uploaded successfully" % uploaded_file)
         finally:
             util.detach_thread()
-
-
-class MultiPartForm(object):
-
-    def __init__(self):
-        self.form_fields = []
-        self.files = []
-        self.boundary = mimetools.choose_boundary()
-        return
-
-    def get_content_type(self):
-        return 'multipart/form-data; boundary=%s' % self.boundary
-
-    def add_field(self, name, value):
-        self.form_fields.append((name, value))
-        return
-
-    def add_file(self, fieldname, filename, mimetype=None):
-        fupload = open(filename, 'rb')
-        body = fupload.read()
-        fupload.close()
-        if mimetype is None:
-            mimetype = mimetypes.guess_type(
-                filename)[0] or 'application/octet-stream'
-        self.files.append((fieldname, filename, mimetype, body))
-        return
-
-    def __str__(self):
-        parts = []
-        part_boundary = '--' + self.boundary
-        parts.extend([part_boundary,
-                      'Content-Disposition: form-data; name="%s"; filename="%s"' % (name,
-                                                                                    value)] for name,
-                     value in self.form_fields)
-
-        parts.extend(
-            [
-                part_boundary,
-                'Content-Disposition: file; name="%s"; filename="%s"' %
-                (field_name,
-                 filename),
-                'Content-Type: %s' %
-                content_type,
-                '',
-                body,
-            ] for field_name,
-            filename,
-            content_type,
-            body in self.files)
-
-        flattened = list(itertools.chain(*parts))
-        flattened.append('--' + self.boundary + '--')
-        flattened.append('')
-        return '\r\n'.join(flattened)
 
 
 class LoggingAnalyzer(Analyzer):
