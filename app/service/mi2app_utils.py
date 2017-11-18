@@ -10,6 +10,7 @@ import subprocess as sp
 import os
 import re
 import jnius
+import hashlib
 from jnius import autoclass, cast, PythonJavaClass, java_method
 
 ANDROID_SHELL = "/system/bin/sh"
@@ -70,11 +71,11 @@ def get_phone_info():
     cmd = "getprop ro.product.model; getprop ro.product.manufacturer;"
     res = run_shell_cmd(cmd)
     if not res:
-        return get_device_id() + '_null-null'
+        return get_device_sn() + '_null-null'
     res = res.split('\n')
     model = res[0].replace(" ", "")
     manufacturer = res[1].replace(" ", "")
-    phone_info = get_device_id() + '_' + manufacturer + '-' + model
+    phone_info = get_device_sn() + '_' + manufacturer + '-' + model
     return phone_info
 
 
@@ -89,7 +90,17 @@ def get_device_id():
     tup = re.findall("\'.+\'", out)
     tupnum = re.findall("\d+", "".join(tup))
     deviceId = "".join(tupnum)
-    return deviceId
+    return hashlib.md5(deviceId).hexdigest()
+
+
+def get_device_sn():
+    cmd = "getprop ro.serialno"
+    out = run_shell_cmd(cmd)
+    if out != "":
+        deviceSn = hashlib.md5(deviceId).hexdigest()
+    else:
+        deviceSn = hashlib.md5("FFFFFFFF").hexdigest()
+    return deviceSn
 
 
 def get_sdcard_path():
