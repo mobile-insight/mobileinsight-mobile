@@ -97,7 +97,7 @@ def get_device_sn():
     cmd = "getprop ro.serialno"
     out = run_shell_cmd(cmd)
     if out != "":
-        deviceSn = hashlib.md5(deviceId).hexdigest()
+        deviceSn = hashlib.md5(out).hexdigest()
     else:
         deviceSn = hashlib.md5("FFFFFFFF").hexdigest()
     return deviceSn
