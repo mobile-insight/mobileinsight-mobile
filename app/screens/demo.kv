@@ -1,0 +1,13 @@
+#:kivy 1.4.0
+<DemoScreen@MobileInsightScreenBase>:
+    name: "DemoScreen"
+
+    GridLayout:
+        cols: 1
+        spacing: "8dp"
+        size_hint_y: None
+        height: self.minimum_height
+
+        Label:
+            text: root.current_log
+            color: 0,0,0,1

@@ -136,7 +136,9 @@ class CrashApp(App):
             main_utils.run_shell_cmd(
                 'logcat -d | grep -E "python|diag" >' + log_name, True)
             self.__upload_crash_log(log_name)
-
-        self.popup.dismiss()
-
-        sys.exit(1)
+            self.popup.dismiss()
+            sys.exit(1)
+        elif answer == "no":
+            App.get_running_app().stop()
+            self.popup.dismiss()
+            sys.exit(1)

@@ -1,0 +1,20 @@
+<ThemingScreen>:
+    name: 'theming'
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: None
+        height: dp(80)
+        center_y: self.parent.center_y
+        MDRaisedButton:
+            size_hint: None, None
+            size: 3 * dp(48), dp(48)
+            center_x: self.parent.center_x
+            text: 'Change theme'
+            on_release: MDThemePicker().open()
+            opposite_colors: True
+            pos_hint: {'center_x': 0.5}
+        MDLabel:
+            text: "Current: " + app.theme_cls.theme_style + ", " + app.theme_cls.primary_palette
+            theme_text_color: 'Primary'
+            pos_hint: {'center_x': 0.5}
+            halign: 'center'

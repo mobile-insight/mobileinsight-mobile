@@ -1,0 +1,38 @@
+<ScrollableLabel2@ScrollView>:
+    text: ""
+    scroll_y: 0
+
+    Label:
+        text: root.text
+        text_size: self.width, None
+        size_hint_y: None
+        font_size: "12sp"
+        color: 0,0,0,1
+        height: self.texture_size[1]
+        line_height: 1
+        valign: "bottom"
+        max_lines: 4
+        markup: True
+
+# Main screen
+<PluginsScreen@MobileInsightScreenBase>:
+    name: "PluginsScreen"
+    id: pluginscreen
+    sColor: [30/255.0, 100/255.0, 180/255.0, .85] # rgb colors must be percentages
+    eColor: [.54, .87, .92, .85]
+    GridLayout:
+        cols: 1
+        spacing: 5
+        ScrollableLabel2:
+            text: "%s" % root.error_log
+            size_hint_y: 6
+        Button:
+            size_hint_y: 2.5
+            id: selectButton
+            on_release: root.popUpMenu();
+            background_normal: ""
+            background_color: pluginscreen.sColor
+            font_size: "24sp"
+            shorten_from: "right"
+            color: 1,1,1,1
+        

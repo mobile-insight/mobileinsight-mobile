@@ -1,0 +1,99 @@
+#:import Toolbar kivymd.toolbar.Toolbar
+#:import ThemeManager kivymd.theming.ThemeManager
+#:import MDNavigationDrawer kivymd.navigationdrawer.MDNavigationDrawer
+#:import NavigationLayout kivymd.navigationdrawer.NavigationLayout
+#:import NavigationDrawerDivider kivymd.navigationdrawer.NavigationDrawerDivider
+#:import NavigationDrawerToolbar kivymd.navigationdrawer.NavigationDrawerToolbar
+#:import NavigationDrawerSubheader kivymd.navigationdrawer.NavigationDrawerSubheader
+#:import MDCheckbox kivymd.selectioncontrols.MDCheckbox
+#:import MDSwitch kivymd.selectioncontrols.MDSwitch
+#:import MDList kivymd.list.MDList
+#:import OneLineListItem kivymd.list.OneLineListItem
+#:import TwoLineListItem kivymd.list.TwoLineListItem
+#:import ThreeLineListItem kivymd.list.ThreeLineListItem
+#:import OneLineAvatarListItem kivymd.list.OneLineAvatarListItem
+#:import OneLineIconListItem kivymd.list.OneLineIconListItem
+#:import OneLineAvatarIconListItem kivymd.list.OneLineAvatarIconListItem
+#:import MDTextField kivymd.textfields.MDTextField
+#:import MDSpinner kivymd.spinner.MDSpinner
+#:import MDCard kivymd.card.MDCard
+#:import MDSeparator kivymd.card.MDSeparator
+#:import MDDropdownMenu kivymd.menu.MDDropdownMenu
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+#:import colors kivymd.color_definitions.colors
+#:import SmartTile kivymd.grid.SmartTile
+#:import MDSlider kivymd.slider.MDSlider
+#:import MDTabbedPanel kivymd.tabs.MDTabbedPanel
+#:import MDTab kivymd.tabs.MDTab
+#:import MDProgressBar kivymd.progressbar.MDProgressBar
+#:import MDThemePicker kivymd.theme_picker.MDThemePicker
+#:import MDBottomNavigation kivymd.tabs.MDBottomNavigation
+#:import MDBottomNavigationItem kivymd.tabs.MDBottomNavigationItem
+#:import Toolbar kivymd.toolbar.Toolbar
+
+NavigationLayout:
+    id: nav_layout
+    MDNavigationDrawer:
+        id: nav_drawer
+        NavigationDrawerToolbar:
+            title: "MobileInsight"
+
+        
+        NavigationDrawerIconButton:
+            icon: 'home'
+            text: "Home Page"
+            on_release:app.go_screen(0); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'widgets'
+            text: "Plugins"
+            on_release: app.screens[1].manager=app.root.ids.scr_mngr;app.screens[1].popUpMenu(); 
+        NavigationDrawerIconButton:
+            icon: 'folder'
+            text: "Log Viewer"
+            on_release:app.go_screen(2); app.screens[2].onOpen(); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'settings'
+            text: "Settings"
+            on_release: app.open_settings()
+        NavigationDrawerIconButton:
+            icon: 'information'
+            text: "About MobileInsight"
+            on_release: app.go_screen(3); app.root.ids.toolbar.title = self.text
+        #NavigationDrawerIconButton:
+        #    icon: 'radio-tower'
+        #    text: "Radio"
+        #    on_release:app.go_screen(4); app.root.ids.toolbar.title = self.text
+        #NavigationDrawerIconButton:
+        #    icon: 'database'
+        #    text: "Data-plane Statistics"
+        #    on_release:app.go_screen(5); app.root.ids.toolbar.title = self.text
+        #NavigationDrawerIconButton:
+        #    icon: 'lan-connect'
+        #    text: "Connectivity Information"
+        #    on_release:app.go_screen(6); app.root.ids.toolbar.title = self.text
+        #NavigationDrawerIconButton:
+        #    icon: 'phone'
+        #    text: "Mobility Information"
+        #    on_release:app.go_screen(7); app.root.ids.toolbar.title = self.text
+        #NavigationDrawerIconButton:
+        #    icon: 'voice'
+        #    text: "Data/Voice Service"
+        #    on_release:app.go_screen(8); app.root.ids.toolbar.title = self.text
+
+        #NavigationDrawerIconButton:
+        #    icon: 'diamond'
+        #    text: "Change Themes"
+        #    on_release:app.go_screen(9); app.root.ids.toolbar.title = self.text
+
+    BoxLayout:
+        orientation: 'vertical'
+        Toolbar:
+            id: toolbar
+            title: 'MobileInsight'
+            md_bg_color: app.theme_cls.primary_color
+            background_palette: 'Primary'
+            background_hue: '500'
+            left_action_items: [['menu', lambda x: app.root.toggle_nav_drawer()]]
+            right_action_items: [['dots-vertical', lambda x: app.root.toggle_nav_drawer()]]
+        ScreenManager:
+            id: scr_mngr

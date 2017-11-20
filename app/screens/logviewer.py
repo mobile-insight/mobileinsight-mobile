@@ -6,12 +6,11 @@ from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
-from kivy.uix.widget import Widget
+from kivy.uix.label import Label
 
 from kivy.app import App
 from kivy.lang import Builder
@@ -34,13 +33,15 @@ import sys
 import xml.dom.minidom
 import main_utils
 
+from . import MobileInsightScreenBase
+
 __all__ = ["LogViewerScreen"]
 
 #############################
 
 
 Builder.load_string('''
-<LogViewerScreen>:
+<LogViewerScreen@MobileInsightScreenBase>:
     grid: grid
     grid_scroll: grid_scroll
     GridLayout:
@@ -63,7 +64,7 @@ Builder.load_string('''
             text: 'GoBack'
             size: root.width*0.16, root.height*0.05
             pos: root.width*0.84, root.height*0.95
-            on_release: app.manager.current = 'MobileInsightScreen'
+            on_release: root.onGoBack(app)
         GridLayout:
             pos: 0, root.height*0.9
             size: root.width, root.height/20
@@ -117,19 +118,18 @@ class Open_Popup(FloatLayout):
 #############################
 
 
-class LogViewerScreen(Screen):
+class LogViewerScreen(MobileInsightScreenBase):
     cancel = ObjectProperty(None)
     loaded = ObjectProperty(None)
     loadinggrid = ObjectProperty(None)
     ok = ObjectProperty(None)
     ReadComplete = ObjectProperty(None)
+    name = StringProperty('LogViewerScreen')
 
-    def __init__(self, name, screen_manager):
-        super(LogViewerScreen, self).__init__()
+    def __init__(self, **kw):
+        super(LogViewerScreen, self).__init__(**kw)
         self._log_analyzer = None
         self.selectedTypes = None
-        self.name = name
-        self.screen_manager = screen_manager
 
     def SetInitialGrid(self, *args):
         if self.ReadComplete == 'Yes':
@@ -139,13 +139,12 @@ class LogViewerScreen(Screen):
             self.onReset()
 
     def exit_open_popup(self, instance):
-        self.screen_manager.current = 'MobileInsightScreen'
+        idx = self.app.available_screens.index('HomeScreen')
+        self.app.go_screen(idx)
         return False
 
     def dismiss_open_popup(self):
-
         self.open_popup.dismiss()
-        # self.screen_manager.current = 'MobileInsightScreen'
         return False
 
     def dismiss_filter_popup(self, *args):
@@ -333,6 +332,14 @@ class LogViewerScreen(Screen):
             self.loading_num = 0
         self.loading_num += 1
 
+# GoBack
+# Go back to Home Screen
+
+    def onGoBack(self, app):
+        idx = app.available_screens.index('HomeScreen')
+        app.go_screen(idx)
+        # app.root.ids.sm.switch_to(app.home_screen)
+
 
 # Filter
 # Pick certain Type IDs to view
@@ -506,20 +513,5 @@ class LogViewerScreen(Screen):
             goto_failed_popup.open()
 
 
-#############################
-
-
-class LogViewerApp(App):
-    screen = ObjectProperty(None)
-
-    def build(self):
-        self.screen = LogViewerScreen()
-        return self.screen
-
-
 Factory.register('LogViewerScreen', cls=LogViewerScreen)
 Factory.register('Open_Popup', cls=Open_Popup)
-
-
-if __name__ == "__main__":
-    LogViewerApp().run()

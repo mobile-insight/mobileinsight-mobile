@@ -111,7 +111,9 @@ try:
     src.run()
 
 except BaseException:
-    src.log_error(traceback.format_exc())
+    from kivy.logger import Logger
+    import traceback
+    Logger.exception(traceback.format_exc())
 
 #finally:
 #    mi2app_utils.detach_thread()
