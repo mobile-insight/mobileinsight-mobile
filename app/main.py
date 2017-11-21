@@ -251,6 +251,7 @@ class MobileInsightApp(App):
             'bstartup_service': 0,
             'bgps': 1,
             'start_service': 'NetLogger',
+            'privacy': 0,
         })
         self.create_app_default_config(config)
 
@@ -384,8 +385,25 @@ class MobileInsightApp(App):
         except Exception as e:
             Logger.exception(traceback.format_exc())
 
+    def privacy_check(self):
+        """
+        Check if new update is available
+        """
+        try:
+            config = ConfigParser()
+            config.read('/sdcard/.mobileinsight.ini')
+            privacy_agreed = int(config.get("mi_general", "privacy"))
+            if privacy_agreed == 0:
+                import privacy_app
+                privacy_app.PrivacyApp().run()
+        except Exception as e:
+            Logger.exception(traceback.format_exc())
+
+
     def on_start(self):
         Config.set('kivy', 'exit_on_escape', 0)
+
+        self.privacy_check()
 
         self.check_update()
 

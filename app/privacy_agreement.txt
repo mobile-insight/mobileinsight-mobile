@@ -1,0 +1,1 @@
+MobileInsight is a community tool that collects and shares the fine-grained mobile network information for academic research. Please see http://www.mobileinsight.net/privacy for more details. If you agree that we can collect such information, please click agree. If you do not agree, MobileInsight will exit.

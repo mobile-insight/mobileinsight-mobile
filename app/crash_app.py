@@ -6,6 +6,7 @@ from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
 from kivy.properties import *
+from kivymd.theming import ThemeManager
 
 import httplib
 import urllib
@@ -49,6 +50,8 @@ class ConfirmPopup(GridLayout):
 
 
 class CrashApp(App):
+    theme_cls = ThemeManager()
+
     def build(self):
         content = ConfirmPopup(text='Would you like to report this bug to us?')
         content.bind(on_answer=self._on_answer)
