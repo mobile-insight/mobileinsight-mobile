@@ -99,7 +99,6 @@ class PrivacyApp(App):
             global disagree_privacy
             disagree_privacy = 1
             App.get_running_app().stop()
-            # sys.exit(1)
             
     
     def on_stop(self):

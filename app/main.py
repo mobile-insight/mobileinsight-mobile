@@ -422,6 +422,7 @@ class MobileInsightApp(App):
 if __name__ == "__main__":
     try:
         MobileInsightApp().run()
+        sys.exit(1)
     except Exception as e:
         import crash_app
         Logger.exception(traceback.format_exc())
