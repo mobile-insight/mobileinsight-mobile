@@ -32,9 +32,13 @@ Builder.load_string('''
         Button:
             text: 'Yes'
             on_release: root.dispatch('on_answer','yes')
+            background_color: 0.1,0.65,0.88,1
+            color: 1,1,1,1
         Button:
             text: 'No'
             on_release: root.dispatch('on_answer', 'no')
+            background_color: 0.1,0.65,0.88,1
+            color: 1,1,1,1
 ''')
 
 

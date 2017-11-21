@@ -396,6 +396,8 @@ class MobileInsightApp(App):
             if privacy_agreed == 0:
                 import privacy_app
                 privacy_app.PrivacyApp().run()
+                if privacy_app.disagree_privacy:
+                    self.stop()
         except Exception as e:
             Logger.exception(traceback.format_exc())
 
@@ -408,12 +410,13 @@ class MobileInsightApp(App):
         self.check_update()
 
     def on_stop(self):
-        main_utils.stop_osc()
-        main_utils.stop_service()
+        # main_utils.stop_osc()
+        # main_utils.stop_service()
         # TODO: should decouple plugin service stop from add stop
         # self.home_screen.stop_service()
-        sm = self.root.ids.sm
-        sm.current_screen.coordinator.stop()
+        # sm = self.root.ids.sm
+        # sm.current_screen.coordinator.stop()
+        pass
 
 
 if __name__ == "__main__":
