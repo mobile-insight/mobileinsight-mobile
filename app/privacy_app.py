@@ -38,18 +38,17 @@ Builder.load_string('''
         on_ref_press:
             import webbrowser
             webbrowser.open('http://www.mobileinsight.net/privacy.html')
-
     GridLayout:
         cols: 2
         size_hint_y: None
         height: '44sp'
         Button:
-            text: 'Agree'
+            text: 'I agree'
             on_release: root.dispatch('on_answer','yes')
             background_color: 0.1,0.65,0.88,1
             color: 1,1,1,1
         Button:
-            text: 'Disagree'
+            text: 'I do not agree'
             on_release: root.dispatch('on_answer', 'no')
             background_color: 0.1,0.65,0.88,1
             color: 1,1,1,1
@@ -81,10 +80,10 @@ class PrivacyApp(App):
         privacy_agreement = file.read()
         content = PrivacyPopup(text=privacy_agreement)
         content.bind(on_answer=self._on_answer)
-        self.popup = Popup(title="Privacy Notice",
+        self.popup = Popup(title="About MobileInsight",
                            content=content,
                            size_hint=(None, None),
-                           size=(1200, 850),
+                           size=(1200, 2150),
                            auto_dismiss=False)
         self.popup.open()
 
