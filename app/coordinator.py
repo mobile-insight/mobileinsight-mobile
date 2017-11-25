@@ -30,10 +30,11 @@ def stop_osc():
     osc.dontListen()
 
 def setup_service():
-    android.start_service(title='MobileInsight',
-                          description='MobileInsight plugins have stopped.',
-                          arg='')
-    Logger.info('coordinator: start background service')
+    # android.start_service(title='MobileInsight',
+    #                       description='MobileInsight plugins have stopped.',
+    #                       arg='')
+    # Logger.info('coordinator: start background service')
+    pass
 
 def stop_service():
     android.stop_service()
@@ -99,6 +100,8 @@ class Coordinator(object):
         send_thread.start()
 
     def stop(self):
+        stop_osc()
+        stop_service()
         Logger.info('coordinator: ' + '// stops does nothing right now')
 
 # only create a singleton coordinator for app

@@ -1,6 +1,7 @@
 import kivy
 kivy.require('1.4.0')
 
+import android
 from jnius import autoclass, cast
 from kivy.app import App
 from kivy.logger import Logger
@@ -27,12 +28,7 @@ import jnius
 import json
 import os
 import re
-import shlex
-import shutil
-import stat
-import subprocess
 import sys
-import threading
 import time
 import traceback
 
@@ -211,7 +207,10 @@ class MobileInsightApp(App):
             Logger.error("main: SDcard is unavailable. Please check.")
         main_utils.init_libs()
         main_utils.check_security_policy()
-        COORDINATOR.start()
+        COORDINATOR.start() # FIXME: DEADLOCK HERE!!!
+
+    def __del__(self):
+        Logger.error("__del__")
 
     def __popup_dismiss(self, instance, answer):
         self.popup.dismiss()
@@ -378,6 +377,7 @@ class MobileInsightApp(App):
     def on_pause(self):
         # Yuanjie: The following code prevents screen freeze when screen off ->
         # screen on
+        Logger.error("on_pause")
         try:
             pm = current_activity.getSystemService(
                 autoclass('android.content.Context').POWER_SERVICE)
@@ -398,6 +398,7 @@ class MobileInsightApp(App):
 
     def on_resume(self):
         # print "on_resume"
+        Logger.error("on_resume")
         pass
 
     def check_update(self):
@@ -432,6 +433,8 @@ class MobileInsightApp(App):
 
 
     def on_start(self):
+        # android.stop_service() # Kill zombine service from previous app instances
+
         Config.set('kivy', 'exit_on_escape', 0)
 
         if not main_utils.is_rooted():
@@ -455,12 +458,16 @@ class MobileInsightApp(App):
             self.check_update()
 
     def on_stop(self):
-        self.home_screen.stop_service()
+        Logger.error("on_stop")
+        COORDINATOR.stop()
 
 if __name__ == "__main__":
     try:
         MobileInsightApp().run()
+        Logger.error("after run?")
     except Exception as e:
         import crash_app
         Logger.exception(traceback.format_exc())
         crash_app.CrashApp().run()
+    finally:
+        main_utils.detach_thread()    

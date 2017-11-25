@@ -34,8 +34,15 @@
     },
     {
         "type"   : "bool",
-        "title"  : "Log upload",
-        "desc"   : "Collected logs will only be uploaded when Wi-Fi is connected",
+        "title"  : "Log sharing",
+        "desc"   : "Share the logs under the agreement of the privacy notice.",
+        "key"    : "privacy",
+        "default": "0"
+    },
+    {
+        "type"   : "bool",
+        "title"  : "Upload the logs via WiFi",
+        "desc"   : "Collected logs will only be uploaded when Wi-Fi is connected.",
         "key"    : "is_use_wifi",
         "default": "1"
     }
