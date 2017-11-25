@@ -13,6 +13,9 @@ from kivy.properties import ObjectProperty,NumericProperty,StringProperty,ListPr
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager
 from kivy.utils import platform
+from kivy.uix.label import Label
+from kivy.uix.popup import Popup
+from kivy.uix.boxlayout import BoxLayout
 
 import main_utils
 from main_utils import current_activity
@@ -49,6 +52,21 @@ from kivymd.time_picker import MDTimePicker
 # not working
 # SERVICE_DIR = os.path.join(os.getcwd(), 'service')
 # sys.path.append(SERVICE_DIR)
+
+Builder.load_string('''
+<ConfirmPopup>:
+    Label:
+        text: root.text
+        size_hint_y: None
+        text_size: self.width, None
+        height: self.texture_size[1]
+        markup: True  
+    Button:
+        text: 'OK'
+        on_release: root.dispatch('on_answer','yes')
+        background_color: 0.1,0.65,0.88,1
+        color: 1,1,1,1
+''')
 
 # Load main UI
 Window.softinput_mode = "pan"
@@ -158,6 +176,16 @@ def get_plugins_list():
 
     return ret
 
+class ConfirmPopup(BoxLayout):
+    text = StringProperty()
+
+    def __init__(self, **kwargs):
+        self.register_event_type('on_answer')
+        super(ConfirmPopup, self).__init__(**kwargs)
+
+    def on_answer(self, *args):
+        Logger.error("WTF")
+        pass
 
 class MobileInsightApp(App):
     theme_cls = ThemeManager()
@@ -177,18 +205,18 @@ class MobileInsightApp(App):
         self.available_screens = screens.__all__
         self.home_screen = None
         self.log_viewer_screen = None
-        if not main_utils.is_rooted():
-            Logger.error(
-                "MobileInsight requires root privilege. Please root your device for correct functioning.")
-        if not main_utils.check_diag_mode():
-            Logger.error(
-                "The diagnostic mode is disabled. Please check your phone settings.")
+
         if not create_folder():
             # MobileInsight folders unavailable. Add warnings
             Logger.error("main: SDcard is unavailable. Please check.")
         main_utils.init_libs()
         main_utils.check_security_policy()
         COORDINATOR.start()
+
+    def __popup_dismiss(self, instance, answer):
+        self.popup.dismiss()
+        self.stop()
+        return True
 
     def build_settings(self, settings):
 
@@ -298,6 +326,7 @@ class MobileInsightApp(App):
         self.screen_names = self.available_screens
         for i in range(len(self.available_screens)):
             self.screens[i] = getattr(screens, self.available_screens[i])()
+        self.home_screen = self.screens[0]
         COORDINATOR.setup_analyzers()
         COORDINATOR.send_control('START')
         self.root.ids.scr_mngr.switch_to(self.screens[0])
@@ -396,8 +425,8 @@ class MobileInsightApp(App):
             if privacy_agreed == 0:
                 import privacy_app
                 privacy_app.PrivacyApp().run()
-                if privacy_app.disagree_privacy:
-                    self.stop()
+                # if privacy_app.disagree_privacy:
+                #     self.stop()
         except Exception as e:
             Logger.exception(traceback.format_exc())
 
@@ -405,24 +434,32 @@ class MobileInsightApp(App):
     def on_start(self):
         Config.set('kivy', 'exit_on_escape', 0)
 
-        self.privacy_check()
-
-        self.check_update()
+        if not main_utils.is_rooted():
+            err_str = "MobileInsight requires root privilege. Please root your device for correct functioning."
+            Logger.error(err_str)
+            self.home_screen.log_error(err_str)
+        elif not main_utils.check_diag_mode():
+            err_str = "The diagnostic mode is disabled. Please check your phone settings."
+            Logger.error(err_str)
+            self.home_screen.log_error(err_str)
+            # content = ConfirmPopup(text=err_str)
+            # content.bind(on_answer=self.__popup_dismiss)
+            # self.popup = Popup(title='Diagnostic mode is not available',
+            #             content=content,
+            #             size_hint=(None, None), 
+            #             size=(1200, 400),
+            #             auto_dismiss=False)
+            # self.popup.open()
+        else:
+            self.privacy_check()
+            self.check_update()
 
     def on_stop(self):
-        # main_utils.stop_osc()
-        # main_utils.stop_service()
-        # TODO: should decouple plugin service stop from add stop
-        # self.home_screen.stop_service()
-        # sm = self.root.ids.sm
-        # sm.current_screen.coordinator.stop()
-        pass
-
+        self.home_screen.stop_service()
 
 if __name__ == "__main__":
     try:
         MobileInsightApp().run()
-        sys.exit(1)
     except Exception as e:
         import crash_app
         Logger.exception(traceback.format_exc())

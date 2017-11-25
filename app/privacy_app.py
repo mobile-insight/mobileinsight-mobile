@@ -54,7 +54,7 @@ Builder.load_string('''
             color: 1,1,1,1
 ''')
 
-disagree_privacy = 0
+# disagree_privacy = 0
 
 
 class PrivacyPopup(GridLayout):
@@ -92,12 +92,18 @@ class PrivacyApp(App):
             config = ConfigParser()
             config.read('/sdcard/.mobileinsight.ini')
             config.set("mi_general","privacy",1)
+            config.set("NetLogger","privacy",1)
             config.write()
             self.popup.dismiss()
         elif answer == "no":
-            global disagree_privacy
-            disagree_privacy = 1
-            App.get_running_app().stop()
+            # global disagree_privacy
+            # disagree_privacy = 1
+            config = ConfigParser()
+            config.read('/sdcard/.mobileinsight.ini')
+            config.set("NetLogger","privacy",0)
+            config.write()
+            self.popup.dismiss()
+            # App.get_running_app().stop()
             
     
     def on_stop(self):

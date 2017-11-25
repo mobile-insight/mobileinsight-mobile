@@ -1,6 +1,6 @@
 [b]Privacy Notice: [/b] [color=1ba4dc][ref=ref]http://www.mobileinsight.net/privacy[/ref][/color]
 
-MobileInsight collects network-relevant data and phone information, and stores it locally in your phone and it is only accessible by you. This data is NOT transmitted to our servers unless we obtain your consent. Transmission of this data to our servers is not mandatory, but is some cases required to use the full functionality of MobileInsight.
+MobileInsight collects network-relevant data and phone information, and stores it locally in your phone and it is only accessible by you. This data is NOT transmitted to our servers unless we obtain your consent. Transmission of this data to our servers is not mandatory, but is in some cases required to use the full functionality of MobileInsight.
 
 MobileInsight is a research project, so we encourage you to contribute to data sharing. No personal identifiable information will be used. Shared data will be anonymized and transmitted via secure transport layer protocol. You are free to stop data sharing any time (in the app setting).
 

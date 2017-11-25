@@ -145,6 +145,15 @@ class LoggingAnalyzer(Analyzer):
         self.__dec_msg = []
         self.__is_wifi_enabled = False
         self.__log_timestamp = ""
+        self.__upload_log_flag = True
+
+        try:
+            if config['privacy'] == '1':
+                self.__upload_log_flag = True
+            else:
+                self.__upload_log_flag = False
+        except BaseException:
+            self.__upload_log_flag = False
 
         try:
             if config['is_use_wifi'] == '1':
@@ -241,7 +250,7 @@ class LoggingAnalyzer(Analyzer):
             self._save_log()
             self.__is_wifi_enabled = util.get_wifi_status()
 
-            if self.__is_use_wifi is True and self.__is_wifi_enabled is True:
+            if self.__is_use_wifi is True and self.__is_wifi_enabled is True and self.__upload_log_flag is True:
                 try:
                     for f in os.listdir(self.__log_dir):
                         if f.endswith(".mi2log"):
