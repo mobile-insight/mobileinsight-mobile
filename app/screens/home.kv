@@ -18,7 +18,7 @@
 <HomeScreen@MobileInsightScreenBase>:
     name: "HomeScreen"
     id: mainscreen
-    sColor: [30/255.0, 100/255.0, 180/255.0, .85] # rgb colors must be percentages
+    sColor: [0/255.0, 161/255.0, 247/255.0, 1] # rgb colors must be percentages
     eColor: [.54, .87, .92, .85]
     GridLayout:
         cols: 1
@@ -34,6 +34,6 @@
             font_size: "24sp"
             on_release: root.on_click_plugin(root.selectedPlugin)
             background_normal: ""
-            background_color: [mainscreen.sColor[0]*4/5 + mainscreen.eColor[0]*1/5, mainscreen.sColor[1]*4/5+mainscreen.eColor[1]*1/5, mainscreen.sColor[2]*4/5 + mainscreen.eColor[2]*1/5, .85]
+            background_color: mainscreen.sColor
             color: 1,1,1,1
         

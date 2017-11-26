@@ -44,27 +44,42 @@ Builder.load_string('''
 <LogViewerScreen@MobileInsightScreenBase>:
     grid: grid
     grid_scroll: grid_scroll
+    id: logviewer
+    sColor: [0/255.0, 161/255.0, 247/255.0, 1] # rgb colors must be percentages
+    eColor: [0/255.0, 161/255.0, 247/255.0, .85]
     GridLayout:
+    	Button:
+            text: 'Open'
+            size: root.width*0.279, root.height*0.05
+            pos: 0, root.height*0.95
+            on_release: root.onOpen()
+            background_normal: ""
+            background_color: logviewer.sColor
+            color: 1,1,1,1
         Button:
             text: 'Filter'
             size: root.width*0.279, root.height*0.05
-            pos: 0, root.height*0.95
+            pos: root.width*0.28, root.height*0.95
             on_release: root.onFilter()
+            background_normal: ""
+            background_color: logviewer.sColor
+            color: 1,1,1,1
         Button:
             text: 'Search'
             size: root.width*0.279, root.height*0.05
-            pos: root.width*0.28, root.height*0.95
+            pos: root.width*0.56, root.height*0.95
             on_release: root.onSearch()
+            background_normal: ""
+            background_color: logviewer.sColor
+            color: 1,1,1,1
         Button:
             text: 'Reset'
-            size: root.width*0.279, root.height*0.05
-            pos: root.width*0.56, root.height*0.95
-            on_release: root.onReset()
-        Button:
-            text: 'GoBack'
             size: root.width*0.16, root.height*0.05
             pos: root.width*0.84, root.height*0.95
-            on_release: root.onGoBack(app)
+            on_release: root.onReset()
+            background_normal: ""
+            background_color: logviewer.sColor
+            color: 1,1,1,1
         GridLayout:
             pos: 0, root.height*0.9
             size: root.width, root.height/20
@@ -75,11 +90,17 @@ Builder.load_string('''
                 text:'No.'
                 size_hint_x: 0.1
                 on_release: root.onGoTo()
+                background_normal: ""
+                background_color: logviewer.eColor
+            	color: 1,1,1,1
             Button:
                 text: '   Timestamp     Type ID'
                 text_size: root.width*0.9, root.height*0.05
                 halign: 'left'
                 valign: 'middle'
+                background_normal: ""
+                background_color: logviewer.eColor
+            	color: 1,1,1,1
         ScrollView:
             id: grid_scroll
             size: root.width, root.height*0.9
@@ -89,9 +110,13 @@ Builder.load_string('''
                 row_force_default: True
                 row_default_height: root.height/15
                 size_hint_y: None
+                background_normal: ""
+                background_color: logviewer.sColor
                 GridLayout:
                     cols: 2
                     row_force_default: True
+                    background_normal: ""
+                    background_color: logviewer.sColor
 <Open_Popup>:
     BoxLayout:
         size: root.size
@@ -103,6 +128,8 @@ Builder.load_string('''
             rootpath: '/sdcard/mobileinsight/log'
             on_selection: root.load(filechooser.path, filechooser.selection, *args)
             minimum_height: filechooser.setter('height')
+            background_normal: ""
+            background_color: [0/255.0, 161/255.0, 247/255.0, 1] 
 ''')
 
 #Clock.max_iteration = 30
@@ -164,9 +191,12 @@ class LogViewerScreen(MobileInsightScreenBase):
 
     def onOpen(self, *args):
         self.open_popup = Popup(
-            title='Load file',
+            title='Open file',
             content=Open_Popup(
                 load=self.load),
+            background_normal='',
+            background_color=(0/255.0, 161/255.0, 247/255.0, 1),
+            color=(0/255.0, 161/255.0, 247/255.0, 1),
             auto_dismiss=True)
         # self.open_popup.bind(on_dismiss=self.exit_open_popup)
         self.open_popup.open()
@@ -293,6 +323,8 @@ class LogViewerScreen(MobileInsightScreenBase):
                     text_size=(
                         self.width * 0.9,
                         self.height * 0.05),
+                    background_normal='',
+                    background_color=(0/255.0, 161/255.0, 247/255.0, 0.65), 
                     halign='left'))
         self.loadinggrid = 'No'
         if self.loading_num != '':
@@ -312,7 +344,7 @@ class LogViewerScreen(MobileInsightScreenBase):
         label.bind(minimum_height=label.setter('height'))
         scroll.add_widget(label)
         popup = Popup(
-            title='Time Stamp : %s\nType : %s' %
+            title='Timestamp : %s\nType : %s' %
             (str.split(
                 data.text)[0], str.split(
                 data.text)[2]), content=scroll, size_hint=(

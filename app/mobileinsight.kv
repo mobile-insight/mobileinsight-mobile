@@ -49,7 +49,7 @@ NavigationLayout:
             on_release: app.screens[1].manager=app.root.ids.scr_mngr;app.screens[1].popUpMenu(); 
         NavigationDrawerIconButton:
             icon: 'folder'
-            text: "Log Viewer"
+            text: "Log Browser"
             on_release:app.go_screen(2); app.screens[2].onOpen(); app.root.ids.toolbar.title = self.text
         NavigationDrawerIconButton:
             icon: 'settings'
