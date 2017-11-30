@@ -78,12 +78,13 @@ class PrivacyApp(App):
     def build(self):
         file = open("privacy_agreement.txt")
         privacy_agreement = file.read()
+        privacy_agreement = privacy_agreement +'\nDo you agree to share data collected on your phone?'
         content = PrivacyPopup(text=privacy_agreement)
         content.bind(on_answer=self._on_answer)
-        self.popup = Popup(title="About MobileInsight",
+        self.popup = Popup(title="Agreement on Data Sharing",
                            content=content,
                            size_hint=(None, None),
-                           size=(1200, 2150),
+                           size=(1200, 2300),
                            auto_dismiss=False)
         self.popup.open()
 
@@ -100,6 +101,7 @@ class PrivacyApp(App):
             # disagree_privacy = 1
             config = ConfigParser()
             config.read('/sdcard/.mobileinsight.ini')
+            config.set("mi_general","privacy",1)
             config.set("NetLogger","privacy",0)
             config.write()
             self.popup.dismiss()

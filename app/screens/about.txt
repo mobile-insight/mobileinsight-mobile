@@ -1,0 +1,9 @@
+[b]Website[/b]: [color=1ba4dc][ref=ref]http://www.mobileinsight.net[/ref][/color]
+
+MobileInsight is an application to collect and analyze network data. It collects 4G/3G network message logs and information (called data hereafter) via NetLogger plugin. Data is stored locally in your phone and it is only accessible by you. 
+
+MobileInsight is a research project, so we encourage you to contribute to data sharing. Data will not be uploaded to our server unless we obtain your consent. You are free to stop data sharing any time (in the setting). No personal identifiable information will be used.  Check privacy notice for more information. 
+
+We respect your privacy and recognize that, by running this app, you are trusting us and doing us a service. We will not abuse that trust. 
+
+If you encounter problems while using the app or have any questions or concerns about this app, please contact us at support@mobileinsight.net.

@@ -59,11 +59,14 @@ from theming import ThemingScreen
 from home import HomeScreen
 from logviewer import LogViewerScreen
 from about import AboutScreen
+from help import HelpScreen
+from privacy import PrivacyScreen
 from plugins import PluginsScreen
+
 
 # WARNING: The ordering of the following screens should be consistent with those in mobileinsight.kv (app.go_screen(idx))
 __all__ = [
-    'HomeScreen', 'PluginsScreen', 'LogViewerScreen', 'AboutScreen',
+    'HomeScreen', 'PluginsScreen', 'LogViewerScreen', 'HelpScreen','AboutScreen','PrivacyScreen',
     'RadioScreen', 'ConnectivityScreen', 'DataplaneScreen',
     'DatavoiceScreen', 'MobilityScreen', 'ThemingScreen',
     ]

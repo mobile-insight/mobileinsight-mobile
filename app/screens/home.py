@@ -470,7 +470,7 @@ class HomeScreen(MobileInsightScreenBase):
     def stop_service(self):
         # Register listener for 'MobileInsight.Plugin.StopServiceAck' intent
         # from plugin
-        self.log_info("Ready to stop current plugin ...")
+        # self.log_info("Ready to stop current plugin ...")
         self.pluginAck = False
 
         # Using broadcast to send 'MobileInsight.Main.StopService' intent to
@@ -536,22 +536,6 @@ class HomeScreen(MobileInsightScreenBase):
 
     def on_leave(self):
         self.stop_service()
-
-    def about(self):
-        about_text = ('MobileInsight ' + main_utils.get_cur_version() + ' \n'
-                      + 'MobileInsight Team\n\n'
-                      + 'Developers:\n'
-                      + '    Yuanjie Li,\n'
-                      + '    Zengwen Yuan,\n'
-                      + '    Jiayao Li,\n'
-                      + '    Haotian Deng,\n'
-                      + '    Qianru Li,\n'
-                      + '    Zhehui Zhang\n\n'
-                      + 'Copyright (c) 2014 – 2017')
-        popup = Popup(title='About MobileInsight', size_hint=(1,1), background="gradient.png")
-        popup_button = Button(text=about_text, background_color=[0,0,0,0], on_press=popup.dismiss)
-        popup.content = popup_button
-        popup.open()
 
     def configure_coordinator(self):
         pass

@@ -24,9 +24,30 @@
                 text: ""
                 halign: 'center'
             MDLabel:
+                padding_y: dp(20)
                 font_style: 'Body1'
                 theme_text_color: 'Primary'
-                text: root.about_text+'\n'+"MobileInsight Team\n\nDeveloplers:\nYuanjie Li,\nZengwen Yuan,\nHaotian Deng,\nJiayao Li\n\nContributors:\nZhehui Zhang,\nQianru Li,\nZhehan Li,\nXingan Wang,\nWeijie Tang,\nKainan Wang,\nShan He,\nWeijie Tang\n\nCopyright (c) 2014 – 2017"
+                text: ""
                 halign: 'center'
-
+            MDLabel:
+                padding_y: dp(20)
+                font_style: 'Body1'
+                theme_text_color: 'Primary'
+                text: ""
+                halign: 'center'
+            MDLabel:
+                padding_y: dp(20)
+                font_style: 'Body1'
+                theme_text_color: 'Primary'
+                text: ""
+                halign: 'center'
+            MDLabel:
+                font_style: 'Body1'
+                theme_text_color: 'Primary'
+                text: root.about_text
+                halign: 'left'
+                markup: True
+                on_ref_press:
+                    import webbrowser
+                    webbrowser.open('http://www.mobileinsight.net')
 

@@ -1,0 +1,13 @@
+[b]More tutorials[/b]: [color=1ba4dc][ref=ref]http://www.mobileinsight.net/tutorials.html[/ref][/color]
+
+MobileInsight collects and analyze the mobile network data via various plugins. It also stores the data locally inside your phone.
+
+[b]• Home:[/b] You can run the selected MobileInsight plugin here. It will report the logging and analysis results.  
+
+[b]• Plugins:[/b] You can extend MobileInsight with third-party and your own plugins. Please check [color=1ba4dc][ref=plugins]here[/ref][/color] on how to develop and install them. 
+
+[b]• Log Browser:[/b] It allows you to browse and read data collected from NetLogger. 
+
+[b]• Setting:[/b] It allows you to configure logging type, level and default settings. Check it for each plugin.
+
+If you encounter any problems about MobileInsight, please contact us at support@mobileinsight.net.

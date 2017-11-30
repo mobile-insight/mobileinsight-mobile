@@ -56,9 +56,17 @@ NavigationLayout:
             text: "Settings"
             on_release: app.open_settings()
         NavigationDrawerIconButton:
-            icon: 'information'
-            text: "About MobileInsight"
+            icon: 'help'
+            text: "Help"
             on_release: app.go_screen(3); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'information'
+            text: "About"
+            on_release: app.go_screen(4); app.root.ids.toolbar.title = self.text
+        NavigationDrawerIconButton:
+            icon: 'account'
+            text: "Privacy notice"
+            on_release: app.go_screen(5); app.root.ids.toolbar.title = self.text
         #NavigationDrawerIconButton:
         #    icon: 'radio-tower'
         #    text: "Radio"
