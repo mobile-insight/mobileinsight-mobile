@@ -1,0 +1,106 @@
+#!/usr/bin/python
+
+'''
+A demo plugin to retrive various info from Android system,
+including WiFi status and logcat output on certain process.
+
+Author  : Zengwen Yuan, Yunqi Guo
+Version : 1.0  Init version based on Android logcat monitoring
+'''
+
+import os
+import sys
+import time
+import commands
+import traceback
+import subprocess
+from jnius import autoclass, cast
+
+from service import mi2app_utils as util
+from mobile_insight.analyzer import Analyzer
+
+ANDROID_SHELL = "/system/bin/sh"
+
+search_proc = ["wpa_supplicant", "wpa", "wifi"]
+
+class WifiMonitor(Analyzer):
+    def __init__(self, proc_name):
+        Analyzer.__init__(self)
+        self.ps_num = -1
+        self.proc_name = proc_name
+        self._get_thread_pid(self.proc_name)
+
+    def _get_thread_pid(self, proc_name):
+        proc = subprocess.Popen(
+            "su -c ps | grep -i %s" % proc_name,
+            executable=ANDROID_SHELL,
+            shell=True,
+            stdout=subprocess.PIPE)
+        out = proc.communicate()
+
+        try:
+            self.ps_num = str(out[0].split('\n')[0]).split()[1]
+            self.log_info("_get_thread_pid: self.ps_num = %s" % self.ps_num)
+        except:
+            self.log_warning("Exception when getting %s threads" % proc_name)
+
+    def run(self):
+        # bssidTime = {}    
+        t1 = t2 = t3 = t4 = 0
+        flag = 0
+        while True:
+            try:
+                lines = util.run_shell_cmd("logcat -v usec,epoch -s %s -d" % self.proc_name, True).split('\n')
+                util.run_shell_cmd("logcat -c")
+                for line in lines[1:]:
+                    if ('nl80211: Drv Event 47' in line) and flag == 0:
+                        flag = 1
+                        t1 = float(line.split()[0])
+                        self.log_info("Roaming event detected!")
+                    if ('nl80211: Associated on' in line) and flag:
+                        print 'Associated on ' + line.split()[-2] + 'MHz'
+                    if ('nl80211: Associated with' in line) and flag == 1:
+                        t2 = float(line.split()[0])
+                        self.log_info('Associated with ' + line.split()[-1])
+                        self.log_info('Association time in roamingg = ' + str(int((t2-t1) * 1000000)) + ' us')
+                    if ('wlan0: State: COMPLETED -> ASSOCIATED' in line) and flag:
+                        t3 = float(line.split()[0])
+                        self.log_info('Authentication time in roaming = ' + str(int((t3-t2) * 1000000)) + ' us')
+                    if ('wlan0: CTRL-EVENT-CONNECTED' in line) and flag:
+                        t4 = float(line.split()[0])
+                        self.log_info('Total roaming time = ' + str(int((t4-t1) * 1000000)) + ' us')
+                        flag = 0
+            except:
+                self.log_warning("run: Exception in getting output!")
+            time.sleep(3)
+            # self.log_warning("running...")
+
+
+'''
+Don't use the following block in plugin:
+
+PythonActivity = autoclass('org.kivy.android.PythonActivity')
+pyActivity = PythonActivity.mActivity
+
+The plugin is run as PythonService, therefore the type of pyActivity
+will be <type 'NoneType'>
+'''
+PythonService  = autoclass('org.kivy.android.PythonService')
+pyService = PythonService.mService
+
+Context = autoclass('android.content.Context')
+
+
+'''
+Grep the process name and then pull the logcat output
+'''
+mWifiMonitor = WifiMonitor(search_proc[0])
+
+mWifiMonitor.log_info("This plugin requires WiFi to be enabled.")
+mWifiManager = pyService.getSystemService(Context.WIFI_SERVICE)
+mWifiInfo = mWifiManager.getConnectionInfo()
+mWifiMonitor.log_info("We are connected to %s." % mWifiInfo.getSSID())
+mWifiMonitor.log_info("Wifi on frequency %s." % mWifiInfo.getFrequency())
+
+mWifiMonitor.log_info("Starting to monitor Wifi activity specified by the analytic task in the settings.")
+mWifiMonitor.run()
