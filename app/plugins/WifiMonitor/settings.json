@@ -1,0 +1,14 @@
+[
+    {
+        "type"   : "title",
+        "title"  : ""
+    },
+    {
+        "type"   : "options",
+        "title"  : "WiFi Analytics Task",
+        "desc"   : "Set the WiFi analytics task to perform",
+        "key"    : "wifi_task",
+        "default": "BSS Info",
+        "options": ["BSS Info", "Roaming"]
+    }
+]

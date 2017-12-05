@@ -11,6 +11,7 @@ Version : 1.0  Init version based on Android logcat monitoring
 import os
 import sys
 import time
+import datetime
 import commands
 import traceback
 import subprocess
@@ -26,9 +27,18 @@ search_proc = ["wpa_supplicant", "wpa", "wifi"]
 class WifiMonitor(Analyzer):
     def __init__(self, proc_name):
         Analyzer.__init__(self)
-        self.ps_num = -1
+
+        self.__log_dir = util.get_mobileinsight_log_path()
+        if not os.path.exists(self.__log_dir):
+            os.makedirs(self.__log_dir)
+
+        self.__log_timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        self.wifi_base_log = "wifi_log_%s.txt" % (self.__log_timestamp)
+        self.wifi_abs_log = os.path.join(self.__log_dir, self.wifi_base_log)
+
+        self.pid = -1
         self.proc_name = proc_name
-        self._get_thread_pid(self.proc_name)
+        # self._get_thread_pid(self.proc_name)
 
     def _get_thread_pid(self, proc_name):
         proc = subprocess.Popen(
@@ -39,41 +49,92 @@ class WifiMonitor(Analyzer):
         out = proc.communicate()
 
         try:
-            self.ps_num = str(out[0].split('\n')[0]).split()[1]
-            self.log_info("_get_thread_pid: self.ps_num = %s" % self.ps_num)
+            self.pid = str(out[0].split('\n')[0]).split()[1]
+            self.log_info("_get_thread_pid: self.pid = %s" % self.pid)
         except:
             self.log_warning("Exception when getting %s threads" % proc_name)
 
+
     def run(self):
-        # bssidTime = {}    
+        ssidTime = {}
         t1 = t2 = t3 = t4 = 0
         flag = 0
+        self.log_info("Starting to monitor " + plugin_config["wifi_task"])
+
+        self.log_info("Logs are stored at " + self.wifi_abs_log)
         while True:
-            try:
-                lines = util.run_shell_cmd("logcat -v usec,epoch -s %s -d" % self.proc_name, True).split('\n')
-                util.run_shell_cmd("logcat -c")
-                for line in lines[1:]:
-                    if ('nl80211: Drv Event 47' in line) and flag == 0:
-                        flag = 1
-                        t1 = float(line.split()[0])
-                        self.log_info("Roaming event detected!")
-                    if ('nl80211: Associated on' in line) and flag:
-                        print 'Associated on ' + line.split()[-2] + 'MHz'
-                    if ('nl80211: Associated with' in line) and flag == 1:
-                        t2 = float(line.split()[0])
-                        self.log_info('Associated with ' + line.split()[-1])
-                        self.log_info('Association time in roamingg = ' + str(int((t2-t1) * 1000000)) + ' us')
-                    if ('wlan0: State: COMPLETED -> ASSOCIATED' in line) and flag:
-                        t3 = float(line.split()[0])
-                        self.log_info('Authentication time in roaming = ' + str(int((t3-t2) * 1000000)) + ' us')
-                    if ('wlan0: CTRL-EVENT-CONNECTED' in line) and flag:
-                        t4 = float(line.split()[0])
-                        self.log_info('Total roaming time = ' + str(int((t4-t1) * 1000000)) + ' us')
-                        flag = 0
-            except:
-                self.log_warning("run: Exception in getting output!")
-            time.sleep(3)
-            # self.log_warning("running...")
+            # try:
+            with open(self.wifi_abs_log, 'a') as write_log:
+                if plugin_config["wifi_task"] == "BSS Info":
+                    lines = util.run_shell_cmd("logcat -v usec -s %s -d" % self.proc_name, True).split('\n')
+                    util.run_shell_cmd("logcat -c")
+                    for line in lines[1:]:
+                        if 'wlan0: BSS: Add' in line:
+                            ssid = line.split("'")[1]
+                            ssidTime[ssid] = [line[0:21], '']
+                        if 'wlan0: BSS: Remove' in line:
+                            ind = line.index(' SSID')
+                            ssid = line[ind:].split("'")[1]
+                            if ssid in ssidTime.keys():
+                                ssidTime[ssid][1] = line[0:21]
+                                output = 'SSID: ' + ssid + '   Add time: ' + ssidTime[ssid][0] + ' Remove time: ' + ssidTime[ssid][0]
+                                self.log_info(output)
+                                write_log.write(output + '\n')
+                        if 'We are connected to' in line:
+                            self.log_info(line)
+                            write_log.write(line + '\n')
+
+                else:
+                    lines = util.run_shell_cmd("logcat -v usec,epoch -s %s -d" % self.proc_name, True).split('\n')
+                    util.run_shell_cmd("logcat -c")
+                    t1 = t2 = t3 = t4 = 0.
+                    for line in lines[1:]:
+                        if ('nl80211: Drv Event 47' in line) and flag == 0:
+                            flag = 1
+                            new_t1 = float(line.split()[0])
+                            if new_t1 == t1:
+                                continue
+                            else:
+                                t1 = new_t1
+                            self.log_info("Roaming event detected!")
+
+                        if ('nl80211: Associated on' in line) and flag:
+                            print 'Associated on ' + line.split()[-2] + 'MHz'
+
+                        if ('nl80211: Associated with' in line) and flag == 1:
+                            new_t2 = float(line.split()[0])
+                            if new_t2 == t2:
+                                continue
+                            else:
+                                t2 = new_t2
+                            if(t2 > t1):
+                                self.log_info('Associated with ' + line.split()[-1])
+                                write_log.write('Associated with ' + line.split()[-1] + '\n')
+                                self.log_info('Association time in roaming = ' + str(int((t2 - t1) * 1000000)) + ' us')
+                                write_log.write('Association time in roaming = ' + str(int((t2 - t1) * 1000000)) + ' us\n')
+                        if ('wlan0: State: COMPLETED -> ASSOCIATED' in line) and flag:
+                            new_t3 = float(line.split()[0])
+                            if new_t3 == t3:
+                                continue
+                            else:
+                                t3 = new_t3
+                            if(t3 > t2):
+                                self.log_info('Authentication time in roaming = ' + str(int((t3 - t2) * 1000000)) + ' us')
+                                write_log.write('Authentication time in roaming = ' + str(int((t3 - t2) * 1000000)) + ' us\n')
+
+                        if ('wlan0: CTRL-EVENT-CONNECTED' in line) and flag:
+                            new_t4 = float(line.split()[0])
+                            if new_t4 == t4:
+                                continue
+                            else:
+                                t4 = new_t4
+                            if(t4 > t3):
+                                self.log_info('Total roaming time = ' + str(int((t4 - t1) * 1000000)) + ' us')
+                                write_log.write('Total roaming time = ' + str(int((t4 - t1) * 1000000)) + ' us\n')
+                                flag = 0
+            # except:
+            #     self.log_warning("run: Exception in getting output!")
+            time.sleep(2)
 
 
 '''
