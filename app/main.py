@@ -470,4 +470,4 @@ if __name__ == "__main__":
         Logger.exception(traceback.format_exc())
         crash_app.CrashApp().run()
     finally:
-        main_utils.detach_thread()    
+        main_utils.detach_thread()

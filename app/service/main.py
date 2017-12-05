@@ -1,10 +1,8 @@
-# encoding=utf8
-import logging
-
 import os
 import sys
 import threading
 import time
+import logging
 import traceback
 import datetime as dt
 import signal
