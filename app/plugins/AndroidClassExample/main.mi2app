@@ -27,7 +27,7 @@ search_proc = ["wpa_supplicant", "wpa", "wifi"]
 class LogcatMonitor(Analyzer):
     def __init__(self, proc_name):
         Analyzer.__init__(self)
-        self.ps_num = -1
+        self.pid = -1
         self.proc_name = proc_name
         self._get_thread_pid(self.proc_name)
 
@@ -40,15 +40,15 @@ class LogcatMonitor(Analyzer):
         out = proc.communicate()
 
         try:
-            self.ps_num = str(out[0].split('\n')[0]).split()[1]
-            self.log_warning("_get_thread_pid: self.ps_num = %s" % self.ps_num)
+            self.pid = str(out[0].split('\n')[0]).split()[1]
+            self.log_warning("_get_thread_pid: self.pid = %s" % self.pid)
         except:
             self.log_warning("Exception when getting %s threads" % proc_name)
 
     def run(self):
         while True:
             try:
-                lines = util.run_shell_cmd("logcat --pid %s -d" % self.ps_num, True).split('\n')
+                lines = util.run_shell_cmd("logcat --pid %s -d" % self.pid, True).split('\n')
                 for line in lines[1:]:
                     self.log_info(line)
             except:
@@ -59,8 +59,8 @@ class LogcatMonitor(Analyzer):
 '''
 Don't use the following block in plugin:
 
-PythonActivity = autoclass('org.kivy.android.PythonActivity')
-pyActivity = PythonActivity.mActivity
+    PythonActivity = autoclass('org.kivy.android.PythonActivity')
+    pyActivity = PythonActivity.mActivity
 
 The plugin is run as PythonService, therefore the type of pyActivity
 will be <type 'NoneType'>
@@ -84,4 +84,3 @@ mLogcatMonitor.log_info("Wifi on frequency %s." % mWifiInfo.getFrequency())
 
 mLogcatMonitor.log_info("Starting to monitor Android logcat output.")
 mLogcatMonitor.run()
-

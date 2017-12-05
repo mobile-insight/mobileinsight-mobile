@@ -5,7 +5,8 @@ A demo plugin to retrive various info from Android system,
 including WiFi status and logcat output on certain process.
 
 Author  : Zengwen Yuan, Yunqi Guo
-Version : 1.0  Init version based on Android logcat monitoring
+Version : 1.1  Add BSS Info analytic task
+          1.0  Init version based on Android logcat monitoring
 '''
 
 import os
@@ -137,24 +138,11 @@ class WifiMonitor(Analyzer):
             time.sleep(2)
 
 
-'''
-Don't use the following block in plugin:
-
-PythonActivity = autoclass('org.kivy.android.PythonActivity')
-pyActivity = PythonActivity.mActivity
-
-The plugin is run as PythonService, therefore the type of pyActivity
-will be <type 'NoneType'>
-'''
 PythonService  = autoclass('org.kivy.android.PythonService')
 pyService = PythonService.mService
 
 Context = autoclass('android.content.Context')
 
-
-'''
-Grep the process name and then pull the logcat output
-'''
 mWifiMonitor = WifiMonitor(search_proc[0])
 
 mWifiMonitor.log_info("This plugin requires WiFi to be enabled.")
