@@ -153,6 +153,12 @@ class HomeScreen(MobileInsightScreenBase):
         if not self.service:
             self.ids.run_plugin.text  = "Run Plugin: "+self.selectedPlugin
 
+    # @staticmethod
+    # def set_plugin(plugin_name):
+    #     selectedPlugin = plugin_name
+    #     if not HomeScreen.service:
+    #         HomeScreen.ids.run_plugin.text  = "Run Plugin: "+selectedPlugin
+
     #Setting the text for the Select Plugin Menu button
     def callback(self, obj):
         self.selectedPlugin = obj.id

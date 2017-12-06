@@ -18,7 +18,7 @@ from kivy.core.window import Window
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
-from kivy.uix.screenmanager import Screen
+from kivy.uix.screenmanager import Screen, ScreenManagerException
 from kivy.uix.scrollview import ScrollView
 from kivy.lang import Builder
 from main import get_plugins_list, create_folder
@@ -26,6 +26,8 @@ import main_utils
 from main_utils import current_activity
 from . import MobileInsightScreenBase
 import traceback
+
+from home import HomeScreen
 
 Builder.load_file('screens/plugins.kv')
 
@@ -113,7 +115,10 @@ class PluginsScreen(MobileInsightScreenBase):
     #Setting the text for the Select Plugin Menu button
     def callback(self, obj):    
         self.selectedPlugin = obj.id
-        self.manager.get_screen('HomeScreen').set_plugin(self.selectedPlugin)
+        self.log_info("screens"+str(self.manager.screens))
+        if self.manager.has_screen('HomeScreen'):
+            self.manager.get_screen('HomeScreen').set_plugin(self.selectedPlugin)
+            # HomeScreen.set_plugin(self.selectedPlugin)
         self.popup.dismiss()
 
     def log_info(self, msg):
