@@ -13,7 +13,7 @@ p4a_path : /home/vagrant/.python-for-android
 
 app_name : MobileInsight
 
-app_version : 3.3.0
+app_version : 3.3.1
 
 pkg_name : net.mobileinsight.app
 
