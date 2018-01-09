@@ -668,48 +668,102 @@ main (int argc, char **argv)
 
 	
 
-	/*
-	 * Enable logging mode
-	 * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diagchar_core.c
-	 */
-	ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &mode);  
-	if (ret < 0) {
-		LOGD("ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
-		perror("ioctl SWITCH_LOGGING");
-		// Yuanjie: the following works for Samsung S5
-		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
-		if (ret < 0) {
-			LOGD("Alternative ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
-			perror("Alternative ioctl SWITCH_LOGGING");
+	// /*
+	//  * Enable logging mode
+	//  * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diagchar_core.c
+	//  */
+	// ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &mode);  
+	// if (ret < 0) {
+	// 	LOGD("ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
+	// 	perror("ioctl SWITCH_LOGGING");
+	// 	// Yuanjie: the following works for Samsung S5
+	// 	ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
+	// 	if (ret < 0) {
+	// 		LOGD("Alternative ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
+	// 		perror("Alternative ioctl SWITCH_LOGGING");
 
-			/* Android 7.0 mode
-			 * Reference: https://android.googlesource.com/kernel/msm.git/+/android-7.1.0_r0.3/drivers/char/diag/diagchar_core.c
-			 */
+	// 		/* Android 7.0 mode
+	// 		 * Reference: https://android.googlesource.com/kernel/msm.git/+/android-7.1.0_r0.3/drivers/char/diag/diagchar_core.c
+	// 		 */
 
-			struct diag_logging_mode_param_t new_mode;
-			new_mode.req_mode = mode;
-			new_mode.peripheral_mask = DIAG_CON_ALL;
-			new_mode.mode_param = 0;
+	// 		struct diag_logging_mode_param_t new_mode;
+	// 		new_mode.req_mode = mode;
+	// 		new_mode.peripheral_mask = DIAG_CON_ALL;
+	// 		new_mode.mode_param = 0;
 
-			ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *)& new_mode);
-			if (ret < 0) {
-				LOGD("Android-7.0 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
-				perror("Alternative ioctl SWITCH_LOGGING");
+	// 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *)& new_mode);
+	// 		if (ret < 0) {
+	// 			LOGD("Android-7.0 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
+	// 			perror("Alternative ioctl SWITCH_LOGGING");
 
 
-				ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &mode, 12, 0, 0, 0, 0);
-				if (ret < 0) {
-					LOGD("S7 Edge fails: %s \n", strerror(errno));
-			    }
-			}	
+	// 			ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &mode, 12, 0, 0, 0, 0);
+	// 			if (ret < 0) {
+	// 				LOGD("S7 Edge fails: %s \n", strerror(errno));
+	// 		    }
+	// 		}	
 
-		}
+	// 	}
 
-	}
-	else{
-		// printf("Older way of ioctl succeeds.\n");
-	}
+	// }
+	// else{
+	// 	// printf("Older way of ioctl succeeds.\n");
+	// }
 
+    /*
+     * Enable logging mode
+     */
+    ret = -1;
+    if (ret < 0) {
+        // Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diagchar_core.c
+	    ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &mode);
+    }
+    if (ret < 0) {
+        LOGD("ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
+        perror("ioctl SWITCH_LOGGING");
+        // Yuanjie: the following works for Samsung S5
+        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
+    }
+    if (ret < 0) {
+        LOGD("Alternative ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
+        perror("Alternative ioctl SWITCH_LOGGING");
+        /* Android 7.0 mode
+         * * Reference: https://android.googlesource.com/kernel/msm.git/+/android-7.1.0_r0.3/drivers/char/diag/diagchar_core.c
+         * */
+        struct diag_logging_mode_param_t new_mode;
+        new_mode.req_mode = mode;
+        new_mode.peripheral_mask = DIAG_CON_ALL;
+        new_mode.mode_param = 0;
+        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *)& new_mode);
+    }
+    if (ret < 0) {
+        LOGD("Android-7.0 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
+        perror("Alternative ioctl SWITCH_LOGGING");
+        // Yuanjie: the following is used for Samsung S7 Edge
+        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &mode, 12, 0, 0, 0, 0);
+    }
+    if (ret < 0) {
+        LOGD("S7 Edge ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
+        perror("Alternative ioctl SWITCH_LOGGING");
+        // Haotian: try for XiaoMI 6 7.1.1
+        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, mode);
+    }
+    if (ret < 0) {
+        LOGD("XiaoMI method 1 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
+        perror("Alternative ioctl SWITCH_LOGGING");
+        // Haotian: try for XiaoMI 6 from Yuanjie (32 bits libdiag.so)
+        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, mode, 0, 0, 0);
+    }
+    if (ret < 0) {
+        LOGD("XiaoMI method 2 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
+        perror("Alternative ioctl SWITCH_LOGGING");
+    }
+
+    if (ret >= 0) {
+        LOGD("Enable logging mode success.\n");
+    } else {
+        LOGD("Failed to enable logging mode.\n");
+    }
 
 	// Write commands to /dev/diag device to enable log collecting.
 	// LOGD("Before write_commands\n");
