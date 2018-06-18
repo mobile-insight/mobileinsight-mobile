@@ -32,7 +32,7 @@ log_directory = os.path.join(cache_directory, "mi2log")
 
 # Initialize a 3G/4G monitor
 src = OnlineMonitor()
-src.set_log_directory(log_directory)
+# src.set_log_directory(log_directory)
 src.set_skip_decoding(False)
 
 # Enable 3G/4G RRC (radio resource control) monitoring
