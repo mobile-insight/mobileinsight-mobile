@@ -31,6 +31,7 @@
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <dlfcn.h>
 
 // #include <linux/diagchar.h>
 #define _GNU_SOURCE 
@@ -45,6 +46,11 @@
 #define  LOGW(...)  __android_log_print(ANDROID_LOG_WARN,LOG_TAG,__VA_ARGS__)
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+
+typedef int (*D_FUNC)(int, int);
+typedef signed int (*I_FUNC)();
+typedef int (*F_FUNC)(int);
+typedef int (*R_FUNC)(const char *);
 
 // NOTE: the following number should be updated every time.
 #define DIAG_REVEALER_VERSION "2.0"
@@ -515,43 +521,70 @@ manager_append_log (struct LogManagerState *pstate, int fifo_fd, size_t msg_len)
 	return 0;
 }
 
-int
-main (int argc, char **argv)
-{
+int __enable_logging_libdiag(int mode){
 
-	if (signal(SIGPIPE, sigpipe_handler) == SIG_ERR) {
-		LOGW("WARNING: diag_revealer cannot capture SIGPIPE\n");
-	}
+    int ret;
 
-	if (argc < 3 || argc > 5) {
-		printf("Diag_revealer " DIAG_REVEALER_VERSION "\n");
-		printf("Author: Yuanjie Li, Jiayao Li\n");
-		printf("UCLA Wing Group\n");
-		printf("Usage: diag_revealer DIAG_CFG_PATH FIFO_PATH [LOG_OUTPUT_DIR] [LOG_CUT_SIZE (in MB)]\n");
-        return 0;
-	}
+    const char LIB_DIAG_PATH[] = "/system/vendor/lib/libdiag.so";
+    void *handle;
+    char *error;
+    D_FUNC diag_switch_logging = NULL;
+    I_FUNC Diag_LSM_Init = NULL, Diag_LSM_DeInit = NULL;
+    int *max_file_size;
+    char *output_dir;
 
-	// Read config file
-	BinaryBuffer buf_write = read_diag_cfg(argv[1]);
-	if (buf_write.p == NULL || buf_write.len == 0) {
-		return -8001;
-	}
-	// print_hex(buf_write.p, buf_write.len);
+    handle = dlopen(LIB_DIAG_PATH, RTLD_NOW);
+    if (!handle) {
+        // fLOGD(stderr, "%s\n", dlerror());
+    }
+    else{
+        // LOGD("%s: test 1\n", __func__);
+        *(void **) (&diag_switch_logging) = dlsym(handle, "diag_switch_logging");
+        *(void **) (&Diag_LSM_Init) = dlsym(handle, "Diag_LSM_Init");
+        *(void **) (&Diag_LSM_DeInit) = dlsym(handle, "Diag_LSM_DeInit");
+        max_file_size = (int*) dlsym(handle, "max_file_size");
+        output_dir = (char*) dlsym(handle, "output_dir");
+        char *dir_p = (char *) &output_dir;
 
-	// system("su -c chmod 777 /dev/diag");
+        if(max_file_size)
+            *max_file_size = 1; //Minimal size, beneficial for real-time features
 
-	// int fd = open("/dev/diag", O_RDWR);
-	// fd = open("/dev/diag", O_RDWR);
-	fd = open("/dev/diag", O_RDWR|O_LARGEFILE|O_NONBLOCK);
-	if (fd < 0) {
-		perror("open diag dev");
-		return -8002;
-	}
+        // LOGD("%s: test 2\n", __func__);
+        // if(Diag_LSM_DeInit)
+        //     Diag_LSM_DeInit();
+        // LOGD("%s: test 3\n", __func__);
+        if(Diag_LSM_Init)
+            ret = Diag_LSM_Init();
+        // LOGD("%s: test 4\n", __func__);
+        char default_output_dir[100] = "/sdcard/diag_logs/";
 
-	int ret;
+        if(dir_p)
+            strlcpy(dir_p,default_output_dir,sizeof(default_output_dir));
+
+        // LOGD("%s: test 5\n", __func__);
+
+        if(output_dir)
+            mkdir((const char *) &output_dir, 504LL);
+
+        // LOGD("%s: test 6\n", __func__);
+
+        if(diag_switch_logging){
 
 
-	/*
+            ret = (int)(*diag_switch_logging)(mode,(int) &output_dir);
+        }
+
+        // dlclose(handle);
+    }
+
+    return ret;
+}
+
+int enable_logging(int fd, int mode){
+
+    int ret = -1;
+
+    /*
      * EXPERIMENTAL (NEXUS 6 ONLY): 
      * 1. check remote_dev
      * 2. Register a DCI client
@@ -641,6 +674,135 @@ main (int argc, char **argv)
         printf("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG fails, with ret val = %d\n", ret);
     	perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG");
     }
+
+
+    /*
+     * Enable logging mode
+     * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diagchar_core.c
+     */   
+    ret = -1;
+    if (ret < 0) {
+        // perror("Alternative ioctl SWITCH_LOGGING");
+        /* Android 7.0 mode
+         * * Reference: https://android.googlesource.com/kernel/msm.git/+/android-7.1.0_r0.3/drivers/char/diag/diagchar_core.c
+         * */
+        struct diag_logging_mode_param_t new_mode;
+        new_mode.req_mode = mode;
+        new_mode.peripheral_mask = DIAG_CON_ALL;
+        new_mode.mode_param = 0;
+        // LOGD("&new_mode=%p peripheral_mask=%d req_mode=%d mode_param=%d\n", &new_mode, new_mode.peripheral_mask, new_mode.req_mode, new_mode.mode_param);
+        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *)& new_mode);
+    }
+    if (ret < 0) {
+        // LOGD("Android-7.0 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
+        // Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diagchar_core.c
+        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &mode);
+    }
+    if (ret < 0) {
+        // LOGD("ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
+        // perror("ioctl SWITCH_LOGGING");
+        // Yuanjie: the following works for Samsung S5
+        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
+    }
+    if (ret < 0) {
+        // LOGD("Android-7.0 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
+        // perror("Alternative ioctl SWITCH_LOGGING");
+        // Yuanjie: the following is used for Xiaomi RedMi 4
+        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode, 12, 0, 0, 0, 0);
+    }
+    if (ret < 0) {
+        // LOGD("S7 Edge ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
+        // perror("Alternative ioctl SWITCH_LOGGING");
+        // XiaoMI 6 7.1.1
+        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, mode);
+    }
+    if (ret < 0) {
+        // LOGD("XiaoMI method 1 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
+        // perror("Alternative ioctl SWITCH_LOGGING");
+        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &mode, 12, 0, 0, 0, 0);
+    }
+    if (ret < 0) {
+        // LOGD("XiaoMI method 2 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
+        /* Ultimate approach: Use libdiag.so */
+        ret = __enable_logging_libdiag(mode);    //FIXME: 0921, uncomment it
+    }
+    if (ret >= 0) {
+        // LOGD("Enable logging mode success.\n");
+
+        // Register a DCI client
+        struct diag_dci_reg_tbl_t dci_client;
+        dci_client.client_id = 0;
+        dci_client.notification_list = 0;
+        dci_client.signal_type = SIGPIPE;
+        // dci_client.token = remote_dev;
+        dci_client.token = 0;
+        ret = ioctl(fd, DIAG_IOCTL_DCI_REG, (char *) &dci_client); 
+        if (ret < 0){
+                // LOGD("ioctl DIAG_IOCTL_DCI_REG fails, with ret val = %d\n", ret);
+                // perror("ioctl DIAG_IOCTL_DCI_REG");
+        } 
+        else{
+            client_id = ret;
+            // LOGD("DIAG_IOCTL_DCI_REG client_id=%d\n", client_id);
+        }
+
+        /*
+         * Configure the buffering mode to circular
+         */
+        struct diag_buffering_mode_t buffering_mode;
+        // buffering_mode.peripheral = remote_dev;
+        buffering_mode.peripheral = 0;
+        buffering_mode.mode = DIAG_BUFFERING_MODE_STREAMING;
+        buffering_mode.high_wm_val = DEFAULT_HIGH_WM_VAL;
+        buffering_mode.low_wm_val = DEFAULT_LOW_WM_VAL;
+
+        ret = ioctl(fd, DIAG_IOCTL_PERIPHERAL_BUF_CONFIG, (char *) &buffering_mode);  
+        if (ret < 0){
+            // LOGD("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG fails, with ret val = %d\n", ret);
+            // perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG");
+        }
+
+    } else {
+        // LOGD("Failed to enable logging mode: %s.\n", strerror(errno));
+    }
+
+    return ret;
+}
+
+int
+main (int argc, char **argv)
+{
+
+	if (signal(SIGPIPE, sigpipe_handler) == SIG_ERR) {
+		LOGW("WARNING: diag_revealer cannot capture SIGPIPE\n");
+	}
+
+	if (argc < 3 || argc > 5) {
+		printf("Diag_revealer " DIAG_REVEALER_VERSION "\n");
+		printf("Author: Yuanjie Li, Jiayao Li\n");
+		printf("UCLA Wing Group\n");
+		printf("Usage: diag_revealer DIAG_CFG_PATH FIFO_PATH [LOG_OUTPUT_DIR] [LOG_CUT_SIZE (in MB)]\n");
+        return 0;
+	}
+
+	// Read config file
+	BinaryBuffer buf_write = read_diag_cfg(argv[1]);
+	if (buf_write.p == NULL || buf_write.len == 0) {
+		return -8001;
+	}
+	// print_hex(buf_write.p, buf_write.len);
+
+	// system("su -c chmod 777 /dev/diag");
+
+	// int fd = open("/dev/diag", O_RDWR);
+	// fd = open("/dev/diag", O_RDWR);
+	fd = open("/dev/diag", O_RDWR|O_LARGEFILE|O_NONBLOCK);
+	if (fd < 0) {
+		perror("open diag dev");
+		return -8002;
+	}
+
+	int ret;
     // uint8_t peripheral = 0;
     // for(;peripheral<=LAST_PERIPHERAL; peripheral++)
     // {
@@ -713,57 +875,7 @@ main (int argc, char **argv)
     /*
      * Enable logging mode
      */
-    ret = -1;
-    if (ret < 0) {
-        // Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diagchar_core.c
-	    ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &mode);
-    }
-    if (ret < 0) {
-        LOGD("ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
-        perror("ioctl SWITCH_LOGGING");
-        // Yuanjie: the following works for Samsung S5
-        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
-    }
-    if (ret < 0) {
-        LOGD("Alternative ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
-        perror("Alternative ioctl SWITCH_LOGGING");
-        /* Android 7.0 mode
-         * * Reference: https://android.googlesource.com/kernel/msm.git/+/android-7.1.0_r0.3/drivers/char/diag/diagchar_core.c
-         * */
-        struct diag_logging_mode_param_t new_mode;
-        new_mode.req_mode = mode;
-        new_mode.peripheral_mask = DIAG_CON_ALL;
-        new_mode.mode_param = 0;
-        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *)& new_mode);
-    }
-    if (ret < 0) {
-        LOGD("Android-7.0 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
-        perror("Alternative ioctl SWITCH_LOGGING");
-        // Yuanjie: the following is used for Samsung S7 Edge
-        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &mode, 12, 0, 0, 0, 0);
-    }
-    if (ret < 0) {
-        LOGD("S7 Edge ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
-        perror("Alternative ioctl SWITCH_LOGGING");
-        // Haotian: try for XiaoMI 6 7.1.1
-        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, mode);
-    }
-    if (ret < 0) {
-        LOGD("XiaoMI method 1 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
-        perror("Alternative ioctl SWITCH_LOGGING");
-        // Haotian: try for XiaoMI 6 from Yuanjie (32 bits libdiag.so)
-        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, mode, 0, 0, 0);
-    }
-    if (ret < 0) {
-        LOGD("XiaoMI method 2 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
-        perror("Alternative ioctl SWITCH_LOGGING");
-    }
-
-    if (ret >= 0) {
-        LOGD("Enable logging mode success.\n");
-    } else {
-        LOGD("Failed to enable logging mode.\n");
-    }
+    enable_logging(fd, mode);
 
 	// Write commands to /dev/diag device to enable log collecting.
 	// LOGD("Before write_commands\n");
@@ -942,3 +1054,6 @@ main (int argc, char **argv)
 
 	return (ret < 0? ret: 0);
 }
+
+
+
