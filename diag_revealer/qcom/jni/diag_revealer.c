@@ -154,6 +154,20 @@ struct diag_dci_reg_tbl_t {
 	int token;
 } __packed;
 
+/*
+ * Android 9.0: switch_logging_mode structure
+ * Reference: https://android.googlesource.com/kernel/msm.git/+/android-9.0.0_r0.31/drivers/char/diag/diagchar.h
+ */
+struct diag_logging_mode_param_t_pie {
+    uint32_t req_mode;
+	uint32_t peripheral_mask;
+	uint32_t pd_mask;
+	uint8_t mode_param;
+	uint8_t diag_id;
+	uint8_t pd_val;
+	uint8_t reserved;
+	int peripheral;
+} __packed;
 
 /* 
  * Android 7.0: switch_logging_mode structure
@@ -679,10 +693,21 @@ int enable_logging(int fd, int mode){
     /*
      * Enable logging mode
      * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diagchar_core.c
-     */   
+     */
     ret = -1;
     if (ret < 0) {
-        // perror("Alternative ioctl SWITCH_LOGGING");
+        /* Android 9.0 mode
+         * * Reference: https://android.googlesource.com/kernel/msm.git/+/android-9.0.0_r0.31/drivers/char/diag/diagchar_core.c
+         * */
+        struct diag_logging_mode_param_t_pie new_mode;
+        new_mode.req_mode = mode;
+        new_mode.mode_param = 0;
+        new_mode.pd_mask = 0;
+        new_mode.peripheral_mask = DIAG_CON_ALL;
+        ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *)& new_mode);
+    }
+    if (ret < 0) {
+        // LOGD("Android-9.0 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
         /* Android 7.0 mode
          * * Reference: https://android.googlesource.com/kernel/msm.git/+/android-7.1.0_r0.3/drivers/char/diag/diagchar_core.c
          * */
@@ -806,7 +831,7 @@ main (int argc, char **argv)
     // uint8_t peripheral = 0;
     // for(;peripheral<=LAST_PERIPHERAL; peripheral++)
     // {
-    // 	ret = ioctl(fd, DIAG_IOCTL_PERIPHERAL_BUF_DRAIN, (char *) &peripheral);  
+    // 	ret = ioctl(fd, DIAG_IOCTL_PERIPHERAL_BUF_DRAIN, (char *) &peripheral);
 	   //  if (ret < 0){
 	   //      printf("ioctl DIAG_IOCTL_PERIPHERAL_BUF_DRAIN fails, with ret val = %d\n", ret);
 	   //  	perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_DRAIN");
@@ -821,20 +846,20 @@ main (int argc, char **argv)
 	   //  buffering_mode.high_wm_val = DEFAULT_HIGH_WM_VAL;
 	   //  buffering_mode.low_wm_val = DEFAULT_LOW_WM_VAL;
 
-	   //  ret = ioctl(fd, DIAG_IOCTL_PERIPHERAL_BUF_CONFIG, (char *) &buffering_mode);  
+	   //  ret = ioctl(fd, DIAG_IOCTL_PERIPHERAL_BUF_CONFIG, (char *) &buffering_mode);
 	   //  if (ret < 0){
 	   //      printf("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG fails, with ret val = %d\n", ret);
 	   //  	perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG");
 	   //  }
     // }
 
-	
+
 
 	// /*
 	//  * Enable logging mode
 	//  * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diagchar_core.c
 	//  */
-	// ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &mode);  
+	// ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &mode);
 	// if (ret < 0) {
 	// 	LOGD("ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
 	// 	perror("ioctl SWITCH_LOGGING");
@@ -863,7 +888,7 @@ main (int argc, char **argv)
 	// 			if (ret < 0) {
 	// 				LOGD("S7 Edge fails: %s \n", strerror(errno));
 	// 		    }
-	// 		}	
+	// 		}
 
 	// 	}
 
@@ -909,7 +934,7 @@ main (int argc, char **argv)
 	} else {
 		// LOGD("FIFO opened\n");
 	}
-	
+
 	int res = fcntl(fifo_fd, F_SETPIPE_SZ, pipesize);
 	if (res < 0)
 		LOGI("Failed to set FIFO: %s\n", strerror(errno));
@@ -960,7 +985,7 @@ main (int argc, char **argv)
 					short fifo_msg_type = FIFO_MSG_TYPE_LOG;
 					short fifo_msg_len;
 					double ts = get_posix_timestamp();
-					
+
 					//Copy msg_len
 					int msg_len = 0;
 					memcpy(&msg_len, buf_read + offset, sizeof(int));
@@ -970,7 +995,7 @@ main (int argc, char **argv)
 						continue;
 					// print_hex(buf_read + offset + 4, msg_len);
 					// Wirte msg type to pipe
-					
+
 					// LOGD("ret_err0");
 					ret_err = write(fifo_fd, &fifo_msg_type, sizeof(short));
 
