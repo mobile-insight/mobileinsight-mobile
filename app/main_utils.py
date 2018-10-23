@@ -415,6 +415,11 @@ def check_security_policy():
     cmd = cmd + \
         "supolicy --live \"allow wcnss_service fuse file {read append getattr}\";"
 
+    # MI phones
+
+    cmd = cmd + \
+        "supolicy --live \"allow untrusted_app_25 diag_device chr_file {open read write getattr}\";"
+
 
     run_shell_cmd(cmd)
 
