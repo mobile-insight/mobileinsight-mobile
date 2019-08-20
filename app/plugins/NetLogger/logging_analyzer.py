@@ -38,7 +38,7 @@ ANDROID_SHELL = "/system/bin/sh"
 __all__ = ['LoggingAnalyzer', 'MultiPartForm']
 
 
-def upload_log(filename):
+def upload_log(self, filename):
     succeed = False
     form = MultiPartForm()
     form.add_field('file[]', filename)
@@ -53,8 +53,8 @@ def upload_log(filename):
 
     try:
         response = urllib2.urlopen(request, timeout=3).read()
-        if response.startswith("TW9iaWxlSW5zaWdodA==FILE_SUCC") \
-                or response.startswith("TW9iaWxlSW5zaWdodA==FILE_EXST"):
+        if "Thank you for your sharing!" in response \
+                or "already exists" in response:
             succeed = True
     except urllib2.URLError as e:
         pass
@@ -256,7 +256,7 @@ class LoggingAnalyzer(Analyzer):
                         if f.endswith(".mi2log"):
                             orphan_file = os.path.join(self.__log_dir, f)
                             t = threading.Thread(
-                                target=upload_log, args=(orphan_file, ))
+                                target=upload_log, args=(self, orphan_file))
                             t.start()
                 except Exception as e:
                     pass
