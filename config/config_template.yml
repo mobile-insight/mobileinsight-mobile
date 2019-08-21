@@ -13,11 +13,11 @@ p4a_path : /home/vagrant/.python-for-android
 
 app_name : MobileInsight
 
-app_version : 3.3.1
+app_version : 4.0.0
 
 pkg_name : net.mobileinsight.app
 
-dist_name : mi3
+dist_name : mi4
 
 # the old pygame bootstrap is depreciated
 bootstrap : sdl2

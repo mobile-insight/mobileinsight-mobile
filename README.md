@@ -1,7 +1,7 @@
 MobileInsight Mobile Version
 ==============
 
-This repository includes the codes to build MobileInsight mobile version. It wraps the MobileInsight monitor and analyzer modules (`mobileinsight-core`) into an Android application, and provides key utilities (UI, log collection/viewer, protocol analyzer, plugin service etc.) to faciliate in-device use. 
+This repository includes the codes to build MobileInsight mobile version. It wraps the MobileInsight monitor and analyzer modules (`mobileinsight-core`) into an Android application, and provides key utilities (UI, log collection/viewer, protocol analyzer, plugin service etc.) to faciliate in-device use.
 
 The structure of this repo is organized as follows:
 
@@ -16,7 +16,7 @@ The structure of this repo is organized as follows:
 └── resources: application icon and welcome screen
 ```
 
-The lastest version of MobileInsight mobile app is v3.3.0.
+The lastest version of MobileInsight mobile app is v4.0.0.
 
 
 ## Quickstart
@@ -25,7 +25,7 @@ It is strongly recommended to use the standalone Vagrant configuration file to a
 
 First, install `virtualbox` and `vagrant`. You can follow the instructions at [VirtuBox.org](https://www.virtualbox.org) and [Vagrant](https://www.vagrantup.com).
 
-Second, obtain the newest `Vagrantfile` for MobileInsight development from the [release page](https://github.com/mobile-insight/mobileinsight-dev/releases). You should put it under your development path, say `/path/to/dev`. Run the `Vagrantfile` and install the virtual image using `vagrant up`. 
+Second, obtain the newest `Vagrantfile` for MobileInsight development from the [release page](https://github.com/mobile-insight/mobileinsight-dev/releases). You should put it under your development path, say `/path/to/dev`. Run the `Vagrantfile` and install the virtual image using `vagrant up`.
 
 ```
 cd /path/to/dev
@@ -38,10 +38,10 @@ vagrant up
 
 Depending on the network and CPU speed, the installation may take half hour or longer.
 
-Then, when the process finish install and returns the shell, a MobileInsight app is already compiled and copied to your path (`/path/to/dev`). You can install it on supported Android phone and try it out immediately using `adb` (for example, the compiled APK version is 3.3.0).
+Then, when the process finish install and returns the shell, a MobileInsight app is already compiled and copied to your path (`/path/to/dev`). You can install it on supported Android phone and try it out immediately using `adb` (for example, the compiled APK version is 4.0.0).
 
 ```
-adb install MobileInsight-3.3.0-debug.apk
+adb install MobileInsight-4.0.0-debug.apk
 ```
 
 For more details on using the provided `Vagrantfile` to configure the MobileInsight, please refer to the [`mobileinsight-dev` repo](https://github.com/mobile-insight/mobileinsight-dev).
@@ -85,9 +85,9 @@ The compiled APK can be copied out of the virtual machine by copying to the `/va
 You may install the APK to phone after that.
 
 ```
-(vm shell)   $ cp MobileInsight-3.2.0-debug.apk /vagrant
+(vm shell)   $ cp MobileInsight-4.0.0-debug.apk /vagrant
 (vm shell)   $ exit
-(host shell) $ adb install -r MobileInsight-3.2.0-debug.apk
+(host shell) $ adb install -r MobileInsight-4.0.0-debug.apk
 ```
 
 __NOTE__: If upstream core functionalities of MobileInsight ([`mobileinsight-core`](https://github.com/mobile-insight/mobileinsight-core)) changes, you need to clean the existing MobileInsight *distribution* and re-compile it:
@@ -113,7 +113,7 @@ The recommended way to install the `mobileinsight-mobile` repo and set up the en
 ```
 git clone https://github.com/mobile-insight/python-for-android.git
 cd python-for-android
-python setup.py install
+python2 setup.py install
 ```
 
 2. Install Android SDK.
@@ -195,12 +195,13 @@ Then, you can follow the usage guide and compile the application. Basically, you
 
 ```
 make dist
-make app_debug
+make apk_debug
 ```
 
 
 ## Version History
 
++ [2018-10-16] Version 3.4 released
 + [2017-12-05] Version 3.3 released
 + [2017-10-05] Version 3.2 released
 + [2017-09-26] Version 3.1 released
