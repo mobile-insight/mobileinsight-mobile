@@ -148,7 +148,7 @@ class HomeScreen(MobileInsightScreenBase):
         self.brStopAck.start()
 
     def set_plugin(self, plugin_name):
-        print("set_plugin")
+        print "set_plugin"
         self.selectedPlugin = plugin_name
         if not self.service:
             self.ids.run_plugin.text  = "Run Plugin: "+self.selectedPlugin
@@ -388,7 +388,7 @@ class HomeScreen(MobileInsightScreenBase):
                 self.append_log("")
                 self.append_log("execfile: %s" % filename)
                 namespace = {"app_log": ""}
-                exec(compile(open(filename, "rb").read(), filename, 'exec'), namespace)
+                execfile(filename, namespace)
                 # Load the "app_log" variable from namespace and print it out
                 self.append_log(namespace["app_log"])
             except BaseException:

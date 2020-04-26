@@ -50,18 +50,18 @@ class MobileInsightScreenBase(Screen):
         pass
 
 
-from .radio import RadioScreen
-from .connectivity import ConnectivityScreen
-from .dataplane import DataplaneScreen
-from .datavoice import DatavoiceScreen
-from .mobility import MobilityScreen
-from .theming import ThemingScreen
-from .home import HomeScreen
-from .logviewer import LogViewerScreen
-from .about import AboutScreen
-from .help import HelpScreen
-from .privacy import PrivacyScreen
-from .plugins import PluginsScreen
+from radio import RadioScreen
+from connectivity import ConnectivityScreen
+from dataplane import DataplaneScreen
+from datavoice import DatavoiceScreen
+from mobility import MobilityScreen
+from theming import ThemingScreen
+from home import HomeScreen
+from logviewer import LogViewerScreen
+from about import AboutScreen
+from help import HelpScreen
+from privacy import PrivacyScreen
+from plugins import PluginsScreen
 
 
 # WARNING: The ordering of the following screens should be consistent with those in mobileinsight.kv (app.go_screen(idx))

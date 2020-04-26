@@ -211,7 +211,7 @@ class LogViewerScreen(MobileInsightScreenBase):
             load_failed_popup.open()
         else:
             name, extension = os.path.splitext(filename[0])
-            if extension == ['.mi2log'][0]:
+            if extension == [u'.mi2log'][0]:
                 self.loading_num = 2
                 self.loading_popup = Popup(
                     title='',

@@ -83,7 +83,7 @@ class Coordinator(object):
     def event_callback(self, message, *args):
         Logger.info('coordinator <RECV: event msg: ' + message[2])
         def G(f): return f(message[2])
-        list(map(G, self._screen_callbacks))
+        map(G, self._screen_callbacks)
 
     def control_callback(self, message, *args):
         # set the Event lock once service is ready

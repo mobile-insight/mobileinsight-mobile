@@ -27,7 +27,7 @@ from main_utils import current_activity
 from . import MobileInsightScreenBase
 import traceback
 
-from .home import HomeScreen
+from home import HomeScreen
 
 Builder.load_file('screens/plugins.kv')
 
