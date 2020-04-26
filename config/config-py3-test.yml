@@ -1,0 +1,62 @@
+# replace it with your path of mobileinsight-mobile
+mi_dev_path :
+
+# replace it with python-for-android storage dir
+p4a_path :
+
+app_name : MobileInsight
+
+app_version : 5.0.0
+
+pkg_name : net.mobileinsight.app
+
+dist_name : mi5
+
+# the old pygame bootstrap is depreciated
+bootstrap : sdl2
+
+orientation : portrait
+
+# replace it with your minimal Android API level
+minsdk : 26
+
+# package requirements
+requirements : pyserial,android,kivy,mobileinsight,python3
+
+# replace it with your application icon path
+icon_path : resources/icon.png
+
+# replace it with your application presplash path
+presplash_path : resources/presplash.jpg
+
+# replace it with your application path
+app_path : app
+
+# replace it with your path of Android SDK
+sdk_path : $HOME/Library/Android/sdk
+
+# replace it with your Android SDK version (compiling Android API level)
+api_level : 27
+
+# replace it with your Android NDK path
+ndk_path : $HOME/Library/Android/sdk/ndk/19.2.5345600
+
+# replace it with your Android NDK version
+ndk_version : r19c
+
+# replace it with your desired target arch
+arch : armeabi-v7a
+
+whitelist : config/whitelist.txt
+
+# Your keystore location
+keystore : config/example.jks
+
+# Your keystore password
+keystorepw : mobileinsight
+
+# Your private signkey name in the keystore
+signkey : mi-key
+
+# Your private signkey password
+signkeypw : mobileinsight
