@@ -46,3 +46,4 @@ app/data/*
 
 # Personalized config file
 config.yml*
+.idea/
