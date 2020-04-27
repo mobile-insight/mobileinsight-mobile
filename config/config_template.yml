@@ -25,7 +25,7 @@ bootstrap : sdl2
 orientation : portrait
 
 # replace it with your minimal Android API level
-minsdk : 26
+minsdk : 27
 
 # package requirements
 requirements : pyserial,android,kivy,mobileinsight,python3
