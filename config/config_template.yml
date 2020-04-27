@@ -46,13 +46,13 @@ sdk_path : /home/vagrant/android-sdk
 api_level : 26
 
 # replace it with your Android NDK path
-ndk_path : /home/vagrant/android-ndk-r19
+ndk_path : android-ndk-r21b
 
 # replace it with your Android NDK version
 ndk_version : r19
 
 # replace it with your desired target arch
-arch : armeabi-v7a
+arch : arm64-v8a
 
 whitelist : config/whitelist.txt
 
