@@ -25,7 +25,7 @@ bootstrap : sdl2
 orientation : portrait
 
 # replace it with your minimal Android API level
-minsdk : 27
+minsdk : 14
 
 # package requirements
 requirements : pyserial,android,kivy,mobileinsight,python3
@@ -43,7 +43,7 @@ app_path : app
 sdk_path : /home/vagrant/android-sdk
 
 # replace it with your Android SDK version (compiling Android API level)
-api_level : 27
+api_level : 19
 
 # replace it with your Android NDK path
 ndk_path : /home/vagrant/android-ndk-r19
