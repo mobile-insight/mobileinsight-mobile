@@ -1,8 +1,15 @@
+#############################
+# DO NOT MODIFY THIS FILE   #
+# Configuration template    #
+# Customize your own config #
+# file in config.yml        #
+#############################
+
 # replace it with your path of mobileinsight-mobile
-mi_dev_path :
+mi_dev_path : /home/vagrant/mi-dev/mobileinsight-mobile
 
 # replace it with python-for-android storage dir
-p4a_path :
+p4a_path : /home/vagrant/.python-for-android
 
 app_name : MobileInsight
 
