@@ -19,7 +19,6 @@ pkg_name : net.mobileinsight.app
 
 dist_name : mi5
 
-# the old pygame bootstrap is depreciated
 bootstrap : sdl2
 
 orientation : portrait
@@ -28,7 +27,7 @@ orientation : portrait
 minsdk : 26
 
 # package requirements
-requirements : pyserial,android,kivy,mobileinsight,python3
+requirements : pyserial,kivy,android,libffi,python3,mobileinsight 
 
 # replace it with your application icon path
 icon_path : resources/icon.png
@@ -46,13 +45,14 @@ sdk_path : /home/vagrant/android-sdk
 api_level : 26
 
 # replace it with your Android NDK path
-ndk_path : android-ndk-r21b
+ndk_path : /Users/yuanjieli/Documents/android-ndk-r19b
 
 # replace it with your Android NDK version
-ndk_version : r19
+ndk_version : r19b
 
 # replace it with your desired target arch
 arch : arm64-v8a
+# arch : armeabi-v7a
 
 whitelist : config/whitelist.txt
 
