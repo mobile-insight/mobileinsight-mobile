@@ -45,9 +45,10 @@ class HomeScreen(MobileInsightScreenBase):
     plugins = []
     selectedPlugin = ""
     app_list = get_plugins_list()
-    myLayout = GridLayout(cols=2, spacing=5,
-        orientation="vertical", size_hint_y=None,
-        height=(len(app_list) / 2 + len(app_list) % 2) * Window.height / 4)
+    # myLayout = GridLayout(cols=2, spacing=5,
+    #     orientation="vertical", size_hint_y=None,
+    #     height=(len(app_list) / 2 + len(app_list) % 2) * Window.height / 4)
+    myLayout = GridLayout()
     popupScroll = ScrollView(size_hint_y=None, size=(Window.width, Window.height*.9))
     popupScroll.add_widget(myLayout)
     popup = Popup(content=popupScroll, title="Choose a plugin")
