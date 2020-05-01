@@ -17,7 +17,7 @@ import os
 import sys
 import re
 import datetime
-from . import main_utils
+import main_utils
 
 __all__ = ["PrivacyPopup", "PrivacyApp", "disagree_privacy"]
 
