@@ -21,7 +21,7 @@ import datetime
 import shutil
 import stat
 import json
-from kivy.lib.osc import oscAPI as osc
+# from kivy.lib.osc import oscAPI as osc
 from kivy.logger import Logger
 
 
@@ -83,7 +83,8 @@ def run_shell_cmd(cmd, wait=False):
         shell=True,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE)
-    res, err = p.communicate(cmd + '\n')
+    Logger.info('Running cmd: {}'.format(cmd))
+    res, err = p.communicate((cmd + '\n').encode())
 
     if wait:
         p.wait()

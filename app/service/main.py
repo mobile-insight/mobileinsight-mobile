@@ -8,7 +8,8 @@ import datetime as dt
 import signal
 from kivy.logger import Logger
 from kivy.config import ConfigParser
-from kivy.lib.osc import oscAPI as osc
+# from kivy.lib.osc import oscAPI as osc
+from oscpy.server import OSCThreadServer
 from service.control import Control, OSCConfig
 from service import mi2app_utils
 from service import GpsListener
@@ -168,7 +169,7 @@ def setup_service():
     control = Control()
     Logger.info('service: control created' + repr(control))
 
-    osc.init()
+    osc = OSCThreadServer()
     OSCID = osc.listen(port=OSCConfig.service_port)
     # def dummy_callback(msg, *args):
     #     Logger.info('service: dummy callback: ' + str(msg))
@@ -178,11 +179,10 @@ def setup_service():
 
     gps_provider = GpsListener(on_gps)
     gps_provider.start()
-
-    osc.sendMsg(OSCConfig.control_addr, dataArray=['service ready',], port=OSCConfig.app_port)
+    osc.send_message(OSCConfig.control_addr, values=['service ready',], *osc.getaddress(), port=OSCConfig.service_port)
     Logger.info('service SEND>: service ready msg sent')
     while True:
-        osc.readQueue(thread_id=OSCID)
+        # osc.readQueue(thread_id=OSCID)
         time.sleep(.5)
 
 if __name__ == "__main__":

@@ -1,7 +1,9 @@
 from kivy.logger import Logger
-from kivy.lib.osc import oscAPI as osc
+# from kivy.lib.osc import oscAPI as osc
+from oscpy.client import OSCClient
 from mobile_insight import monitor, analyzer
-from .mi2app_utils import get_cache_dir
+from oscpy.server import OSCThreadServer
+from mi2app_utils import get_cache_dir
 import os
 import threading
 import traceback
@@ -20,7 +22,9 @@ def coord_callback(event, *args):
     # send event data to event address and app port,
     # this will be received by screens' coordinator
     Logger.info('control SEND>: event msg: ' + str(event))
-    osc.sendMsg(OSCConfig.event_addr, dataArray=[str(event),], port=OSCConfig.app_port)
+    # osc.sendMsg(OSCConfig.event_addr, dataArray=[str(event),], port=OSCConfig.app_port)
+    osc = OSCThreadServer()
+    osc.send_message(OSCConfig.event_addr, values=[str(event),], *osc.getaddress(), port=OSCConfig.app_port)
 
 
 class Control(object):
@@ -96,7 +100,7 @@ class Control(object):
                 a.register_coordinator_cb(coord_callback)
                 self.analyzers[name] = a
         except AttributeError as error:
-            Logger.error('service: Analyzer class not found ' + error)
+            Logger.error('service: Analyzer class not found ' + str(error))
             Logger.error(traceback.format_exc())
         self._analyzers_ready.set()
         Logger.info('control: set analyzers: ' + str(self.analyzers))
