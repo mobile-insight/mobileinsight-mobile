@@ -1,4 +1,5 @@
 import kivy
+
 kivy.require('1.4.0')
 
 import os
@@ -18,10 +19,9 @@ from kivy.core.window import Window
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
-from kivy.uix.screenmanager import Screen
 from kivy.uix.scrollview import ScrollView
 from kivy.lang import Builder
-from main import get_plugins_list, create_folder
+from main import get_plugins_list
 import main_utils
 from main_utils import current_activity
 from . import MobileInsightScreenBase
@@ -30,7 +30,8 @@ import traceback
 Builder.load_file('screens/home.kv')
 
 LOGO_STRING = "MobileInsight " + main_utils.get_cur_version() + \
-    "\nCopyright (c) 2015-2017 MobileInsight Team"
+              "\nCopyright (c) 2015-2017 MobileInsight Team"
+
 
 class HomeScreen(MobileInsightScreenBase):
     error_log = StringProperty(LOGO_STRING)
@@ -45,11 +46,11 @@ class HomeScreen(MobileInsightScreenBase):
     plugins = []
     selectedPlugin = ""
     app_list = get_plugins_list()
-    # myLayout = GridLayout(cols=2, spacing=5,
-    #     orientation="vertical", size_hint_y=None,
-    #     height=(len(app_list) / 2 + len(app_list) % 2) * Window.height / 4)
-    myLayout = GridLayout()
-    popupScroll = ScrollView(size_hint_y=None, size=(Window.width, Window.height*.9))
+    myLayout = GridLayout(cols=2, spacing=5,
+                          orientation="vertical",
+                          size_hint_y=None,
+                          height=(len(app_list) / 2 + len(app_list) % 2) * Window.height / 4)
+    popupScroll = ScrollView(size_hint_y=None, size=(Window.width, Window.height * .9))
     popupScroll.add_widget(myLayout)
     popup = Popup(content=popupScroll, title="Choose a plugin")
 
@@ -101,12 +102,13 @@ class HomeScreen(MobileInsightScreenBase):
         self.terminal_thread = None
         bootup = True
 
-        #used to shorten long widget names in popup menu
-        shortenLabel = CoreLabel(markup = True, text_size = (Window.width/2.5, None), shorten_from = "right", font_size = 70)
-        #Making and adding widgets to popup menu
+        # used to shorten long widget names in popup menu
+        shortenLabel = CoreLabel(markup=True, text_size=(Window.width / 2.5, None), shorten_from="right", font_size=70)
+        # Making and adding widgets to popup menu
         for name in self.plugins_list:
-            widget = Button(id = name, markup = True, halign = "left", valign = "top", on_release = self.callback, background_normal = "", background_color = self.ids.run_plugin.background_color)
-            widget.text_size = (Window.width/2.25, Window.height/4)
+            widget = Button(id=name, markup=True, halign="left", valign="top", on_release=self.callback,
+                            background_normal="", background_color=self.ids.run_plugin.background_color)
+            widget.text_size = (Window.width / 2.25, Window.height / 4)
             self.myLayout.add_widget(widget)
 
             app_path = self.plugins_list[name][0]
@@ -115,17 +117,17 @@ class HomeScreen(MobileInsightScreenBase):
                     my_description = ff.read()
             else:
                 my_description = "no description."
-            #shortening long widget names and making font size
+            # shortening long widget names and making font size
             shortenedName = shortenLabel.shorten(name)
             font_size = "60"
             if Window.width < 1450:
                 font_size = "45"
-            widget.text = "[color=fffafa][size=70]"+ shortenedName + "[/size][size="+ font_size + "]\n"+ my_description+"[/size][/color]"
+            widget.text = "[color=fffafa][size=70]" + shortenedName + "[/size][size=" + font_size + "]\n" + my_description + "[/size][/color]"
 
             if bootup:
                 self.selectedPlugin = name
                 # self.ids.selectButton.text = "Select Plugin"
-                self.ids.run_plugin.text  = "Run Plugin: "+self.selectedPlugin
+                self.ids.run_plugin.text = "Run Plugin: " + self.selectedPlugin
                 bootup = False
 
         # register Broadcast Receivers.
@@ -139,20 +141,20 @@ class HomeScreen(MobileInsightScreenBase):
             launch_service = config.get("mi_general", "bstartup_service")
             if default_app_name and launch_service == "1":
                 self.start_service(default_app_name)
-                self.ids.run_plugin.text = "Stop Plugin: "+default_app_name
+                self.ids.run_plugin.text = "Stop Plugin: " + default_app_name
         except Exception as e:
             Logger.warning(traceback.format_exc())
 
     def registerBroadcastReceivers(self):
         self.brStopAck = BroadcastReceiver(self.on_broadcastStopServiceAck,
-                actions=['MobileInsight.Plugin.StopServiceAck'])
+                                           actions=['MobileInsight.Plugin.StopServiceAck'])
         self.brStopAck.start()
 
     def set_plugin(self, plugin_name):
         print("set_plugin")
         self.selectedPlugin = plugin_name
         if not self.service:
-            self.ids.run_plugin.text  = "Run Plugin: "+self.selectedPlugin
+            self.ids.run_plugin.text = "Run Plugin: " + self.selectedPlugin
 
     # @staticmethod
     # def set_plugin(plugin_name):
@@ -160,13 +162,13 @@ class HomeScreen(MobileInsightScreenBase):
     #     if not HomeScreen.service:
     #         HomeScreen.ids.run_plugin.text  = "Run Plugin: "+selectedPlugin
 
-    #Setting the text for the Select Plugin Menu button
+    # Setting the text for the Select Plugin Menu button
     def callback(self, obj):
         self.selectedPlugin = obj.id
         # self.ids.selectButton.text = "Select Button: " + obj.text[(obj.text.find("]", obj.text.find("]")+1)+1):obj.text.find("[", obj.text.find("[", obj.text.find("[")+1)+1)]
         # self.ids.selectButton.text = "Select Plugin"
         if not self.service:
-            self.ids.run_plugin.text  = "Run Plugin: "+self.selectedPlugin
+            self.ids.run_plugin.text = "Run Plugin: " + self.selectedPlugin
         self.popup.dismiss()
 
     def log_info(self, msg):
@@ -402,7 +404,7 @@ class HomeScreen(MobileInsightScreenBase):
         for item in res:
             if item.find('diag_revealer') != -1:
                 pid = item.split()[1]
-                cmd = "kill "+pid
+                cmd = "kill " + pid
                 main_utils.run_shell_cmd(cmd)
 
     # def stop_collection(self):
@@ -457,7 +459,7 @@ class HomeScreen(MobileInsightScreenBase):
             self.service.stop()
 
             self.service.start(
-                app_name + ":" + self.plugins_list[app_name][0])   # app name
+                app_name + ":" + self.plugins_list[app_name][0])  # app name
             self.default_app_name = app_name
 
             # TODO: support collecting TCPDUMP trace
@@ -515,10 +517,10 @@ class HomeScreen(MobileInsightScreenBase):
     def on_click_plugin(self, app_name):
         if self.service:
             self.stop_service()
-            self.ids.run_plugin.text = "Run Plugin: "+app_name
+            self.ids.run_plugin.text = "Run Plugin: " + app_name
         else:
             self.start_service(app_name)
-            self.ids.run_plugin.text = "Stop Plugin: "+app_name
+            self.ids.run_plugin.text = "Stop Plugin: " + app_name
 
     def _save_log(self):
         orig_basename = os.path.basename(self.__original_filename)
@@ -528,7 +530,7 @@ class HomeScreen(MobileInsightScreenBase):
             self.__log_timestamp, self.__phone_info, main_utils.get_operator_info())
         milog_absname = os.path.join(self.__logdir, milog_basename)
         main_utils.run_shell_cmd("cp %s %s" %
-                                   (self.__original_filename, milog_absname))
+                                 (self.__original_filename, milog_absname))
         # shutil.copyfile(self.__original_filename, milog_absname)
         # chmodcmd = "rm -f " + self.__original_filename
         # p = subprocess.Popen("su ", executable = main_utils.ANDROID_SHELL, shell = True, \
