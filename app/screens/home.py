@@ -8,6 +8,7 @@ import time
 import datetime
 from android import AndroidService
 from android.broadcast import BroadcastReceiver
+from android.permissions import request_permissions, Permission
 from collections import deque
 from jnius import autoclass
 from kivy.utils import platform
@@ -34,6 +35,11 @@ LOGO_STRING = "MobileInsight " + main_utils.get_cur_version() + \
 
 
 class HomeScreen(MobileInsightScreenBase):
+    # Update for sdk 21+ for storage permission
+    request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
+    # TODO: Replace it with flexible timeout
+    time.sleep(5)
+
     error_log = StringProperty(LOGO_STRING)
     default_app_name = StringProperty("")
     collecting = BooleanProperty(False)
@@ -45,9 +51,10 @@ class HomeScreen(MobileInsightScreenBase):
     logs = deque([], MAX_LINE)
     plugins = []
     selectedPlugin = ""
+
     app_list = get_plugins_list()
     myLayout = GridLayout(cols=2, spacing=5,
-                          orientation="vertical",
+                          # orientation="vertical",
                           size_hint_y=None,
                           height=(len(app_list) / 2 + len(app_list) % 2) * Window.height / 4)
     popupScroll = ScrollView(size_hint_y=None, size=(Window.width, Window.height * .9))
