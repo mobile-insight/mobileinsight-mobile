@@ -130,7 +130,7 @@ def run_apk(build_release):
         print("sign command was: \n" + sign_cmd)
         print("align command was: \n" + align_cmd)
 
-        rename_cmd = 'rename '+cfg['app_name']+'__'+cfg['arch']+'-release-unsigned-'+cfg['app_version']+'-.apk '\
+        rename_cmd = 'mv '+cfg['app_name']+'__'+cfg['arch']+'-release-unsigned-'+cfg['app_version']+'-.apk '\
                    + cfg['app_name']+'-release-unsigned-'+cfg['app_version']+'.apk '
         os.system(rename_cmd)
 
@@ -140,7 +140,7 @@ def run_apk(build_release):
         print("make_diag command was: \n" + make_diag_cmd)
         print("build command was: \n" + build_cmd)
 
-        rename_cmd = 'rename '+cfg['app_name']+'__'+cfg['arch']+'-debug-'+cfg['app_version']+'-.apk '\
+        rename_cmd = 'mv '+cfg['app_name']+'__'+cfg['arch']+'-debug-'+cfg['app_version']+'-.apk '\
                    + cfg['app_name']+'-debug-'+cfg['app_version']+'.apk '
         os.system(rename_cmd)
 
