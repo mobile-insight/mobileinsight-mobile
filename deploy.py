@@ -119,7 +119,6 @@ def run_apk(build_release):
 
         align_cmd = '{zipalign} -v 4 {p4a}/dists/{dist}/bin/{app}-{ver}-release-unsigned.apk {app}-{ver}.apk'.format(
             zipalign=zipalign_path, p4a=cfg['p4a_path'], dist=cfg['dist_name'], app=cfg['app_name'], ver=cfg['app_version'])
-
         os.system(clean_cmd)
         os.system(make_diag_cmd)
         os.system(build_cmd)
@@ -130,11 +129,20 @@ def run_apk(build_release):
         print("build command was: \n" + build_cmd)
         print("sign command was: \n" + sign_cmd)
         print("align command was: \n" + align_cmd)
+
+        rename_cmd = 'rename '+cfg['app_name']+'__'+cfg['arch']+'-release-unsigned-'+cfg['app_version']+'-.apk '\
+                   + cfg['app_name']+'-release-unsigned-'+cfg['app_version']+'.apk '
+        os.system(rename_cmd)
+
     else:
         os.system(make_diag_cmd)
         os.system(build_cmd)
         print("make_diag command was: \n" + make_diag_cmd)
         print("build command was: \n" + build_cmd)
+
+        rename_cmd = 'rename '+cfg['app_name']+'__'+cfg['arch']+'-debug-'+cfg['app_version']+'-.apk '\
+                   + cfg['app_name']+'-debug-'+cfg['app_version']+'.apk '
+        os.system(rename_cmd)
 
 
 if __name__ == '__main__':
