@@ -27,7 +27,7 @@ orientation : portrait
 minsdk : 27
 
 # package requirements
-requirements : pyserial,oscpy,kivy,android,libffi,python3,mobileinsight 
+requirements : pyserial,kivy,android,libffi,python3,mobileinsight 
 
 # replace it with your application icon path
 icon_path : resources/icon.png
