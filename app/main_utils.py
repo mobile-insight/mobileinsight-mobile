@@ -422,7 +422,7 @@ def check_security_policy():
         "supolicy --live \"allow untrusted_app_25 diag_device chr_file {open read write getattr}\";"
 
     cmd = cmd + \
-        "supolicy --live \"allow crash_dump app_data_file file {open getattr}\";"
+        "supolicy --live \"allow crash_dump app_data_file file {open getattr read write}\";"
 
 
     run_shell_cmd(cmd)
