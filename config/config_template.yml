@@ -17,7 +17,7 @@ app_version : 5.0.0
 
 pkg_name : net.mobileinsight.app
 
-dist_name : mi5
+dist_name : MobileInsight
 
 bootstrap : sdl2
 
@@ -27,7 +27,7 @@ orientation : portrait
 minsdk : 27
 
 # package requirements
-requirements : pyserial,kivy,android,libffi,python3,mobileinsight 
+requirements : pyserial,oscpy,kivy,android,libffi,python3,mobileinsight 
 
 # replace it with your application icon path
 icon_path : resources/icon.png
