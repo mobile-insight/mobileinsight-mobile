@@ -42,7 +42,6 @@ def run_dist():
         + ' --storage-dir={}'.format(cfg['p4a_path']) \
         + ' --sdk-dir={}'.format(cfg['sdk_path']) \
         + ' --android-api={}'.format(cfg['api_level']) \
-        # + ' --minsdk={}'.format(cfg['minsdk']) \
         + ' --ndk-dir={}'.format(cfg['ndk_path']) \
         + ' --arch={}'.format(cfg['arch']) \
         + ' --requirements={}'.format(cfg['requirements'])
@@ -73,7 +72,6 @@ def run_apk(build_release):
         + ' --orientation={}'.format(cfg['orientation']) \
         + ' --sdk-dir={}'.format(cfg['sdk_path']) \
         + ' --android-api={}'.format(cfg['api_level']) \
-        # + ' --minsdk={}'.format(cfg['minsdk']) \
         + ' --ndk-dir={}'.format(cfg['ndk_path']) \
         + ' --arch={}'.format(cfg['arch']) \
         + ' --whitelist={}/{}'.format(cfg['mi_dev_path'], cfg['whitelist']) \
