@@ -424,6 +424,12 @@ def check_security_policy():
     cmd = cmd + \
         "supolicy --live \"allow crash_dump app_data_file file {open getattr read write search}\";"
 
+    cmd = cmd + \
+        "supolicy --live \"allow zygote cgroup file {create}\";"
+
+    cmd = cmd + \
+        "supolicy --live \"allow crash_dump app_data_file dir {read write search}\";"
+
 
     run_shell_cmd(cmd)
 
