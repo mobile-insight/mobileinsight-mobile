@@ -2,7 +2,6 @@ from kivy.logger import Logger
 # from kivy.lib.osc import oscAPI as osc
 from oscpy.client import OSCClient
 from mobile_insight import monitor, analyzer
-from oscpy.server import OSCThreadServer
 from mi2app_utils import get_cache_dir
 import os
 import threading
@@ -23,8 +22,8 @@ def coord_callback(event, *args):
     # this will be received by screens' coordinator
     Logger.info('control SEND>: event msg: ' + str(event))
     # osc.sendMsg(OSCConfig.event_addr, dataArray=[str(event),], port=OSCConfig.app_port)
-    osc = OSCThreadServer()
-    osc.send_message(OSCConfig.event_addr, values=[str(event),], *osc.getaddress(), port=OSCConfig.app_port)
+    osc = OSCClient("127.0.0.1", OSCConfig.app_port)
+    osc.send_message(bytes(OSCConfig.event_addr, "ascii"), [str(event),])
 
 
 class Control(object):

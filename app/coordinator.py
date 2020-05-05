@@ -3,6 +3,7 @@ import threading
 from time import sleep
 # from kivy.lib.osc import oscAPI as osc
 from oscpy.server import OSCThreadServer
+from oscpy.client import OSCClient
 from kivy.utils import platform
 import traceback
 from kivy.clock import Clock
@@ -18,18 +19,17 @@ class OSCConfig:
     service_port = 3000
     app_port = 3001
     # app side oscid
-    oscid = None
+    osc_server = None
 
-# def setup_osc():
-#     osc = OSCThreadServer()
-#     OSCConfig.oscid = osc.listen(port=OSCConfig.app_port)
-#     Clock.schedule_interval(lambda *x: osc.readQueue(thread_id=OSCConfig.oscid), .5)
-#     Logger.info('coordinator: setup osc at ' + str(OSCConfig.app_port))
-#     Logger.info('coordinator: osc id: ' + OSCConfig.oscid)
+def setup_osc():
+    OSCConfig.osc_server = OSCThreadServer()
+    OSCConfig.osc_server.listen(port=OSCConfig.app_port, default=True)
+    # Clock.schedule_interval(lambda *x: osc.readQueue(thread_id=OSCConfig.oscid), .5)
+    Logger.info('coordinator: setup osc at ' + str(OSCConfig.app_port))
+    # Logger.info('coordinator: osc id: ' + OSCConfig.oscid)
 
 def stop_osc():
-    pass
-    # osc.dontListen()
+    OSCConfig.osc_server.stop()
 
 def setup_service():
     # android.start_service(title='MobileInsight',
@@ -64,29 +64,27 @@ class Coordinator(object):
         use osc to listen for data update
         Yunqi: Update using oscpy for kivy 1.11.0+
         '''
-        osc = OSCThreadServer()
-        OSCConfig.oscid = osc.listen(port=OSCConfig.app_port)
-        # Clock.schedule_interval(lambda *x: osc.readQueue(thread_id=OSCConfig.oscid), .5)
-        Logger.info('coordinator: setup osc at ' + str(OSCConfig.app_port))
-        Logger.info('coordinator: osc id: ' + OSCConfig.oscid)
+
+        setup_osc()
+        osc = OSCConfig.osc_server
 
         setup_service()
-        osc.bind(self.event_callback, OSCConfig.event_addr, sock=OSCConfig.oscid)
+        osc.bind(bytes(OSCConfig.event_addr, "ascii"), self.event_callback)
         Logger.info('coordinator: coordinator bind to ' + OSCConfig.event_addr)
-        osc.bind(self.control_callback, OSCConfig.control_addr, sock=OSCConfig.oscid)
+        osc.bind(bytes(OSCConfig.control_addr, "ascii"), self.control_callback)
         Logger.info('coordinator: coordinator bind to ' + OSCConfig.control_addr)
-        listen_thread = threading.Thread(target=self.listen_osc, args=(OSCConfig.oscid,))
-        listen_thread.start()
+        # listen_thread = threading.Thread(target=self.listen_osc, args=(OSCConfig.oscid,))
+        # listen_thread.start()
         Logger.info('coordinator: ' + 'listen thread starts')
 
     def setup_analyzers(self):
         argstr = ','.join(self._analyzers)
         self.send_control(argstr)
 
-    def listen_osc(self, oscid):
-        while True:
-            # osc.readQueue(thread_id=oscid)
-            sleep(.5)
+    # def listen_osc(self, oscid):
+    #     while True:
+    #        osc.readQueue(thread_id=oscid)
+    #        sleep(.5)
 
     def event_callback(self, message, *args):
         Logger.info('coordinator <RECV: event msg: ' + message[2])
@@ -103,8 +101,10 @@ class Coordinator(object):
             # wait for service ready event
             self._service_ready.wait()
             # Update OSC
-            osc = OSCThreadServer()
-            osc.send_message(OSCConfig.control_addr, values=[str(msg), ], *osc.getaddress(), port=OSCConfig.service_port)
+            osc = OSCClient("127.0.0.1", OSCConfig.service_port)
+            osc.send_message(bytes(OSCConfig.control_addr, "ascii"), [str(msg), ])
+            # osc = OSCThreadServer()
+            # osc.send_message(OSCConfig.control_addr, values=[str(msg), ], *osc.getaddress(), port=OSCConfig.service_port)
             Logger.info('coordinator SEND>: control msg: ' + msg)
         send_thread = threading.Thread(target=thread_target, args=(message,))
         send_thread.start()

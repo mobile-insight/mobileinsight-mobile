@@ -10,6 +10,7 @@ from kivy.logger import Logger
 from kivy.config import ConfigParser
 # from kivy.lib.osc import oscAPI as osc
 from oscpy.server import OSCThreadServer
+from oscpy.client import OSCClient
 from service.control import Control, OSCConfig
 from service import mi2app_utils
 from service import GpsListener
@@ -170,16 +171,19 @@ def setup_service():
     Logger.info('service: control created' + repr(control))
 
     osc = OSCThreadServer()
-    OSCID = osc.listen(port=OSCConfig.service_port)
+    osc.listen(port=OSCConfig.service_port, default=True)
     # def dummy_callback(msg, *args):
     #     Logger.info('service: dummy callback: ' + str(msg))
     # osc.bind(OSCID, dummy_callback, OSCConfig.control_addr)
-    osc.bind(OSCID, control.osc_callback, OSCConfig.control_addr)
-    Logger.info('service: osc setup, id: ' + OSCID)
+    osc.bind(bytes(OSCConfig.control_addr, "ascii"), control.osc_callback)
+    # Logger.info('service: osc setup, id: ' + OSCID)
+    Logger.info('service: osc setup')
 
     gps_provider = GpsListener(on_gps)
     gps_provider.start()
-    osc.send_message(OSCConfig.control_addr, values=['service ready',], *osc.getaddress(), port=OSCConfig.service_port)
+
+    osc_client = OSCClient("127.0.0.1", OSCConfig.service_port)
+    osc_client.send_message(bytes(OSCConfig.control_addr, "ascii"), ['service ready',])
     Logger.info('service SEND>: service ready msg sent')
     while True:
         # osc.readQueue(thread_id=OSCID)
