@@ -36,7 +36,10 @@ LOGO_STRING = "MobileInsight " + main_utils.get_cur_version() + \
 
 class HomeScreen(MobileInsightScreenBase):
     # Update for sdk 21+ for storage permission
-    request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
+    request_permissions([Permission.READ_EXTERNAL_STORAGE,
+        Permission.WRITE_EXTERNAL_STORAGE,
+        Permission.ACCESS_FINE_LOCATION,
+        Permission.ACCESS_COARSE_LOCATION])
     # TODO: Replace it with flexible timeout
     time.sleep(5)
 
