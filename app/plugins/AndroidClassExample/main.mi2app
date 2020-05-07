@@ -48,7 +48,7 @@ class LogcatMonitor(Analyzer):
     def run(self):
         while True:
             try:
-                lines = util.run_shell_cmd("logcat --pid %s -d" % self.pid, True).split('\n')
+                lines = util.run_shell_cmd("logcat --pid %s -d" % self.pid, True).decode('utf-8').split('\n')
                 for line in lines[1:]:
                     self.log_info(line)
             except:

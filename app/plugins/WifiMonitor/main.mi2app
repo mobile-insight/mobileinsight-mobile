@@ -67,7 +67,7 @@ class WifiMonitor(Analyzer):
             # try:
             with open(self.wifi_abs_log, 'a') as write_log:
                 if plugin_config["wifi_task"] == "BSS Info":
-                    lines = util.run_shell_cmd("logcat -v usec -s %s -d" % self.proc_name, True).split('\n')
+                    lines = util.run_shell_cmd("logcat -v usec -s %s -d" % self.proc_name, True).decode('utf-8').split('\n')
                     util.run_shell_cmd("logcat -c")
                     for line in lines[1:]:
                         if 'wlan0: BSS: Add' in line:
@@ -86,7 +86,7 @@ class WifiMonitor(Analyzer):
                             write_log.write(line + '\n')
 
                 else:
-                    lines = util.run_shell_cmd("logcat -v usec,epoch -s %s -d" % self.proc_name, True).split('\n')
+                    lines = util.run_shell_cmd("logcat -v usec,epoch -s %s -d" % self.proc_name, True).decode('utf-8').split('\n')
                     util.run_shell_cmd("logcat -c")
                     t1 = t2 = t3 = t4 = 0.
                     for line in lines[1:]:

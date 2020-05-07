@@ -407,7 +407,7 @@ class HomeScreen(MobileInsightScreenBase):
                 no_error = False
 
     def stop_collection(self):
-        res = main_utils.run_shell_cmd("ps").split('\n')
+        res = main_utils.run_shell_cmd("ps").decode('utf-8').split('\n')
         for item in res:
             if item.find('diag_revealer') != -1:
                 pid = item.split()[1]

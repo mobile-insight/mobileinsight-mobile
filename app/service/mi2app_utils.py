@@ -72,7 +72,7 @@ def get_phone_info():
     res = run_shell_cmd(cmd)
     if not res:
         return get_device_sn() + '_null-null'
-    res = res.split('\n')
+    res = res.decode('utf-8').split('\n')
     model = res[0].replace(" ", "")
     manufacturer = res[1].replace(" ", "")
     phone_info = get_device_sn() + '_' + manufacturer + '-' + model
@@ -87,19 +87,19 @@ def get_operator_info():
 def get_device_id():
     cmd = "service call iphonesubinfo 1"
     out = run_shell_cmd(cmd)
-    tup = re.findall("\'.+\'", out)
-    tupnum = re.findall("\d+", "".join(tup))
-    deviceId = "".join(tupnum)
+    tup = re.findall(b"\'.+\'", out)
+    tupnum = re.findall(b"\d+", b"".join(tup))
+    deviceId = b"".join(tupnum)
     return hashlib.md5(deviceId).hexdigest()
 
 
 def get_device_sn():
     cmd = "getprop ro.serialno"
     out = run_shell_cmd(cmd)
-    if out != "":
+    if out != b"":
         deviceSn = hashlib.md5(out).hexdigest()
     else:
-        deviceSn = hashlib.md5("FFFFFFFF").hexdigest()
+        deviceSn = hashlib.md5(b"FFFFFFFF").hexdigest()
     return deviceSn
 
 

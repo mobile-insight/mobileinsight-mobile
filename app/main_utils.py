@@ -295,7 +295,7 @@ def get_operator_info():
 
 def get_device_id():
     cmd = "service call iphonesubinfo 1"
-    out = run_shell_cmd(cmd)
+    out = run_shell_cmd(cmd).decode('utf-8')
     tup = re.findall("\'.+\'", out)
     tupnum = re.findall("\d+", "".join(tup))
     deviceId = "".join(tupnum)
