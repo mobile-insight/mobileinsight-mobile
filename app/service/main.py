@@ -15,11 +15,7 @@ from service.control import Control, OSCConfig
 from service import mi2app_utils
 from service import GpsListener
 import kivy
-import importlib
 kivy.require('1.4.0')
-
-importlib.reload(sys)
-sys.setdefaultencoding('utf8')
 
 
 def receive_signal(signum, stack):
