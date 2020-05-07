@@ -19,7 +19,7 @@ from service import mi2app_utils as util
 import datetime
 import itertools
 import logging
-import mimetools
+import email.generator
 import mimetypes
 import os
 import shutil
@@ -79,7 +79,7 @@ class MultiPartForm(object):
     def __init__(self):
         self.form_fields = []
         self.files = []
-        self.boundary = mimetools.choose_boundary()
+        self.boundary = email.generator._make_boundary()
         return
 
     def get_content_type(self):
