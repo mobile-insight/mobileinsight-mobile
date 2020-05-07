@@ -13,7 +13,6 @@ import os
 import sys
 import time
 import datetime
-import commands
 import traceback
 import subprocess
 from jnius import autoclass, cast
