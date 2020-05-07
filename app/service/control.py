@@ -2,7 +2,7 @@ from kivy.logger import Logger
 # from kivy.lib.osc import oscAPI as osc
 from oscpy.client import OSCClient
 from mobile_insight import monitor, analyzer
-from mi2app_utils import get_cache_dir
+from service.mi2app_utils import get_cache_dir
 import os
 import threading
 import traceback
