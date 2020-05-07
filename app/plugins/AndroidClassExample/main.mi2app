@@ -39,7 +39,7 @@ class LogcatMonitor(Analyzer):
         out = proc.communicate()
 
         try:
-            self.pid = str(out[0].split('\n')[0]).split()[1]
+            self.pid = str(out[0].decode('utf-8').split('\n')[0]).split()[1]
             self.log_warning("_get_thread_pid: self.pid = %s" % self.pid)
         except:
             self.log_warning("Exception when getting %s threads" % proc_name)
