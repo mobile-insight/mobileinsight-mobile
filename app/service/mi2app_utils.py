@@ -33,13 +33,15 @@ telephonyManager = pyService.getSystemService(Context.TELEPHONY_SERVICE)
 locationManager = pyService.getSystemService(Context.LOCATION_SERVICE)
 
 def run_shell_cmd(cmd, wait=False):
+    if isinstance(cmd, str):
+        cmd = cmd.encode()
     p = sp.Popen(
         "su",
         executable=ANDROID_SHELL,
         shell=True,
         stdin=sp.PIPE,
         stdout=sp.PIPE)
-    res, err = p.communicate(cmd + '\n')
+    res, err = p.communicate(cmd + b'\n')
     if wait:
         p.wait()
         return res
