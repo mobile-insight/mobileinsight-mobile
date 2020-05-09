@@ -1,7 +1,9 @@
 import kivy
+
 kivy.require('1.4.0')
 
 import android
+from android.permissions import request_permissions, Permission, check_permission
 from jnius import autoclass, cast
 from kivy.app import App
 from kivy.logger import Logger
@@ -10,7 +12,7 @@ from kivy.uix.image import Image
 from kivy.config import ConfigParser, Config
 from kivy.core.window import Window
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty,NumericProperty,StringProperty,ListProperty
+from kivy.properties import ObjectProperty, NumericProperty, StringProperty, ListProperty
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager
 from kivy.utils import platform
@@ -68,8 +70,8 @@ Builder.load_string('''
 Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
 
-def create_folder():
 
+def create_folder():
     cmd = ""
 
     mobileinsight_path = main_utils.get_mobileinsight_path()
@@ -86,7 +88,6 @@ def create_folder():
     if not os.path.exists(mobileinsight_path):
         cmd = cmd + "mkdir " + mobileinsight_path + "; "
         cmd = cmd + "chmod -R 755 " + mobileinsight_path + "; "
-
 
     log_path = main_utils.get_mobileinsight_log_path()
     if not os.path.exists(log_path):
@@ -134,10 +135,24 @@ def create_folder():
     return True
 
 
+PERMISSION = [Permission.READ_EXTERNAL_STORAGE,
+              Permission.WRITE_EXTERNAL_STORAGE,
+              Permission.ACCESS_FINE_LOCATION,
+              Permission.ACCESS_COARSE_LOCATION]
+
+
 def get_plugins_list():
     '''
     Load plugin lists, including both built-in and 3rd-party plugins
     '''
+    # Update for sdk 21+ for storage permission
+
+    if not check_permission(Permission.ACCESS_COARSE_LOCATION):
+        ret = request_permissions(PERMISSION)
+        Logger.info("python:request_permissions %s" % ret)
+
+    while not check_permission(Permission.ACCESS_COARSE_LOCATION):
+        Logger.info("Waiting for permissions")
 
     ret = {}  # app_name->(path,with_UI)
 
@@ -172,6 +187,7 @@ def get_plugins_list():
 
     return ret
 
+
 class ConfirmPopup(BoxLayout):
     text = StringProperty()
 
@@ -182,6 +198,7 @@ class ConfirmPopup(BoxLayout):
     def on_answer(self, *args):
         Logger.error("WTF")
         pass
+
 
 class MobileInsightApp(App):
     theme_cls = ThemeManager()
@@ -207,7 +224,7 @@ class MobileInsightApp(App):
             Logger.error("main: SDcard is unavailable. Please check.")
         main_utils.init_libs()
         main_utils.check_security_policy()
-        COORDINATOR.start() # FIXME: DEADLOCK HERE!!!
+        COORDINATOR.start()  # FIXME: DEADLOCK HERE!!!
 
     def __del__(self):
         Logger.error("__del__")
@@ -246,23 +263,23 @@ class MobileInsightApp(App):
                             result = result + '{"type": "title","title": ""},'
                         elif tmp[index]['type'] == 'options':
                             default_val[tmp[index]['key']
-                                        ] = tmp[index]['default']
+                            ] = tmp[index]['default']
                             result = result + '{"type": "' + tmp[index]['type'] \
-                                + '","title":"' + tmp[index]['title'] \
-                                + '","desc":"' + tmp[index]['desc'] \
-                                + '","section":"' + APP_NAME \
-                                + '","key":"' + tmp[index]['key'] \
-                                + '","options":' + json.dumps(tmp[index]['options']) \
-                                + '},'
+                                     + '","title":"' + tmp[index]['title'] \
+                                     + '","desc":"' + tmp[index]['desc'] \
+                                     + '","section":"' + APP_NAME \
+                                     + '","key":"' + tmp[index]['key'] \
+                                     + '","options":' + json.dumps(tmp[index]['options']) \
+                                     + '},'
                         else:
                             default_val[tmp[index]['key']
-                                        ] = tmp[index]['default']
+                            ] = tmp[index]['default']
                             result = result + '{"type": "' + tmp[index]['type'] \
-                                + '","title":"' + tmp[index]['title'] \
-                                + '","desc":"' + tmp[index]['desc'] \
-                                + '","section":"' + APP_NAME \
-                                + '","key":"' + tmp[index]['key'] \
-                                + '"},'
+                                     + '","title":"' + tmp[index]['title'] \
+                                     + '","desc":"' + tmp[index]['desc'] \
+                                     + '","section":"' + APP_NAME \
+                                     + '","key":"' + tmp[index]['key'] \
+                                     + '"},'
                     result = result[0:-1] + "]"
 
                     # Update the default value and setting menu
@@ -302,7 +319,7 @@ class MobileInsightApp(App):
                             pass
                         elif 'default' in tmp[index]:
                             default_val[tmp[index]['key']
-                                        ] = tmp[index]['default']
+                            ] = tmp[index]['default']
 
                     # Update the default value and setting menu
                     config.setdefaults(APP_NAME, default_val)
@@ -331,7 +348,7 @@ class MobileInsightApp(App):
         self.root.ids.scr_mngr.switch_to(self.screens[0])
 
     def go_screen(self, idx):
-        if self.index ==  idx:
+        if self.index == idx:
             return
         self.index = idx
         self.root.ids.scr_mngr.switch_to(self.load_screen(idx), direction='left')
@@ -431,7 +448,6 @@ class MobileInsightApp(App):
         except Exception as e:
             Logger.exception(traceback.format_exc())
 
-
     def on_start(self):
         # android.stop_service() # Kill zombine service from previous app instances
 
@@ -461,12 +477,14 @@ class MobileInsightApp(App):
         Logger.error("on_stop")
         COORDINATOR.stop()
 
+
 if __name__ == "__main__":
     try:
         MobileInsightApp().run()
         Logger.error("after run?")
     except Exception as e:
         from . import crash_app
+
         Logger.exception(traceback.format_exc())
         crash_app.CrashApp().run()
     finally:
