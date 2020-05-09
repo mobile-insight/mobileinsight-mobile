@@ -199,7 +199,7 @@ if __name__ == '__main__':
                 os.path.join(
                     cfg['p4a_path'],
                     'dists',
-                    cfg['dist_name']))
+                    cfg['dist_name']+"*"))
             os.system(
                 'rm -rf ' +
                 os.path.join(
