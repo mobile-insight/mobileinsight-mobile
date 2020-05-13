@@ -6,6 +6,7 @@ Define utility variables and functions for apps.
 import jnius
 from jnius import autoclass, cast
 import android
+from android.permissions import request_permissions, Permission, check_permission
 
 # FIXME(likayo): subprocess module in Python 2.7 is not thread-safe. Use
 # subprocess32 instead.
@@ -77,6 +78,7 @@ def is_rooted():
 
 
 def run_shell_cmd(cmd, wait=False):
+
     p = subprocess.Popen(
         "su",
         executable=ANDROID_SHELL,
@@ -453,3 +455,118 @@ def check_diag_mode():
             return False
         else:
             return True
+
+
+def create_folder():
+    cmd = ""
+
+    mobileinsight_path = get_mobileinsight_path()
+    if not mobileinsight_path:
+        return False
+
+    try:
+        legacy_mobileinsight_path = get_legacy_mobileinsight_path()
+        cmd = cmd + "mv " + legacy_mobileinsight_path + " " + mobileinsight_path + "; "
+        cmd = cmd + "mv " + legacy_mobileinsight_path + "/apps/ " + mobileinsight_path + "/plugins/; "
+    except:
+        pass
+
+    if not os.path.exists(mobileinsight_path):
+        cmd = cmd + "mkdir " + mobileinsight_path + "; "
+        cmd = cmd + "chmod -R 755 " + mobileinsight_path + "; "
+
+    log_path = get_mobileinsight_log_path()
+    if not os.path.exists(log_path):
+        cmd = cmd + "mkdir " + log_path + "; "
+        cmd = cmd + "chmod -R 755 " + log_path + "; "
+
+    analysis_path = get_mobileinsight_analysis_path()
+    if not os.path.exists(analysis_path):
+        cmd = cmd + "mkdir " + analysis_path + "; "
+        cmd = cmd + "chmod -R 755 " + analysis_path + "; "
+
+    cfg_path = get_mobileinsight_cfg_path()
+    if not os.path.exists(analysis_path):
+        cmd = cmd + "mkdir " + cfg_path + "; "
+        cmd = cmd + "chmod -R 755 " + cfg_path + "; "
+
+    db_path = get_mobileinsight_db_path()
+    if not os.path.exists(db_path):
+        cmd = cmd + "mkdir " + db_path + "; "
+        cmd = cmd + "chmod -R 755 " + db_path + "; "
+
+    plugin_path = get_mobileinsight_plugin_path()
+    if not os.path.exists(plugin_path):
+        cmd = cmd + "mkdir " + plugin_path + "; "
+        cmd = cmd + "chmod -R 755 " + plugin_path + "; "
+
+    log_decoded_path = get_mobileinsight_log_decoded_path()
+    if not os.path.exists(log_decoded_path):
+        cmd = cmd + "mkdir " + log_decoded_path + "; "
+        cmd = cmd + "chmod -R 755 " + log_decoded_path + "; "
+
+    log_uploaded_path = get_mobileinsight_log_uploaded_path()
+    if not os.path.exists(log_uploaded_path):
+        cmd = cmd + "mkdir " + log_uploaded_path + "; "
+        cmd = cmd + "chmod -R 755 " + log_uploaded_path + "; "
+
+    crash_log_path = get_mobileinsight_crash_log_path()
+    if not os.path.exists(crash_log_path):
+        cmd = cmd + "mkdir " + crash_log_path + "; "
+        cmd = cmd + "chmod -R 755 " + crash_log_path + "; "
+
+    # cmd = cmd + "chmod -R 755 "+mobileinsight_path+"; "
+    Logger.info('main: create folder cmd: ' + cmd)
+    run_shell_cmd(cmd)
+    return True
+
+
+def get_plugins_list():
+    '''
+    Load plugin lists, including both built-in and 3rd-party plugins
+    '''
+    # Update for sdk 21+ for storage permission
+    PERMISSION = [Permission.READ_EXTERNAL_STORAGE,
+                  Permission.WRITE_EXTERNAL_STORAGE,
+                  Permission.ACCESS_FINE_LOCATION,
+                  Permission.ACCESS_COARSE_LOCATION]
+    if not check_permission(Permission.ACCESS_COARSE_LOCATION):
+        ret = request_permissions(PERMISSION)
+        Logger.info("python:request_permissions %s" % ret)
+
+    while not check_permission(Permission.ACCESS_COARSE_LOCATION):
+        Logger.info("Waiting for permissions")
+
+    ret = {}  # app_name->(path,with_UI)
+
+    APP_DIR = os.path.join(
+        str(current_activity.getFilesDir().getAbsolutePath()), "app/plugins")
+    l = os.listdir(APP_DIR)
+    for f in l:
+        if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+            # ret.append(f)
+            ret[f] = (os.path.join(APP_DIR, f), False)
+
+    # Yuanjie: support alternative path for users to customize their own plugin
+    APP_DIR = get_mobileinsight_plugin_path()
+
+    if os.path.exists(APP_DIR):
+        l = os.listdir(APP_DIR)
+        for f in l:
+            if os.path.exists(os.path.join(APP_DIR, f, "main_ui.mi2app")):
+                if f in ret:
+                    tmp_name = f + " (plugin)"
+                else:
+                    tmp_name = f
+                ret[tmp_name] = (os.path.join(APP_DIR, f), True)
+            elif os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+                if f in ret:
+                    tmp_name = f + " (plugin)"
+                else:
+                    tmp_name = f
+                ret[tmp_name] = (os.path.join(APP_DIR, f), False)
+    else:  # create directory for user-customized apps
+        create_folder()
+
+    return ret
+

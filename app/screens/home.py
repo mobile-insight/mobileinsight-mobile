@@ -21,9 +21,9 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
 from kivy.uix.scrollview import ScrollView
 from kivy.lang import Builder
-from main import get_plugins_list
+# from main import get_plugins_list
 import main_utils
-from main_utils import current_activity
+from main_utils import current_activity, get_plugins_list
 from . import MobileInsightScreenBase
 import traceback
 
@@ -48,15 +48,6 @@ class HomeScreen(MobileInsightScreenBase):
     plugins = []
     selectedPlugin = ""
 
-    app_list = get_plugins_list()
-    myLayout = GridLayout(cols=2, spacing=5,
-                          # orientation="vertical",
-                          size_hint_y=None,
-                          height=(len(app_list) / 2 + len(app_list) % 2) * Window.height / 4)
-    popupScroll = ScrollView(size_hint_y=None, size=(Window.width, Window.height * .9))
-    popupScroll.add_widget(myLayout)
-    popup = Popup(content=popupScroll, title="Choose a plugin")
-
     def __init__(self, **kw):
         """
         Initialization function. We will do the following task (in order):
@@ -74,7 +65,14 @@ class HomeScreen(MobileInsightScreenBase):
         super(HomeScreen, self).__init__(**kw)
 
         self.log_viewer = None
-
+        self.app_list = get_plugins_list()
+        self.myLayout = GridLayout(cols=2, spacing=5,
+                              # orientation="vertical",
+                              size_hint_y=None,
+                              height=(len(self.app_list) / 2 + len(self.app_list) % 2) * Window.height / 4)
+        self.popupScroll = ScrollView(size_hint_y=None, size=(Window.width, Window.height * .9))
+        self.popupScroll.add_widget(self.myLayout)
+        self.popup = Popup(content=self.popupScroll, title="Choose a plugin")
         # if not main_utils.is_rooted():
         #     # self.ids.log_viewer.disabled = False
         #     # self.ids.run_plugin.disabled = False

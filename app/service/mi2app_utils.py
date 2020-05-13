@@ -12,6 +12,7 @@ import re
 import jnius
 import hashlib
 from jnius import autoclass, cast, PythonJavaClass, java_method
+from kivy.logger import Logger
 
 ANDROID_SHELL = "/system/bin/sh"
 
@@ -33,6 +34,7 @@ telephonyManager = pyService.getSystemService(Context.TELEPHONY_SERVICE)
 locationManager = pyService.getSystemService(Context.LOCATION_SERVICE)
 
 def run_shell_cmd(cmd, wait=False):
+
     if isinstance(cmd, str):
         cmd = cmd.encode()
     p = sp.Popen(
@@ -41,6 +43,7 @@ def run_shell_cmd(cmd, wait=False):
         shell=True,
         stdin=sp.PIPE,
         stdout=sp.PIPE)
+    Logger.info('mi2app/Running cmd: {}'.format(cmd))
     res, err = p.communicate(cmd + b'\n')
     if wait:
         p.wait()

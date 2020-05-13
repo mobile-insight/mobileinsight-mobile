@@ -3,7 +3,6 @@ import kivy
 kivy.require('1.4.0')
 
 import android
-from android.permissions import request_permissions, Permission, check_permission
 from jnius import autoclass, cast
 from kivy.app import App
 from kivy.logger import Logger
@@ -21,9 +20,11 @@ from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
 
 import main_utils
-from main_utils import current_activity
+from main_utils import current_activity, get_plugins_list, create_folder
 import screens
-from coordinator import COORDINATOR
+
+Logger.info("Import Screens")
+
 import datetime
 import functools
 import jnius
@@ -34,7 +35,7 @@ import sys
 import time
 import traceback
 
-sys.path.append('/vagrant/mi-dev/mobileinsight-mobile/app/kivymd')
+# sys.path.append('/vagrant/mi-dev/mobileinsight-mobile/app/kivymd')
 from kivymd.button import MDIconButton
 from kivymd.date_picker import MDDatePicker
 from kivymd.dialog import MDDialog
@@ -50,6 +51,10 @@ from kivymd.time_picker import MDTimePicker
 # not working
 # SERVICE_DIR = os.path.join(os.getcwd(), 'service')
 # sys.path.append(SERVICE_DIR)
+Logger.info("Import Coordinator")
+from coordinator import COORDINATOR
+
+Logger.info("Finish Import")
 
 Builder.load_string('''
 <ConfirmPopup>:
@@ -65,127 +70,14 @@ Builder.load_string('''
         background_color: 0.1,0.65,0.88,1
         color: 1,1,1,1
 ''')
+Logger.info("Finish Builder")
 
 # Load main UI
 Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
 
+Logger.info("Loading UI")
 
-def create_folder():
-    cmd = ""
-
-    mobileinsight_path = main_utils.get_mobileinsight_path()
-    if not mobileinsight_path:
-        return False
-
-    try:
-        legacy_mobileinsight_path = main_utils.get_legacy_mobileinsight_path()
-        cmd = cmd + "mv " + legacy_mobileinsight_path + " " + mobileinsight_path + "; "
-        cmd = cmd + "mv " + legacy_mobileinsight_path + "/apps/ " + mobileinsight_path + "/plugins/; "
-    except:
-        pass
-
-    if not os.path.exists(mobileinsight_path):
-        cmd = cmd + "mkdir " + mobileinsight_path + "; "
-        cmd = cmd + "chmod -R 755 " + mobileinsight_path + "; "
-
-    log_path = main_utils.get_mobileinsight_log_path()
-    if not os.path.exists(log_path):
-        cmd = cmd + "mkdir " + log_path + "; "
-        cmd = cmd + "chmod -R 755 " + log_path + "; "
-
-    analysis_path = main_utils.get_mobileinsight_analysis_path()
-    if not os.path.exists(analysis_path):
-        cmd = cmd + "mkdir " + analysis_path + "; "
-        cmd = cmd + "chmod -R 755 " + analysis_path + "; "
-
-    cfg_path = main_utils.get_mobileinsight_cfg_path()
-    if not os.path.exists(analysis_path):
-        cmd = cmd + "mkdir " + cfg_path + "; "
-        cmd = cmd + "chmod -R 755 " + cfg_path + "; "
-
-    db_path = main_utils.get_mobileinsight_db_path()
-    if not os.path.exists(db_path):
-        cmd = cmd + "mkdir " + db_path + "; "
-        cmd = cmd + "chmod -R 755 " + db_path + "; "
-
-    plugin_path = main_utils.get_mobileinsight_plugin_path()
-    if not os.path.exists(plugin_path):
-        cmd = cmd + "mkdir " + plugin_path + "; "
-        cmd = cmd + "chmod -R 755 " + plugin_path + "; "
-
-    log_decoded_path = main_utils.get_mobileinsight_log_decoded_path()
-    if not os.path.exists(log_decoded_path):
-        cmd = cmd + "mkdir " + log_decoded_path + "; "
-        cmd = cmd + "chmod -R 755 " + log_decoded_path + "; "
-
-    log_uploaded_path = main_utils.get_mobileinsight_log_uploaded_path()
-    if not os.path.exists(log_uploaded_path):
-        cmd = cmd + "mkdir " + log_uploaded_path + "; "
-        cmd = cmd + "chmod -R 755 " + log_uploaded_path + "; "
-
-    crash_log_path = main_utils.get_mobileinsight_crash_log_path()
-    if not os.path.exists(crash_log_path):
-        cmd = cmd + "mkdir " + crash_log_path + "; "
-        cmd = cmd + "chmod -R 755 " + crash_log_path + "; "
-
-    # cmd = cmd + "chmod -R 755 "+mobileinsight_path+"; "
-    Logger.info('main: create folder cmd: ' + cmd)
-    main_utils.run_shell_cmd(cmd)
-    return True
-
-
-PERMISSION = [Permission.READ_EXTERNAL_STORAGE,
-              Permission.WRITE_EXTERNAL_STORAGE,
-              Permission.ACCESS_FINE_LOCATION,
-              Permission.ACCESS_COARSE_LOCATION]
-
-
-def get_plugins_list():
-    '''
-    Load plugin lists, including both built-in and 3rd-party plugins
-    '''
-    # Update for sdk 21+ for storage permission
-
-    if not check_permission(Permission.ACCESS_COARSE_LOCATION):
-        ret = request_permissions(PERMISSION)
-        Logger.info("python:request_permissions %s" % ret)
-
-    while not check_permission(Permission.ACCESS_COARSE_LOCATION):
-        Logger.info("Waiting for permissions")
-
-    ret = {}  # app_name->(path,with_UI)
-
-    APP_DIR = os.path.join(
-        str(current_activity.getFilesDir().getAbsolutePath()), "app/plugins")
-    l = os.listdir(APP_DIR)
-    for f in l:
-        if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
-            # ret.append(f)
-            ret[f] = (os.path.join(APP_DIR, f), False)
-
-    # Yuanjie: support alternative path for users to customize their own plugin
-    APP_DIR = main_utils.get_mobileinsight_plugin_path()
-
-    if os.path.exists(APP_DIR):
-        l = os.listdir(APP_DIR)
-        for f in l:
-            if os.path.exists(os.path.join(APP_DIR, f, "main_ui.mi2app")):
-                if f in ret:
-                    tmp_name = f + " (plugin)"
-                else:
-                    tmp_name = f
-                ret[tmp_name] = (os.path.join(APP_DIR, f), True)
-            elif os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
-                if f in ret:
-                    tmp_name = f + " (plugin)"
-                else:
-                    tmp_name = f
-                ret[tmp_name] = (os.path.join(APP_DIR, f), False)
-    else:  # create directory for user-customized apps
-        create_folder()
-
-    return ret
 
 
 class ConfirmPopup(BoxLayout):
@@ -201,6 +93,7 @@ class ConfirmPopup(BoxLayout):
 
 
 class MobileInsightApp(App):
+    Logger.info("build MI Class")
     theme_cls = ThemeManager()
     previous_date = ObjectProperty()
     title = "MobileInsight"
@@ -210,8 +103,10 @@ class MobileInsightApp(App):
     screen_names = ListProperty([])
 
     use_kivy_settings = False
+    Logger.info("Finish build MI Class")
 
     def __init__(self, **kwargs):
+        Logger.info("Initializing APP")
         super(MobileInsightApp, self).__init__(**kwargs)
         self.title = 'MobileInsight'
         self.screens = {}
@@ -328,6 +223,7 @@ class MobileInsightApp(App):
         # Force to initialize all configs in .mobileinsight.ini
         # This prevents missing config due to existence of older-version .mobileinsight.ini
         # Work-around: force on_config_change, which would update config.ini
+        Logger.info("Building APP")
         config = self.load_config()
         val = int(config.get('mi_general', 'bcheck_update'))
         config.set('mi_general', 'bcheck_update', int(not val))
@@ -478,14 +374,12 @@ class MobileInsightApp(App):
         COORDINATOR.stop()
 
 
-if __name__ == "__main__":
-    try:
-        MobileInsightApp().run()
-        Logger.error("after run?")
-    except Exception as e:
-        from . import crash_app
+time.sleep(0.5)
 
-        Logger.exception(traceback.format_exc())
-        crash_app.CrashApp().run()
-    finally:
-        main_utils.detach_thread()
+Logger.info("Begin Main")
+
+MobileInsightApp().run()
+# if __name__ == "__main__":
+#     Logger.info("Running Main")
+#     MobileInsightApp().run()
+#     Logger.error("after run?")
