@@ -194,9 +194,9 @@ class LogViewerScreen(MobileInsightScreenBase):
             title='Open file',
             content=Open_Popup(
                 load=self.load),
-            background_normal='',
+            #background_normal='',
             background_color=(0/255.0, 161/255.0, 247/255.0, 1),
-            color=(0/255.0, 161/255.0, 247/255.0, 1),
+            #color=(0/255.0, 161/255.0, 247/255.0, 1),
             auto_dismiss=True)
         # self.open_popup.bind(on_dismiss=self.exit_open_popup)
         self.open_popup.open()
