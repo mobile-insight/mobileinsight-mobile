@@ -356,8 +356,14 @@ time.sleep(0.5)
 
 Logger.info("Begin Main")
 
-MobileInsightApp().run()
-# if __name__ == "__main__":
-#     Logger.info("Running Main")
-#     MobileInsightApp().run()
-#     Logger.error("after run?")
+if __name__ == "__main__":
+    try:
+        MobileInsightApp().run()
+        Logger.error("MobileInsight Error. Existing")
+    except Exception as e:
+        from . import crash_app
+
+        Logger.exception(traceback.format_exc())
+        crash_app.CrashApp().run()
+    finally:
+        pass
