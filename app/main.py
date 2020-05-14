@@ -2,21 +2,13 @@ import kivy
 
 kivy.require('1.4.0')
 
-import android
-from jnius import autoclass, cast
+from jnius import autoclass
 from kivy.app import App
 from kivy.logger import Logger
-from kivy.metrics import dp
-from kivy.uix.image import Image
 from kivy.config import ConfigParser, Config
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, NumericProperty, StringProperty, ListProperty
-from kivy.uix.popup import Popup
-from kivy.uix.screenmanager import ScreenManager
-from kivy.utils import platform
-from kivy.uix.label import Label
-from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
 
 import main_utils
@@ -25,26 +17,13 @@ import screens
 
 Logger.info("Import Screens")
 
-import datetime
-import functools
-import jnius
 import json
 import os
-import re
-import sys
 import time
 import traceback
 
 # sys.path.append('/vagrant/mi-dev/mobileinsight-mobile/app/kivymd')
-from kivymd.button import MDIconButton
 from kivymd.date_picker import MDDatePicker
-from kivymd.dialog import MDDialog
-from kivymd.label import MDLabel
-from kivymd.list import ILeftBody, ILeftBodyTouch, IRightBodyTouch, BaseListItem
-from kivymd.material_resources import DEVICE_TYPE
-from kivymd.navigationdrawer import MDNavigationDrawer, NavigationDrawerHeaderBase
-from kivymd.selectioncontrols import MDCheckbox
-from kivymd.snackbar import Snackbar
 from kivymd.theming import ThemeManager
 from kivymd.time_picker import MDTimePicker
 
@@ -77,7 +56,6 @@ Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
 
 Logger.info("Loading UI")
-
 
 
 class ConfirmPopup(BoxLayout):

@@ -1,4 +1,5 @@
 import kivy
+
 kivy.require('1.0.9')
 
 from kivy.lang import Builder
@@ -8,13 +9,10 @@ from kivy.uix.popup import Popup
 from kivy.properties import *
 from .kivymd.theming import ThemeManager
 
-import http.client
 import urllib.request, urllib.parse, urllib.error
 import urllib.request, urllib.error, urllib.parse
-import subprocess
 import os
 import sys
-import re
 import datetime
 from . import main_utils
 
@@ -135,9 +133,9 @@ class CrashApp(App):
         if answer == "yes":
             phone_info = main_utils.get_phone_info()
             log_name = "crash_report_" \
-                + phone_info + '_' \
-                + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') \
-                + '.txt'
+                       + phone_info + '_' \
+                       + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') \
+                       + '.txt'
             log_name = os.path.join(
                 main_utils.get_mobileinsight_crash_log_path(), log_name)
             main_utils.run_shell_cmd(

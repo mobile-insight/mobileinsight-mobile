@@ -1,14 +1,10 @@
-import android
 import threading
-from time import sleep
+
+import android
+from kivy.logger import Logger
+from oscpy.client import OSCClient
 # from kivy.lib.osc import oscAPI as osc
 from oscpy.server import OSCThreadServer
-from oscpy.client import OSCClient
-from kivy.utils import platform
-import traceback
-from kivy.clock import Clock
-from kivy.logger import Logger
-
 
 
 class OSCConfig:

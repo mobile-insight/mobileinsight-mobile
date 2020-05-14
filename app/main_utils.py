@@ -3,28 +3,16 @@ main_utils.py
 
 Define utility variables and functions for apps.
 """
-import jnius
-from jnius import autoclass, cast
-import android
-from android.permissions import request_permissions, Permission, check_permission
-
 # FIXME(likayo): subprocess module in Python 2.7 is not thread-safe. Use
 # subprocess32 instead.
-import functools
 import os
-import shlex
-import sys
-import subprocess
-import time
-import traceback
 import re
-import datetime
-import shutil
-import stat
-import json
-# from kivy.lib.osc import oscAPI as osc
-from kivy.logger import Logger
+import subprocess
 
+import jnius
+from android.permissions import request_permissions, Permission, check_permission
+from jnius import autoclass, cast
+from kivy.logger import Logger
 
 current_activity = cast("android.app.Activity", autoclass(
     "org.kivy.android.PythonActivity").mActivity)
@@ -36,6 +24,7 @@ FileOutputStream = autoclass('java.io.FileOutputStream')
 Context = autoclass('android.content.Context')
 telephonyManager = current_activity.getSystemService(Context.TELEPHONY_SERVICE)
 androidOsBuild = autoclass("android.os.Build")
+
 
 class ChipsetType:
     """
@@ -78,7 +67,6 @@ def is_rooted():
 
 
 def run_shell_cmd(cmd, wait=False):
-
     p = subprocess.Popen(
         "su",
         executable=ANDROID_SHELL,
@@ -94,13 +82,13 @@ def run_shell_cmd(cmd, wait=False):
     else:
         return res
 
+
 def get_chipset_type():
     """
     Determine the type of the chipset
 
     :returns: an enum of ChipsetType
     """
-
 
     """
     MediaTek: [ro.board.platform]: [mt6735m]
@@ -271,12 +259,14 @@ def get_cache_dir():
 def get_files_dir():
     return str(current_activity.getFilesDir().getAbsolutePath() + '/app')
 
+
 def get_phone_manufacturer():
     return androidOsBuild.MANUFACTURER
 
 
 def get_phone_model():
     return androidOsBuild.MODEL
+
 
 def get_phone_info():
     # cmd = "getprop ro.product.model; getprop ro.product.manufacturer;"
@@ -289,6 +279,7 @@ def get_phone_info():
     # phone_info = get_device_id() + '_' + manufacturer + '-' + model
     phone_info = get_device_id() + '-' + get_phone_manufacturer() + '-' + get_phone_model()
     return phone_info
+
 
 def get_operator_info():
     # return telephonyManager.getNetworkOperatorName()+"-"+telephonyManager.getNetworkOperator()
@@ -315,7 +306,6 @@ def init_libs():
             "MobileInsight requires root privilege. \
             Please root your device for correct functioning.")
 
-
     libs_path = os.path.join(get_files_dir(), "data")
     cmd = ""
 
@@ -330,7 +320,7 @@ def init_libs():
             if True:
                 # TODO: chown to restore ownership for the symlinks
                 cmd = cmd + " ln -s " + \
-                    os.path.join(libs_path, lib) + " " + os.path.join(libs_path, sym_lib) + "; "
+                      os.path.join(libs_path, lib) + " " + os.path.join(libs_path, sym_lib) + "; "
 
     exes = ["diag_revealer",
             "diag_revealer_mtk",
@@ -357,81 +347,80 @@ def check_security_policy():
     # # Depreciated supolicies. Still keep them for backup purpose
     cmd = cmd + "supolicy --live \"allow init init process execmem\";"
     cmd = cmd + \
-        "supolicy --live \"allow atfwd diag_device chr_file {read write open ioctl}\";"
+          "supolicy --live \"allow atfwd diag_device chr_file {read write open ioctl}\";"
     cmd = cmd + "supolicy --live \"allow init properties_device file execute\";"
     cmd = cmd + \
-        "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
+          "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
 
     # # Suspicious supolicies: MI works without them, but it seems that they SHOULD be enabled...
 
     # # mi2log permission denied (logcat | grep denied), but no impact on log collection/analysis
     cmd = cmd + \
-        "supolicy --live \"allow untrusted_app app_data_file file {rename}\";"
+          "supolicy --live \"allow untrusted_app app_data_file file {rename}\";"
 
     # # Suspicious: why still works after disabling this command? Won't FIFO fail?
     cmd = cmd + \
-        "supolicy --live \"allow init app_data_file fifo_file {write open getattr}\";"
+          "supolicy --live \"allow init app_data_file fifo_file {write open getattr}\";"
     cmd = cmd + \
-        "supolicy --live \"allow init diag_device chr_file {getattr write ioctl}\"; "
+          "supolicy --live \"allow init diag_device chr_file {getattr write ioctl}\"; "
 
     # Nexus 6 only
     cmd = cmd + \
-        "supolicy --live \"allow untrusted_app diag_device chr_file {write open getattr}\";"
+          "supolicy --live \"allow untrusted_app diag_device chr_file {write open getattr}\";"
     cmd = cmd + \
-        "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
+          "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
     cmd = cmd + \
-        "supolicy --live \"allow netmgrd diag_device chr_file {read write}\";"
+          "supolicy --live \"allow netmgrd diag_device chr_file {read write}\";"
     cmd = cmd + \
-        "supolicy --live \"allow rild diag_device chr_file {read write}\";"
+          "supolicy --live \"allow rild diag_device chr_file {read write}\";"
     cmd = cmd + \
-        "supolicy --live \"allow rild debuggerd app_data_file {read open getattr}\";"
+          "supolicy --live \"allow rild debuggerd app_data_file {read open getattr}\";"
     cmd = cmd + \
-        "supolicy --live \"allow debuggerd app_data_file file {read open getattr}\";"
+          "supolicy --live \"allow debuggerd app_data_file file {read open getattr}\";"
     cmd = cmd + \
-        "supolicy --live \"allow zygote zygote process {execmem}\";"
+          "supolicy --live \"allow zygote zygote process {execmem}\";"
     cmd = cmd + \
-        "supolicy --live \"allow zygote ashmem_device chr_file {execute}\";"
+          "supolicy --live \"allow zygote ashmem_device chr_file {execute}\";"
     cmd = cmd + \
-        "supolicy --live \"allow zygote zygote_tmpfs file {execute}\";"
+          "supolicy --live \"allow zygote zygote_tmpfs file {execute}\";"
     cmd = cmd + \
-        "supolicy --live \"allow zygote activity_service service_manager {find}\";"
+          "supolicy --live \"allow zygote activity_service service_manager {find}\";"
     cmd = cmd + \
-        "supolicy --live \"allow zygote package_service service_manager {find}\";"
+          "supolicy --live \"allow zygote package_service service_manager {find}\";"
     cmd = cmd + \
-        "supolicy --live \"allow zygote system_server binder {call}\";"
+          "supolicy --live \"allow zygote system_server binder {call}\";"
     cmd = cmd + \
-        "supolicy --live \"allow zygote system_server binder {transfer}\";"
+          "supolicy --live \"allow zygote system_server binder {transfer}\";"
     cmd = cmd + \
-        "supolicy --live \"allow system_server zygote binder {call}\";"
+          "supolicy --live \"allow system_server zygote binder {call}\";"
     cmd = cmd + \
-        "supolicy --live \"allow untrusted_app sysfs file {read open getattr}\";"
+          "supolicy --live \"allow untrusted_app sysfs file {read open getattr}\";"
 
     cmd = cmd + \
-        "supolicy --live \"allow wcnss_service mnt_user_file dir {search}\";"
+          "supolicy --live \"allow wcnss_service mnt_user_file dir {search}\";"
 
     cmd = cmd + \
-        "supolicy --live \"allow wcnss_service fuse dir {read open search}\";"
+          "supolicy --live \"allow wcnss_service fuse dir {read open search}\";"
 
     cmd = cmd + \
-        "supolicy --live \"allow wcnss_service mnt_user_file lnk_file {read}\";"
+          "supolicy --live \"allow wcnss_service mnt_user_file lnk_file {read}\";"
 
     cmd = cmd + \
-        "supolicy --live \"allow wcnss_service fuse file {read append getattr}\";"
+          "supolicy --live \"allow wcnss_service fuse file {read append getattr}\";"
 
     # MI phones
 
     cmd = cmd + \
-        "supolicy --live \"allow untrusted_app_25 diag_device chr_file {open read write getattr}\";"
+          "supolicy --live \"allow untrusted_app_25 diag_device chr_file {open read write getattr}\";"
 
     cmd = cmd + \
-        "supolicy --live \"allow crash_dump app_data_file file {open getattr read write search}\";"
+          "supolicy --live \"allow crash_dump app_data_file file {open getattr read write search}\";"
 
     cmd = cmd + \
-        "supolicy --live \"allow zygote cgroup file {create}\";"
+          "supolicy --live \"allow zygote cgroup file {create}\";"
 
     cmd = cmd + \
-        "supolicy --live \"allow crash_dump app_data_file dir {read write search}\";"
-
+          "supolicy --live \"allow crash_dump app_data_file dir {read write search}\";"
 
     run_shell_cmd(cmd)
 
@@ -569,4 +558,3 @@ def get_plugins_list():
         create_folder()
 
     return ret
-

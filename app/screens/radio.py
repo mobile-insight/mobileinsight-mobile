@@ -1,13 +1,13 @@
-from . import MobileInsightScreenBase
 from kivy.lang import Builder
-from kivy.properties import NumericProperty, StringProperty
 from kivy.logger import Logger
+from kivy.properties import StringProperty
 
+from . import MobileInsightScreenBase
 
 Builder.load_file('screens/radio.kv')
 
-class RadioScreen(MobileInsightScreenBase):
 
+class RadioScreen(MobileInsightScreenBase):
     current_log = StringProperty('')
 
     def configure_coordinator(self):

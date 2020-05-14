@@ -1,4 +1,5 @@
 import kivy
+
 kivy.require('1.0.9')
 
 from kivy.lang import Builder
@@ -6,18 +7,8 @@ from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
 from kivy.properties import *
-from kivy.config import ConfigParser, Config
+from kivy.config import ConfigParser
 from .kivymd.theming import ThemeManager
-
-import http.client
-import urllib.request, urllib.parse, urllib.error
-import urllib.request, urllib.error, urllib.parse
-import subprocess
-import os
-import sys
-import re
-import datetime
-import main_utils
 
 __all__ = ["PrivacyPopup", "PrivacyApp", "disagree_privacy"]
 
@@ -54,13 +45,13 @@ Builder.load_string('''
             color: 1,1,1,1
 ''')
 
+
 # disagree_privacy = 0
 
 
 class PrivacyPopup(GridLayout):
     text = StringProperty()
     theme_cls = ThemeManager()
-
 
     def __init__(self, **kwargs):
         self.theme_cls.theme_style = "Light"
@@ -78,7 +69,7 @@ class PrivacyApp(App):
     def build(self):
         file = open("privacy_agreement.txt")
         privacy_agreement = file.read()
-        privacy_agreement = privacy_agreement +'\nDo you agree to share data collected on your phone?'
+        privacy_agreement = privacy_agreement + '\nDo you agree to share data collected on your phone?'
         content = PrivacyPopup(text=privacy_agreement)
         content.bind(on_answer=self._on_answer)
         self.popup = Popup(title="Agreement on Data Sharing",
@@ -92,8 +83,8 @@ class PrivacyApp(App):
         if answer == "yes":
             config = ConfigParser()
             config.read('/sdcard/.mobileinsight.ini')
-            config.set("mi_general","privacy",1)
-            config.set("NetLogger","privacy",1)
+            config.set("mi_general", "privacy", 1)
+            config.set("NetLogger", "privacy", 1)
             config.write()
             self.popup.dismiss()
         elif answer == "no":
@@ -101,12 +92,11 @@ class PrivacyApp(App):
             # disagree_privacy = 1
             config = ConfigParser()
             config.read('/sdcard/.mobileinsight.ini')
-            config.set("mi_general","privacy",1)
-            config.set("NetLogger","privacy",0)
+            config.set("mi_general", "privacy", 1)
+            config.set("NetLogger", "privacy", 0)
             config.write()
             self.popup.dismiss()
             # App.get_running_app().stop()
-            
-    
+
     def on_stop(self):
         pass
