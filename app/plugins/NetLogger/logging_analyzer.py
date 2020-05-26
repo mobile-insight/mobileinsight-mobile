@@ -16,6 +16,7 @@ from jnius import autoclass
 from mobile_insight.analyzer import Analyzer
 from service import mi2app_utils as util
 
+import socket
 import datetime
 import itertools
 import logging
@@ -49,7 +50,7 @@ def upload_log(filename):
     request.add_header("ENCTYPE", "multipart/form-data")
     request.add_header('Content-Type', form.get_content_type())
     body = str(form)
-    request.add_data(body)
+    request.data = body
 
     try:
         response = urllib.request.urlopen(request, timeout=3).read()
@@ -69,7 +70,7 @@ def upload_log(filename):
             # shutil.copyfile(filename, uploaded_file)
             util.run_shell_cmd("cp %s %s" % (filename, uploaded_file))
             os.remove(filename)
-            self.log_info("File %s has been uploaded successfully" % uploaded_file)
+            print("File %s has been uploaded successfully" % uploaded_file)
         finally:
             util.detach_thread()
 
@@ -125,6 +126,11 @@ class MultiPartForm(object):
         flattened = list(itertools.chain(*parts))
         flattened.append('--' + self.boundary + '--')
         flattened.append('')
+        # Debug Message
+        # print(flattened)
+        for i in range(len(flattened)):
+            flattened[i] = str(flattened[i])
+
         return '\r\n'.join(flattened)
 
 
