@@ -9,6 +9,8 @@ Version : 3.1  Attempt upload again when WiFi is available
           3.0  Add uploading function
           2.0  Save decoded log to sdcard
           1.0  Init NetLogger
+Update:   Yunqi Guo
+Version:  5.0  Python3 update
 '''
 
 from android.broadcast import BroadcastReceiver
@@ -50,12 +52,12 @@ def upload_log(filename):
     request.add_header("ENCTYPE", "multipart/form-data")
     request.add_header('Content-Type', form.get_content_type())
     body = str(form)
-    request.data = body
-
+    request.data = body.encode("utf8")
     try:
-        response = urllib.request.urlopen(request, timeout=3).read()
         if response.startswith("TW9iaWxlSW5zaWdodA==FILE_SUCC") \
-                or response.startswith("TW9iaWxlSW5zaWdodA==FILE_EXST"):
+        response = urllib.request.urlopen(request, timeout=20).read()
+        if response.startswith(b"TW9iaWxlSW5zaWdodA==FILE_SUCC") \
+                or response.startswith(b"TW9iaWxlSW5zaWdodA==FILE_EXST"):
             succeed = True
     except urllib.error.URLError as e:
         pass
@@ -126,10 +128,9 @@ class MultiPartForm(object):
         flattened = list(itertools.chain(*parts))
         flattened.append('--' + self.boundary + '--')
         flattened.append('')
-        # Debug Message
-        # print(flattened)
         for i in range(len(flattened)):
-            flattened[i] = str(flattened[i])
+            if isinstance(flattened[i], (bytes, bytearray)):
+                flattened[i] = str(flattened[i])[2:-1]
 
         return '\r\n'.join(flattened)
 
