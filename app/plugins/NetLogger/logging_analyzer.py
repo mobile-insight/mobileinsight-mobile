@@ -54,7 +54,6 @@ def upload_log(filename):
     body = str(form)
     request.data = body.encode("utf8")
     try:
-        if response.startswith("TW9iaWxlSW5zaWdodA==FILE_SUCC") \
         response = urllib.request.urlopen(request, timeout=20).read()
         if response.startswith(b"TW9iaWxlSW5zaWdodA==FILE_SUCC") \
                 or response.startswith(b"TW9iaWxlSW5zaWdodA==FILE_EXST"):
