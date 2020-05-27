@@ -56,7 +56,8 @@ def upload_log(filename):
     try:
         response = urllib.request.urlopen(request, timeout=20).read()
         if response.startswith(b"TW9iaWxlSW5zaWdodA==FILE_SUCC") \
-                or response.startswith(b"TW9iaWxlSW5zaWdodA==FILE_EXST"):
+                or response.startswith(b"TW9iaWxlSW5zaWdodA==FILE_EXST")\
+                or response.startswith(b'Upload: '):
             succeed = True
     except urllib.error.URLError as e:
         pass
