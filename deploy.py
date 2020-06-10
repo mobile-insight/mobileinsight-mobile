@@ -54,10 +54,10 @@ def run_apk(build_release):
 
     make_diag_cmd = 'cd diag_revealer/qcom/jni; ' \
                       + 'rm diag_revealer; ' \
-                      + 'make; ' \
+                      + 'make ndk-build={}/ndk-build; '.format(cfg['ndk_path']) \
                       + 'cd ../../mtk/jni; ' \
                       + 'rm diag_revealer_mtk; ' \
-                      + 'make;'
+                      + 'make ndk-build={}/ndk-build; '.format(cfg['ndk_path'])
 
     build_cmd = 'python-for-android apk' \
         + ' --copy-libs' \
