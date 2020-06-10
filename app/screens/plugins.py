@@ -22,7 +22,7 @@ from . import MobileInsightScreenBase
 Builder.load_file('screens/plugins.kv')
 
 LOGO_STRING = "MobileInsight " + main_utils.get_cur_version() + \
-              "\nCopyright (c) 2015-2017 MobileInsight Team"
+              "\nCopyright (c) 2015-2020 MobileInsight Team"
 
 
 class PluginsScreen(MobileInsightScreenBase):
