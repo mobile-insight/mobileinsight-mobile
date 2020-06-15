@@ -16,7 +16,7 @@ The structure of this repo is organized as follows:
 └── resources: application icon and welcome screen
 ```
 
-The lastest version of MobileInsight mobile app is v.0.0.
+The lastest version of MobileInsight mobile app is v5.0.0.
 
 
 ## Quickstart
