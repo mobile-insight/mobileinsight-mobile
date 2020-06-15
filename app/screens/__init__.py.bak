@@ -2,7 +2,7 @@
 Screens
 =======
 
-.. versionadded:: 4.0.0
+.. versionadded:: 5.0.0
 
 Contains all available screens for the Mobile-Insight app.
 
