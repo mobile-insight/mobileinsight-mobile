@@ -1,2 +1,2 @@
 APP_ABI := arm64-v8a
-APP_PLATFORM := android-19
+APP_PLATFORM := android-21
