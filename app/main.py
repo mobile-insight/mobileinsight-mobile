@@ -1,53 +1,39 @@
 import kivy
+
 kivy.require('1.4.0')
 
-import android
-from jnius import autoclass, cast
+from jnius import autoclass
 from kivy.app import App
 from kivy.logger import Logger
-from kivy.metrics import dp
-from kivy.uix.image import Image
 from kivy.config import ConfigParser, Config
 from kivy.core.window import Window
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty,NumericProperty,StringProperty,ListProperty
-from kivy.uix.popup import Popup
-from kivy.uix.screenmanager import ScreenManager
-from kivy.utils import platform
-from kivy.uix.label import Label
-from kivy.uix.popup import Popup
+from kivy.properties import ObjectProperty, NumericProperty, StringProperty, ListProperty
 from kivy.uix.boxlayout import BoxLayout
 
 import main_utils
-from main_utils import current_activity
+from main_utils import current_activity, get_plugins_list, create_folder
 import screens
-from coordinator import COORDINATOR
-import datetime
-import functools
-import jnius
+
+Logger.info("Import Screens")
+
 import json
 import os
-import re
-import sys
 import time
 import traceback
 
-sys.path.append('/vagrant/mi-dev/mobileinsight-mobile/app/kivymd')
-from kivymd.button import MDIconButton
+# sys.path.append('/vagrant/mi-dev/mobileinsight-mobile/app/kivymd')
 from kivymd.date_picker import MDDatePicker
-from kivymd.dialog import MDDialog
-from kivymd.label import MDLabel
-from kivymd.list import ILeftBody, ILeftBodyTouch, IRightBodyTouch, BaseListItem
-from kivymd.material_resources import DEVICE_TYPE
-from kivymd.navigationdrawer import MDNavigationDrawer, NavigationDrawerHeaderBase
-from kivymd.selectioncontrols import MDCheckbox
-from kivymd.snackbar import Snackbar
 from kivymd.theming import ThemeManager
 from kivymd.time_picker import MDTimePicker
 
 # not working
 # SERVICE_DIR = os.path.join(os.getcwd(), 'service')
 # sys.path.append(SERVICE_DIR)
+Logger.info("Import Coordinator")
+from coordinator import COORDINATOR
+
+Logger.info("Finish Import")
 
 Builder.load_string('''
 <ConfirmPopup>:
@@ -63,114 +49,14 @@ Builder.load_string('''
         background_color: 0.1,0.65,0.88,1
         color: 1,1,1,1
 ''')
+Logger.info("Finish Builder")
 
 # Load main UI
 Window.softinput_mode = "pan"
 Window.clearcolor = (1, 1, 1, 1)
 
-def create_folder():
+Logger.info("Loading UI")
 
-    cmd = ""
-
-    mobileinsight_path = main_utils.get_mobileinsight_path()
-    if not mobileinsight_path:
-        return False
-
-    try:
-        legacy_mobileinsight_path = main_utils.get_legacy_mobileinsight_path()
-        cmd = cmd + "mv " + legacy_mobileinsight_path + " " + mobileinsight_path + "; "
-        cmd = cmd + "mv " + legacy_mobileinsight_path + "/apps/ " + mobileinsight_path + "/plugins/; "
-    except:
-        pass
-
-    if not os.path.exists(mobileinsight_path):
-        cmd = cmd + "mkdir " + mobileinsight_path + "; "
-        cmd = cmd + "chmod -R 755 " + mobileinsight_path + "; "
-
-
-    log_path = main_utils.get_mobileinsight_log_path()
-    if not os.path.exists(log_path):
-        cmd = cmd + "mkdir " + log_path + "; "
-        cmd = cmd + "chmod -R 755 " + log_path + "; "
-
-    analysis_path = main_utils.get_mobileinsight_analysis_path()
-    if not os.path.exists(analysis_path):
-        cmd = cmd + "mkdir " + analysis_path + "; "
-        cmd = cmd + "chmod -R 755 " + analysis_path + "; "
-
-    cfg_path = main_utils.get_mobileinsight_cfg_path()
-    if not os.path.exists(analysis_path):
-        cmd = cmd + "mkdir " + cfg_path + "; "
-        cmd = cmd + "chmod -R 755 " + cfg_path + "; "
-
-    db_path = main_utils.get_mobileinsight_db_path()
-    if not os.path.exists(db_path):
-        cmd = cmd + "mkdir " + db_path + "; "
-        cmd = cmd + "chmod -R 755 " + db_path + "; "
-
-    plugin_path = main_utils.get_mobileinsight_plugin_path()
-    if not os.path.exists(plugin_path):
-        cmd = cmd + "mkdir " + plugin_path + "; "
-        cmd = cmd + "chmod -R 755 " + plugin_path + "; "
-
-    log_decoded_path = main_utils.get_mobileinsight_log_decoded_path()
-    if not os.path.exists(log_decoded_path):
-        cmd = cmd + "mkdir " + log_decoded_path + "; "
-        cmd = cmd + "chmod -R 755 " + log_decoded_path + "; "
-
-    log_uploaded_path = main_utils.get_mobileinsight_log_uploaded_path()
-    if not os.path.exists(log_uploaded_path):
-        cmd = cmd + "mkdir " + log_uploaded_path + "; "
-        cmd = cmd + "chmod -R 755 " + log_uploaded_path + "; "
-
-    crash_log_path = main_utils.get_mobileinsight_crash_log_path()
-    if not os.path.exists(crash_log_path):
-        cmd = cmd + "mkdir " + crash_log_path + "; "
-        cmd = cmd + "chmod -R 755 " + crash_log_path + "; "
-
-    # cmd = cmd + "chmod -R 755 "+mobileinsight_path+"; "
-    Logger.info('main: create folder cmd: ' + cmd)
-    main_utils.run_shell_cmd(cmd)
-    return True
-
-
-def get_plugins_list():
-    '''
-    Load plugin lists, including both built-in and 3rd-party plugins
-    '''
-
-    ret = {}  # app_name->(path,with_UI)
-
-    APP_DIR = os.path.join(
-        str(current_activity.getFilesDir().getAbsolutePath()), "app/plugins")
-    l = os.listdir(APP_DIR)
-    for f in l:
-        if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
-            # ret.append(f)
-            ret[f] = (os.path.join(APP_DIR, f), False)
-
-    # Yuanjie: support alternative path for users to customize their own plugin
-    APP_DIR = main_utils.get_mobileinsight_plugin_path()
-
-    if os.path.exists(APP_DIR):
-        l = os.listdir(APP_DIR)
-        for f in l:
-            if os.path.exists(os.path.join(APP_DIR, f, "main_ui.mi2app")):
-                if f in ret:
-                    tmp_name = f + " (plugin)"
-                else:
-                    tmp_name = f
-                ret[tmp_name] = (os.path.join(APP_DIR, f), True)
-            elif os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
-                if f in ret:
-                    tmp_name = f + " (plugin)"
-                else:
-                    tmp_name = f
-                ret[tmp_name] = (os.path.join(APP_DIR, f), False)
-    else:  # create directory for user-customized apps
-        create_folder()
-
-    return ret
 
 class ConfirmPopup(BoxLayout):
     text = StringProperty()
@@ -183,7 +69,9 @@ class ConfirmPopup(BoxLayout):
         Logger.error("WTF")
         pass
 
+
 class MobileInsightApp(App):
+    Logger.info("build MI Class")
     theme_cls = ThemeManager()
     previous_date = ObjectProperty()
     title = "MobileInsight"
@@ -193,8 +81,10 @@ class MobileInsightApp(App):
     screen_names = ListProperty([])
 
     use_kivy_settings = False
+    Logger.info("Finish build MI Class")
 
     def __init__(self, **kwargs):
+        Logger.info("Initializing APP")
         super(MobileInsightApp, self).__init__(**kwargs)
         self.title = 'MobileInsight'
         self.screens = {}
@@ -207,7 +97,7 @@ class MobileInsightApp(App):
             Logger.error("main: SDcard is unavailable. Please check.")
         main_utils.init_libs()
         main_utils.check_security_policy()
-        COORDINATOR.start() # FIXME: DEADLOCK HERE!!!
+        COORDINATOR.start()  # FIXME: DEADLOCK HERE!!!
 
     def __del__(self):
         Logger.error("__del__")
@@ -246,23 +136,23 @@ class MobileInsightApp(App):
                             result = result + '{"type": "title","title": ""},'
                         elif tmp[index]['type'] == 'options':
                             default_val[tmp[index]['key']
-                                        ] = tmp[index]['default']
+                            ] = tmp[index]['default']
                             result = result + '{"type": "' + tmp[index]['type'] \
-                                + '","title":"' + tmp[index]['title'] \
-                                + '","desc":"' + tmp[index]['desc'] \
-                                + '","section":"' + APP_NAME \
-                                + '","key":"' + tmp[index]['key'] \
-                                + '","options":' + json.dumps(tmp[index]['options']) \
-                                + '},'
+                                     + '","title":"' + tmp[index]['title'] \
+                                     + '","desc":"' + tmp[index]['desc'] \
+                                     + '","section":"' + APP_NAME \
+                                     + '","key":"' + tmp[index]['key'] \
+                                     + '","options":' + json.dumps(tmp[index]['options']) \
+                                     + '},'
                         else:
                             default_val[tmp[index]['key']
-                                        ] = tmp[index]['default']
+                            ] = tmp[index]['default']
                             result = result + '{"type": "' + tmp[index]['type'] \
-                                + '","title":"' + tmp[index]['title'] \
-                                + '","desc":"' + tmp[index]['desc'] \
-                                + '","section":"' + APP_NAME \
-                                + '","key":"' + tmp[index]['key'] \
-                                + '"},'
+                                     + '","title":"' + tmp[index]['title'] \
+                                     + '","desc":"' + tmp[index]['desc'] \
+                                     + '","section":"' + APP_NAME \
+                                     + '","key":"' + tmp[index]['key'] \
+                                     + '"},'
                     result = result[0:-1] + "]"
 
                     # Update the default value and setting menu
@@ -302,7 +192,7 @@ class MobileInsightApp(App):
                             pass
                         elif 'default' in tmp[index]:
                             default_val[tmp[index]['key']
-                                        ] = tmp[index]['default']
+                            ] = tmp[index]['default']
 
                     # Update the default value and setting menu
                     config.setdefaults(APP_NAME, default_val)
@@ -311,6 +201,7 @@ class MobileInsightApp(App):
         # Force to initialize all configs in .mobileinsight.ini
         # This prevents missing config due to existence of older-version .mobileinsight.ini
         # Work-around: force on_config_change, which would update config.ini
+        Logger.info("Building APP")
         config = self.load_config()
         val = int(config.get('mi_general', 'bcheck_update'))
         config.set('mi_general', 'bcheck_update', int(not val))
@@ -331,7 +222,7 @@ class MobileInsightApp(App):
         self.root.ids.scr_mngr.switch_to(self.screens[0])
 
     def go_screen(self, idx):
-        if self.index ==  idx:
+        if self.index == idx:
             return
         self.index = idx
         self.root.ids.scr_mngr.switch_to(self.load_screen(idx), direction='left')
@@ -410,7 +301,7 @@ class MobileInsightApp(App):
             config.read('/sdcard/.mobileinsight.ini')
             bcheck_update = config.get("mi_general", "bcheck_update")
             if bcheck_update == "1":
-                import check_update
+                from . import check_update
                 check_update.check_update()
         except Exception as e:
             Logger.exception(traceback.format_exc())
@@ -424,13 +315,12 @@ class MobileInsightApp(App):
             config.read('/sdcard/.mobileinsight.ini')
             privacy_agreed = int(config.get("mi_general", "privacy"))
             if privacy_agreed == 0:
-                import privacy_app
+                from . import privacy_app
                 privacy_app.PrivacyApp().run()
                 # if privacy_app.disagree_privacy:
                 #     self.stop()
         except Exception as e:
             Logger.exception(traceback.format_exc())
-
 
     def on_start(self):
         # android.stop_service() # Kill zombine service from previous app instances
@@ -461,13 +351,19 @@ class MobileInsightApp(App):
         Logger.error("on_stop")
         COORDINATOR.stop()
 
+
+time.sleep(0.5)
+
+Logger.info("Begin Main")
+
 if __name__ == "__main__":
     try:
         MobileInsightApp().run()
-        Logger.error("after run?")
+        Logger.error("MobileInsight Error. Existing")
     except Exception as e:
-        import crash_app
+        from . import crash_app
+
         Logger.exception(traceback.format_exc())
         crash_app.CrashApp().run()
     finally:
-        main_utils.detach_thread()
+        pass

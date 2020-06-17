@@ -1,4 +1,5 @@
 import kivy
+
 kivy.require('1.4.0')
 
 from kivy.uix.boxlayout import BoxLayout
@@ -7,31 +8,23 @@ from kivy.uix.checkbox import CheckBox
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
-from kivy.uix.screenmanager import Screen
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
 
-from kivy.app import App
 from kivy.lang import Builder
 from kivy.clock import Clock
-from kivy.core.window import Window
 from kivy.effects.scroll import ScrollEffect
 from kivy.factory import Factory
-from kivy.graphics import *
 from kivy.properties import ObjectProperty, StringProperty
+from kivy.logger import Logger
 
-from mobile_insight.analyzer import LogAnalyzer
-from mobile_insight.monitor.dm_collector.dm_endec.dm_log_packet import DMLogPacket
+# from mobile_insight.monitor.dm_collector.dm_endec.dm_log_packet import DMLogPacket
 
-from datetime import datetime, timedelta
 from threading import Thread
 
-import time
 import os
-import sys
 import xml.dom.minidom
-import main_utils
 
 from . import MobileInsightScreenBase
 
@@ -132,7 +125,8 @@ Builder.load_string('''
             background_color: [0/255.0, 161/255.0, 247/255.0, 1] 
 ''')
 
-#Clock.max_iteration = 30
+
+# Clock.max_iteration = 30
 
 # Used for filechooser
 
@@ -154,6 +148,7 @@ class LogViewerScreen(MobileInsightScreenBase):
     name = StringProperty('LogViewerScreen')
 
     def __init__(self, **kw):
+
         super(LogViewerScreen, self).__init__(**kw)
         self._log_analyzer = None
         self.selectedTypes = None
@@ -183,20 +178,19 @@ class LogViewerScreen(MobileInsightScreenBase):
     def dismiss_goto_popup(self, *args):
         self.goto_popup.dismiss()
 
-
-# Open
-#    Pick a .mi2log file that you would like to load.
-# Logs are organized by their Type ID.
-# Click the row to see the whole log
+    # Open
+    #    Pick a .mi2log file that you would like to load.
+    # Logs are organized by their Type ID.
+    # Click the row to see the whole log
 
     def onOpen(self, *args):
         self.open_popup = Popup(
             title='Open file',
             content=Open_Popup(
                 load=self.load),
-            background_normal='',
-            background_color=(0/255.0, 161/255.0, 247/255.0, 1),
-            color=(0/255.0, 161/255.0, 247/255.0, 1),
+            # background_normal='',
+            background_color=(0 / 255.0, 161 / 255.0, 247 / 255.0, 1),
+            # color=(0/255.0, 161/255.0, 247/255.0, 1),
             auto_dismiss=True)
         # self.open_popup.bind(on_dismiss=self.exit_open_popup)
         self.open_popup.open()
@@ -211,7 +205,7 @@ class LogViewerScreen(MobileInsightScreenBase):
             load_failed_popup.open()
         else:
             name, extension = os.path.splitext(filename[0])
-            if extension == [u'.mi2log'][0]:
+            if extension == ['.mi2log'][0]:
                 self.loading_num = 2
                 self.loading_popup = Popup(
                     title='',
@@ -243,6 +237,8 @@ class LogViewerScreen(MobileInsightScreenBase):
 
     def openFile(self, Paths, selectedTypes):
         if not self._log_analyzer:
+            Logger.info("Logviewer: Importing LogAnalyzer")
+            from mobile_insight.analyzer import LogAnalyzer
             self._log_analyzer = LogAnalyzer(self.OnReadComplete)
         self._log_analyzer.AnalyzeFile(Paths, selectedTypes)
 
@@ -298,7 +294,7 @@ class LogViewerScreen(MobileInsightScreenBase):
             self.grid_scroll.scroll_y = 1 - 11.5 / (nrows - 13.5)
         if Move == '':
             self.grid_scroll.scroll_y = -13.5 / \
-                (nrows - 13.5) + (rows - self.k) / (nrows - 13.5)
+                                        (nrows - 13.5) + (rows - self.k) / (nrows - 13.5)
             self.k = rows - nrows
         for i in range(self.k, self.k + nrows):
             self.grid.add_widget(
@@ -324,7 +320,7 @@ class LogViewerScreen(MobileInsightScreenBase):
                         self.width * 0.9,
                         self.height * 0.05),
                     background_normal='',
-                    background_color=(0/255.0, 161/255.0, 247/255.0, 0.65), 
+                    background_color=(0 / 255.0, 161 / 255.0, 247 / 255.0, 0.65),
                     halign='left'))
         self.loadinggrid = 'No'
         if self.loading_num != '':
@@ -340,14 +336,14 @@ class LogViewerScreen(MobileInsightScreenBase):
             text=str(pretty_xml_as_string),
             readonly=True,
             size_hint_y=None)
-        #label = TextInput(text = json.dumps(xmltodict.parse(pretty_xml_as_string), indent = 1), readonly = True, size_hint_y = None)
+        # label = TextInput(text = json.dumps(xmltodict.parse(pretty_xml_as_string), indent = 1), readonly = True, size_hint_y = None)
         label.bind(minimum_height=label.setter('height'))
         scroll.add_widget(label)
         popup = Popup(
             title='Timestamp : %s\nType : %s' %
-            (str.split(
-                data.text)[0], str.split(
-                data.text)[2]), content=scroll, size_hint=(
+                  (str.split(
+                      data.text)[0], str.split(
+                      data.text)[2]), content=scroll, size_hint=(
                 0.8, 0.8))
         popup.open()
 
@@ -364,18 +360,17 @@ class LogViewerScreen(MobileInsightScreenBase):
             self.loading_num = 0
         self.loading_num += 1
 
-# GoBack
-# Go back to Home Screen
+    # GoBack
+    # Go back to Home Screen
 
     def onGoBack(self, app):
         idx = app.available_screens.index('HomeScreen')
         app.go_screen(idx)
         # app.root.ids.sm.switch_to(app.home_screen)
 
-
-# Filter
-# Pick certain Type IDs to view
-# To reset everything, press the Reset button
+    # Filter
+    # Pick certain Type IDs to view
+    # To reset everything, press the Reset button
 
     def onFilter(self):
         popup = BoxLayout(orientation='vertical', size=self.size, pos=self.pos)
@@ -446,9 +441,9 @@ class LogViewerScreen(MobileInsightScreenBase):
             for i in range(len(self._log_analyzer.supported_types)):
                 self.filter_rows[i].active = False
 
-# Search
-# Search for a keyword in the Payload that shows up when a row is pressed
-# To reset everything, press the Reset button
+    # Search
+    # Search for a keyword in the Payload that shows up when a row is pressed
+    # To reset everything, press the Reset button
 
     def onSearch(self):
         popup = BoxLayout(orientation='vertical', size=self.size, pos=self.pos)
@@ -476,9 +471,8 @@ class LogViewerScreen(MobileInsightScreenBase):
         else:
             self.dismiss_search_popup()
 
-
-# Reset
-# Reset the grid to the state before filtering and/or searching
+    # Reset
+    # Reset the grid to the state before filtering and/or searching
 
     def onReset(self):
         if self.loaded == 'Yes':
@@ -487,9 +481,8 @@ class LogViewerScreen(MobileInsightScreenBase):
             Clock.unschedule(self.check_scroll_limit)
             Clock.schedule_interval(self.check_scroll_limit, 0.11)
 
-
-# Go To
-# Go to the selected row
+    # Go To
+    # Go to the selected row
 
     def onGoTo(self):
         if self.loaded == 'Yes':
@@ -498,9 +491,9 @@ class LogViewerScreen(MobileInsightScreenBase):
                 size=self.size,
                 pos=self.pos)
             self.goto_popup = Popup(title='Go To' +
-                                    '          (1~' +
-                                    str(len(self.data_view)) +
-                                    ')', content=popup, size_hint=(0.9, 0.25), auto_dismiss=False)
+                                          '          (1~' +
+                                          str(len(self.data_view)) +
+                                          ')', content=popup, size_hint=(0.9, 0.25), auto_dismiss=False)
             self.goto_textinput = TextInput()
             cancel = Button(text='Cancel', on_release=self.dismiss_goto_popup)
             ok = Button(text='Ok', on_release=self.goto_ok)

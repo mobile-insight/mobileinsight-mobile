@@ -29,13 +29,13 @@ from math import sin, cos, pi, radians
 __all__ = ('CircularLayout')
 
 try:
-    xrange(1, 2)
+    range(1, 2)
 except NameError:
     def xrange(first, second, third=None):
         if third:
-            return range(first, second, third)
+            return list(range(first, second, third))
         else:
-            return range(first, second)
+            return list(range(first, second))
 
 
 class CircularLayout(Layout):
@@ -188,7 +188,7 @@ if __name__ == "__main__":
         def build(self):
             cly = CircularLayout(direction="cw", start_angle=-75, inner_radius_hint=.7, padding="20dp")
 
-            for i in xrange(1, 13):
+            for i in range(1, 13):
                 cly.add_widget(Button(text=str(i), font_size="30dp"))
 
             return cly

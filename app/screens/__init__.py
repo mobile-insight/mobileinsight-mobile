@@ -2,20 +2,19 @@
 Screens
 =======
 
-.. versionadded:: 4.0.0
+.. versionadded:: 5.0.0
 
 Contains all available screens for the Mobile-Insight app.
 
 TODO: more doc
 
 '''
-import kivy
 
-from kivy.uix.screenmanager import Screen
-from kivy.properties import BooleanProperty
+from coordinator import COORDINATOR
 from kivy.lang import Builder
 from kivy.logger import Logger
-from coordinator import COORDINATOR
+from kivy.properties import BooleanProperty
+from kivy.uix.screenmanager import Screen
 
 Builder.load_string('''
 <MobileInsightScreenBase>:
@@ -23,6 +22,7 @@ Builder.load_string('''
         do_scroll_x: False
         do_scroll_y: False
 ''')
+
 
 class MobileInsightScreenBase(Screen):
     fullscreen = BooleanProperty(False)
@@ -50,23 +50,22 @@ class MobileInsightScreenBase(Screen):
         pass
 
 
-from radio import RadioScreen
-from connectivity import ConnectivityScreen
-from dataplane import DataplaneScreen
-from datavoice import DatavoiceScreen
-from mobility import MobilityScreen
-from theming import ThemingScreen
-from home import HomeScreen
-from logviewer import LogViewerScreen
-from about import AboutScreen
-from help import HelpScreen
-from privacy import PrivacyScreen
-from plugins import PluginsScreen
-
+from .radio import RadioScreen
+from .connectivity import ConnectivityScreen
+from .dataplane import DataplaneScreen
+from .datavoice import DatavoiceScreen
+from .mobility import MobilityScreen
+from .theming import ThemingScreen
+from .home import HomeScreen
+from .logviewer import LogViewerScreen
+from .about import AboutScreen
+from .help import HelpScreen
+from .privacy import PrivacyScreen
+from .plugins import PluginsScreen
 
 # WARNING: The ordering of the following screens should be consistent with those in mobileinsight.kv (app.go_screen(idx))
 __all__ = [
-    'HomeScreen', 'PluginsScreen', 'LogViewerScreen', 'HelpScreen','AboutScreen','PrivacyScreen',
+    'HomeScreen', 'PluginsScreen', 'LogViewerScreen', 'HelpScreen', 'AboutScreen', 'PrivacyScreen',
     'RadioScreen', 'ConnectivityScreen', 'DataplaneScreen',
     'DatavoiceScreen', 'MobilityScreen', 'ThemingScreen',
-    ]
+]

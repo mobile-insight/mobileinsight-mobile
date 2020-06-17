@@ -12,7 +12,6 @@ Version : 2.0  Major refactoring, add logcat monitoring example
 import os
 import sys
 import time
-import commands
 import traceback
 import subprocess
 from jnius import autoclass, cast
@@ -40,7 +39,7 @@ class LogcatMonitor(Analyzer):
         out = proc.communicate()
 
         try:
-            self.pid = str(out[0].split('\n')[0]).split()[1]
+            self.pid = str(out[0].decode('utf-8').split('\n')[0]).split()[1]
             self.log_warning("_get_thread_pid: self.pid = %s" % self.pid)
         except:
             self.log_warning("Exception when getting %s threads" % proc_name)
@@ -48,7 +47,7 @@ class LogcatMonitor(Analyzer):
     def run(self):
         while True:
             try:
-                lines = util.run_shell_cmd("logcat --pid %s -d" % self.pid, True).split('\n')
+                lines = util.run_shell_cmd("logcat --pid %s -d" % self.pid, True).decode('utf-8').split('\n')
                 for line in lines[1:]:
                     self.log_info(line)
             except:

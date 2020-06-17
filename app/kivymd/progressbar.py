@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
         def callback(self,dt):
             self.rvalue =random.random()*100
-            print self.rvalue
+            print(self.rvalue)
         def on_rvalue(self,instance,value):
              pass
 

@@ -1,38 +1,29 @@
 import kivy
+
 kivy.require('1.4.0')
 
 import os
-import threading
-import time
-import datetime
-from android import AndroidService
 from android.broadcast import BroadcastReceiver
 from collections import deque
-from jnius import autoclass
-from kivy.utils import platform
 from kivy.logger import Logger
 from kivy.core.text import Label as CoreLabel
-from kivy.config import ConfigParser
 from kivy.properties import StringProperty, BooleanProperty
 from kivy.core.window import Window
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
-from kivy.uix.screenmanager import Screen, ScreenManagerException
 from kivy.uix.scrollview import ScrollView
 from kivy.lang import Builder
-from main import get_plugins_list, create_folder
+# from main import get_plugins_list
 import main_utils
-from main_utils import current_activity
+from main_utils import get_plugins_list
 from . import MobileInsightScreenBase
-import traceback
-
-from home import HomeScreen
 
 Builder.load_file('screens/plugins.kv')
 
 LOGO_STRING = "MobileInsight " + main_utils.get_cur_version() + \
-    "\nCopyright (c) 2015-2017 MobileInsight Team"
+              "\nCopyright (c) 2015-2020 MobileInsight Team"
+
 
 class PluginsScreen(MobileInsightScreenBase):
     error_log = StringProperty(LOGO_STRING)
@@ -46,13 +37,7 @@ class PluginsScreen(MobileInsightScreenBase):
     logs = deque([], MAX_LINE)
     plugins = []
     selectedPlugin = ""
-    app_list = get_plugins_list()
-    myLayout = GridLayout(cols=2, spacing=5,
-        orientation="vertical", size_hint_y=None,
-        height=(len(app_list) / 2 + len(app_list) % 2) * Window.height / 4)
-    popupScroll = ScrollView(size_hint_y=None, size=(Window.width, Window.height*.9))
-    popupScroll.add_widget(myLayout)
-    popup = Popup(content=popupScroll, title="Choose a plugin")
+
 
     def __init__(self, **kw):
         """
@@ -71,6 +56,15 @@ class PluginsScreen(MobileInsightScreenBase):
         super(PluginsScreen, self).__init__(**kw)
 
         self.log_viewer = None
+        self.app_list = get_plugins_list()
+        self.myLayout = GridLayout(cols=2, spacing=5,
+                              # orientation="vertical",
+                              size_hint_y=None,
+                              height=(len(self.app_list) / 2 + len(self.app_list) % 2) * Window.height / 4)
+        # myLayout = GridLayout()
+        self.popupScroll = ScrollView(size_hint_y=None, size=(Window.width, Window.height * .9))
+        self.popupScroll.add_widget(self.myLayout)
+        self.popup = Popup(content=self.popupScroll, title="Choose a plugin")
 
         self.plugins_list = get_plugins_list()
 
@@ -78,12 +72,13 @@ class PluginsScreen(MobileInsightScreenBase):
         self.terminal_thread = None
         bootup = True
 
-        #used to shorten long widget names in popup menu
-        shortenLabel = CoreLabel(markup = True, text_size = (Window.width/2.5, None), shorten_from = "right", font_size = 70)
-        #Making and adding widgets to popup menu
+        # used to shorten long widget names in popup menu
+        shortenLabel = CoreLabel(markup=True, text_size=(Window.width / 2.5, None), shorten_from="right", font_size=70)
+        # Making and adding widgets to popup menu
         for name in self.plugins_list:
-            widget = Button(id = name, markup = True, halign = "left", valign = "top", on_release = self.callback, background_normal = "", background_color = self.ids.selectButton.background_color)
-            widget.text_size = (Window.width/2.25, Window.height/4)
+            widget = Button(id=name, markup=True, halign="left", valign="top", on_release=self.callback,
+                            background_normal="", background_color=self.ids.selectButton.background_color)
+            widget.text_size = (Window.width / 2.25, Window.height / 4)
             self.myLayout.add_widget(widget)
 
             app_path = self.plugins_list[name][0]
@@ -92,12 +87,12 @@ class PluginsScreen(MobileInsightScreenBase):
                     my_description = ff.read()
             else:
                 my_description = "no description."
-            #shortening long widget names and making font size
+            # shortening long widget names and making font size
             shortenedName = shortenLabel.shorten(name)
             font_size = "60"
             if Window.width < 1450:
                 font_size = "45"
-            widget.text = "[color=fffafa][size=70]"+ shortenedName + "[/size][size="+ font_size + "]\n"+ my_description+"[/size][/color]"
+            widget.text = "[color=fffafa][size=70]" + shortenedName + "[/size][size=" + font_size + "]\n" + my_description + "[/size][/color]"
 
             if bootup:
                 self.selectedPlugin = name
@@ -109,13 +104,13 @@ class PluginsScreen(MobileInsightScreenBase):
 
     def registerBroadcastReceivers(self):
         self.brStopAck = BroadcastReceiver(self.on_broadcastStopServiceAck,
-                actions=['MobileInsight.Plugin.StopServiceAck'])
+                                           actions=['MobileInsight.Plugin.StopServiceAck'])
         self.brStopAck.start()
 
-    #Setting the text for the Select Plugin Menu button
-    def callback(self, obj):    
+    # Setting the text for the Select Plugin Menu button
+    def callback(self, obj):
         self.selectedPlugin = obj.id
-        self.log_info("screens"+str(self.manager.screens))
+        self.log_info("screens" + str(self.manager.screens))
         if self.manager.has_screen('HomeScreen'):
             self.manager.get_screen('HomeScreen').set_plugin(self.selectedPlugin)
             # HomeScreen.set_plugin(self.selectedPlugin)
@@ -139,7 +134,6 @@ class PluginsScreen(MobileInsightScreenBase):
 
     def popUpMenu(self):
         self.popup.open()
-
 
     def on_broadcastStopServiceAck(self, context, intent):
         self.log_info("Received MobileInsight.Plugin.StopServiceAck from plugin")

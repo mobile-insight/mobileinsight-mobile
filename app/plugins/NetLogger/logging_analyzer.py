@@ -9,6 +9,8 @@ Version : 3.1  Attempt upload again when WiFi is available
           3.0  Add uploading function
           2.0  Save decoded log to sdcard
           1.0  Init NetLogger
+Update:   Yunqi Guo
+Version:  5.0  Python3 update
 '''
 
 from android.broadcast import BroadcastReceiver
@@ -16,18 +18,19 @@ from jnius import autoclass
 from mobile_insight.analyzer import Analyzer
 from service import mi2app_utils as util
 
+import socket
 import datetime
 import itertools
 import logging
-import mimetools
+import email.generator
 import mimetypes
 import os
 import shutil
 import subprocess
 import threading
 import time
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 
 # logging.basicConfig(level=logging.DEBUG,
 #                     format='[%(levelname)s] (%(threadName)-10s) %(message)s',
@@ -43,20 +46,20 @@ def upload_log(filename):
     form = MultiPartForm()
     form.add_field('file[]', filename)
     form.add_file('file', filename)
-    request = urllib2.Request(
+    request = urllib.request.Request(
         'http://metro.cs.ucla.edu/mobile_insight/upload_file.php')
     request.add_header("Connection", "Keep-Alive")
     request.add_header("ENCTYPE", "multipart/form-data")
     request.add_header('Content-Type', form.get_content_type())
     body = str(form)
-    request.add_data(body)
-
+    request.data = body.encode("utf8")
     try:
-        response = urllib2.urlopen(request, timeout=3).read()
-        if response.startswith("TW9iaWxlSW5zaWdodA==FILE_SUCC") \
-                or response.startswith("TW9iaWxlSW5zaWdodA==FILE_EXST"):
+        response = urllib.request.urlopen(request, timeout=20).read()
+        if response.startswith(b"TW9iaWxlSW5zaWdodA==FILE_SUCC") \
+                or response.startswith(b"TW9iaWxlSW5zaWdodA==FILE_EXST")\
+                or response.startswith(b'Upload: '):
             succeed = True
-    except urllib2.URLError as e:
+    except urllib.error.URLError as e:
         pass
     except socket.timeout as e:
         pass
@@ -69,7 +72,7 @@ def upload_log(filename):
             # shutil.copyfile(filename, uploaded_file)
             util.run_shell_cmd("cp %s %s" % (filename, uploaded_file))
             os.remove(filename)
-            self.log_info("File %s has been uploaded successfully" % uploaded_file)
+            print("File %s has been uploaded successfully" % uploaded_file)
         finally:
             util.detach_thread()
 
@@ -79,7 +82,7 @@ class MultiPartForm(object):
     def __init__(self):
         self.form_fields = []
         self.files = []
-        self.boundary = mimetools.choose_boundary()
+        self.boundary = email.generator._make_boundary()
         return
 
     def get_content_type(self):
@@ -125,6 +128,10 @@ class MultiPartForm(object):
         flattened = list(itertools.chain(*parts))
         flattened.append('--' + self.boundary + '--')
         flattened.append('')
+        for i in range(len(flattened)):
+            if isinstance(flattened[i], (bytes, bytearray)):
+                flattened[i] = str(flattened[i])[2:-1]
+
         return '\r\n'.join(flattened)
 
 

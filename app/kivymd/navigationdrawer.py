@@ -213,7 +213,7 @@ class NavigationDrawerIconButton(OneLineIconListItem):
             self._active_color = self.theme_cls.accent_color
 
     def on_icon(self, instance, value):
-        self.ids['_icon'].text = u"{}".format(md_icons[value])
+        self.ids['_icon'].text = "{}".format(md_icons[value])
 
     def on_active_color_type(self, *args):
         self._set_active_color(args)

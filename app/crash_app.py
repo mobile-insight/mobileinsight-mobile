@@ -1,4 +1,5 @@
 import kivy
+
 kivy.require('1.0.9')
 
 from kivy.lang import Builder
@@ -6,17 +7,14 @@ from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
 from kivy.properties import *
-from kivymd.theming import ThemeManager
+from .kivymd.theming import ThemeManager
 
-import httplib
-import urllib
-import urllib2
-import subprocess
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import os
 import sys
-import re
 import datetime
-import main_utils
+from . import main_utils
 
 __all__ = ["ConfirmPopup", "CrashApp"]
 
@@ -104,7 +102,7 @@ class CrashApp(App):
 
         try:
             # buld http request
-            req = urllib2.Request(http_url)
+            req = urllib.request.Request(http_url)
             # header
             req.add_header('Host', 'metro.cs.ucla.edu')
             req.add_header('Cache-Control', 'max-age=0')
@@ -121,7 +119,7 @@ class CrashApp(App):
             req.add_data(http_body)
 
             # post data to server
-            resp = urllib2.urlopen(req, timeout=5)
+            resp = urllib.request.urlopen(req, timeout=5)
             # get response
             if resp:
                 qrcont = resp.read()
@@ -129,15 +127,15 @@ class CrashApp(App):
         except Exception as e:
             "Fail to send bug report!"
             import traceback
-            print str(traceback.format_exc())
+            print(str(traceback.format_exc()))
 
     def _on_answer(self, instance, answer):
         if answer == "yes":
             phone_info = main_utils.get_phone_info()
             log_name = "crash_report_" \
-                + phone_info + '_' \
-                + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') \
-                + '.txt'
+                       + phone_info + '_' \
+                       + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') \
+                       + '.txt'
             log_name = os.path.join(
                 main_utils.get_mobileinsight_crash_log_path(), log_name)
             main_utils.run_shell_cmd(

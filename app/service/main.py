@@ -8,19 +8,18 @@ import datetime as dt
 import signal
 from kivy.logger import Logger
 from kivy.config import ConfigParser
-from kivy.lib.osc import oscAPI as osc
+# from kivy.lib.osc import oscAPI as osc
+from oscpy.server import OSCThreadServer
+from oscpy.client import OSCClient
 from service.control import Control, OSCConfig
 from service import mi2app_utils
 from service import GpsListener
 import kivy
 kivy.require('1.4.0')
 
-reload(sys)
-sys.setdefaultencoding('utf8')
-
 
 def receive_signal(signum, stack):
-    print 'Received:', signum
+    print('Received:', signum)
 
 class MyFormatter(logging.Formatter):
     converter = dt.datetime.fromtimestamp
@@ -134,7 +133,7 @@ def exec_legacy(arg):
         gps_provider = GpsListener(on_gps)
         gps_provider.start()
 
-        execfile(app_file, namespace)
+        exec(compile(open(app_file, "rb").read(), app_file, 'exec'), namespace)
 
         # print app_name, "stops normally"
 
@@ -167,21 +166,23 @@ def setup_service():
     control = Control()
     Logger.info('service: control created' + repr(control))
 
-    osc.init()
-    OSCID = osc.listen(port=OSCConfig.service_port)
+    osc = OSCThreadServer()
+    osc.listen(port=OSCConfig.service_port, default=True)
     # def dummy_callback(msg, *args):
     #     Logger.info('service: dummy callback: ' + str(msg))
     # osc.bind(OSCID, dummy_callback, OSCConfig.control_addr)
-    osc.bind(OSCID, control.osc_callback, OSCConfig.control_addr)
-    Logger.info('service: osc setup, id: ' + OSCID)
+    osc.bind(bytes(OSCConfig.control_addr, "ascii"), control.osc_callback)
+    # Logger.info('service: osc setup, id: ' + OSCID)
+    Logger.info('service: osc setup')
 
     gps_provider = GpsListener(on_gps)
     gps_provider.start()
 
-    osc.sendMsg(OSCConfig.control_addr, dataArray=['service ready',], port=OSCConfig.app_port)
+    osc_client = OSCClient("127.0.0.1", OSCConfig.service_port)
+    osc_client.send_message(bytes(OSCConfig.control_addr, "ascii"), ['service ready',])
     Logger.info('service SEND>: service ready msg sent')
     while True:
-        osc.readQueue(thread_id=OSCID)
+        # osc.readQueue(thread_id=OSCID)
         time.sleep(.5)
 
 if __name__ == "__main__":
