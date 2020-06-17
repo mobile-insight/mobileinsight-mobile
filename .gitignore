@@ -37,14 +37,16 @@ dist/
 # Binaries
 *android_pie_ws_dissector
 *android_ws_dissector
-*diag_revealer
 
 # Data directory
 app/data/*
 # Not filter files
 !app/data/MTK-filter
+!app/data/emdlogger1
 
 # Personalized config file
 config.yml*
 .idea/
 *.bak
+diag_revealer/mtk/jni/diag_revealer_mtk
+diag_revealer/qcom/jni/diag_revealer
