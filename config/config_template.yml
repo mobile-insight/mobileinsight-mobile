@@ -33,7 +33,7 @@ requirements : oscpy,pyserial,kivy,android,libffi,python3,mobileinsight
 icon_path : resources/icon.png
 
 # replace it with your application presplash path
-presplash_path : resources/presplash-5.jpg
+presplash_path : resources/presplash.jpg
 
 # replace it with your application path
 app_path : app
