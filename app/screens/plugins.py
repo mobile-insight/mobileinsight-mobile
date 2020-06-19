@@ -18,6 +18,8 @@ from kivy.lang import Builder
 import main_utils
 from main_utils import get_plugins_list
 from . import MobileInsightScreenBase
+from kivy.uix.screenmanager import ScreenManager
+from . import HomeScreen
 
 Builder.load_file('screens/plugins.kv')
 
@@ -109,11 +111,13 @@ class PluginsScreen(MobileInsightScreenBase):
 
     # Setting the text for the Select Plugin Menu button
     def callback(self, obj):
+        # TODO: Update this part so that it go back to home screen after clicking
         self.selectedPlugin = obj.id
+        if not self.manager.has_screen('HomeScreen'):
+            self.manager.add_widget(HomeScreen(name="HomeScreen"))
         self.log_info("screens" + str(self.manager.screens))
-        if self.manager.has_screen('HomeScreen'):
-            self.manager.get_screen('HomeScreen').set_plugin(self.selectedPlugin)
-            # HomeScreen.set_plugin(self.selectedPlugin)
+        self.manager.get_screen('HomeScreen').set_plugin(self.selectedPlugin)
+        self.manager.switch_to(self.manager.get_screen('HomeScreen'))
         self.popup.dismiss()
 
     def log_info(self, msg):
