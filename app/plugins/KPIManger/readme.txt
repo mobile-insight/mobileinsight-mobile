@@ -1,1 +1,0 @@
-An example to demostrate the usage of KPIManager with all standardized KPIs enabled.
