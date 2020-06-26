@@ -1,0 +1,1 @@
+An example to demonstrate the usage of KPI analyzers with all standardized KPIs enabled.
