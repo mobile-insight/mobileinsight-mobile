@@ -179,6 +179,7 @@ class MobileInsightApp(App):
             APP_DIR = app_list[app][0]
             setting_path = os.path.join(APP_DIR, "settings.json")
             if os.path.exists(setting_path):
+                Logger.info("default path:"+setting_path)
                 with open(setting_path, "r") as settings_json:
                     raw_data = settings_json.read()
 
@@ -205,10 +206,9 @@ class MobileInsightApp(App):
         # config = self.load_config()
         config = ConfigParser()
         config.read("/sdcard/.mobileinsight.ini")
-        val = int(config.get('mi_general', 'bcheck_update'))
-        config.set('mi_general', 'bcheck_update', int(not val))
-        config.write()
-        config.set('mi_general', 'bcheck_update', val)
+        # val = int(config.get('mi_general', 'bcheck_update'))
+        # config.set('mi_general', 'bcheck_update', int(not val))
+        config.set('mi_general', 'bcheck_update', 0)
         config.write()
 
         Window.borderless = False
@@ -270,7 +270,6 @@ class MobileInsightApp(App):
     def on_pause(self):
         # Yuanjie: The following code prevents screen freeze when screen off ->
         # screen on
-        Logger.error("on_pause")
         try:
             pm = current_activity.getSystemService(
                 autoclass('android.content.Context').POWER_SERVICE)
@@ -291,7 +290,6 @@ class MobileInsightApp(App):
 
     def on_resume(self):
         # print "on_resume"
-        Logger.error("on_resume")
         pass
 
     def check_update(self):
