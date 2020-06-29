@@ -101,12 +101,16 @@ def run_apk(build_release):
                 + ' -keystore {}'.format(cfg['keystore']) \
                 + ' -storepass {}'.format(cfg['keystorepw']) \
                 + ' -keypass {}'.format(cfg['signkeypw']) \
-                + ' {p4a}/dists/{dist}/bin/{app}-{ver}-release-unsigned.apk {key}'.format(
-                    p4a=cfg['p4a_path'],
-                    dist=cfg['dist_name'],
+                + ' ./{app}-release-unsigned-{ver}.apk {key}'.format(
                     app=cfg['app_name'],
                     ver=cfg['app_version'],
                     key=cfg['signkey'])
+                # + ' {p4a}/dists/{dist}/bin/{app}-{ver}-release-unsigned.apk {key}'.format(
+                #    p4a=cfg['p4a_path'],
+                #    dist=cfg['dist_name'],
+                #    app=cfg['app_name'],
+                #    ver=cfg['app_version'],
+                #    key=cfg['signkey'])
 
 
         zipalign_path = ""
@@ -117,8 +121,10 @@ def run_apk(build_release):
                     zipalign_path = os.path.join(subdir, f)
                     break
 
-        align_cmd = '{zipalign} -v 4 {p4a}/dists/{dist}/bin/{app}-{ver}-release-unsigned.apk {app}-{ver}.apk'.format(
-            zipalign=zipalign_path, p4a=cfg['p4a_path'], dist=cfg['dist_name'], app=cfg['app_name'], ver=cfg['app_version'])
+        # align_cmd = '{zipalign} -v 4 {p4a}/dists/{dist}/bin/{app}-{ver}-release-unsigned.apk {app}-{ver}.apk'.format(
+        #    zipalign=zipalign_path, p4a=cfg['p4a_path'], dist=cfg['dist_name'], app=cfg['app_name'], ver=cfg['app_version'])
+        align_cmd = '{zipalign} -v 4 {app}-release-unsigned-{ver}.apk {app}-{ver}.apk'.format(
+            zipalign=zipalign_path, app=cfg['app_name'], ver=cfg['app_version'])
         os.system(clean_cmd)
         os.system(make_diag_cmd)
         os.system(build_cmd)
