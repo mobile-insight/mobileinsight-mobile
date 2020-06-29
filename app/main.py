@@ -161,16 +161,18 @@ class MobileInsightApp(App):
     def build_config(self, config):
         # Yuanjie: the ordering of the following options MUST be the same as
         # those in settings.json!!!
+        config.read('/sdcard/.mobileinsight.ini')
         config.setdefaults('mi_general', {
             'bcheck_update': 0,
             'log_level': 'info',
             'bstartup': 0,
             'bstartup_service': 0,
             'bgps': 1,
-            'start_service': 'NetLogger',
+            'start_service': 'KPIAnalyzer',
             'privacy': 0,
         })
         self.create_app_default_config(config)
+        config.write()
 
     def create_app_default_config(self, config):
         app_list = get_plugins_list()
@@ -204,8 +206,7 @@ class MobileInsightApp(App):
         # Work-around: force on_config_change, which would update config.ini
         # Logger.info("Building APP")
         # config = self.load_config()
-        config = ConfigParser()
-        config.read("/sdcard/.mobileinsight.ini")
+        config = self.config
         # val = int(config.get('mi_general', 'bcheck_update'))
         # config.set('mi_general', 'bcheck_update', int(not val))
         config.set('mi_general', 'bcheck_update', 0)
@@ -297,8 +298,9 @@ class MobileInsightApp(App):
         Check if new update is available
         """
         try:
-            config = ConfigParser()
-            config.read('/sdcard/.mobileinsight.ini')
+            config = self.config
+            # config = ConfigParser()
+            # config.read('/sdcard/.mobileinsight.ini')
             bcheck_update = config.get("mi_general", "bcheck_update")
             if bcheck_update == "1":
                 from . import check_update
@@ -311,11 +313,12 @@ class MobileInsightApp(App):
         Check if new update is available
         """
         try:
-            config = ConfigParser()
-            config.read('/sdcard/.mobileinsight.ini')
+            # config = ConfigParser()
+            # config.read('/sdcard/.mobileinsight.ini')
+            config = self.config
             privacy_agreed = int(config.get("mi_general", "privacy"))
             if privacy_agreed == 0:
-                from . import privacy_app
+                import privacy_app
                 privacy_app.PrivacyApp().run()
                 # if privacy_app.disagree_privacy:
                 #     self.stop()

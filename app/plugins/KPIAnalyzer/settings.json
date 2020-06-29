@@ -1,0 +1,62 @@
+[
+    {
+        "type"   : "title",
+        "title"  : ""
+    },
+    {
+        "type"   : "bool",
+        "title"  : "Accessibility: RRC success ratio",
+        "desc"   : "RRC success ratio",
+        "key"    : "rrc_sr_enabled",
+        "default": "1"
+    },
+    {
+        "type"   : "bool",
+        "title"  : "Accessibility: SR success ratio",
+        "desc"   : "Service request success ratio",
+        "key"    : "sr_sr_enabled",
+        "default": "1"
+    },
+    {
+        "type"   : "bool",
+        "title"  : "Accessibility: Attach success ratio",
+        "desc"   : "Attach request success ratio",
+        "key"    : "attach_sr_enabled",
+        "default": "1"
+    },
+    {
+        "type"   : "bool",
+        "title"  : "Accessibility: Dedicated bearer success ratio",
+        "desc"   : "Dedicated bearer setup success ratio",
+        "key"    : "ded_sr_enabled",
+        "default": "1"
+    },
+    {
+        "type"   : "bool",
+        "title"  : "Mobility: HO success ratio",
+        "desc"   : "Handover success ratio",
+        "key"    : "ho_sr_enabled",
+        "default": "1"
+    },
+    {
+        "type"   : "bool",
+        "title"  : "Mobility: TAU success ratio",
+        "desc"   : "Tracking area update success ratio",
+        "key"    : "tau_sr_enabled",
+        "default": "1"
+    },
+    {
+        "type"   : "bool",
+        "title"  : "Retainability: RRC abnormal release ratio",
+        "desc"   : "RRC abnormal release ratio",
+        "key"    : "rrc_rel_enabled",
+        "default": "1"
+    },
+    {
+        "type"   : "bool",
+        "title"  : "Integrity: Downlink throughput",
+        "desc"   : "Downlink throughput in bps",
+        "key"    : "dltput_enabled",
+        "default": "1"
+    }
+]

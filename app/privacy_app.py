@@ -8,7 +8,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
 from kivy.properties import *
 from kivy.config import ConfigParser
-from .kivymd.theming import ThemeManager
+from kivymd.theming import ThemeManager
 
 __all__ = ["PrivacyPopup", "PrivacyApp", "disagree_privacy"]
 

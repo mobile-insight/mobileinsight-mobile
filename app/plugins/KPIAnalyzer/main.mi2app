@@ -1,8 +1,12 @@
 #!/usr/bin/python
+# Filename: online-analysis-example.py
+import os
+import sys
 
 # Import MobileInsight modules
-from service import mi2app_utils
+# from service import mi2app_utils
 from mobile_insight.analyzer import *
+# from mobile_insight.analyzer.kpi import PhyRlmAnalyzer, LteWirelessErrorAnalyzer, LteBandwidthPredictor
 from mobile_insight.monitor import OnlineMonitor
 
 # Initialize a 3G/4G monitor
@@ -10,27 +14,43 @@ src = OnlineMonitor()
 
 src.set_skip_decoding(False)
 
-# Enable 3G/4G RRC (radio resource control) monitoring
+# # Enable 3G/4G RRC (radio resource control) monitoring
 # src.enable_log_all()
 
 kpi_manager = KPIManager()
 print ("All supported KPIs:", str(kpi_manager.list_kpis()))
 
 # Test Accessibility KPIs 
-kpi_manager.enable_kpi("KPI.Accessibility.RRC_SR")
-kpi_manager.enable_kpi("KPI.Accessibility.SR_SR")
-kpi_manager.enable_kpi("KPI.Accessibility.ATTACH_SR")
-kpi_manager.enable_kpi("KPI.Accessibility.DEDICATED_BEARER_SR_QCI1_SR")
+if plugin_config["rrc_sr_enabled"] == '1':
+    kpi_manager.enable_kpi("KPI.Accessibility.RRC_SR")
+if plugin_config['sr_sr_enabled'] == '1':
+    kpi_manager.enable_kpi("KPI.Accessibility.SR_SR")
+if plugin_config['attach_sr_enabled'] == '1':
+    kpi_manager.enable_kpi("KPI.Accessibility.ATTACH_SR")
+if plugin_config['ded_sr_enabled'] == '1':
+    kpi_manager.enable_kpi("KPI.Accessibility.DEDICATED_BEARER_SR_QCI1_SR")
 
 # Test Mobility KPIs
-kpi_manager.enable_kpi("KPI.Mobility.HO_SR")
-kpi_manager.enable_kpi("KPI.Mobility.TAU_SR")
+if plugin_config['ho_sr_enabled'] == '1':
+    kpi_manager.enable_kpi("KPI.Mobility.HO_SR")
+if plugin_config['tau_sr_enabled'] == '1':
+    kpi_manager.enable_kpi("KPI.Mobility.TAU_SR")
 
 # Test Retainability KPIs
-kpi_manager.enable_kpi("KPI.Retainability.RRC_AB_REL") 
+if plugin_config['rrc_rel_enabled'] == '1':
+    kpi_manager.enable_kpi("KPI.Retainability.RRC_AB_REL") 
 
 # Test Integrity KPIs
-kpi_manager.enable_kpi("KPI.Integrity.DL_TPUT") 
+if plugin_config['dltput_enabled'] == '1':
+    kpi_manager.enable_kpi("KPI.Integrity.DL_TPUT") 
+
+# Test data plane KPIs
+# Test experimental KPIs - data plane
+# kpi_manager.enable_kpi("KPI.Wireless.SYMBOL_ERROR_RATE")
+
+# Test experimental KPIs - handover
+# kpi_manager.enable_kpi("KPI.Mobility.HANDOVER_PREDICTION")
+# kpi_manager.enable_kpi("KPI.Mobility.HANDOVER_LATENCY")
 
 kpi_manager.set_source(src)
 
