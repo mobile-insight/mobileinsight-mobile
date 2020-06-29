@@ -201,8 +201,10 @@ class MobileInsightApp(App):
         # Force to initialize all configs in .mobileinsight.ini
         # This prevents missing config due to existence of older-version .mobileinsight.ini
         # Work-around: force on_config_change, which would update config.ini
-        Logger.info("Building APP")
-        config = self.load_config()
+        # Logger.info("Building APP")
+        # config = self.load_config()
+        config = ConfigParser()
+        config.read("/sdcard/.mobileinsight.ini")
         val = int(config.get('mi_general', 'bcheck_update'))
         config.set('mi_general', 'bcheck_update', int(not val))
         config.write()
