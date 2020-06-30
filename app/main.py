@@ -169,7 +169,7 @@ class MobileInsightApp(App):
             'bstartup_service': 0,
             'bgps': 1,
             'start_service': 'KPIAnalyzer',
-            'privacy': 0,
+            'privacy': 1,
         })
         self.create_app_default_config(config)
         config.write()
