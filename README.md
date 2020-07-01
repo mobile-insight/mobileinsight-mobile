@@ -200,7 +200,7 @@ make apk_debug
 
 
 ## Version History
-+ [2020-06-11] Version 5.0 released
++ [2020-07-01] Version 5.0 released
 + [2019-08-03] Version 4.0 released
 + [2018-10-16] Version 3.4 released
 + [2017-12-05] Version 3.3 released
