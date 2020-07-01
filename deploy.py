@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 # Filename: deploy.py
 
 '''
@@ -17,7 +17,7 @@ Version : 2.4 -- 2017/10/05 automate password arguments for release version
 import os
 import sys
 import yaml
-import commands
+import subprocess
 import subprocess
 
 LIBS_GIT = 'https://github.com/mobile-insight/mobileinsight-libs.git'
@@ -33,7 +33,7 @@ def run_config():
     if os.path.isfile('./config/config.yml') is True:
         os.system('cp ./config/config.yml ./config/config.yml.bak')
     os.system('tail -n+8 ./config/config_template.yml > ./config/config.yml')
-    print 'Edit ./config/config.yml to customize your configuration!'
+    print('Edit ./config/config.yml to customize your configuration!')
 
 def run_dist():
     build_dist_cmd = 'python-for-android create' \
@@ -42,13 +42,11 @@ def run_dist():
         + ' --storage-dir={}'.format(cfg['p4a_path']) \
         + ' --sdk-dir={}'.format(cfg['sdk_path']) \
         + ' --android-api={}'.format(cfg['api_level']) \
-        + ' --minsdk={}'.format(cfg['minsdk']) \
         + ' --ndk-dir={}'.format(cfg['ndk_path']) \
-        + ' --ndk-version={}'.format(cfg['ndk_version']) \
         + ' --arch={}'.format(cfg['arch']) \
         + ' --requirements={}'.format(cfg['requirements'])
 
-    print build_dist_cmd
+    print(build_dist_cmd)
     os.system(build_dist_cmd)
 
 
@@ -56,10 +54,10 @@ def run_apk(build_release):
 
     make_diag_cmd = 'cd diag_revealer/qcom/jni; ' \
                       + 'rm diag_revealer; ' \
-                      + 'make; ' \
+                      + 'make ndk-build={}/ndk-build; '.format(cfg['ndk_path']) \
                       + 'cd ../../mtk/jni; ' \
                       + 'rm diag_revealer_mtk; ' \
-                      + 'make;'
+                      + 'make ndk-build={}/ndk-build; '.format(cfg['ndk_path'])
 
     build_cmd = 'python-for-android apk' \
         + ' --copy-libs' \
@@ -74,10 +72,9 @@ def run_apk(build_release):
         + ' --orientation={}'.format(cfg['orientation']) \
         + ' --sdk-dir={}'.format(cfg['sdk_path']) \
         + ' --android-api={}'.format(cfg['api_level']) \
-        + ' --minsdk={}'.format(cfg['minsdk']) \
         + ' --ndk-dir={}'.format(cfg['ndk_path']) \
-        + ' --ndk-version={}'.format(cfg['ndk_version']) \
         + ' --arch={}'.format(cfg['arch']) \
+        + ' --window'\
         + ' --whitelist={}/{}'.format(cfg['mi_dev_path'], cfg['whitelist']) \
         + ' --permission WRITE_EXTERNAL_STORAGE' \
         + ' --permission READ_EXTERNAL_STORAGE' \
@@ -105,12 +102,16 @@ def run_apk(build_release):
                 + ' -keystore {}'.format(cfg['keystore']) \
                 + ' -storepass {}'.format(cfg['keystorepw']) \
                 + ' -keypass {}'.format(cfg['signkeypw']) \
-                + ' {p4a}/dists/{dist}/bin/{app}-{ver}-release-unsigned.apk {key}'.format(
-                    p4a=cfg['p4a_path'],
-                    dist=cfg['dist_name'],
+                + ' ./{app}-release-unsigned-{ver}.apk {key}'.format(
                     app=cfg['app_name'],
                     ver=cfg['app_version'],
                     key=cfg['signkey'])
+                # + ' {p4a}/dists/{dist}/bin/{app}-{ver}-release-unsigned.apk {key}'.format(
+                #    p4a=cfg['p4a_path'],
+                #    dist=cfg['dist_name'],
+                #    app=cfg['app_name'],
+                #    ver=cfg['app_version'],
+                #    key=cfg['signkey'])
 
 
         zipalign_path = ""
@@ -121,24 +122,34 @@ def run_apk(build_release):
                     zipalign_path = os.path.join(subdir, f)
                     break
 
-        align_cmd = '{zipalign} -v 4 {p4a}/dists/{dist}/bin/{app}-{ver}-release-unsigned.apk {app}-{ver}.apk'.format(
-            zipalign=zipalign_path, p4a=cfg['p4a_path'], dist=cfg['dist_name'], app=cfg['app_name'], ver=cfg['app_version'])
-
+        # align_cmd = '{zipalign} -v 4 {p4a}/dists/{dist}/bin/{app}-{ver}-release-unsigned.apk {app}-{ver}.apk'.format(
+        #    zipalign=zipalign_path, p4a=cfg['p4a_path'], dist=cfg['dist_name'], app=cfg['app_name'], ver=cfg['app_version'])
+        align_cmd = '{zipalign} -v 4 {app}-release-unsigned-{ver}.apk {app}-{ver}.apk'.format(
+            zipalign=zipalign_path, app=cfg['app_name'], ver=cfg['app_version'])
         os.system(clean_cmd)
         os.system(make_diag_cmd)
         os.system(build_cmd)
         os.system(sign_cmd)
         os.system(align_cmd)
 
-        print "make_diag command was: \n" + make_diag_cmd
-        print "build command was: \n" + build_cmd
-        print "sign command was: \n" + sign_cmd
-        print "align command was: \n" + align_cmd
+        print("make_diag command was: \n" + make_diag_cmd)
+        print("build command was: \n" + build_cmd)
+        print("sign command was: \n" + sign_cmd)
+        print("align command was: \n" + align_cmd)
+
+        rename_cmd = 'mv '+cfg['app_name']+'__'+cfg['arch']+'-release-unsigned-'+cfg['app_version']+'-.apk '\
+                   + cfg['app_name']+'-release-unsigned-'+cfg['app_version']+'.apk '
+        os.system(rename_cmd)
+
     else:
         os.system(make_diag_cmd)
         os.system(build_cmd)
-        print "make_diag command was: \n" + make_diag_cmd
-        print "build command was: \n" + build_cmd
+        print("make_diag command was: \n" + make_diag_cmd)
+        print("build command was: \n" + build_cmd)
+
+        rename_cmd = 'mv '+cfg['app_name']+'__'+cfg['arch']+'-debug-'+cfg['app_version']+'-.apk '\
+                   + cfg['app_name']+'-debug-'+cfg['app_version']+'.apk '
+        os.system(rename_cmd)
 
 
 if __name__ == '__main__':
@@ -153,7 +164,7 @@ if __name__ == '__main__':
         with open("./config/config.yml", 'r') as ymlfile:
             cfg = yaml.load(ymlfile)
     except BaseException:
-        print "Compilation environment is not configured!\nRunning make config automatically for you..."
+        print("Compilation environment is not configured!\nRunning make config automatically for you...")
         run_config()
         sys.exit()
 
@@ -167,7 +178,7 @@ if __name__ == '__main__':
         elif debug == "release":
             run_apk(True)
         else:
-            print "Usage: python deploy.py apk [debug|release]"
+            print("Usage: python deploy.py apk [debug|release]")
     elif arg == 'clean':
         for subdir, dirs, files in os.walk('.'):
             for f in files:
@@ -187,7 +198,7 @@ if __name__ == '__main__':
                     app=cfg['app_name'],
                     ver=cfg['app_version']))
         except BaseException:
-            print "APK clean failed."
+            print("APK clean failed.")
     elif arg == 'clean_dist':
         try:
             os.system(
@@ -195,7 +206,7 @@ if __name__ == '__main__':
                 os.path.join(
                     cfg['p4a_path'],
                     'dists',
-                    cfg['dist_name']))
+                    cfg['dist_name']+"*"))
             os.system(
                 'rm -rf ' +
                 os.path.join(
@@ -221,9 +232,9 @@ if __name__ == '__main__':
                     'build/python-installs',
                     cfg['dist_name']))
             os.system('p4a clean_dists')
-            print "Dist %s successfully cleaned." % cfg['dist_name']
+            print("Dist %s successfully cleaned." % cfg['dist_name'])
         except BaseException:
-            print "Dist %s clean failed."
+            print("Dist %s clean failed.")
     elif arg == 'clean_all':
         try:
             os.system('p4a clean_all')
@@ -252,6 +263,6 @@ if __name__ == '__main__':
                 os.system(
                     'adb push ./internal_app/{plugin} /sdcard/mobileinsight/plugins/{plugin}'.format(plugin=plg))
             else:
-                print "Sorry, the plugin {plugin} does not exist".format(plugin=plg)
+                print("Sorry, the plugin {plugin} does not exist".format(plugin=plg))
         except BaseException:
-            print "Sorry, the plugin {plugin} does not exist".format(plugin=plg)
+            print("Sorry, the plugin {plugin} does not exist".format(plugin=plg))

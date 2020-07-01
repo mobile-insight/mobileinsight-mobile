@@ -17,7 +17,7 @@ def haversine(lon1, lat1, lon2, lat2):
     Taken from: http://stackoverflow.com/questions/4913349/haversine-formula-in-python-bearing-and-distance-between-two-gps-points
     """
     # convert decimal degrees to radians
-    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    lon1, lat1, lon2, lat2 = list(map(radians, [lon1, lat1, lon2, lat2]))
     # haversine formula
     dlon = lon2 - lon1
     dlat = lat2 - lat1

@@ -22,8 +22,7 @@
         "title": "Default plugin on startup",
         "desc": "The default plugin to run on MobileInsight startup. If empty, no service will be started",
         "section": "mi_general",
-        "key": "start_service",
-        "default": "NetLogger"
+        "key": "start_service"
     },
     {
         "type": "bool",
@@ -53,7 +52,6 @@
         "title": "Automatically check for update",
         "desc": "Check available MobileInsight updates automatically",
         "section": "mi_general",
-        "key": "bcheck_update",
-        "default": "1"
+        "key": "bcheck_update"
     }
 ]

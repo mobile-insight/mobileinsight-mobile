@@ -63,9 +63,9 @@ import datetime
 if sys.version_info[0] > 2:
     def xrange(first=None, second=None, third=None):
         if third:
-            return range(first, second, third)
+            return list(range(first, second, third))
         else:
-            return range(first, second)
+            return list(range(first, second))
 
 
 def map_number(x, in_min, in_max, out_min, out_max):
@@ -261,7 +261,7 @@ class CircularNumberPicker(CircularLayout):
 
     def _get_shown_items(self):
         sh = 0
-        for i in xrange(*self.range):
+        for i in range(*self.range):
             if i % self.multiples_of == 0:
                 sh += 1
         return sh
@@ -314,7 +314,7 @@ class CircularNumberPicker(CircularLayout):
 
     def _genitems(self, *a):
         self.clear_widgets()
-        for i in xrange(*self.range):
+        for i in range(*self.range):
             if i % self.multiples_of != 0:
                 continue
             n = Number(text=self.number_format_string.format(i), size_factor=self.number_size_factor, color=self.color)

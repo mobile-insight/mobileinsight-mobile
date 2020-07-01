@@ -3,27 +3,16 @@ main_utils.py
 
 Define utility variables and functions for apps.
 """
-import jnius
-from jnius import autoclass, cast
-import android
-
 # FIXME(likayo): subprocess module in Python 2.7 is not thread-safe. Use
 # subprocess32 instead.
-import functools
 import os
-import shlex
-import sys
-import subprocess
-import time
-import traceback
 import re
-import datetime
-import shutil
-import stat
-import json
-from kivy.lib.osc import oscAPI as osc
-from kivy.logger import Logger
+import subprocess
 
+import jnius
+from android.permissions import request_permissions, Permission, check_permission
+from jnius import autoclass, cast
+from kivy.logger import Logger
 
 current_activity = cast("android.app.Activity", autoclass(
     "org.kivy.android.PythonActivity").mActivity)
@@ -35,6 +24,7 @@ FileOutputStream = autoclass('java.io.FileOutputStream')
 Context = autoclass('android.content.Context')
 telephonyManager = current_activity.getSystemService(Context.TELEPHONY_SERVICE)
 androidOsBuild = autoclass("android.os.Build")
+
 
 class ChipsetType:
     """
@@ -83,13 +73,15 @@ def run_shell_cmd(cmd, wait=False):
         shell=True,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE)
-    res, err = p.communicate(cmd + '\n')
+    Logger.info('Running cmd: {}'.format(cmd))
+    res, err = p.communicate((cmd + '\n').encode())
 
     if wait:
         p.wait()
         return res
     else:
         return res
+
 
 def get_chipset_type():
     """
@@ -98,16 +90,15 @@ def get_chipset_type():
     :returns: an enum of ChipsetType
     """
 
-
     """
     MediaTek: [ro.board.platform]: [mt6735m]
     Qualcomm: [ro.board.platform]: [msm8084]
     """
     cmd = "getprop ro.board.platform;"
     res = run_shell_cmd(cmd)
-    if res.startswith("mt"):
+    if res.startswith(b"mt"):
         return ChipsetType.MTK
-    elif res.startswith("msm") or res.startswith("mdm") or res.startswith("sdm"):
+    elif res.startswith(b"msm") or res.startswith(b"mdm") or res.startswith(b"sdm"):
         return ChipsetType.QUALCOMM
     else:
         return None
@@ -268,12 +259,14 @@ def get_cache_dir():
 def get_files_dir():
     return str(current_activity.getFilesDir().getAbsolutePath() + '/app')
 
+
 def get_phone_manufacturer():
     return androidOsBuild.MANUFACTURER
 
 
 def get_phone_model():
     return androidOsBuild.MODEL
+
 
 def get_phone_info():
     # cmd = "getprop ro.product.model; getprop ro.product.manufacturer;"
@@ -287,6 +280,7 @@ def get_phone_info():
     phone_info = get_device_id() + '-' + get_phone_manufacturer() + '-' + get_phone_model()
     return phone_info
 
+
 def get_operator_info():
     # return telephonyManager.getNetworkOperatorName()+"-"+telephonyManager.getNetworkOperator()
     return telephonyManager.getNetworkOperator()
@@ -294,7 +288,7 @@ def get_operator_info():
 
 def get_device_id():
     cmd = "service call iphonesubinfo 1"
-    out = run_shell_cmd(cmd)
+    out = run_shell_cmd(cmd).decode('utf-8')
     tup = re.findall("\'.+\'", out)
     tupnum = re.findall("\d+", "".join(tup))
     deviceId = "".join(tupnum)
@@ -312,7 +306,6 @@ def init_libs():
             "MobileInsight requires root privilege. \
             Please root your device for correct functioning.")
 
-
     libs_path = os.path.join(get_files_dir(), "data")
     cmd = ""
 
@@ -327,7 +320,7 @@ def init_libs():
             if True:
                 # TODO: chown to restore ownership for the symlinks
                 cmd = cmd + " ln -s " + \
-                    os.path.join(libs_path, lib) + " " + os.path.join(libs_path, sym_lib) + "; "
+                      os.path.join(libs_path, lib) + " " + os.path.join(libs_path, sym_lib) + "; "
 
     exes = ["diag_revealer",
             "diag_revealer_mtk",
@@ -354,72 +347,80 @@ def check_security_policy():
     # # Depreciated supolicies. Still keep them for backup purpose
     cmd = cmd + "supolicy --live \"allow init init process execmem\";"
     cmd = cmd + \
-        "supolicy --live \"allow atfwd diag_device chr_file {read write open ioctl}\";"
+          "supolicy --live \"allow atfwd diag_device chr_file {read write open ioctl}\";"
     cmd = cmd + "supolicy --live \"allow init properties_device file execute\";"
     cmd = cmd + \
-        "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
+          "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
 
     # # Suspicious supolicies: MI works without them, but it seems that they SHOULD be enabled...
 
     # # mi2log permission denied (logcat | grep denied), but no impact on log collection/analysis
     cmd = cmd + \
-        "supolicy --live \"allow untrusted_app app_data_file file {rename}\";"
+          "supolicy --live \"allow untrusted_app app_data_file file {rename}\";"
 
     # # Suspicious: why still works after disabling this command? Won't FIFO fail?
     cmd = cmd + \
-        "supolicy --live \"allow init app_data_file fifo_file {write open getattr}\";"
+          "supolicy --live \"allow init app_data_file fifo_file {write open getattr}\";"
     cmd = cmd + \
-        "supolicy --live \"allow init diag_device chr_file {getattr write ioctl}\"; "
+          "supolicy --live \"allow init diag_device chr_file {getattr write ioctl}\"; "
 
     # Nexus 6 only
     cmd = cmd + \
-        "supolicy --live \"allow untrusted_app diag_device chr_file {write open getattr}\";"
+          "supolicy --live \"allow untrusted_app diag_device chr_file {write open getattr}\";"
     cmd = cmd + \
-        "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
+          "supolicy --live \"allow system_server diag_device chr_file {read write}\";"
     cmd = cmd + \
-        "supolicy --live \"allow netmgrd diag_device chr_file {read write}\";"
+          "supolicy --live \"allow netmgrd diag_device chr_file {read write}\";"
     cmd = cmd + \
-        "supolicy --live \"allow rild diag_device chr_file {read write}\";"
+          "supolicy --live \"allow rild diag_device chr_file {read write}\";"
     cmd = cmd + \
-        "supolicy --live \"allow rild debuggerd app_data_file {read open getattr}\";"
+          "supolicy --live \"allow rild debuggerd app_data_file {read open getattr}\";"
     cmd = cmd + \
-        "supolicy --live \"allow debuggerd app_data_file file {read open getattr}\";"
+          "supolicy --live \"allow debuggerd app_data_file file {read open getattr}\";"
     cmd = cmd + \
-        "supolicy --live \"allow zygote zygote process {execmem}\";"
+          "supolicy --live \"allow zygote zygote process {execmem}\";"
     cmd = cmd + \
-        "supolicy --live \"allow zygote ashmem_device chr_file {execute}\";"
+          "supolicy --live \"allow zygote ashmem_device chr_file {execute}\";"
     cmd = cmd + \
-        "supolicy --live \"allow zygote zygote_tmpfs file {execute}\";"
+          "supolicy --live \"allow zygote zygote_tmpfs file {execute}\";"
     cmd = cmd + \
-        "supolicy --live \"allow zygote activity_service service_manager {find}\";"
+          "supolicy --live \"allow zygote activity_service service_manager {find}\";"
     cmd = cmd + \
-        "supolicy --live \"allow zygote package_service service_manager {find}\";"
+          "supolicy --live \"allow zygote package_service service_manager {find}\";"
     cmd = cmd + \
-        "supolicy --live \"allow zygote system_server binder {call}\";"
+          "supolicy --live \"allow zygote system_server binder {call}\";"
     cmd = cmd + \
-        "supolicy --live \"allow zygote system_server binder {transfer}\";"
+          "supolicy --live \"allow zygote system_server binder {transfer}\";"
     cmd = cmd + \
-        "supolicy --live \"allow system_server zygote binder {call}\";"
+          "supolicy --live \"allow system_server zygote binder {call}\";"
     cmd = cmd + \
-        "supolicy --live \"allow untrusted_app sysfs file {read open getattr}\";"
+          "supolicy --live \"allow untrusted_app sysfs file {read open getattr}\";"
 
     cmd = cmd + \
-        "supolicy --live \"allow wcnss_service mnt_user_file dir {search}\";"
+          "supolicy --live \"allow wcnss_service mnt_user_file dir {search}\";"
 
     cmd = cmd + \
-        "supolicy --live \"allow wcnss_service fuse dir {read open search}\";"
+          "supolicy --live \"allow wcnss_service fuse dir {read open search}\";"
 
     cmd = cmd + \
-        "supolicy --live \"allow wcnss_service mnt_user_file lnk_file {read}\";"
+          "supolicy --live \"allow wcnss_service mnt_user_file lnk_file {read}\";"
 
     cmd = cmd + \
-        "supolicy --live \"allow wcnss_service fuse file {read append getattr}\";"
+          "supolicy --live \"allow wcnss_service fuse file {read append getattr}\";"
 
     # MI phones
 
     cmd = cmd + \
-        "supolicy --live \"allow untrusted_app_25 diag_device chr_file {open read write getattr}\";"
+          "supolicy --live \"allow untrusted_app_25 diag_device chr_file {open read write getattr}\";"
 
+    cmd = cmd + \
+          "supolicy --live \"allow crash_dump app_data_file file {open getattr read write search}\";"
+
+    cmd = cmd + \
+          "supolicy --live \"allow zygote cgroup file {create}\";"
+
+    cmd = cmd + \
+          "supolicy --live \"allow crash_dump app_data_file dir {read write search}\";"
 
     run_shell_cmd(cmd)
 
@@ -443,3 +444,117 @@ def check_diag_mode():
             return False
         else:
             return True
+
+
+def create_folder():
+    cmd = ""
+
+    mobileinsight_path = get_mobileinsight_path()
+    if not mobileinsight_path:
+        return False
+
+    try:
+        legacy_mobileinsight_path = get_legacy_mobileinsight_path()
+        cmd = cmd + "mv " + legacy_mobileinsight_path + " " + mobileinsight_path + "; "
+        cmd = cmd + "mv " + legacy_mobileinsight_path + "/apps/ " + mobileinsight_path + "/plugins/; "
+    except:
+        pass
+
+    if not os.path.exists(mobileinsight_path):
+        cmd = cmd + "mkdir " + mobileinsight_path + "; "
+        cmd = cmd + "chmod -R 755 " + mobileinsight_path + "; "
+
+    log_path = get_mobileinsight_log_path()
+    if not os.path.exists(log_path):
+        cmd = cmd + "mkdir " + log_path + "; "
+        cmd = cmd + "chmod -R 755 " + log_path + "; "
+
+    analysis_path = get_mobileinsight_analysis_path()
+    if not os.path.exists(analysis_path):
+        cmd = cmd + "mkdir " + analysis_path + "; "
+        cmd = cmd + "chmod -R 755 " + analysis_path + "; "
+
+    cfg_path = get_mobileinsight_cfg_path()
+    if not os.path.exists(analysis_path):
+        cmd = cmd + "mkdir " + cfg_path + "; "
+        cmd = cmd + "chmod -R 755 " + cfg_path + "; "
+
+    db_path = get_mobileinsight_db_path()
+    if not os.path.exists(db_path):
+        cmd = cmd + "mkdir " + db_path + "; "
+        cmd = cmd + "chmod -R 755 " + db_path + "; "
+
+    plugin_path = get_mobileinsight_plugin_path()
+    if not os.path.exists(plugin_path):
+        cmd = cmd + "mkdir " + plugin_path + "; "
+        cmd = cmd + "chmod -R 755 " + plugin_path + "; "
+
+    log_decoded_path = get_mobileinsight_log_decoded_path()
+    if not os.path.exists(log_decoded_path):
+        cmd = cmd + "mkdir " + log_decoded_path + "; "
+        cmd = cmd + "chmod -R 755 " + log_decoded_path + "; "
+
+    log_uploaded_path = get_mobileinsight_log_uploaded_path()
+    if not os.path.exists(log_uploaded_path):
+        cmd = cmd + "mkdir " + log_uploaded_path + "; "
+        cmd = cmd + "chmod -R 755 " + log_uploaded_path + "; "
+
+    crash_log_path = get_mobileinsight_crash_log_path()
+    if not os.path.exists(crash_log_path):
+        cmd = cmd + "mkdir " + crash_log_path + "; "
+        cmd = cmd + "chmod -R 755 " + crash_log_path + "; "
+
+    # cmd = cmd + "chmod -R 755 "+mobileinsight_path+"; "
+    Logger.info('main: create folder cmd: ' + cmd)
+    run_shell_cmd(cmd)
+    return True
+
+
+def get_plugins_list():
+    '''
+    Load plugin lists, including both built-in and 3rd-party plugins
+    '''
+    # Update for sdk 21+ for storage permission
+    PERMISSION = [Permission.READ_EXTERNAL_STORAGE,
+                  Permission.WRITE_EXTERNAL_STORAGE,
+                  Permission.ACCESS_FINE_LOCATION,
+                  Permission.ACCESS_COARSE_LOCATION]
+    if not check_permission(Permission.ACCESS_COARSE_LOCATION):
+        ret = request_permissions(PERMISSION)
+        Logger.info("python:request_permissions %s" % ret)
+
+    while not check_permission(Permission.ACCESS_COARSE_LOCATION):
+        Logger.info("Waiting for permissions")
+
+    ret = {}  # app_name->(path,with_UI)
+
+    APP_DIR = os.path.join(
+        str(current_activity.getFilesDir().getAbsolutePath()), "app/plugins")
+    l = os.listdir(APP_DIR)
+    for f in l:
+        if os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+            # ret.append(f)
+            ret[f] = (os.path.join(APP_DIR, f), False)
+
+    # Yuanjie: support alternative path for users to customize their own plugin
+    APP_DIR = get_mobileinsight_plugin_path()
+
+    if os.path.exists(APP_DIR):
+        l = os.listdir(APP_DIR)
+        for f in l:
+            if os.path.exists(os.path.join(APP_DIR, f, "main_ui.mi2app")):
+                if f in ret:
+                    tmp_name = f + " (plugin)"
+                else:
+                    tmp_name = f
+                ret[tmp_name] = (os.path.join(APP_DIR, f), True)
+            elif os.path.exists(os.path.join(APP_DIR, f, "main.mi2app")):
+                if f in ret:
+                    tmp_name = f + " (plugin)"
+                else:
+                    tmp_name = f
+                ret[tmp_name] = (os.path.join(APP_DIR, f), False)
+    else:  # create directory for user-customized apps
+        create_folder()
+
+    return ret

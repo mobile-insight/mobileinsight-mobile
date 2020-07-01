@@ -1,15 +1,14 @@
 import kivy
+
 kivy.require('1.4.0')
 
 from kivy.lang import Builder
 from kivy.properties import StringProperty
-from mobile_insight.analyzer import LteNasAnalyzer, UmtsNasAnalyzer
-from mobile_insight.monitor import OnlineMonitor
-import traceback
 from . import MobileInsightScreenBase
 from kivy.logger import Logger
 
 Builder.load_file('screens/demo.kv')
+
 
 class DemoScreen(MobileInsightScreenBase):
     '''

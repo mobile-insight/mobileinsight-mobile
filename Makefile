@@ -3,31 +3,31 @@ all: apk_release install clean
 .PHONY: apk install config dist debug release
 
 config:
-	python deploy.py config
+	python3 deploy.py config
 
 dist:
-	python deploy.py dist
+	python3 deploy.py dist
 
 apk:
-	python deploy.py apk
+	python3 deploy.py apk
 
 apk_debug:
-	python deploy.py apk debug
+	python3 deploy.py apk debug
 
 apk_release:
-	python deploy.py apk release
+	python3 deploy.py apk release
 
 install:
-	python deploy.py install
+	python3 deploy.py install
 
 clean_all:
-	python deploy.py clean_all
+	python3 deploy.py clean_all
 
 clean:
-	python deploy.py clean
+	python3 deploy.py clean
 
 clean_apk:
-	python deploy.py clean_apk
+	python3 deploy.py clean_apk
 
 clean_dist:
-	python deploy.py clean_dist
+	python3 deploy.py clean_dist

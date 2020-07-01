@@ -1,8 +1,8 @@
 import kivy
+
 kivy.require('1.0.9')
 
 from kivy.lang import Builder
-from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
 from kivy.properties import *
@@ -11,14 +11,12 @@ from kivy.clock import Clock
 
 from jnius import autoclass, cast
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import json
-import re
 import os
 import threading
 import re
-import datetime
-import main_utils
+from . import main_utils
 
 __all__ = ["check_update"]
 
@@ -39,7 +37,6 @@ Builder.load_string('''
             text: 'No'
             on_release: root.dispatch('on_answer', 'no')
 ''')
-
 
 cur_activity = cast("android.app.Activity", autoclass(
     "org.kivy.android.PythonActivity").mActivity)
@@ -82,8 +79,10 @@ def cmp_version(version1, version2):
     :type version2: string
     :returns: 0 if version1==version2, 1 if version1>version2, -1 if version1<version2
     '''
+
     def normalize(v):
         return [int(x) for x in re.sub(r'(\.0+)*$', '', v).split(".")]
+
     return cmp(normalize(version1), normalize(version2))
 
 
@@ -107,7 +106,7 @@ def install_apk(apk_path):
 
 def download_thread(apk_url, apk_path):
     try:
-        urllib.urlretrieve(apk_url, apk_path)
+        urllib.request.urlretrieve(apk_url, apk_path)
         install_apk(apk_path)
     finally:
         main_utils.detach_thread()
@@ -134,6 +133,7 @@ def download_apk(instance, answer):
                 if progress_bar.value >= 100:
                     return False
                 progress_bar.value += 1
+
             Clock.schedule_interval(next_update, 1 / 25)
 
         progress_popup = Popup(
@@ -162,9 +162,9 @@ def check_update():
 
     # retrieve latest metadata
     try:
-        urllib.urlretrieve(update_meta_url, update_meta_path)
+        urllib.request.urlretrieve(update_meta_url, update_meta_path)
     except Exception as e:
-        print "Connection failure: stop checking update"
+        print("Connection failure: stop checking update")
         return
 
     if not os.path.isfile(update_meta_path):
@@ -180,16 +180,15 @@ def check_update():
     apk_url = update_meta["URL"]
 
     if cmp_version(cur_version, update_meta['Version']) < 0:
-
         global popup
 
         content = ConfirmPopup(text='New updates in v' + update_meta["Version"]
-                               + ':\n ' + update_meta["Description"]
-                               + 'Would you like to update?')
+                                    + ':\n ' + update_meta["Description"]
+                                    + 'Would you like to update?')
         content.bind(on_answer=download_apk)
         popup = Popup(title='New update is available',
-                            content=content,
-                            size_hint=(None, None),
-                            size=(1000, 800),
-                            auto_dismiss=False)
+                      content=content,
+                      size_hint=(None, None),
+                      size=(1000, 800),
+                      auto_dismiss=False)
         popup.open()

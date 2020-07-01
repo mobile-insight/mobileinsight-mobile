@@ -16,12 +16,12 @@ The structure of this repo is organized as follows:
 └── resources: application icon and welcome screen
 ```
 
-The lastest version of MobileInsight mobile app is v4.0.0.
+The lastest version of MobileInsight mobile app is v5.0.0.
 
 
 ## Quickstart
 
-It is strongly recommended to use the standalone Vagrant configuration file to automatically download `mobileinsight-mobile` repo and configure the development environment. The `Vagrantfile` will automatically fire up a virtual machine and configure everything. It is tested on Ubuntu 14.04/16.04, macOS 10.11/10.12, and Windows 7/10.
+It is strongly recommended to use the standalone Vagrant configuration file to automatically download `mobileinsight-mobile` repo and configure the development environment. The `Vagrantfile` will automatically fire up a virtual machine and configure everything. It is tested on Ubuntu 20.04/18.04/16.04, macOS 10.15/10.12/10.11, and Windows 7/10.
 
 First, install `virtualbox` and `vagrant`. You can follow the instructions at [VirtuBox.org](https://www.virtualbox.org) and [Vagrant](https://www.vagrantup.com).
 
@@ -38,10 +38,10 @@ vagrant up
 
 Depending on the network and CPU speed, the installation may take half hour or longer.
 
-Then, when the process finish install and returns the shell, a MobileInsight app is already compiled and copied to your path (`/path/to/dev`). You can install it on supported Android phone and try it out immediately using `adb` (for example, the compiled APK version is 4.0.0).
+Then, when the process finish install and returns the shell, a MobileInsight app is already compiled and copied to your path (`/path/to/dev`). You can install it on supported Android phone and try it out immediately using `adb` (for example, the compiled APK version is 5.0.0).
 
 ```
-adb install MobileInsight-4.0.0-debug.apk
+adb install MobileInsight-5.0.0-debug.apk
 ```
 
 For more details on using the provided `Vagrantfile` to configure the MobileInsight, please refer to the [`mobileinsight-dev` repo](https://github.com/mobile-insight/mobileinsight-dev).
@@ -85,9 +85,9 @@ The compiled APK can be copied out of the virtual machine by copying to the `/va
 You may install the APK to phone after that.
 
 ```
-(vm shell)   $ cp MobileInsight-4.0.0-debug.apk /vagrant
+(vm shell)   $ cp MobileInsight-5.0.0-debug.apk /vagrant
 (vm shell)   $ exit
-(host shell) $ adb install -r MobileInsight-4.0.0-debug.apk
+(host shell) $ adb install -r MobileInsight-5.0.0-debug.apk
 ```
 
 __NOTE__: If upstream core functionalities of MobileInsight ([`mobileinsight-core`](https://github.com/mobile-insight/mobileinsight-core)) changes, you need to clean the existing MobileInsight *distribution* and re-compile it:
@@ -200,7 +200,8 @@ make apk_debug
 
 
 ## Version History
-
++ [2020-06-11] Version 5.0 released
++ [2019-08-03] Version 4.0 released
 + [2018-10-16] Version 3.4 released
 + [2017-12-05] Version 3.3 released
 + [2017-10-05] Version 3.2 released
