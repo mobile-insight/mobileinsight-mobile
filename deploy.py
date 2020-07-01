@@ -74,6 +74,7 @@ def run_apk(build_release):
         + ' --android-api={}'.format(cfg['api_level']) \
         + ' --ndk-dir={}'.format(cfg['ndk_path']) \
         + ' --arch={}'.format(cfg['arch']) \
+        + ' --window'\
         + ' --whitelist={}/{}'.format(cfg['mi_dev_path'], cfg['whitelist']) \
         + ' --permission WRITE_EXTERNAL_STORAGE' \
         + ' --permission READ_EXTERNAL_STORAGE' \
