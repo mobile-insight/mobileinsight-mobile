@@ -571,61 +571,96 @@ probe_ioctl_arglen (int req, size_t maxlen)
 	return len;
 }
 
+/*
+ * Calling functions into libdiag.so will create several threads. For example,
+ * in diag_switch_logging, three threads (disk_write_hdl, qsr4_db_parser_thread_hdl,
+ * db_write_thread_hdl) will be created. But actually we don't need them at all.
+ * Meanwhile we cannot call dlclose when these useless threads are still alive.
+ * So the following fake pthread_create is used to prevent them from being created.
+ *
+ * Note this fake pthread_create may cause some unexpected side effects on another
+ * untested version of libdiag.so. If so, futher modification is needed.
+ *
+ * Tested devices:
+ *   Xiaomi Mi 5S            Android 7.1.2
+ *   Huawei Nexus 6P         Android 8.0.0
+ *   Xiaomi Redmi Note 8     Android 10.0.0
+ *   Samsung Galaxy A90 5G   Android 10.0.0
+ */
+int
+pthread_create (pthread_t *thread, const pthread_attr_t *attr,
+                void *(*start_routine)(void *), void *arg) {
+	*thread = 1;
+	return 0;
+}
+
 static int
 __enable_logging_libdiag (int mode)
 {
+	const char *LIB_DIAG_PATH[] = {
+		"/system/vendor/lib64/libdiag.so",
+		"/system/vendor/lib/libdiag.so",
+	};
+
 	int ret;
-
-	const char LIB_DIAG_PATH[] = "/system/vendor/lib/libdiag.so";
+	const char *err;
 	void *handle;
-	char *error;
-	D_FUNC diag_switch_logging = NULL;
-	I_FUNC Diag_LSM_Init = NULL, Diag_LSM_DeInit = NULL;
-	int *max_file_size;
-	char *output_dir;
+	void (*diag_switch_logging)(int, const char *);
+	int *diag_fd;
+	int *logging_mode;
 
-	handle = dlopen(LIB_DIAG_PATH, RTLD_NOW);
+	handle = dlopen(LIB_DIAG_PATH[0], RTLD_NOW);
+	if (!handle)
+		handle = dlopen(LIB_DIAG_PATH[1], RTLD_NOW);
 	if (!handle) {
-		// fLOGD(stderr, "%s\n", dlerror());
-	} else {
-		// LOGD("%s: test 1\n", __func__);
-		*(void **) (&diag_switch_logging) = dlsym(handle, "diag_switch_logging");
-		*(void **) (&Diag_LSM_Init) = dlsym(handle, "Diag_LSM_Init");
-		*(void **) (&Diag_LSM_DeInit) = dlsym(handle, "Diag_LSM_DeInit");
-		max_file_size = (int*) dlsym(handle, "max_file_size");
-		output_dir = (char*) dlsym(handle, "output_dir");
-		char *dir_p = (char *) &output_dir;
-
-		if (max_file_size)
-			*max_file_size = 1; // Minimal size, beneficial for real-time features
-
-		// LOGD("%s: test 2\n", __func__);
-		// if (Diag_LSM_DeInit)
-		// 	Diag_LSM_DeInit();
-		// LOGD("%s: test 3\n", __func__);
-		if (Diag_LSM_Init)
-			ret = Diag_LSM_Init();
-		// LOGD("%s: test 4\n", __func__);
-		char default_output_dir[100] = "/sdcard/diag_logs/";
-
-		if (dir_p)
-			strlcpy(dir_p, default_output_dir, sizeof(default_output_dir));
-
-		// LOGD("%s: test 5\n", __func__);
-
-		if (output_dir)
-			mkdir((const char *) &output_dir, 504LL);
-
-		// LOGD("%s: test 6\n", __func__);
-
-		if (diag_switch_logging) {
-			ret = (int) (*diag_switch_logging)(mode, (int) &output_dir);
-		}
-
-		// dlclose(handle);
+		LOGE("dlopen libdiag.so failed (%s)\n" , dlerror());
+		return -1;
 	}
 
+	// Note diag_switch_logging does NOT have a return value in general.
+	err = "diag_switch_logging";
+	diag_switch_logging = (void (*)(int, const char *)) dlsym(handle, "diag_switch_logging");
+	if (!diag_switch_logging)
+		goto fail;
+	err = "diag_fd/fd";
+	diag_fd = (int *) dlsym(handle, "diag_fd");
+	if (!diag_fd)
+		diag_fd = (int *) dlsym(handle, "fd");
+	if (!diag_fd)
+		goto fail;
+	logging_mode = (int *) dlsym(handle, "logging_mode");
+
+	/*
+	 * It seems that calling Diag_LSM_Init here is not necessary.
+	 *
+	 * When diag_fd is not set, Diag_LSM_Init will try to open
+	 * /dev/diag, which will fail since we've already opened one
+	 * (errno=EEXIST).
+	 *
+	 * When diag_fd is set, Diag_LSM_Init will also do nothing
+	 * related to our goal.
+	 */
+	*diag_fd = fd;
+	(*diag_switch_logging)(mode, NULL);
+
+	if (logging_mode && *logging_mode != mode) {
+		LOGE("diag_switch_logging in libdiag.so failed\n");
+		ret = -1;
+	} else if (!logging_mode) {
+		LOGW("Missing symbol logging_mode in libdiag.so, "
+		     "assume diag_switch_logging succeeded\n");
+		ret = 0;
+	} else {
+		ret = 0;
+	}
+
+	// We have never created new threads in libdiag.so, so we can close it.
+	dlclose(handle);
 	return ret;
+fail:
+	LOGE("Missing symbol %s in libdiag.so\n", err);
+	dlclose(handle);
+	return -1;
 }
 
 static int
@@ -823,7 +858,7 @@ enable_logging (int fd, int mode)
 
 	if (ret < 0) {
 		/* Ultimate approach: Use libdiag.so */
-		ret = __enable_logging_libdiag(mode);    // FIXME: 0921, uncomment it
+		ret = __enable_logging_libdiag(mode);
 	}
 	if (ret >= 0) {
 		// LOGD("Enable logging mode success.\n");
