@@ -31,6 +31,7 @@
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <sys/mman.h>
 #include <dlfcn.h>
 
 // #include <linux/diagchar.h>
@@ -529,6 +530,47 @@ manager_append_log (struct LogManagerState *pstate, int fifo_fd, size_t msg_len)
 	return 0;
 }
 
+/*
+ * Explicitly probe the length of the argument that ioctl(fd, req, ...) takes.
+ *
+ * Assumptions:
+ *  1. The length is fixed.
+ *  2. The insufficient length is the only reason to make ioctl(fd, req, ...)
+ *     fail and set errno to EFAULT.
+ *  3. The argument filled with 0x3f won't cause unrecoverable errors, or
+ *     interfere with what we're going to do next.
+ */
+static ssize_t
+probe_ioctl_arglen (int req, size_t maxlen)
+{
+	size_t pagesize = sysconf(_SC_PAGESIZE);
+	char *p;
+	size_t len;
+
+	if (maxlen > pagesize) {
+		LOGE("probe_ioctl_arglen: maxlen > pagesize is not implemented\n");
+		return -1;
+	}
+
+	p = mmap(NULL, pagesize * 2, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
+	if (p == MAP_FAILED) {
+		LOGE("probe_ioctl_arglen: mmap fails (%s)\n", strerror(errno));
+		return -1;
+	}
+	p += pagesize;
+	munmap(p, pagesize);
+	memset(p - maxlen, 0x3f, maxlen);
+
+	for (len = 0; len <= maxlen; ++len) {
+		if (ioctl(fd, req, p - len) >= 0)
+			break;
+		if (errno != EFAULT)
+			break;
+	}
+	munmap(p - pagesize, pagesize);
+	return len;
+}
+
 static int
 __enable_logging_libdiag (int mode)
 {
@@ -705,10 +747,26 @@ enable_logging (int fd, int mode)
 
 	/*
 	 * Enable logging mode
-	 * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diagchar_core.c
 	 */
 	ret = -1;
-	if (ret < 0) {
+
+	/*
+	 * DIAG_IOCTL_SWITCH_LOGGING has multiple versions. They require different arguments (which have
+	 * different fields and whose lengths are also different). However, it seems there is no way to
+	 * directly determine the version of DIAG_IOCTL_SWITCH_LOGGING. So some tricks can not be avoided
+	 * here.
+	 *
+	 * A traditional way is to try one by one. But it can cause undefined behaviour. Specially, when
+	 * a new verison of DIAG_IOCTL_SWITCH_LOGGING is introduced, it may not report an error. But some
+	 * new fields will be out of bounds. Consequently, it may cause random bugs, which is confusing.
+	 *
+	 * So a more elegant way is to explicitly probe the length of DIAG_IOCTL_SWITCH_LOGGING's argument.
+	 * And the version can be deduced from the length. It is not very precise, but it is enough at least
+	 * for now.
+	 */
+	ssize_t arglen = probe_ioctl_arglen(DIAG_IOCTL_SWITCH_LOGGING, sizeof(struct diag_logging_mode_param_t_pie));
+	switch (arglen) {
+	case sizeof(struct diag_logging_mode_param_t_pie): {
 		/* Android 9.0 mode
 		 * Reference: https://android.googlesource.com/kernel/msm.git/+/android-9.0.0_r0.31/drivers/char/diag/diagchar_core.c
 		 */
@@ -718,9 +776,9 @@ enable_logging (int fd, int mode)
 		new_mode.pd_mask = 0;
 		new_mode.peripheral_mask = DIAG_CON_ALL;
 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &new_mode);
+		break;
 	}
-	if (ret < 0) {
-		// LOGD("Android-9.0 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
+	case sizeof(struct diag_logging_mode_param_t): {
 		/* Android 7.0 mode
 		 * Reference: https://android.googlesource.com/kernel/msm.git/+/android-7.1.0_r0.3/drivers/char/diag/diagchar_core.c
 		 */
@@ -728,39 +786,42 @@ enable_logging (int fd, int mode)
 		new_mode.req_mode = mode;
 		new_mode.peripheral_mask = DIAG_CON_ALL;
 		new_mode.mode_param = 0;
-		// LOGD("&new_mode=%p peripheral_mask=%d req_mode=%d mode_param=%d\n", &new_mode, new_mode.peripheral_mask, new_mode.req_mode, new_mode.mode_param);
 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &new_mode);
+		break;
 	}
-	if (ret < 0) {
-		// LOGD("Android-7.0 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
-		// Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diagchar_core.c
+	case sizeof(int):
+		/* Android 6.0 mode
+		 * Reference: https://android.googlesource.com/kernel/msm.git/+/android-6.0.0_r0.9/drivers/char/diag/diagchar_core.c
+		 */
 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) &mode);
-	}
-	if (ret < 0) {
-		// LOGD("ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
-		// perror("ioctl SWITCH_LOGGING");
+		if (ret >= 0)
+			break;
+		/*
+		 * Is it really necessary? It seems that the kernel will simply ignore all the fourth and subsequent
+		 * arguments of ioctl. But similar lines do exist in libdiag.so. Why?
+		 * Reference: https://android.googlesource.com/kernel/msm.git/+/android-10.0.0_r0.87/fs/ioctl.c#692
+		 */
+		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &mode, 12, 0, 0, 0, 0);
+		break;
+	case 0:
 		// Yuanjie: the following works for Samsung S5
 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode);
-	}
-	if (ret < 0) {
-		// LOGD("Android-7.0 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
-		// perror("Alternative ioctl SWITCH_LOGGING");
+		if (ret >= 0)
+			break;
+		// Same question as above: Is it really necessary?
 		// Yuanjie: the following is used for Xiaomi RedMi 4
 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (char *) mode, 12, 0, 0, 0, 0);
+		break;
+	default:
+		LOGW("ioctl DIAG_IOCTL_SWITCH_LOGGING with arglen=%ld is not supported\n", arglen);
+		ret = -8080;
+		break;
 	}
+	if (ret < 0 && ret != -8080)
+		LOGE("ioctl DIAG_IOCTL_SWITCH_LOGGING with arglen=%ld is supported, "
+		     "but it failed (%s)\n", arglen, strerror(errno));
+
 	if (ret < 0) {
-		// LOGD("S7 Edge ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
-		// perror("Alternative ioctl SWITCH_LOGGING");
-		// XiaoMI 6 7.1.1
-		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, mode);
-	}
-	if (ret < 0) {
-		// LOGD("XiaoMI method 1 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
-		// perror("Alternative ioctl SWITCH_LOGGING");
-		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &mode, 12, 0, 0, 0, 0);
-	}
-	if (ret < 0) {
-		// LOGD("XiaoMI method 2 ioctl SWITCH_LOGGING fails: %s \n", strerror(errno));
 		/* Ultimate approach: Use libdiag.so */
 		ret = __enable_logging_libdiag(mode);    // FIXME: 0921, uncomment it
 	}
