@@ -96,9 +96,10 @@ def get_chipset_type():
     """
     cmd = "getprop ro.board.platform;"
     res = run_shell_cmd(cmd)
+    Logger.error("Chipset type: "+str(res))
     if res.startswith(b"mt"):
         return ChipsetType.MTK
-    elif res.startswith(b"msm") or res.startswith(b"mdm") or res.startswith(b"sdm"):
+    elif res.startswith(b"msm") or res.startswith(b"mdm") or res.startswith(b"sdm") or res.startswith(b"kona"):
         return ChipsetType.QUALCOMM
     else:
         return None
@@ -432,7 +433,7 @@ def check_diag_mode():
     chipset_type = get_chipset_type()
     if chipset_type == ChipsetType.QUALCOMM:
         diag_port = "/dev/diag"
-        if not os.path.exists(diag_port):
+        if not os.path.isfile(diag_port) and not os.path.exists(diag_port):
             return False
         else:
             run_shell_cmd("chmod 777 /dev/diag")

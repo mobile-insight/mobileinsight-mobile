@@ -18,6 +18,10 @@ from logging_analyzer import LoggingAnalyzer
 
 cfg_file = "netlogger.cfg"
 
+nr_lvl1 = [
+    '5G_NR_RRC_OTA_Packet',
+]
+
 lte_lvl1 = [
     'LTE_RRC_OTA_Packet',
     'LTE_RRC_Serv_Cell_Info',
@@ -63,7 +67,9 @@ try:
     src.set_log_directory(log_dir)
     src.set_log_cut_size(float(plugin_config['mi_log_size']) / 1000.0)
 
-    if plugin_config["log_type"] == "LTE Control Plane":
+    if plugin_config["log_type"] == "5G Control Plane":
+        src.enable_log(nr_lvl1)
+    elif plugin_config["log_type"] == "LTE Control Plane":
         src.enable_log(lte_lvl1)
     elif plugin_config["log_type"] == "LTE PHY":
         src.enable_log(lte_lvl3)
