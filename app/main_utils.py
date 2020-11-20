@@ -99,7 +99,7 @@ def get_chipset_type():
     Logger.error("Chipset type: "+str(res))
     if res.startswith(b"mt"):
         return ChipsetType.MTK
-    elif res.startswith(b"msm") or res.startswith(b"mdm") or res.startswith(b"sdm") or res.startswith(b"kona"):
+    elif res.startswith(b"msm") or res.startswith(b"mdm") or res.startswith(b"sdm") or res.startswith(b"kona") or res.startswith(b"lito"):
         return ChipsetType.QUALCOMM
     else:
         return None

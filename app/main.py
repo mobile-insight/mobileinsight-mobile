@@ -364,9 +364,8 @@ if __name__ == "__main__":
         MobileInsightApp().run()
         Logger.error("MobileInsight Error. Existing")
     except Exception as e:
-        from . import crash_app
-
         Logger.exception(traceback.format_exc())
+        from . import crash_app
         crash_app.CrashApp().run()
     finally:
         pass
