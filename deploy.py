@@ -21,12 +21,15 @@ import subprocess
 import subprocess
 
 LIBS_GIT = 'https://github.com/mobile-insight/mobileinsight-libs.git'
+LIBS_BRANCH = 'ws-3.4'
+
 
 def run_config():
     os.system(
-        'git clone {}'.format(LIBS_GIT))
+        'git clone -b {} {}'.format(LIBS_BRANCH, LIBS_GIT))
     if os.path.isdir('./app/data') is False:
         os.makedirs('./app/data')
+    os.system('tar -xzf mobileinsight-libs/lib.tar.gz -C mobileinsight-libs')
     os.system('cp mobileinsight-libs/lib/* ./app/data')
     os.system('cp mobileinsight-libs/bin/* ./app/data')
     os.system('rm -rf mobileinsight-libs')
