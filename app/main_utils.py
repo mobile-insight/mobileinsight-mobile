@@ -96,7 +96,6 @@ def get_chipset_type():
     """
     cmd = "getprop ro.board.platform;"
     res = run_shell_cmd(cmd)
-    Logger.error("Chipset type: "+str(res))
     if res.startswith(b"mt"):
         return ChipsetType.MTK
     elif res.startswith(b"msm") or res.startswith(b"mdm") or res.startswith(b"sdm") or res.startswith(b"kona") or res.startswith(b"lito"):

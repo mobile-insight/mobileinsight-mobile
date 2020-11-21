@@ -5,7 +5,7 @@ import sys
 # Import MobileInsight modules
 from android.broadcast import BroadcastReceiver
 from jnius import autoclass
-from mobile_insight.analyzer import LteRrcAnalyzer, WcdmaRrcAnalyzer
+from mobile_insight.analyzer import NrRrcAnalyzer, LteRrcAnalyzer, WcdmaRrcAnalyzer
 from mobile_insight.monitor import OnlineMonitor
 from service import mi2app_utils
 
@@ -30,12 +30,15 @@ br.start()
 cache_directory = mi2app_utils.get_cache_dir()
 log_directory = os.path.join(cache_directory, "mi2log")
 
-# Initialize a 3G/4G monitor
+# Initialize a  monitor
 src = OnlineMonitor()
 # src.set_log_directory(log_directory)
 src.set_skip_decoding(False)
 
-# Enable 3G/4G RRC (radio resource control) monitoring
+# Enable 3G/4G/5G RRC (radio resource control) monitoring
+nr_rrc_analyzer = NrRrcAnalyzer()
+nr_rrc_analyzer.set_source(src)
+
 lte_rrc_analyzer = LteRrcAnalyzer()
 lte_rrc_analyzer.set_source(src)
 
