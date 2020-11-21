@@ -52,7 +52,7 @@ ndk_version : r19b
 
 # replace it with your desired target arch
 arch : arm64-v8a
- arch : armeabi-v7a
+# arch : armeabi-v7a
 
 whitelist : config/whitelist.txt
 
