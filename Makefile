@@ -30,4 +30,9 @@ clean_apk:
 	python3 deploy.py clean_apk
 
 clean_dist:
-	python3 deploy.py clean_dist
+	# python3 deploy.py clean_dist
+	p4a clean_dists
+	p4a clean_builds
+	p4a clean_bootstrap_builds
+	p4a clean_all
+	rm -fr ~/.python-for-android/dists/MobileInsight*
