@@ -16,7 +16,7 @@
         "title"  : "Log Size (KB)",
         "desc"   : "The max size of each log",
         "key"    : "mi_log_size",
-        "default": "100"
+        "default": "1000"
     },
     {
         "type"   : "bool",
