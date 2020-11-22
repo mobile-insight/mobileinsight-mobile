@@ -109,9 +109,9 @@ class MobileInsightApp(App):
         Clock.schedule_once(self.remove_android_splash, 0.3)
 
     def remove_android_splash(self, *args):
+        PythonActivity = autoclass('org.kivy.android.PythonActivity')
         activity = PythonActivity.mActivity
         activity.removeLoadingScreen()
-
 
     def __popup_dismiss(self, instance, answer):
         self.popup.dismiss()
