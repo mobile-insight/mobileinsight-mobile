@@ -233,6 +233,7 @@ class MobileInsightApp(App):
         self.home_screen = self.screens[0]
         COORDINATOR.setup_analyzers()
         COORDINATOR.send_control('START')
+        self.remove_android_splash()
         self.root.ids.scr_mngr.switch_to(self.screens[0])
 
     def go_screen(self, idx):
