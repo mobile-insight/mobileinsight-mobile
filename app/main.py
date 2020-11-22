@@ -10,6 +10,7 @@ from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, NumericProperty, StringProperty, ListProperty
 from kivy.uix.boxlayout import BoxLayout
+from kivy.clock import Clock
 
 import main_utils
 from main_utils import current_activity, get_plugins_list, create_folder
@@ -101,6 +102,16 @@ class MobileInsightApp(App):
 
     def __del__(self):
         Logger.error("__del__")
+
+    # This function is added to remove remove the presplash manually
+    def on_enter(self):
+        # This function is called when everything is fully loaded and the app is ready
+        Clock.schedule_once(self.remove_android_splash, 0.3)
+
+    def remove_android_splash(self, *args):
+        PythonActivity = autoclass('org.kivy.android.PythonActivity')
+        activity = PythonActivity.mActivity
+        activity.removeLoadingScreen()
 
     def __popup_dismiss(self, instance, answer):
         self.popup.dismiss()
