@@ -849,6 +849,20 @@ enable_logging (int fd, int mode)
 	// LOGD("arglen=%ld, target=%lu\n", arglen, sizeof(struct diag_logging_mode_param_t_r));
 	switch (arglen) {
 	
+	case sizeof(struct diag_logging_mode_param_t_pie): {
+		/* Android 9.0 mode
+		 * Reference: https://android.googlesource.com/kernel/msm.git/+/android-9.0.0_r0.31/drivers/char/diag/diagchar_core.c
+		 */
+		struct diag_logging_mode_param_t_pie new_mode;
+		new_mode.req_mode = mode;
+		new_mode.mode_param = 0;
+		new_mode.pd_mask = 0;
+		new_mode.peripheral_mask = DIAG_CON_ALL;
+		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &new_mode);
+		
+		if(ret >= 0)
+		    break;
+	}
 	case (sizeof(struct diag_logging_mode_param_t_q)): {
 		/* Android 10.0 mode
 		 * Reference:
@@ -877,20 +891,6 @@ enable_logging (int fd, int mode)
 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &new_mode);
 	
 	    if(ret >= 0)	
-		    break;
-	}
-	case sizeof(struct diag_logging_mode_param_t_pie): {
-		/* Android 9.0 mode
-		 * Reference: https://android.googlesource.com/kernel/msm.git/+/android-9.0.0_r0.31/drivers/char/diag/diagchar_core.c
-		 */
-		struct diag_logging_mode_param_t_pie new_mode;
-		new_mode.req_mode = mode;
-		new_mode.mode_param = 0;
-		new_mode.pd_mask = 0;
-		new_mode.peripheral_mask = DIAG_CON_ALL;
-		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &new_mode);
-		
-		if(ret >= 0)
 		    break;
 	}
 	case sizeof(struct diag_logging_mode_param_t): {
