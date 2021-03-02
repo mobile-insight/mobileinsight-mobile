@@ -894,8 +894,7 @@ enable_logging (int fd, int mode)
 		goto next;
     }
 	// Testing end
-
-	// LOGD("arglen=%ld, target=%lu\n", arglen, sizeof(struct diag_logging_mode_param_t_r));
+    // LOGD("Not pixel-5 or Android 11: arglen=%ld, struct_q_size=%lu\n", arglen, sizeof(struct diag_logging_mode_param_t_q));
 	switch (arglen) {
 	
 	case sizeof(struct diag_logging_mode_param_t_pie): {
@@ -912,33 +911,34 @@ enable_logging (int fd, int mode)
 		if(ret >= 0)
 		    break;
 	}
-	case (sizeof(struct diag_logging_mode_param_t_q)): {
-		/* Android 10.0 mode
-		 * Reference:
-		 *   https://android.googlesource.com/kernel/msm.git/+/android-10.0.0_r0.87/drivers/char/diag/diagchar_core.c
-		 *   and the disassembly code of libdiag.so
-		 */
-		struct diag_logging_mode_param_t_q new_mode;
-		struct diag_con_all_param_t con_all;
-        	con_all.diag_con_all = 0xff;
-		ret = ioctl(fd, DIAG_IOCTL_QUERY_CON_ALL, &con_all);
-		if (ret == 0)
-			new_mode.peripheral_mask = con_all.diag_con_all;
-		else
-			new_mode.peripheral_mask = 0x7f;
-		new_mode.req_mode = mode;
-		new_mode.peripheral_mask = DIAG_CON_ALL;
-		new_mode.pd_mask = 0;
-		new_mode.mode_param = 1;
-		new_mode.diag_id = 0;
-		new_mode.pd_val = 0;
-		new_mode.peripheral = -22;
-		new_mode.device_mask = 1 << DIAG_MD_LOCAL;
-		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &new_mode);
+	// case (sizeof(struct diag_logging_mode_param_t_q)): {
+	// 	/* Android 10.0 mode
+	// 	 * Reference:
+	// 	 *   https://android.googlesource.com/kernel/msm.git/+/android-10.0.0_r0.87/drivers/char/diag/diagchar_core.c
+	// 	 *   and the disassembly code of libdiag.so
+	// 	 */
+	// 	LOGD("Matched with Android 10: arglen=%ld, struct_q_size=%lu\n", arglen, sizeof(struct diag_logging_mode_param_t_q));
+	// 	struct diag_logging_mode_param_t_q new_mode;
+	// 	struct diag_con_all_param_t con_all;
+ //        	con_all.diag_con_all = 0xff;
+	// 	ret = ioctl(fd, DIAG_IOCTL_QUERY_CON_ALL, &con_all);
+	// 	if (ret == 0)
+	// 		new_mode.peripheral_mask = con_all.diag_con_all;
+	// 	else
+	// 		new_mode.peripheral_mask = 0x7f;
+	// 	new_mode.req_mode = mode;
+	// 	new_mode.peripheral_mask = DIAG_CON_ALL;
+	// 	new_mode.pd_mask = 0;
+	// 	new_mode.mode_param = 1;
+	// 	new_mode.diag_id = 0;
+	// 	new_mode.pd_val = 0;
+	// 	new_mode.peripheral = -22;
+	// 	new_mode.device_mask = 1 << DIAG_MD_LOCAL;
+	// 	ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &new_mode);
 	
-	    if(ret >= 0)	
-		    break;
-	}
+	//     if(ret >= 0)	
+	// 	    break;
+	// }
 	case sizeof(struct diag_logging_mode_param_t): {
 		/* Android 7.0 mode
 		 * Reference: https://android.googlesource.com/kernel/msm.git/+/android-7.1.0_r0.3/drivers/char/diag/diagchar_core.c
