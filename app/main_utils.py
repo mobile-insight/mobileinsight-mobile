@@ -88,15 +88,11 @@ def get_chipset_type():
     :returns: an enum of ChipsetType
     """
 
-    """
-    MediaTek: [ro.board.platform]: [mt6735m]
-    Qualcomm: [ro.board.platform]: [msm8084]
-    """
     cmd = "getprop ro.board.platform;"
     res = run_shell_cmd(cmd)
     if res.startswith(b"mt"):
         return ChipsetType.MTK
-    elif res.startswith(b"msm") or res.startswith(b"mdm") or res.startswith(b"sdm") or res.startswith(b"kona") or res.startswith(b"lito"):
+    elif res.startswith(b"msm") or res.startswith(b"mdm") or res.startswith(b"sdm") or res.startswith(b"kona") or res.startswith(b"lito") or res.startswith(b"universal980"):
         return ChipsetType.QUALCOMM
     else:
         return None
