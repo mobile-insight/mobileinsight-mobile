@@ -373,7 +373,11 @@ Logger.info("Begin Main")
 
 if __name__ == "__main__":
     try:
-        MobileInsightApp().run()
+        app = MobileInsightApp()
+        import weakmethodref
+        weakmethodref.fixBugs() # Fix weak reference bugs in kivy
+        app.run()
+        # MobileInsightApp().run()
         Logger.error("MobileInsight Error. Existing")
     except Exception as e:
         Logger.exception(traceback.format_exc())
