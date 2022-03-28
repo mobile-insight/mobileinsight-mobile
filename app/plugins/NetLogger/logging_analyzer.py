@@ -272,7 +272,12 @@ class LoggingAnalyzer(Analyzer):
                 pass
 
         if self.__is_dec_log is True:
-            if self.__dec_log_type == "LTE Control Plane":
+            self._decode_msg(msg)
+            """
+            if self.__dec_log_type == "5G Control Plane":
+                if (msg.type_id.startswith("5G_NR_RRC")):
+                    self._decode_msg(msg)
+            elif self.__dec_log_type == "LTE Control Plane":
                 if (msg.type_id.startswith("LTE_RRC")
                         or msg.type_id.startswith("LTE_NAS")):
                     self._decode_msg(msg)
@@ -292,10 +297,12 @@ class LoggingAnalyzer(Analyzer):
                     self._decode_msg(msg)
             else:
                 pass
+            """
         else:
             pass
 
     def _decode_msg(self, msg):
+        self.log_debug(msg.type_id)
         self.__raw_msg[self.__msg_cnt] = msg.data
         self.__msg_cnt += 1
         if len(self.__raw_msg) >= 20:

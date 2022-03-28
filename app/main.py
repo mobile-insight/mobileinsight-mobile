@@ -10,6 +10,7 @@ from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty, NumericProperty, StringProperty, ListProperty
 from kivy.uix.boxlayout import BoxLayout
+from kivy.clock import Clock
 
 import main_utils
 from main_utils import current_activity, get_plugins_list, create_folder
@@ -101,6 +102,16 @@ class MobileInsightApp(App):
 
     def __del__(self):
         Logger.error("__del__")
+
+    # This function is added to remove remove the presplash manually
+    def on_enter(self):
+        # This function is called when everything is fully loaded and the app is ready
+        Clock.schedule_once(self.remove_android_splash, 0.3)
+
+    def remove_android_splash(self, *args):
+        PythonActivity = autoclass('org.kivy.android.PythonActivity')
+        activity = PythonActivity.mActivity
+        activity.removeLoadingScreen()
 
     def __popup_dismiss(self, instance, answer):
         self.popup.dismiss()
@@ -222,6 +233,7 @@ class MobileInsightApp(App):
         self.home_screen = self.screens[0]
         COORDINATOR.setup_analyzers()
         COORDINATOR.send_control('START')
+        self.remove_android_splash()
         self.root.ids.scr_mngr.switch_to(self.screens[0])
 
     def go_screen(self, idx):
@@ -348,7 +360,7 @@ class MobileInsightApp(App):
             # self.popup.open()
         else:
             self.privacy_check()
-            self.check_update()
+            # self.check_update()
 
     def on_stop(self):
         Logger.error("on_stop")
@@ -361,12 +373,16 @@ Logger.info("Begin Main")
 
 if __name__ == "__main__":
     try:
-        MobileInsightApp().run()
+        app = MobileInsightApp()
+        import weakmethodref
+        weakmethodref.fixBugs() # Fix weak reference bugs in kivy
+        app.run()
+        # MobileInsightApp().run()
         Logger.error("MobileInsight Error. Existing")
     except Exception as e:
-        from . import crash_app
-
         Logger.exception(traceback.format_exc())
+        # from . import crash_app
+        import crash_app
         crash_app.CrashApp().run()
     finally:
         pass

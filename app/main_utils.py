@@ -3,8 +3,6 @@ main_utils.py
 
 Define utility variables and functions for apps.
 """
-# FIXME(likayo): subprocess module in Python 2.7 is not thread-safe. Use
-# subprocess32 instead.
 import os
 import re
 import subprocess
@@ -90,15 +88,11 @@ def get_chipset_type():
     :returns: an enum of ChipsetType
     """
 
-    """
-    MediaTek: [ro.board.platform]: [mt6735m]
-    Qualcomm: [ro.board.platform]: [msm8084]
-    """
     cmd = "getprop ro.board.platform;"
     res = run_shell_cmd(cmd)
     if res.startswith(b"mt"):
         return ChipsetType.MTK
-    elif res.startswith(b"msm") or res.startswith(b"mdm") or res.startswith(b"sdm"):
+    elif res.startswith(b"msm") or res.startswith(b"mdm") or res.startswith(b"sdm") or res.startswith(b"kona") or res.startswith(b"lito") or res.startswith(b"universal980"):
         return ChipsetType.QUALCOMM
     else:
         return None
@@ -422,6 +416,8 @@ def check_security_policy():
     cmd = cmd + \
           "supolicy --live \"allow crash_dump app_data_file dir {read write search}\";"
 
+    cmd = cmd + \
+          "supolicy --live \"allow untrusted_app_27 diag_device chr_file {getattr read write}\";"
     run_shell_cmd(cmd)
 
 
@@ -432,7 +428,7 @@ def check_diag_mode():
     chipset_type = get_chipset_type()
     if chipset_type == ChipsetType.QUALCOMM:
         diag_port = "/dev/diag"
-        if not os.path.exists(diag_port):
+        if not os.path.isfile(diag_port) and not os.path.exists(diag_port):
             return False
         else:
             run_shell_cmd("chmod 777 /dev/diag")

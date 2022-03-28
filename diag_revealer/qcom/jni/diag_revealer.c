@@ -2,7 +2,7 @@
  * Read diagnostic message from Android's /dev/diag device. Messages are output
  * using a Linux FIFO pipe.
  *
- * Author: Jiayao Li
+ * Author: Jiayao Li, Yuanjie Li, Haotian Deng
  * Changes:
  *   Ruihan Li: Probe ioctl argument length.
  *              Fix libdiag.so logging switching.
@@ -161,6 +161,8 @@ struct diag_dci_reg_tbl_t {
 /*
  * Android 10.0: switch_logging_mode structure
  * Reference: https://android.googlesource.com/kernel/msm.git/+/android-10.0.0_r0.87/drivers/char/diag/diagchar.h
+ * Android 11.0.0 (RD1A.201105.003.C1)
+ * https://android.googlesource.com/kernel/msm.git/+/refs/tags/android-11.0.0_r0.27/drivers/char/diag/diagchar.h
  */
 struct diag_logging_mode_param_t_q {
 	uint32_t req_mode;
@@ -410,12 +412,12 @@ write_commands (int fd, BinaryBuffer *pbuf_write)
 		if (len >= 3) {
 			// memcpy(send_buf + 4, p + i, len);
 			memcpy(send_buf + offset, p + i, len);
-			// LOGD("Writing %d bytes of data\n", len + 4);
-			// print_hex(send_buf, len + 4);
+			//LOGD("Writing %d bytes of data\n", len + 4);
+			//print_hex(send_buf, len + 4);
 			fflush(stdout);
 			// int ret = write(fd, (const void *) send_buf, len + 4);
 			int ret = write(fd, (const void *) send_buf, len + offset);
-			// LOGD("write_commands: ret=%d\n", ret);
+			//LOGD("write_commands: ret=%d\n", ret);
 			if (ret < 0) {
 				LOGE("write_commands error (len=%lu, offset=%lu): %s\n", len, offset, strerror(errno));
 				return -1;
@@ -750,7 +752,7 @@ enable_logging (int fd, int mode)
 	// Nexus-6-only logging optimizations
 	// It will fail on other devices (errno=EFAULT), since DIAG_IOCTL_OPTIMIZED_LOGGING is equal to DIAG_IOCTL_PERIPHERAL_BUF_CONFIG.
 	// Reference: https://github.com/MotorolaMobilityLLC/kernel-msm/blob/kitkat-4.4.4-release-victara/drivers/char/diag/diagchar_core.c#L1189
-	ret = ioctl(fd, DIAG_IOCTL_OPTIMIZED_LOGGING, (long) 1);
+	// ret = ioctl(fd, DIAG_IOCTL_OPTIMIZED_LOGGING, (long) 1);
 	// if (ret >= 0) {
 	// 	ret = ioctl(fd, DIAG_IOCTL_OPTIMIZED_LOGGING_FLUSH, NULL);
 	// 	if (ret < 0) {
@@ -801,7 +803,7 @@ enable_logging (int fd, int mode)
 	ret = ioctl(fd, DIAG_IOCTL_PERIPHERAL_BUF_CONFIG, &buffering_mode);
 	if (ret < 0) {
 		printf("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG fails, with ret val = %d\n", ret);
-		perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG");
+		//perror("ioctl DIAG_IOCTL_PERIPHERAL_BUF_CONFIG");
 	}
 
 	// uint8_t peripheral = 0;
@@ -844,17 +846,37 @@ enable_logging (int fd, int mode)
 	 * And the version can be deduced from the length. It is not very precise, but it is enough at least
 	 * for now.
 	 */
-	ssize_t arglen = probe_ioctl_arglen(DIAG_IOCTL_SWITCH_LOGGING, sizeof(struct diag_logging_mode_param_t_q));
-	switch (arglen) {
-	case sizeof(struct diag_logging_mode_param_t_q): {
-		/* Android 10.0 mode
+	// Testing: get device info
+	char *board_pf_cmd = "su -c getprop ro.board.platform";
+	char board_name[256];
+    FILE *fp;
+    if ((fp = popen(board_pf_cmd, "r")) != NULL) {
+        while (fgets(board_name, 256, fp) != NULL) {
+        	// printf("OUTPUT: %s\n", board_name);
+    	}
+    	pclose(fp);
+    }
+
+	char *sys_ver_cmd = "su -c getprop ro.build.version.release";
+    char system_version[256];
+    if ((fp = popen(sys_ver_cmd, "r")) != NULL) {
+        while (fgets(system_version, 256, fp) != NULL) {
+        	// printf("OUTPUT: %s\n", system_version);
+    	}
+    	pclose(fp);
+    }
+
+    ssize_t arglen = probe_ioctl_arglen(DIAG_IOCTL_SWITCH_LOGGING, sizeof(struct diag_logging_mode_param_t_q));
+    
+    if (strstr(board_name, "lito") != NULL && strstr(system_version, "11") != NULL){
+    	printf("MATCHED.\n");
+    	/* Android 11.0.0 (RD1A.201105.003.C1)
 		 * Reference:
-		 *   https://android.googlesource.com/kernel/msm.git/+/android-10.0.0_r0.87/drivers/char/diag/diagchar_core.c
-		 *   and the disassembly code of libdiag.so
+		 *   https://android.googlesource.com/kernel/msm.git/+/refs/tags/android-11.0.0_r0.27/drivers/char/diag/diagchar_core.c
 		 */
 		struct diag_logging_mode_param_t_q new_mode;
 		struct diag_con_all_param_t con_all;
-		con_all.diag_con_all = 0xff /* DIAG_CON_ALL */;
+        	con_all.diag_con_all = 0xff;
 		ret = ioctl(fd, DIAG_IOCTL_QUERY_CON_ALL, &con_all);
 		if (ret == 0)
 			new_mode.peripheral_mask = con_all.diag_con_all;
@@ -865,11 +887,16 @@ enable_logging (int fd, int mode)
 		new_mode.mode_param = 1;
 		new_mode.diag_id = 0;
 		new_mode.pd_val = 0;
-		new_mode.peripheral = -22;
+		new_mode.peripheral = 0;
 		new_mode.device_mask = 1 << DIAG_MD_LOCAL;
 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &new_mode);
-		break;
-	}
+		printf("Enable for Android 11: %d\n", ret);
+		goto next;
+    }
+	// Testing end
+    // LOGD("Not pixel-5 or Android 11: arglen=%ld, struct_q_size=%lu\n", arglen, sizeof(struct diag_logging_mode_param_t_q));
+	switch (arglen) {
+	
 	case sizeof(struct diag_logging_mode_param_t_pie): {
 		/* Android 9.0 mode
 		 * Reference: https://android.googlesource.com/kernel/msm.git/+/android-9.0.0_r0.31/drivers/char/diag/diagchar_core.c
@@ -880,8 +907,38 @@ enable_logging (int fd, int mode)
 		new_mode.pd_mask = 0;
 		new_mode.peripheral_mask = DIAG_CON_ALL;
 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &new_mode);
-		break;
+		
+		if(ret >= 0)
+		    break;
 	}
+	// case (sizeof(struct diag_logging_mode_param_t_q)): {
+	// 	/* Android 10.0 mode
+	// 	 * Reference:
+	// 	 *   https://android.googlesource.com/kernel/msm.git/+/android-10.0.0_r0.87/drivers/char/diag/diagchar_core.c
+	// 	 *   and the disassembly code of libdiag.so
+	// 	 */
+	// 	LOGD("Matched with Android 10: arglen=%ld, struct_q_size=%lu\n", arglen, sizeof(struct diag_logging_mode_param_t_q));
+	// 	struct diag_logging_mode_param_t_q new_mode;
+	// 	struct diag_con_all_param_t con_all;
+ //        	con_all.diag_con_all = 0xff;
+	// 	ret = ioctl(fd, DIAG_IOCTL_QUERY_CON_ALL, &con_all);
+	// 	if (ret == 0)
+	// 		new_mode.peripheral_mask = con_all.diag_con_all;
+	// 	else
+	// 		new_mode.peripheral_mask = 0x7f;
+	// 	new_mode.req_mode = mode;
+	// 	new_mode.peripheral_mask = DIAG_CON_ALL;
+	// 	new_mode.pd_mask = 0;
+	// 	new_mode.mode_param = 1;
+	// 	new_mode.diag_id = 0;
+	// 	new_mode.pd_val = 0;
+	// 	new_mode.peripheral = -22;
+	// 	new_mode.device_mask = 1 << DIAG_MD_LOCAL;
+	// 	ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &new_mode);
+	
+	//     if(ret >= 0)	
+	// 	    break;
+	// }
 	case sizeof(struct diag_logging_mode_param_t): {
 		/* Android 7.0 mode
 		 * Reference: https://android.googlesource.com/kernel/msm.git/+/android-7.1.0_r0.3/drivers/char/diag/diagchar_core.c
@@ -891,7 +948,9 @@ enable_logging (int fd, int mode)
 		new_mode.peripheral_mask = DIAG_CON_ALL;
 		new_mode.mode_param = 0;
 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &new_mode);
-		break;
+		
+		if(ret >= 0)
+		  break;
 	}
 	case sizeof(int):
 		/* Android 6.0 mode
@@ -899,33 +958,38 @@ enable_logging (int fd, int mode)
 		 */
 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &mode);
 		if (ret >= 0)
-			break;
+		    break;
 		/*
 		 * Is it really necessary? It seems that the kernel will simply ignore all the fourth and subsequent
 		 * arguments of ioctl. But similar lines do exist in libdiag.so. Why?
 		 * Reference: https://android.googlesource.com/kernel/msm.git/+/android-10.0.0_r0.87/fs/ioctl.c#692
 		 */
 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, &mode, 12, 0, 0, 0, 0);
-		break;
+		if (ret >= 0)
+		    break;
 	case 0:
 		// Yuanjie: the following works for Samsung S5
 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (long) mode);
 		if (ret >= 0)
-			break;
+		    break;
 		// Same question as above: Is it really necessary?
 		// Yuanjie: the following is used for Xiaomi RedMi 4
 		ret = ioctl(fd, DIAG_IOCTL_SWITCH_LOGGING, (long) mode, 12, 0, 0, 0, 0);
-		break;
+		if (ret >= 0)
+		    break;
 	default:
 		LOGW("ioctl DIAG_IOCTL_SWITCH_LOGGING with arglen=%ld is not supported\n", arglen);
 		ret = -8080;
 		break;
 	}
+next:
+	// printf("Reach the next\n");
 	if (ret < 0 && ret != -8080)
 		LOGE("ioctl DIAG_IOCTL_SWITCH_LOGGING with arglen=%ld is supported, "
 		     "but it failed (%s)\n", arglen, strerror(errno));
 	else if (ret >= 0)
 		LOGI("ioctl DIAG_IOCTL_SWITCH_LOGGING with arglen=%ld succeeded\n", arglen);
+		// printf("ioctl DIAG_IOCTL_SWITCH_LOGGING with arglen=%ld succeeded\n", arglen);
 
 	if (ret < 0) {
 		/* Ultimate approach: Use libdiag.so */
